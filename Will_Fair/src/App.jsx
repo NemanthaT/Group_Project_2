@@ -1,19 +1,25 @@
-import './App.css'
-import Header from './components/Header';
-import Footer from './components/Footer';
-import LandingPage from './pages/landingPage/LandingPage';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import LandingPage from "./pages/landingPage/LandingPage";
+import FeaturedContent from "./pages/landingPage/FeaturedContent";
+import Reg from "./pages/signIn/Reg";
 
 function App() {
-
   return (
-    <>
+    <Router>
       <Header />
       <main>
-        <LandingPage />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/featured" element={<FeaturedContent />} />
+          <Route path="/loginD/*" element={<Reg />} />
+        </Routes>
       </main>
       <Footer />
-    </>
+    </Router>
   );
 }
 
-export default App
+export default App;

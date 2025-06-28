@@ -1,9 +1,23 @@
 import "./LandingPage.css";
+import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
+  // Initialize the useNavigate hook from react-router-dom
+  const navigate = useNavigate();
+
+  const goToFeatured = () => {
+    navigate("/featured");
+  };
   return (
     <>
       <section className="hero" id="home">
+        <div className="bg-container">
+          <img
+            className="bg"
+            src="src/assets/images/homeBg.jpeg"
+            alt="Hero Background"
+          />
+        </div>
         <div className="container">
           <div className="hero-content">
             <h1>
@@ -111,9 +125,9 @@ function LandingPage() {
             </div>
           </div>
           <div className="see-more">
-            <a href="#" className="btn-primary">
+            <button className="btn-small" onClick={goToFeatured}>
               See more
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -146,7 +160,11 @@ function LandingPage() {
                   fontSize: "4rem",
                 }}
               >
-                👥
+                <img
+                  className="bg"
+                  src="src/assets/images/crowd.png"
+                  alt="hands image"
+                />
               </div>
             </div>
           </div>
@@ -195,7 +213,13 @@ function LandingPage() {
                 build a better tomorrow.
               </p>
             </div>
-            <div className="cta-image">🤝</div>
+            <div className="cta-image">
+              <img
+                className="bg"
+                src="src/assets/images/hands.png"
+                alt="hands image"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -277,7 +301,13 @@ function LandingPage() {
                 the world.
               </p>
             </div>
-            <div className="about-image">🌟</div>
+            <div className="about-image">
+              <img
+                src="src/assets/images/logo.png"
+                alt="Logo"
+                className="ab-image"
+              />
+            </div>
           </div>
         </div>
       </section>

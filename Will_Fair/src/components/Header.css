@@ -1,6 +1,6 @@
 /* Header */
 header {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.747);
   padding: 1rem 0;
   position: fixed;
   width: 100%;
@@ -68,4 +68,10 @@ nav {
 .sign-in-btn:hover {
   background: #5855eb;
   transform: translateY(-2px);
+}
+
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  width: 18%;
 }

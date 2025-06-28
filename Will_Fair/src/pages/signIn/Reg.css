@@ -1,0 +1,10 @@
+.reg-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+.hero {
+  justify-content: center;
+}
