@@ -15,6 +15,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/featured" element={<FeaturedContent />} />
           <Route path="/loginD/*" element={<Reg />} />
+          <Route path="/loginF/*" element={<Reg />} />
         </Routes>
       </main>
       <Footer />

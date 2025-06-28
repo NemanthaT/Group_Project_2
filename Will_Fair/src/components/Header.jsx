@@ -1,5 +1,5 @@
 import "./Header.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link } from "react-router-dom";
 
 function Header() {
   // Initialize the useNavigate hook from react-router-dom
@@ -7,6 +7,9 @@ function Header() {
 
   const goToLoginD = () => {
     navigate("/loginD");
+  };
+  const goToLoginF = () => {
+    navigate("/loginF");
   };
   return (
     <header>
@@ -38,7 +41,7 @@ function Header() {
           <button className="sign-in-btn" onClick={goToLoginD}>
             Donate
           </button>
-          <button className="sign-in-btn">Fundraise</button>
+          <button className="sign-in-btn" onClick={goToLoginF}>Fundraise</button>
         </div>
       </nav>
     </header>

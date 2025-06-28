@@ -1,10 +1,11 @@
 import "./RegLog.css";
 import { useNavigate } from "react-router-dom";
 
+//Form for Donor Login
 export function LoginD() {
   const navigate = useNavigate();
 
-  const goToSignup = () => {
+  const goToSignupD = () => {
     navigate("/loginD/signupD");
   };
 
@@ -48,7 +49,7 @@ export function LoginD() {
 
         <div className="signup-link">
           Don't have an account?{" "}
-          <button onClick={goToSignup} className="link-button">
+          <button onClick={goToSignupD} className="link-button">
             Sign in
           </button>
         </div>
@@ -57,10 +58,11 @@ export function LoginD() {
   );
 }
 
+//Form for Donor Sign Up
 export function SignUpD() {
   const navigate = useNavigate();
 
-  const goToLogin = () => {
+  const goToLoginD = () => {
     navigate("/loginD");
   };
 
@@ -153,7 +155,7 @@ export function SignUpD() {
 
         <div className="login-link">
           Already have an account?{" "}
-          <button onClick={goToLogin} className="link-button">
+          <button onClick={goToLoginD} className="link-button">
             Login
           </button>
         </div>
@@ -162,10 +164,173 @@ export function SignUpD() {
   );
 }
 
-export function SignUpI() {
-  return <></>;
+//Form for Fundraiser Login
+export function LoginF() {
+  const navigate = useNavigate();
+
+  const goToSignupF = () => {
+    navigate("/loginF/signupF");
+  };
+
+  return (
+    <>
+      <div className="login-container">
+        <div className="flogo"></div>
+
+        <div className="welcome-text">
+          <h1>Welcome Back!</h1>
+          <p>Connecting Hearts, Changing Lives</p>
+        </div>
+
+        <form>
+          <div className="form-group">
+            <div className="input-wrapper">
+              <span className="input-icon">📧</span>
+              <input type="tel" placeholder="Phone no" pattern="[0-9]{10}" required />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-wrapper">
+              <span className="input-icon">🔒</span>
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+              />
+              <button type="button" className="password-toggle">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" className="login-btn">
+            Login
+          </button>
+        </form>
+
+        <div className="signup-link">
+          Don't have an account?{" "}
+          <button onClick={goToSignupF} className="link-button">
+            Sign in
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export function SignUpR() {
-  return <></>;
+//Form for Fundraiser Sign Up
+export function SignUpF() {
+  function toggleType(type) {
+    const buttons = document.querySelectorAll(".toggle-btn");
+    buttons.forEach((btn) => btn.classList.remove("active"));
+
+    if (type === "individual") {
+      buttons[0].classList.add("active");
+    } else {
+      buttons[1].classList.add("active");
+    }
+  }
+  const navigate = useNavigate();
+
+  const goToLoginF = () => {
+    navigate("/loginF");
+  };
+
+  return (
+    <>
+      <div className="login-container">
+        <div className="flogo"></div>
+
+        <div className="welcome-text">
+          <h1>Welcome Back!</h1>
+          <p>Connecting Hearts, Changing Lives</p>
+        </div>
+
+        <form>
+          <div className="toggle-buttons">
+            <button
+              type="button"
+              className="toggle-btn active"
+              onClick={() => {
+                toggleType("individual");
+              }}
+            >
+              Individual
+            </button>
+            <button
+              type="button"
+              className="toggle-btn"
+              onClick={() => {
+                toggleType("representative");
+              }}
+            >
+              Representative
+            </button>
+          </div>
+          <div className="form-group">
+            <div className="input-wrapper">
+              <span className="input-icon">👤</span>
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name/ Organization Name"
+                required
+              />
+            </div>
+          </div>
+          <div className="form-group">
+            <div className="input-wrapper">
+              <span className="input-icon">📧</span>
+              <input type="tel" placeholder="Phone no" pattern="[0-9]{10}" required />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-wrapper">
+              <span className="input-icon">🔒</span>
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+              />
+              <button type="button" className="password-toggle">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="upload-group"
+            onClick={() => document.getElementById("proofDocument").click()}
+          >
+            <input
+              type="file"
+              id="proofDocument"
+              name="proofDocument"
+              accept=".pdf,.doc,.docx,.jpg,.png"
+            />
+            <div className="upload-content">
+              <span className="upload-text">📄 Proof Document</span>
+              <span className="upload-btn">Upload</span>
+            </div>
+          </div>
+
+          <button type="submit" className="login-btn">
+            Login
+          </button>
+        </form>
+
+        <div className="signup-link">
+          Don't have an account?{" "}
+          <button onClick={goToLoginF} className="link-button">
+            Sign in
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }
