@@ -6,6 +6,10 @@ export function LoginD() {
   const navigate = useNavigate();
 
   const goToSignupD = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
     navigate("/loginD/signupD");
   };
 
@@ -69,19 +73,23 @@ export function SignUpD() {
   const navigate = useNavigate();
 
   const goToLoginD = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
     navigate("/loginD");
   };
 
   return (
     <>
       <div className="signup-container">
-        <div className="flogo">
+        {/*<div className="flogo">
           <img
             src="../src/assets/images/logo.png"
             alt="Logo"
             className="flogo-icon"
           />
-        </div>
+        </div>*/}
 
         <div className="welcome-text">
           <h1>Join with us</h1>
@@ -179,6 +187,10 @@ export function LoginF() {
   const navigate = useNavigate();
 
   const goToSignupF = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
     navigate("/loginF/signupF");
   };
 
@@ -256,21 +268,25 @@ export function SignUpF() {
   const navigate = useNavigate();
 
   const goToLoginF = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
     navigate("/loginF");
   };
 
   return (
     <>
       <div className="signup-container">
-        <div className="flogo">
+        {/*<div className="flogo">
           <img
             src="../src/assets/images/logo.png"
             alt="Logo"
             className="flogo-icon"
           />
-        </div>
+        </div>*/}
         <div className="welcome-text">
-          <h1>Welcome Back!</h1>
+          <h1>Join with us</h1>
           <p>Connecting Hearts, Changing Lives</p>
         </div>
 
@@ -355,9 +371,9 @@ export function SignUpF() {
         </form>
 
         <div className="signup-link">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <button onClick={goToLoginF} className="link-button">
-            Sign in
+            Login
           </button>
         </div>
       </div>

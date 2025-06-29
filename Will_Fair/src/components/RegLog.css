@@ -321,7 +321,7 @@ input[type="checkbox"]:checked + .checkbox-custom::after {
 .upload-group {
   border: 2px dashed #e0e0e0;
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px 20px;
   text-align: center;
   margin-bottom: 20px;
   cursor: pointer;
