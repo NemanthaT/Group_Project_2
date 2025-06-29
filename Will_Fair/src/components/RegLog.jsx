@@ -241,7 +241,7 @@ export function SignUpF() {
 
   return (
     <>
-      <div className="login-container">
+      <div className="signup-container">
         <div className="flogo"></div>
 
         <div className="welcome-text">
