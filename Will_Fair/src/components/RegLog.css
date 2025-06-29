@@ -356,3 +356,9 @@ input[type="checkbox"]:checked + .checkbox-custom::after {
   color: #666;
   cursor: pointer;
 }
+
+.flogo-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

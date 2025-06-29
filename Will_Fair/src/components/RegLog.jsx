@@ -12,7 +12,13 @@ export function LoginD() {
   return (
     <>
       <div className="login-container">
-        <div className="flogo"></div>
+        <div className="flogo">
+          <img
+            src="src/assets/images/logo.png"
+            alt="Logo"
+            className="flogo-icon"
+          />
+        </div>
 
         <div className="welcome-text">
           <h1>Welcome Back!</h1>
@@ -70,7 +76,11 @@ export function SignUpD() {
     <>
       <div className="signup-container">
         <div className="flogo">
-          <div className="flogo-icon"></div>
+          <img
+            src="../src/assets/images/logo.png"
+            alt="Logo"
+            className="flogo-icon"
+          />
         </div>
 
         <div className="welcome-text">
@@ -175,8 +185,13 @@ export function LoginF() {
   return (
     <>
       <div className="login-container">
-        <div className="flogo"></div>
-
+        <div className="flogo">
+          <img
+            src="src/assets/images/logo.png"
+            alt="Logo"
+            className="flogo-icon"
+          />
+        </div>
         <div className="welcome-text">
           <h1>Welcome Back!</h1>
           <p>Connecting Hearts, Changing Lives</p>
@@ -186,7 +201,12 @@ export function LoginF() {
           <div className="form-group">
             <div className="input-wrapper">
               <span className="input-icon">📧</span>
-              <input type="tel" placeholder="Phone no" pattern="[0-9]{10}" required />
+              <input
+                type="tel"
+                placeholder="Phone no"
+                pattern="[0-9]{10}"
+                required
+              />
             </div>
           </div>
 
@@ -242,8 +262,13 @@ export function SignUpF() {
   return (
     <>
       <div className="signup-container">
-        <div className="flogo"></div>
-
+        <div className="flogo">
+          <img
+            src="../src/assets/images/logo.png"
+            alt="Logo"
+            className="flogo-icon"
+          />
+        </div>
         <div className="welcome-text">
           <h1>Welcome Back!</h1>
           <p>Connecting Hearts, Changing Lives</p>
@@ -284,7 +309,12 @@ export function SignUpF() {
           <div className="form-group">
             <div className="input-wrapper">
               <span className="input-icon">📧</span>
-              <input type="tel" placeholder="Phone no" pattern="[0-9]{10}" required />
+              <input
+                type="tel"
+                placeholder="Phone no"
+                pattern="[0-9]{10}"
+                required
+              />
             </div>
           </div>
 
