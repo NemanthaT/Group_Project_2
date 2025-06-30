@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import LandingPage from "./pages/landingPage/LandingPage";
 import FeaturedContent from "./pages/landingPage/FeaturedContent";
 import Reg from "./pages/signIn/Reg";
+import MarketPlace from "./pages/MarketPlace/MarketPlace";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/featured" element={<FeaturedContent />} />
           <Route path="/loginD/*" element={<Reg />} />
           <Route path="/loginF/*" element={<Reg />} />
+          <Route path="/marketplace" element={<MarketPlace/>} />
         </Routes>
       </main>
       <Footer />
