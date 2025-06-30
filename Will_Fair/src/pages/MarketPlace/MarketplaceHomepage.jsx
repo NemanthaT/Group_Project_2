@@ -1,11 +1,9 @@
-import React from "react";
-import { NavigationBarSection } from "./sections/NavigationBarSection";
 import { CategoryBrowseSection } from "./sections/CategoryBrowseSection";
 import { ProductGridSection } from "./sections/ProductGridSection";
 import { ArtisanStoriesSection } from "./sections/ArtisanStoriesSection";
-import { FooterSection } from "./sections/FooterSection";
+import "./MarketPlace.css";
 
-export const MarketplaceHomepage = () => {
+function MarketplaceHomepage (){
   // Product data for the Recent Products section
   const recentProducts = [
     {
@@ -75,9 +73,6 @@ export const MarketplaceHomepage = () => {
           alt="Hero background"
           src="https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=1200"
         />
-
-        {/* Navigation Bar */}
-        <NavigationBarSection />
 
         {/* Hero Content with Search Bar */}
         <div className="hero-content">
@@ -152,9 +147,8 @@ export const MarketplaceHomepage = () => {
 
       {/* Artisan Stories Section */}
       <ArtisanStoriesSection />
-
-      {/* Footer Section */}
-      <FooterSection />
     </div>
   );
-};
+}
+
+export default MarketplaceHomepage;
