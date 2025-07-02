@@ -19,7 +19,7 @@ function App() {
           <Route path={feat} element={<FeaturedContent />} />
           <Route path="/loginD/*" element={<Reg />} />
           <Route path="/loginF/*" element={<Reg />} />
-          <Route path="/marketplace" element={<MarketplaceHomepage/>} />
+          <Route path="/marketplace" element={<MarketplaceHomepage />} />
         </Routes>
       </main>
       <Footer />

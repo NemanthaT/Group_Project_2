@@ -125,9 +125,11 @@ img {
 }
 
 .category-grid {
-  display: flex;
+  display: grid;
   justify-content: center;
   gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-width: 1400px;
   flex-wrap: wrap;
 }
 
