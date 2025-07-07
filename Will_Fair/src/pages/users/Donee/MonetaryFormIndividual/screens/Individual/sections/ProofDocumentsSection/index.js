@@ -1,0 +1,1 @@
+export { ProofDocumentsSection } from "./ProofDocumentsSection";
