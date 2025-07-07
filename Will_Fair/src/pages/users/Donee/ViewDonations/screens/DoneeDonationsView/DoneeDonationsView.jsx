@@ -1,7 +1,7 @@
-import { PlusIcon } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
+import "../../styles/global.css";
 
-export const DoneeDonationsView = () => {
+function DoneeDonationsView() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -13,9 +13,9 @@ export const DoneeDonationsView = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -25,7 +25,7 @@ export const DoneeDonationsView = () => {
 
   const handleLogout = () => {
     // Add logout logic here
-    console.log('Logging out...');
+    console.log("Logging out...");
     setIsProfileDropdownOpen(false);
   };
 
@@ -34,7 +34,7 @@ export const DoneeDonationsView = () => {
     {
       id: 1,
       title: "Renovations at Early Bird Child Care",
-      image: "/image-5.png",
+      image: "https://assets.aecf.org/m/blogimg/_1200x630_crop_center-center_82_none/blog-highcostchildcare-2023.jpg?mtime=1724866501",
       type: "Monetary",
       category: "Education",
       raised: "7,000.00",
@@ -44,7 +44,7 @@ export const DoneeDonationsView = () => {
     {
       id: 2,
       title: "Wheelchairs at Sathkara Elderly Care Centre",
-      image: "/image-6.png",
+      image: "https://jeewakapharmacy.lk/wp-content/uploads/2020/12/Wheel-Chair-With-Commode-YJ-8100-C.jpg",
       type: "Non-monetary",
       category: "Education",
       received: "23",
@@ -54,7 +54,7 @@ export const DoneeDonationsView = () => {
     {
       id: 3,
       title: "Renovations at Magalle Special Care",
-      image: "/image-7.png",
+      image: "https://mylifesite.net/wp-content/uploads/2019/09/special-care.jpg",
       type: "Monetary",
       category: "Education",
       raised: "22,000.00",
@@ -64,7 +64,7 @@ export const DoneeDonationsView = () => {
     {
       id: 4,
       title: "Renovations at Early Bird Child Care",
-      image: "/image-5-1.png",
+      image: "https://assets.aecf.org/m/blogimg/_1200x630_crop_center-center_82_none/blog-highcostchildcare-2023.jpg?mtime=1724866501",
       type: "Monetary",
       category: "Education",
       raised: "7,000.00",
@@ -74,7 +74,7 @@ export const DoneeDonationsView = () => {
     {
       id: 5,
       title: "Wheelchairs at Sathkara Elderly Care Centre",
-      image: "/image-6-1.png",
+      image: "https://jeewakapharmacy.lk/wp-content/uploads/2020/12/Wheel-Chair-With-Commode-YJ-8100-C.jpg",
       type: "Non-monetary",
       category: "Education",
       received: "23",
@@ -84,7 +84,7 @@ export const DoneeDonationsView = () => {
     {
       id: 6,
       title: "Renovations at Magalle Special Care",
-      image: "/image-7-1.png",
+      image: "https://mylifesite.net/wp-content/uploads/2019/09/special-care.jpg",
       type: "Monetary",
       category: "Education",
       raised: "22,000.00",
@@ -100,91 +100,19 @@ export const DoneeDonationsView = () => {
     { name: "LinkedIn", icon: "/linkedin-logo.png" },
   ];
 
-  // Footer links
-  const footerLinks = {
-    quickLinks: [
-      { title: "About Us", href: "#" },
-      { title: "Our Programs", href: "#" },
-      { title: "Our Marketplace", href: "#" },
-    ],
-    support: [
-      { title: "Help Center", href: "#" },
-      { title: "FAQs", href: "#" },
-      { title: "Privacy Policy", href: "#" },
-      { title: "Terms of Service", href: "#" },
-    ],
-    contact: [
-      { title: "Reid Avenue, Colombo", href: "#" },
-      { title: "+94 77 123456789", href: "tel:+94771234567" },
-      { title: "info@willfair.org", href: "mailto:info@willfair.org" },
-    ],
-  };
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <header className="header">
-        <img
-          className="header-bg"
-          alt="Close up people"
-          src="/close-up-people-holding-box-4.png"
-        />
-        <div className="header-overlay"></div>
 
-        {/* Navigation Bar */}
-        <nav className="nav">
-          <div className="nav-container">
-            <div className="nav-left">
-              <img
-                className="logo"
-                alt="WillFair Logo"
-                src="/6-6.png"
-              />
-              <a href="#" className="back-link">
-                <span>←</span>
-                <span>Back</span>
-              </a>
-            </div>
-
-            <div className="nav-center">
-              <a href="#" className="nav-link">Home</a>
-              <a href="#" className="nav-link">Volunteer</a>
-              <a href="#" className="nav-link">Contact Us</a>
-              <a href="#" className="nav-link">About</a>
-            </div>
-
-            <div className="nav-right">
-              <div className="profile-dropdown" ref={dropdownRef}>
-                <img
-                  className="profile-img"
-                  alt="User profile"
-                  src="/image.png"
-                  onClick={toggleProfileDropdown}
-                />
-                {isProfileDropdownOpen && (
-                  <div className="dropdown-menu">
-                    <button className="dropdown-item" onClick={handleLogout}>
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        {/* Hero Content */}
+      {/* Main Content */}
+      <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">
-            My Donation Requests
-          </h1>
+          <h1 className="hero-title">My Donation Requests</h1>
           <p className="hero-subtitle">
             Track and Manage your submitted donation requests
           </p>
         </div>
-      </header>
-
-      {/* Main Content */}
+      </section>
       <main className="main-content">
         <div className="container">
           {/* Filter Section */}
@@ -209,7 +137,7 @@ export const DoneeDonationsView = () => {
             </div>
 
             <button className="new-request-btn">
-              <PlusIcon className="plus-icon" />
+              <p className="plus-icon">+</p>
               <span>New Request</span>
             </button>
           </div>
@@ -224,20 +152,16 @@ export const DoneeDonationsView = () => {
                     alt={card.title}
                     className="card-image"
                   />
-                  <div className="card-badge">
-                    {card.category}
-                  </div>
+                  <div className="card-badge">{card.category}</div>
                 </div>
 
                 <div className="card-content">
-                  <h3 className="card-title">
-                    {card.title}
-                  </h3>
+                  <h3 className="card-title">{card.title}</h3>
                   <p className="card-type">{card.type}</p>
 
                   <div className="progress-container">
                     <div className="progress-bar">
-                      <div 
+                      <div
                         className="progress-fill"
                         style={{ width: `${card.progress}%` }}
                       ></div>
@@ -259,97 +183,16 @@ export const DoneeDonationsView = () => {
                 </div>
 
                 <div className="card-actions">
-                  <button className="btn btn-outline">
-                    Edit
-                  </button>
-                  <button className="btn btn-primary">
-                    View
-                  </button>
+                  <button className="btn btn-outline">Edit</button>
+                  <button className="btn btn-primary">View</button>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            {/* Logo and Description */}
-            <div className="footer-section">
-              <div className="flex items-center">
-                <img
-                  className="footer-logo"
-                  alt="WillFair Logo"
-                  src="/6-6.png"
-                />
-              </div>
-              <h2>WillFair</h2>
-              <p className="footer-tagline">
-                Connecting Hearts, Changing Lives
-              </p>
-              <p className="footer-description">
-                Connecting generous hearts with communities in need, creating
-                lasting positive change through transparent and impactful
-                giving.
-              </p>
-              <div className="social-links">
-                {socialLinks.map((link, index) => (
-                  <a key={index} href="#" className="social-link" aria-label={link.name}>
-                    <img
-                      src={link.icon}
-                      alt={link.name}
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="footer-section">
-              <h3>Quick Links</h3>
-              <ul className="footer-links">
-                {footerLinks.quickLinks.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.href}>
-                      {link.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div className="footer-section">
-              <h3>Support</h3>
-              <ul className="footer-links">
-                {footerLinks.support.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.href}>
-                      {link.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact Us */}
-            <div className="footer-section">
-              <h3>Contact Us</h3>
-              <ul className="footer-links">
-                {footerLinks.contact.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.href}>
-                      {link.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
-};
+}
+
+export default DoneeDonationsView;
