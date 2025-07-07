@@ -31,13 +31,16 @@ function Header() {
             <a href="/marketplace">Market Place</a>
           </li>
           <li>
-            <a href="/#volunteer">Volunteer</a>
+            <a href="/featured">Volunteer</a>
           </li>
           <li>
             <a href="/#contact">Contact Us</a>
           </li>
           <li>
             <a href="/#about">About</a>
+          </li>
+          <li>
+            <a href="/users">users</a>
           </li>
         </ul>
         <div className="btn-container">
