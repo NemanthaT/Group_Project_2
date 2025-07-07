@@ -21,7 +21,7 @@ function LandingPage() {
         <div className="container">
           <div className="hero-content">
             <h1>
-              Empowering Generosity,
+              Empowering GEnerosity,
               <br />
               One Gift at a Time
             </h1>
