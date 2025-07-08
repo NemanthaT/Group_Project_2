@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 
 function DoneeDonationsView() {
+  const navigate = useNavigate();
+
+  const goToViewDonation = () => {
+    navigate("/users/view");
+  }
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -184,7 +190,7 @@ function DoneeDonationsView() {
 
                 <div className="card-actions">
                   <button className="btn btn-outline">Edit</button>
-                  <button className="btn btn-primary">View</button>
+                  <button className="btn btn-primary" onClick={goToViewDonation}>View</button>
                 </div>
               </div>
             ))}

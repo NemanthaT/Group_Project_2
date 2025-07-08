@@ -18,7 +18,7 @@ img {
 }
 
 /* Container */
-.container {
+.min-h-screen .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -201,7 +201,7 @@ img {
 }
 
 /* Main Content */
-.main-content {
+.min-h-screen .main-content {
   margin-top: 0; /* Removed negative margin */
   margin-bottom: 5rem;
   position: relative;
