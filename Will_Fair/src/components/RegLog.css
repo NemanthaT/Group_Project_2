@@ -99,9 +99,24 @@
   z-index: 2;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.login-container input[type="tel"],
+.login-container input[type="text"],
+.login-container input[type="email"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 16px 16px 16px 48px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.signup-container input[type="tel"],
+.signup-container input[type="text"],
+.signup-container input[type="email"],
+.signup-container input[type="password"] {
   width: 100%;
   padding: 16px 16px 16px 48px;
   border: 2px solid #f0f0f0;

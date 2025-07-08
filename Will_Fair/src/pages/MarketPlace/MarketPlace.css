@@ -57,6 +57,7 @@ img {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+
 .search-container {
   position: relative;
   max-width: 600px;
@@ -79,7 +80,7 @@ img {
 
 .search-box:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+ 
 }
 
 .search-input {
