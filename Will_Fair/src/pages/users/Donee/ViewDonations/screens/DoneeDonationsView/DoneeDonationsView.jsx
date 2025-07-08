@@ -99,13 +99,6 @@ function DoneeDonationsView() {
     },
   ];
 
-  // Social media links
-  const socialLinks = [
-    { name: "Facebook", icon: "/group.png" },
-    { name: "Instagram", icon: "/insta-logo.png" },
-    { name: "LinkedIn", icon: "/linkedin-logo.png" },
-  ];
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
