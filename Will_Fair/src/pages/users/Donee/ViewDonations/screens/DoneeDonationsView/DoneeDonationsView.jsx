@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 
 function DoneeDonationsView() {
+  const navigate = useNavigate();
+
+  const goToViewDonation = () => {
+    navigate("/users/view");
+  }
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -93,13 +99,6 @@ function DoneeDonationsView() {
     },
   ];
 
-  // Social media links
-  const socialLinks = [
-    { name: "Facebook", icon: "/group.png" },
-    { name: "Instagram", icon: "/insta-logo.png" },
-    { name: "LinkedIn", icon: "/linkedin-logo.png" },
-  ];
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -184,7 +183,7 @@ function DoneeDonationsView() {
 
                 <div className="card-actions">
                   <button className="btn btn-outline">Edit</button>
-                  <button className="btn btn-primary">View</button>
+                  <button className="btn btn-primary" onClick={goToViewDonation}>View</button>
                 </div>
               </div>
             ))}

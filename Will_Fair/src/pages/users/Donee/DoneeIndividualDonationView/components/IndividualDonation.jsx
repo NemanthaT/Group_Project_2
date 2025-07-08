@@ -1,31 +1,6 @@
-import React from "react";
+import '../styles/main.css';
 
-export const IndividualDonation = () => {
-  // Navigation links data
-  const navLinks = [
-    { text: "Home", href: "#" },
-    { text: "Volunteer", href: "#" },
-    { text: "Contact Us", href: "#" },
-    { text: "About", href: "#" },
-  ];
-
-  // Footer links data
-  const footerLinks = {
-    quickLinks: ["About Us", "Our Programs", "Our Marketplace"],
-    support: ["Help Center", "FAQs", "Privacy Policy", "Terms of Service"],
-    contactUs: [
-      "Reid Avenue, Colombo",
-      "+94 77 123456789",
-      "info@willfair.org",
-    ],
-  };
-
-  // Social media icons
-  const socialIcons = [
-    { src: "/group.png", alt: "Facebook" },
-    { src: "/insta-logo.png", alt: "Instagram" },
-    { src: "/linkedin-logo.png", alt: "LinkedIn" },
-  ];
+function IndividualDonation() {
 
   // Timeline data
   const timelineData = [
@@ -58,52 +33,13 @@ export const IndividualDonation = () => {
 
   return (
     <div className="page-wrapper">
-      {/* Header Section */}
-      <header className="header">
-        <img
-          className="header-bg"
-          alt="Close up people holding box"
-          src="/close-up-people-holding-box-7.png"
-        />
-
-        {/* Navigation Bar */}
-        <nav className="navbar">
-          <div className="navbar-bg"></div>
-          <div className="navbar-content">
-            <img
-              className="logo"
-              alt="WillFair Logo"
-              src="/6-6.png"
-            />
-
-            <a href="#" className="back-button">
-              <span>← Back</span>
-            </a>
-
-            <ul className="nav-links">
-              {navLinks.map((link, index) => (
-                <li key={index}>
-                  <a href={link.href}>{link.text}</a>
-                </li>
-              ))}
-            </ul>
-
-            <div className="user-section">
-              <button className="logout-btn">Logout</button>
-              <img
-                className="user-avatar"
-                alt="User profile"
-                src="/image.png"
-              />
-            </div>
-          </div>
-        </nav>
-
-        {/* Page Title */}
-        <h1 className="page-title">
-          Renovations at Early Bird Child Care
-        </h1>
-      </header>
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Renovations at Early Bird Child Care
+          </h1>
+        </div>
+      </section>
 
       {/* Main Content */}
       <main className="main-content">
@@ -112,7 +48,7 @@ export const IndividualDonation = () => {
           <img
             className="main-image"
             alt="Child care center"
-            src="/image-6.png"
+            src="https://assets.aecf.org/m/blogimg/_1200x630_crop_center-center_82_none/blog-highcostchildcare-2023.jpg?mtime=1724866501"
           />
 
           <div className="location-category">
@@ -120,7 +56,7 @@ export const IndividualDonation = () => {
               <img
                 className="location-icon"
                 alt="Location pin"
-                src="/location-pin-svgrepo-com-1.svg"
+                src="https://cdn-icons-png.flaticon.com/512/535/535137.png"
               />
               <span className="location-text">Karapitiya</span>
             </div>
@@ -174,7 +110,7 @@ export const IndividualDonation = () => {
               <img
                 className="tick-icon"
                 alt="Tick"
-                src="/tick-svgrepo-com-1.svg"
+                src="https://static.vecteezy.com/system/resources/thumbnails/019/465/852/small/tick-mark-icon-symbol-on-transparent-background-free-png.png"
               />
             </div>
 
@@ -208,80 +144,8 @@ export const IndividualDonation = () => {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            {/* Logo and Description */}
-            <div className="footer-section">
-              <div className="footer-logo-section">
-                <img
-                  className="footer-logo"
-                  alt="WillFair Logo"
-                  src="/6-6.png"
-                />
-                <div>
-                  <h2 className="footer-brand">WillFair</h2>
-                </div>
-              </div>
-              <div className="footer-tagline">
-                Connecting Hearts, Changing Lives
-              </div>
-              <p className="footer-description">
-                Connecting generous hearts with communities in need, creating
-                lasting positive change through transparent and impactful
-                giving.
-              </p>
-              <div className="social-icons">
-                {socialIcons.map((icon, index) => (
-                  <a key={index} href="#">
-                    <img
-                      className="social-icon"
-                      alt={icon.alt}
-                      src={icon.src}
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="footer-section">
-              <h3 className="footer-title">Quick Links</h3>
-              <ul className="footer-links">
-                {footerLinks.quickLinks.map((link, index) => (
-                  <li key={index}>
-                    <a href="#">{link}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div className="footer-section">
-              <h3 className="footer-title">Support</h3>
-              <ul className="footer-links">
-                {footerLinks.support.map((link, index) => (
-                  <li key={index}>
-                    <a href="#">{link}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact Us */}
-            <div className="footer-section">
-              <h3 className="footer-title">Contact Us</h3>
-              <ul className="footer-contact">
-                {footerLinks.contactUs.map((info, index) => (
-                  <li key={index}>{info}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
-};
+}
+
+export default IndividualDonation;
