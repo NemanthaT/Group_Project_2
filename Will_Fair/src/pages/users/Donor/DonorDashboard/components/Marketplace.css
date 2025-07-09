@@ -1,0 +1,88 @@
+.marketplace {
+  background: white;
+}
+
+.marketplace-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.marketplace-text {
+  text-align: left;
+}
+
+.marketplace-text .section-title {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.marketplace-text .section-subtitle {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.marketplace-features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-icon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7fafc;
+  border-radius: 50%;
+}
+
+.feature span {
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.marketplace-image {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.marketplace-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.marketplace-image:hover img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .marketplace-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  
+  .marketplace-text .section-title,
+  .marketplace-text .section-subtitle {
+    text-align: center;
+  }
+  
+  .marketplace-features {
+    justify-content: center;
+  }
+}
