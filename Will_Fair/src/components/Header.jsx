@@ -16,7 +16,7 @@ function Header() {
       <nav className="container">
         <div className="logo-container">
           <img
-            src="src/assets/images/logo.png"
+            src="http://localhost:5173/src/assets/images/logo.png"
             alt="Logo"
             className="logo-img"
           />

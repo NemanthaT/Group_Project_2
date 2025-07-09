@@ -25,16 +25,6 @@ function DoneeDonationsView() {
     };
   }, []);
 
-  const toggleProfileDropdown = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  };
-
-  const handleLogout = () => {
-    // Add logout logic here
-    console.log("Logging out...");
-    setIsProfileDropdownOpen(false);
-  };
-
   // Donation card data
   const donationCards = [
     {
