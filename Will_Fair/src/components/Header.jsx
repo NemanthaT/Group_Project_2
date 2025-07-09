@@ -31,6 +31,9 @@ function Header() {
             <a href="/marketplace">Market Place</a>
           </li>
           <li>
+            <a href="/authManagerDashboard">Dashboard</a>
+          </li>
+          <li>
             <a href="/#volunteer">Volunteer</a>
           </li>
           <li>
