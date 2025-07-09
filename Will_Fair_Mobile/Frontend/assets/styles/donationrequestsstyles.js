@@ -218,4 +218,41 @@ export const donationRequestsStyles = StyleSheet.create({
     alignContent : "center",
     textAlign: "center",
   },
+   instructionBox: {
+    backgroundColor: "#FEE2E2",
+    padding: 12,
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 8,
+  },
+  instructionText: {
+    fontSize: 13,
+    color: "#444",
+    textAlign: "center",
+  },
+   checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    flexWrap: 'wrap',
+    width: '100%',
+  },
+    checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#7B61FF',
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 1, // optional, for better spacing
+    },
+
+  checked: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#7B61FF',
+    borderRadius: 2,
+  },
 });

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native'; // Required for naviga
 import { styles } from '../../assets/styles/loginstyles'; // Adjust the path if necessary
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
  // Adjust the path if necessary
 
 import { useState } from 'react';
@@ -113,7 +114,7 @@ const Signup = ({ visible, onClose, onLoginPress }) => {
                   Don’t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => navigation.navigate('monetory')}
+                    onPress={() => navigation.navigate('donationform')} // Must match your route name
                   >
                     Sign in
                   </Text>
