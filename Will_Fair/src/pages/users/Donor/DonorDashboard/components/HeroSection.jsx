@@ -8,7 +8,7 @@ const HeroSection = () => {
       <div className="hero-background">
         <div className="hero-gradient"></div>
         <div className="hero-illustration">
-          <img src="https://images.pexels.com/photos/6647033/pexels-photo-6647033.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Community helping" />
+          <img src="http://localhost:5173/src/assets/images/homeBg.jpeg" alt="Community helping" />
         </div>
       </div>
       
