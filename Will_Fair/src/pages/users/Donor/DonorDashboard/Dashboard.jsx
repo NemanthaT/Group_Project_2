@@ -6,7 +6,7 @@ import WaysToHelp from './components/WaysToHelp';
 import Marketplace from './components/Marketplace';
 import ImpactSection from './components/ImpactSection';
 
-function Dashborad() {
+function Dashboard() {
   return (
     <div className="donor-dashboard">
       <HeroSection />
@@ -18,4 +18,4 @@ function Dashborad() {
   );
 }
 
-export default Dashborad;
+export default Dashboard;

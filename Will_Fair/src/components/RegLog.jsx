@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 export function LoginD() {
   const navigate = useNavigate();
 
+  const goToDonor = () => {
+    navigate("/users/donor");
+  };
+
   const goToSignupD = () => {
     window.scrollTo({
       top: 0,
@@ -53,7 +57,7 @@ export function LoginD() {
             </div>
           </div>
 
-          <button type="submit" className="login-btn">
+          <button type="submit" onClick={goToDonor} className="login-btn">
             Login
           </button>
         </form>

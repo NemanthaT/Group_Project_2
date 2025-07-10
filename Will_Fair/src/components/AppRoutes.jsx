@@ -9,10 +9,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/featured" element={<FeaturedContent />} />
+      <Route path="/featured/*" element={<FeaturedContent />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
-      <Route path="/marketplace" element={<MarketplaceHomepage />} />
+      <Route path="/marketplace/*" element={<MarketplaceHomepage />} />
       <Route path="/users/*" element={<Users />} />
     </Routes>
   );
