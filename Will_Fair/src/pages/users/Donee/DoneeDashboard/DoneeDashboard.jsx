@@ -59,7 +59,7 @@ const mockRequests = [
   }
 ];
 
-function App() {
+function DoneeDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('This Month');
 
@@ -372,67 +372,8 @@ function App() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <div className="footer-logo">
-                <div className="logo">
-                  <Heart className="logo-icon" />
-                </div>
-                <span className="logo-text">WillFair</span>
-              </div>
-              <p className="footer-tagline">Connecting, Changing Lives</p>
-              <p className="footer-description">
-                Connecting generous hearts with communities in need, creating lasting 
-                positive change through transparent and impactful giving.
-              </p>
-              <div className="social-links">
-                <a href="#" className="social-link facebook">
-                  <Facebook className="icon" />
-                </a>
-                <a href="#" className="social-link instagram">
-                  <Instagram className="icon" />
-                </a>
-                <a href="#" className="social-link linkedin">
-                  <Linkedin className="icon" />
-                </a>
-              </div>
-            </div>
-            
-            <div className="footer-section">
-              <h3 className="footer-title">Quick Links</h3>
-              <ul className="footer-links">
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Our Programs</a></li>
-                <li><a href="#">Our Marketplace</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h3 className="footer-title">Support</h3>
-              <ul className="footer-links">
-                <li><a href="#">Help Center</a></li>
-                <li><a href="#">FAQs</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h3 className="footer-title">Contact Us</h3>
-              <div className="contact-info">
-                <p>Reid Avenue, Colombo</p>
-                <p>+94 77 1234567</p>
-                <p>info@willfair.org</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
 
-export default App;
+export default DoneeDashboard;

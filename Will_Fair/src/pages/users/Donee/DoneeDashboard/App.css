@@ -22,7 +22,7 @@ body {
 }
 
 /* Header Styles */
-.header {
+.app .header {
   background: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e5e7eb;
@@ -31,25 +31,25 @@ body {
   z-index: 40;
 }
 
-.header-container {
+.app .header-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
-.header-content {
+.app .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 4rem;
 }
 
-.logo-section {
+.app .logo-section {
   display: flex;
   align-items: center;
 }
 
-.logo {
+.app .logo {
   width: 2rem;
   height: 2rem;
   background: linear-gradient(135deg, #ec4899, #8b5cf6);
@@ -59,13 +59,13 @@ body {
   justify-content: center;
 }
 
-.logo-icon {
+.app .logo-icon {
   width: 1.25rem;
   height: 1.25rem;
   color: white;
 }
 
-.logo-text {
+.app .logo-text {
   margin-left: 0.5rem;
   font-size: 1.25rem;
   font-weight: 700;
@@ -249,53 +249,52 @@ body {
 }
 
 /* Main Content */
-.main-content {
+.app .main-content {
   flex: 1;
   transition: margin-left 0.3s ease;
 }
 
-.main-content.shifted {
+.app .main-content.shifted {
   margin-left: 0;
 }
 
 /* Hero Section */
-.hero-section {
+.app .hero-section {
   background: linear-gradient(135deg, #2563eb, #8b5cf6, #2563eb);
   position: relative;
   overflow: hidden;
 }
 
-.hero-overlay {
+.app .hero-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.1);
 }
 
-.hero-content {
-  position: relative;
+.app .hero-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
 
-.hero-text {
+.app .hero-text {
   text-align: center;
 }
 
-.hero-title {
+.app .hero-title {
   font-size: 2.25rem;
   font-weight: 700;
   color: white;
   margin-bottom: 1rem;
 }
 
-.hero-subtitle {
+.app .hero-subtitle {
   font-size: 1.25rem;
   color: #dbeafe;
   margin-bottom: 2rem;
 }
 
-.hero-button {
+.app .hero-button {
   background: rgba(255, 255, 255, 0.2);
   color: white;
   padding: 0.75rem 2rem;
@@ -307,12 +306,12 @@ body {
   backdrop-filter: blur(4px);
 }
 
-.hero-button:hover {
+.app .hero-button:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
 /* Content Container */
-.content-container {
+.app .content-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1.5rem 1.5rem;
