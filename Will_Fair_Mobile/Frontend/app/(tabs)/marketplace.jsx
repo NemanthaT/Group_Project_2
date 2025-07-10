@@ -26,7 +26,7 @@ const products = Array(5).fill({
   image: require('../../assets/images/jewelry-sample.png')
 });
 
-const MarketplaceScreen = () => {
+const Marketplace = () => {
   const navigation = useNavigation();
 
   return (
@@ -81,23 +81,38 @@ const MarketplaceScreen = () => {
       {/* Artisan Stories */}
       <View style={homeStyles.storySection}>
         <Text style={homeStyles.sectionTitle}>Artisan Stories</Text>
-        <View style={homeStyles.storyCard}><Text>Artisan - Handicraft</Text></View>
-        <View style={homeStyles.storyCard}><Text>Artisan - Textiles</Text></View>
+            <LinearGradient 
+              colors = {['#9333EA', '#2622A8']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={homeStyles.storyContainer}>
+                <View style={homeStyles.storyCard}><Text>Artisan - Handicraft</Text></View>
+                <View style={homeStyles.storyCard}><Text>Artisan - Textiles</Text></View>
+            </LinearGradient>
       </View>
 
       {/* How it Works */}
       <Text style={homeStyles.sectionTitle}>How it Works</Text>
-      <View style={homeStyles.infoBox}><Ionicons name="cart-outline" size={24} color="#7B61FF" /><Text>Shop Products</Text></View>
-      <View style={homeStyles.infoBox}><Ionicons name="rocket-outline" size={24} color="#7B61FF" /><Text>Fast Delivery</Text></View>
-      <View style={homeStyles.infoBox}><Ionicons name="heart-outline" size={24} color="#7B61FF" /><Text>Support Artisans</Text></View>
+      <View style={homeStyles.infoBox}><Ionicons name="cart-outline" size={24} color="#9333EA" />
+        <Text style={homeStyles.infoValue}>Shop Products</Text>
+        <Text style={homeStyles.infoDescription}>Browse and purchase unique handcrafted products made by artisans with disabilities</Text>
+      </View>
+      <View style={homeStyles.infoBox}><Ionicons name="rocket-outline" size={24} color="#9333EA" />
+        <Text style={homeStyles.infoValue}>Fast Delivery</Text>
+        <Text style={homeStyles.infoDescription}>We deliver your purchases directly to your doorstep anywhere in Sri Lanka</Text>
+      </View>
+      <View style={homeStyles.infoBox}><Ionicons name="heart-outline" size={24} color="#9333EA" />
+        <Text style={homeStyles.infoValue}>Support Artisans</Text>
+        <Text style={homeStyles.infoDescription}>your purchase directly supports artisans with disabilities, helping them achieve financial independence</Text>
+      </View>
 
       {/* Our Impact */}
       <Text style={homeStyles.sectionTitle}>Our Impact</Text>
-      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>10+</Text><Text>Products Available</Text></View>
-      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>Rs.17,900+</Text><Text>Income Generated</Text></View>
-      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>100%</Text><Text>Fair Trade</Text></View>
+      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>10+</Text><Text style={homeStyles.infoDescription}>Products Available</Text></View>
+      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>Rs.17,900+</Text><Text style={homeStyles.infoDescription}>Income Generated</Text></View>
+      <View style={homeStyles.infoBox}><Text style={homeStyles.impactValue}>100%</Text><Text style={homeStyles.infoDescription}>Fair Trade</Text></View>
     </ScrollView>
   );
 };
 
-export default MarketplaceScreen;
+export default Marketplace;
