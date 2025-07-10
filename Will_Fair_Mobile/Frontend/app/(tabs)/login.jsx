@@ -114,7 +114,7 @@ const Signup = ({ visible, onClose, onLoginPress }) => {
                   Don’t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => navigation.navigate('donationform')} // Must match your route name
+                    onPress={() => navigation.navigate('donation_payment')} // Must match your route name
                   >
                     Sign in
                   </Text>

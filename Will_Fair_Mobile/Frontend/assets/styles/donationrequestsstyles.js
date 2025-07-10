@@ -7,14 +7,16 @@ export const donationRequestsStyles = StyleSheet.create({
   },
 
   // Header Section
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
+  // header: {
+  //   paddingTop: 60,
+  //   paddingBottom: 20,
+  //   paddingHorizontal: 16,
+  //   alignItems: "center",
+  //   borderBottomLeftRadius: 24,
+  //   borderBottomRightRadius: 24,
+  // },
+  header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
 
     sectionTitle: {
     fontSize: 14,
@@ -105,6 +107,19 @@ export const donationRequestsStyles = StyleSheet.create({
   },
   amountText: {
     fontSize: 13,
+  },
+  amountRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: 12,
+  marginBottom: 8,
+ },
+  amountLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 2,
+    paddingBottom :5 ,
   },
   progressBarBackground: {
     height: 6,
@@ -255,4 +270,105 @@ export const donationRequestsStyles = StyleSheet.create({
     backgroundColor: '#7B61FF',
     borderRadius: 2,
   },
+
+  icon: {
+    marginRight: 8,
+  },
+
+  contactRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 10,
+  fontWeight: 'bold',
+},
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  infoRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: 12,
+},
+
+locationRow: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+locationText: {
+  marginLeft: 4,
+  fontSize: 14,
+  color: "#333",
+},
+
+categoryChip: {
+  backgroundColor: "#EDE9FE",
+  paddingHorizontal: 10,
+  paddingVertical: 4,
+  borderRadius: 12,
+},
+
+categoryText: {
+  color: "#7B61FF",
+  fontWeight: "600",
+  fontSize: 13,
+},
+
+description: {
+  marginVertical: 12,
+  color: "#444",
+  fontSize: 14,
+  lineHeight: 20,
+},
+
+statusBadgeNew: {
+  backgroundColor: "#9333EA",
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+  borderRadius: 12,
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+statusTextNew: {
+  color: "#fff",
+  fontSize: 14,
+  fontWeight: "500",
+},
+editButtonNew: {
+    backgroundColor: "#6366F1",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+  editTextNew: {
+    color: "#fff",
+    marginLeft: 6,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  removeButton: {
+    backgroundColor: "#DC2626",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  removeText: {
+    color: "#fff",
+    marginLeft: 6,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  link :{
+  color: "#7B61FF", 
+  textDecorationLine: "underline",
+},
 });
