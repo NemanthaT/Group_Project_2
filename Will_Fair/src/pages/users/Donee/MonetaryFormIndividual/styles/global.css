@@ -303,13 +303,6 @@ body {
   margin: 24px 0;
 }
 
-.section-title {
-  font-size: clamp(20px, 3vw, 32px);
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 16px;
-}
-
 .form-card {
   width: 100%;
   background: white;

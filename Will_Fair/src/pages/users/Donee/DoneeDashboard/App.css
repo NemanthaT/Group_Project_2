@@ -304,6 +304,7 @@ body {
   border: none;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
@@ -330,12 +331,6 @@ body {
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
 }
 
 .period-selector {

@@ -88,14 +88,6 @@
   background: #f8fafc;
 }
 
-.section-title {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 3rem;
-  color: #1e293b;
-}
-
 .programs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

@@ -117,14 +117,6 @@ img {
   padding: 80px 0;
 }
 
-.section-title {
-  text-align: center;
-  font-size: 64px;
-  font-weight: 700;
-  margin-bottom: 60px;
-  color: #000;
-}
-
 .category-grid {
   display: grid;
   justify-content: center;
@@ -289,7 +281,7 @@ img {
 
 /* Artisan Stories Section */
 .artisan-stories-section {
-  background-color: #9333ea;
+  background: linear-gradient(135deg, #8400ff 0%, #c180ff 100%);
   padding: 60px 0;
 }
 
@@ -386,6 +378,7 @@ img {
 
 /* Impact Section */
 .impact-section {
+  background: #fffafa !important;
   padding: 80px 0;
 }
 
