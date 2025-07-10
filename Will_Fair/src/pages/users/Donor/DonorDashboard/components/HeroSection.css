@@ -7,40 +7,6 @@
   align-items: stretch;
 }
 
-.donor-dashboard .hero-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-}
-
-.donor-dashboard .hero-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #667eea3f 0%, #764ba241 100%);
-}
-
-.donor-dashboard .hero-illustration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-}
-
-.donor-dashboard .hero-illustration img {
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  object-fit: cover;
-}
-
 .donor-dashboard .hero-content {
   text-align: center;
   position: relative;
