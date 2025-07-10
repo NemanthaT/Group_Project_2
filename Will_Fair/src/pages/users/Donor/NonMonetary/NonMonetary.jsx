@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { NavigationBarSection } from "./sections/NavigationBarSection";
 import { DonationInstructionsSection } from "./sections/DonationInstructionsSection";
 import { DonationDetailsSection } from "./sections/DonationDetailsSection";
 import { DonationFormSection } from "./sections/DonationFormSection";
 import { TermsAgreementSection } from "./sections/TermsAgreementSection";
-import { FooterSection } from "./sections/FooterSection";
+import "./styles/main.css";
 
 export const NonMonetary = () => {
   const [formData, setFormData] = useState({
@@ -32,8 +31,6 @@ export const NonMonetary = () => {
 
   return (
     <div className="w-full">
-      {/* Navigation Bar */}
-      <NavigationBarSection />
 
       {/* Hero Section */}
       <div className="hero">
@@ -97,9 +94,8 @@ export const NonMonetary = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <FooterSection />
     </div>
   );
 };
+
+export default NonMonetary;

@@ -12,6 +12,23 @@ const WaysToHelp = () => {
     });
     navigate("/users/donor/monetory");
   };
+
+  const goToNonMonetory = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
+    navigate("/users/donor/nonMonetory");
+  };
+
+  const goToPrograms = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling
+    });
+    navigate("/featured");
+  };
+
   const ways = [
     {
       icon: Heart,
@@ -27,6 +44,7 @@ const WaysToHelp = () => {
       description:
         "Contribute non-monetary items like books, clothing, and supplies to those in need. Your items can make a significant difference in someone's life.",
       action: "Donate Items",
+      onClick: goToNonMonetory,
     },
     {
       icon: Users,
@@ -34,6 +52,7 @@ const WaysToHelp = () => {
       description:
         "Offer your time and skills to help others. Join volunteer opportunities and make a direct impact in your community through personal engagement.",
       action: "Volunteer",
+      onClick: goToPrograms,
     },
   ];
 
