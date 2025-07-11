@@ -86,41 +86,6 @@ function DoneeDashboard() {
 
   return (
     <div className="app">
-      {/* Header */}
-      <header className="header">
-        <div className="header-container">
-          <div className="header-content">
-            {/* Logo */}
-            <div className="logo-section">
-              <div className="logo">
-                <Heart className="logo-icon" />
-              </div>
-              <span className="logo-text">WillFair</span>
-            </div>
-
-            {/* Navigation */}
-            <nav className="nav-desktop">
-              <a href="#" className="nav-link active">Home</a>
-              <a href="#" className="nav-link">Volunteer</a>
-              <a href="#" className="nav-link">Contact Us</a>
-              <a href="#" className="nav-link">About</a>
-            </nav>
-
-            {/* Right side */}
-            <div className="header-actions">
-              <button className="icon-button">
-                <Search className="icon" />
-              </button>
-              <button className="icon-button">
-                <Bell className="icon" />
-              </button>
-              <button onClick={toggleSidebar} className="user-avatar">
-                <User className="icon" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (

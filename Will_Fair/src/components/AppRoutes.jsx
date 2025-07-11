@@ -4,7 +4,7 @@ import FeaturedContent from "../pages/landingPage/FeaturedContent";
 import Reg from "../pages/signIn/Reg";
 import MarketplaceHomepage from "../pages/MarketPlace/MarketplaceHomepage";
 import Users from "../pages/users/users";
-import DoneeDashboard from "../pages/users/Donee/DoneeDashboard/DoneeDashboard";
+
 
 
 const AppRoutes = () => {
@@ -16,9 +16,6 @@ const AppRoutes = () => {
       <Route path="/loginF/*" element={<Reg />} />
       <Route path="/marketplace" element={<MarketplaceHomepage />} />
       <Route path="/users/*" element={<Users />} />
-      <Route path="/users/donee" element={<DoneeDashboard />} />
-
-      
 
     </Routes>
   );
