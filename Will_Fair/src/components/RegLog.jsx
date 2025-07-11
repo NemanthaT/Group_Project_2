@@ -223,6 +223,10 @@ export function SignUpD() {
 export function LoginF() {
   const navigate = useNavigate();
 
+  const goToDonee = () => {
+    navigate("/users/donee");
+  };
+
   const goToSignupF = () => {
     window.scrollTo({
       top: 0,
@@ -230,6 +234,8 @@ export function LoginF() {
     });
     navigate("/loginF/signupF");
   };
+
+  
 
   return (
     <>
@@ -274,7 +280,7 @@ export function LoginF() {
             </div>
           </div>
 
-          <button type="submit" className="login-btn">
+          <button onClick={goToDonee} type="submit" className="login-btn">
             Login
           </button>
         </form>
