@@ -8,7 +8,7 @@ const HeroSection = () => {
       <div className="bg-container">
         <img
           className="bg"
-          src="http://localhost:5173/src/assets/images/homeBg.jpeg"
+          src="http://localhost:5173/src/assets/images/featuredBg.png"
           alt="Hero Background"
         />
       </div>
