@@ -6,6 +6,7 @@ import LandingPage from "./pages/landingPage/LandingPage";
 import FeaturedContent from "./pages/landingPage/FeaturedContent";
 import Reg from "./pages/signIn/Reg";
 import MarketplaceHomepage from "./pages/MarketPlace/MarketplaceHomepage";
+import IndividualProductsView from "./pages/MarketPlace/IndividualProductsView";
 
 const feat = "/featured";
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/loginD/*" element={<Reg />} />
           <Route path="/loginF/*" element={<Reg />} />
           <Route path="/marketplace" element={<MarketplaceHomepage />} />
+          <Route path="/marketplace/product" element={<IndividualProductsView/>} />
         </Routes>
       </main>
       <Footer />

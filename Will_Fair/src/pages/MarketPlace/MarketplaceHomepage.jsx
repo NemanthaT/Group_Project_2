@@ -1,10 +1,13 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { CategoryBrowseSection } from "./sections/CategoryBrowseSection";
 import { ProductGridSection } from "./sections/ProductGridSection";
 import { ArtisanStoriesSection } from "./sections/ArtisanStoriesSection";
 import "./MarketPlace.css";
 
-function MarketplaceHomepage (){
-  // Product data for the Recent Products section
+function MarketplaceHomepage() {
+  const navigate = useNavigate();
+
   const recentProducts = [
     {
       id: 1,
@@ -64,6 +67,10 @@ function MarketplaceHomepage (){
     },
   ];
 
+  const handleProductClick = (product) => {
+    navigate("/marketplace/product", { state: { product } });
+  };
+
   return (
     <div className="marketplace-homepage">
       {/* Hero Section with Navigation */}
@@ -73,13 +80,8 @@ function MarketplaceHomepage (){
           alt="Hero background"
           src="https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=1200"
         />
-
-        {/* Hero Content with Search Bar */}
         <div className="hero-content">
-          <h1 className="hero-title">
-            What are you Looking for?
-          </h1>
-
+          <h1 className="hero-title">What are you Looking for?</h1>
           <div className="search-container">
             <div className="search-box">
               <input
@@ -95,46 +97,31 @@ function MarketplaceHomepage (){
         </div>
       </section>
 
-      {/* Category Browse Section */}
       <CategoryBrowseSection />
 
       {/* Recent Products Section */}
       <section className="products-section">
-        <h2 className="section-title">
-          Recent Products
-        </h2>
-
+        <h2 className="section-title">Recent Products</h2>
         <div className="products-grid">
           {recentProducts.map((product) => (
-            <div key={product.id} className="product-card">
+            <div
+              key={product.id}
+              className="product-card"
+              onClick={() => handleProductClick(product)}
+              style={{ cursor: "pointer" }}
+            >
               <div>
-                <img
-                  className="product-image"
-                  alt="Product"
-                  src={product.image}
-                />
+                <img className="product-image" alt="Product" src={product.image} />
               </div>
               <div className="product-content">
                 <div className="product-header">
-                  <p className="product-title">
-                    {product.title}
-                  </p>
-                  <img
-                    className="heart-icon"
-                    alt="Heart icon"
-                    src={product.heartIcon}
-                  />
+                  <p className="product-title">{product.title}</p>
+                  <img className="heart-icon" alt="Heart icon" src={product.heartIcon} />
                 </div>
-                <p className="product-price">
-                  {product.price}
-                </p>
+                <p className="product-price">{product.price}</p>
                 <div className="product-actions">
-                  <button className="btn btn-outline">
-                    Buy Now
-                  </button>
-                  <button className="btn btn-primary">
-                    Add to Cart
-                  </button>
+                  <button className="btn btn-outline">Buy Now</button>
+                  <button className="btn btn-primary">Add to Cart</button>
                 </div>
               </div>
             </div>
@@ -142,10 +129,7 @@ function MarketplaceHomepage (){
         </div>
       </section>
 
-      {/* Product Grid Section */}
       <ProductGridSection />
-
-      {/* Artisan Stories Section */}
       <ArtisanStoriesSection />
     </div>
   );
