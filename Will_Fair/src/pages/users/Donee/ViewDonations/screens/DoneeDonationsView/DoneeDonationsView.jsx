@@ -8,6 +8,11 @@ function DoneeDonationsView() {
   const goToViewDonation = () => {
     navigate("/users/view");
   }
+
+  const goToMonetaryFormIndividual = () => {
+    navigate("/users/donee/monetary-form-individual");
+  }
+
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -125,7 +130,7 @@ function DoneeDonationsView() {
               </div>
             </div>
 
-            <button className="new-request-btn">
+            <button onClick={goToMonetaryFormIndividual} className="new-request-btn">
               <p className="plus-icon">+</p>
               <span>New Request</span>
             </button>
