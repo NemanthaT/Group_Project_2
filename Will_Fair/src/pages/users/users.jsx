@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import Donor from './Donor/Donor'
-import DoneeDashboard from './Donee/DoneeDashboard/DoneeDashboard'; 
+import Donee from './Donee/Donee'; 
 
 function Users() {
     return (
         <Routes>
           <Route path="/donor/*" element={<Donor />} />
-          <Route path="/donee/*" element={<DoneeDashboard />} />
+          <Route path="/donee/*" element={<Donee />} />
         </Routes>
     );
 }

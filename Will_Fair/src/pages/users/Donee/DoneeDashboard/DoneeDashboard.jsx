@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Home, 
   User, 
@@ -84,6 +85,12 @@ function DoneeDashboard() {
     { icon: MessageSquare, label: 'Feedback History' },
   ];
 
+  const navigate = useNavigate();
+
+  const goToDonationsView = () => {
+    navigate('/users/donee/view');
+  }
+
   return (
     <div className="app">
 
@@ -153,7 +160,7 @@ function DoneeDashboard() {
             <div className="hero-text">
               <h1 className="hero-title">Welcome, Test</h1>
               <p className="hero-subtitle">Your dashboard for monitoring donation requests and impact</p>
-              <button className="hero-button">New Request</button>
+              <button onClick={goToDonationsView} className="hero-button">View Requests</button>
             </div>
           </div>
         </div>
