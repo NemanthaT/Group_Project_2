@@ -73,7 +73,7 @@ function MarketplaceHomepage() {
 
   return (
     <div className="marketplace-homepage">
-      {/* Hero Section with Navigation */}
+      {/* Hero Section with New Search Bar */}
       <section className="hero-section">
         <img
           className="hero-background"
@@ -82,17 +82,27 @@ function MarketplaceHomepage() {
         />
         <div className="hero-content">
           <h1 className="hero-title">What are you Looking for?</h1>
-          <div className="search-container">
-            <div className="search-box">
-              <input
-                className="search-input"
-                placeholder="Search for handcrafted products..."
-                type="text"
-              />
-              <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div className="search-bar-wrapper">
+            <input
+              type="text"
+              className="search-bar-input"
+              placeholder="Search for handcrafted products..."
+            />
+            <button className="search-bar-button">
+              <svg
+                className="search-bar-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
-            </div>
+            </button>
           </div>
         </div>
       </section>

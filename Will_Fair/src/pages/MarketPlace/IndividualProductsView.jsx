@@ -12,6 +12,8 @@ function IndividualProductsView() {
   useEffect(() => {
     if (!product) {
       navigate("/marketplace");
+    }else{
+      window.scrollTo(0,0);
     }
   }, [product, navigate]);
 
@@ -34,6 +36,12 @@ function IndividualProductsView() {
 
   return (
     <div className="individual-product-page-wrapper">
+      <div className="product-detail-hero">
+      <h1 className="product-detail-heading">
+        Product Details: <span>{product.title}</span>
+      </h1>
+      </div>
+
     <div className="individual-product-page">
       <div className="individual-product-container">
         <div className="individual-product-image">
