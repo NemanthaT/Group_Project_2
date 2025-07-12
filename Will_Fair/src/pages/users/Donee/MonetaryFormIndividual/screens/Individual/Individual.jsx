@@ -8,12 +8,12 @@ import { ProofDocumentsSection } from "./sections/ProofDocumentsSection";
 import { RequestImageSection } from "./sections/RequestImageSection";
 import { SubmissionInstructionsSection } from "./sections/SubmissionInstructionsSection";
 import { SupportOptionsSection } from "./sections/SupportOptionsSection";
+import "../../styles/global.css"; 
+
 
 export const Individual = () => {
   return (
     <div className="flex flex-col w-full">
-      {/* Navigation Bar Section */}
-      <NavigationBarSection />
 
       {/* Header Section with Background */}
       <div className="hero-section">
@@ -83,9 +83,8 @@ export const Individual = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer Section */}
-      <FooterSection />
     </div>
   );
 };
+
+export default Individual;
