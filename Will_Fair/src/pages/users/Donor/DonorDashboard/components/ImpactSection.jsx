@@ -7,7 +7,7 @@ const ImpactSection = () => {
     {
       icon: Users,
       title: 'Total Donations',
-      value: 'Rs. 137,500',
+      value: 'Rs. 37,500',
       color: '#667eea'
     },
     {
