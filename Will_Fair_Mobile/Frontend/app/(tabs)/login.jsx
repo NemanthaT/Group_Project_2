@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native'; // Required for naviga
 import { styles } from '../../assets/styles/loginstyles'; // Adjust the path if necessary
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+
 
  // Adjust the path if necessary
 
@@ -107,14 +109,14 @@ const Signup = ({ visible, onClose, onLoginPress }) => {
               {/* Login Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('signup')} // Must match your route name
+                onPress={() => navigation.navigate('signup')} 
               >
                 {/* Signup Link */}
                 <Text style={styles.loginText}>
                   Don’t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => navigation.navigate('donation_payment')} // Must match your route name
+                    onPress={() => router.push('/(drawer)/homescreen')}
                   >
                     Sign in
                   </Text>

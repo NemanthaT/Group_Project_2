@@ -10,7 +10,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { homeStyles } from "../../assets/styles/homestyles"; 
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 
 
@@ -52,16 +52,17 @@ const HomeScreen = () => {
         {/* Hero Section */}
         <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
         <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            zIndex: 5,
-          }}
-        >
-      <Ionicons name="menu-outline" size={30} color="#fff" />
-      </TouchableOpacity>
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
+          
           <Text style={homeStyles.heroTitle}>
             Empowering Generosity, One Gift at a Time
           </Text>
