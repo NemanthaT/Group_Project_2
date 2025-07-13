@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import {
   View,
   Text,
@@ -15,6 +16,25 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 
 const HomeScreen = () => {
+    // const scrollViewRef = useRef(null);
+    // const aboutRef = useRef(null);
+    // const contactRef = useRef(null);
+
+    // const { scrollTo } = useLocalSearchParams();
+
+    // const [aboutY, setAboutY] = useState(0);
+    // const [contactY, setContactY] = useState(0);
+
+    // useEffect(() => {
+    //   if (scrollTo === 'about' && scrollViewRef.current) {
+    //     scrollViewRef.current.scrollTo({ y: aboutY, animated: true });
+    //   }
+    //   if (scrollTo === 'contact' && scrollViewRef.current) {
+    //     scrollViewRef.current.scrollTo({ y: contactY, animated: true });
+    //   }
+    // }, [scrollTo, aboutY, contactY]);
+
+
     const navigation = useNavigation(); // ← Hook for drawer access
 
     const programs = [
@@ -146,6 +166,7 @@ const HomeScreen = () => {
         </View>
 
      {/* Contact Us */}
+      {/* <View ref={contactRef} onLayout={(event) => setContactY(event.nativeEvent.layout.y)} style={homeStyles.testimonialContainer}> */}
       <View style={homeStyles.testimonialContainer}>
         <Text style={homeStyles.sectionTitle}>Contact Us</Text>
         <Text style={homeStyles.impactLabel}>Feel free to reach out to us:</Text>
@@ -169,6 +190,7 @@ const HomeScreen = () => {
 
 
         {/* About Section */}
+        {/* <View ref={aboutRef} onLayout={(event) => setAboutY(event.nativeEvent.layout.y)} style={homeStyles.aboutContainer}> */}
         <View style={homeStyles.aboutContainer}>
           <Text style={homeStyles.sectionTitle}>About</Text>
                 <Image

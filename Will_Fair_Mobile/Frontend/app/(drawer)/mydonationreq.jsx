@@ -8,11 +8,12 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,DrawerActions } from "@react-navigation/native";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
+import { router } from 'expo-router';
 
-const mydonationreq = () => {
 
+const MyDonationReq = () => {  
   const requests = [
     {
       id: 1,
@@ -39,7 +40,8 @@ const mydonationreq = () => {
       status: "In Review",
     },
   ];
-
+  
+  
   const renderCard = (item) => {
     const progress = (item.raised / item.target) * 100;
 
@@ -84,13 +86,18 @@ const mydonationreq = () => {
           <TouchableOpacity style={styles.editButton}>
             <Text style={styles.editText}>Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.viewButton}>
+          <TouchableOpacity style={styles.viewButton}
+            // onPress={() => navigation.navigate("donationform", { requestId: item.id })}
+          onPress={() => router.push('/donationform')}
+            >
             <Text style={styles.viewText}>View</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
+
+  const navigation = useNavigation();  
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -99,7 +106,17 @@ const mydonationreq = () => {
         colors={["#7B61FF", "#9333EA"]}
         style={styles.header}
       >
-
+        <TouchableOpacity
+                    onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                    style={{
+                      position: 'absolute',
+                      top: 10,
+                      left: 10,
+                      zIndex: 5,
+                    }}
+                  >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+        </TouchableOpacity>
         {/* Logo */}
         <View style={styles.logoContainer}>
             <View style={styles.logoBackground}>
@@ -139,4 +156,4 @@ const mydonationreq = () => {
   );
 };
 
-export default mydonationreq;
+export default MyDonationReq;

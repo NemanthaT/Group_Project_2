@@ -13,9 +13,9 @@ import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useNavigation } from "@react-navigation/native";
-
-
+import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from 'expo-router';
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 
 const NonMonetary = () => {
@@ -82,6 +82,17 @@ const NonMonetary = () => {
     >
       {/* Header */}
       <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+        <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
         <View style={styles.logoContainer}>
           <View style={styles.logoBackground}>
             <Image
@@ -197,7 +208,9 @@ const NonMonetary = () => {
         </Text>
 
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity style={styles.submitButton}
+        onPress={() => router.push('/(drawer)/donationform')} // Must match your route name
+        >
           <Text style={styles.submitText}>Create Request</Text>
         </TouchableOpacity>
       </View>

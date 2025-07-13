@@ -12,6 +12,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
+import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { router } from 'expo-router';
+
 
 const DonationForm = () => {
   const [quantity, setQuantity] = useState("");
@@ -19,6 +22,8 @@ const DonationForm = () => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const navigation = useNavigation(); // ← Hook for drawer access
+  
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -49,6 +54,17 @@ const DonationForm = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
             <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+               <TouchableOpacity
+                          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                          style={{
+                            position: 'absolute',
+                            top: 10,
+                            left: 10,
+                            zIndex: 5,
+                          }}
+                        >
+                          <Ionicons name="menu-outline" size={30} color="#fff" />
+                        </TouchableOpacity>
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>
                   <Image
@@ -125,7 +141,9 @@ const DonationForm = () => {
 
         {/* Submit Button */}
          {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity style={styles.submitButton}
+        onPress={() => router.push('donation_payment')} // Must match your route name
+        >
             <Text style={styles.submitText}>Create Request</Text>
             </TouchableOpacity>
       </View>

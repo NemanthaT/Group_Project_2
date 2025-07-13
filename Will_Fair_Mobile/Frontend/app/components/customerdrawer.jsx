@@ -32,21 +32,29 @@ export default function CustomDrawer(props) {
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
           <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/programs')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/monetory')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Donation</Text>
+        </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
+          <Text style={styles.menuText}>My Donation Requests</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
           <Text style={styles.menuText}>Programs</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/marketplace')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
           <Text style={styles.menuText}>Marketplace</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/contact')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Contact Us</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/about')} style={styles.menuButton}>
-          <Text style={styles.menuText}>About</Text>
-        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>
+        <Text style={styles.menuText}>About</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'contact' } })} style={styles.menuButton}>
+        <Text style={styles.menuText}>Contact Us</Text>
+      </TouchableOpacity>
+
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={() => {}}>
+      <TouchableOpacity style={styles.logoutButton} onPress={() => navigateTo('/(tabs)/login')}>
           <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </DrawerContentScrollView>

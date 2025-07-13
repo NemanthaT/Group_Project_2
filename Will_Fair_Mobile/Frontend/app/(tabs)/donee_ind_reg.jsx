@@ -156,7 +156,8 @@ const DoneeOrg = ({ visible, onClose, onLoginPress }) => {
             <View style={styles.buttonsContainer}>
             <TouchableOpacity
                 style={[styles.button, styles.loginButton]}
-                onPress={onLoginPress}
+                onPress={() => navigation.navigate('login')} 
+                // onPress={onLoginPress}
                 activeOpacity={0.8}
             >
                 <LinearGradient
@@ -171,7 +172,7 @@ const DoneeOrg = ({ visible, onClose, onLoginPress }) => {
             {/* Login Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('login')} // Must match your route name
+                onPress={() => navigation.navigate('login')} 
               >
                 <Text style={styles.loginText}>
                   Already have an account?

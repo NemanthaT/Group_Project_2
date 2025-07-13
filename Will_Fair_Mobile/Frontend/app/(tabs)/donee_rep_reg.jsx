@@ -182,7 +182,9 @@ const Donee = ({ visible, onClose, onLoginPress }) => {
             <View style={styles.buttonsContainer}>
             <TouchableOpacity
                 style={[styles.button, styles.loginButton]}
-                onPress={onLoginPress}
+                // onPress={onLoginPress}
+                onPress={() => navigation.navigate('login')} 
+
                 activeOpacity={0.8}
             >
                 <LinearGradient

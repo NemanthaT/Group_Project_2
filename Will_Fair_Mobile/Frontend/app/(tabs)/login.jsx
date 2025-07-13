@@ -94,7 +94,9 @@ const Signup = ({ visible, onClose, onLoginPress }) => {
         <View style={styles.buttonsContainer}>
             <TouchableOpacity
               style={[styles.button, styles.loginButton]}
-              onPress={onLoginPress}
+              // onPress={onLoginPress}
+              onPress={() => router.push('/(drawer)/homescreen')}
+
               activeOpacity={0.8}
               >
               <LinearGradient
@@ -116,7 +118,7 @@ const Signup = ({ visible, onClose, onLoginPress }) => {
                   Don’t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => router.push('/(drawer)/homescreen')}
+                    onPress={() => router.push('signup')}
                   >
                     Sign in
                   </Text>
