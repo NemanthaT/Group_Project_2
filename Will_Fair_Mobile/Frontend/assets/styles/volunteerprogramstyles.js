@@ -30,6 +30,13 @@ export const volunteerProgramStyles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 5,
   },
+  logo: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      marginTop: 30,
+      alignSelf: 'center',
+  },
   filterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -44,21 +51,8 @@ export const volunteerProgramStyles = StyleSheet.create({
     elevation: 2,
   },
   filterText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  newRequestButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#7B61FF',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  newRequestText: {
-    color: '#fff',
-    fontSize: 14,
-    marginLeft: 5,
+    fontSize: 12,
+    color: '#555',
   },
   card: {
     backgroundColor: '#fff',
@@ -73,7 +67,7 @@ export const volunteerProgramStyles = StyleSheet.create({
     height: 180,
   },
   cardContent: {
-    padding: 15,
+    padding: 10,
   },
   cardTitle: {
     fontSize: 16,
@@ -98,19 +92,17 @@ export const volunteerProgramStyles = StyleSheet.create({
   aboutRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginVertical: 3,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    marginVertical: 6,
   },
   aboutLabel: {
     fontSize: 14,
-    color: '#555',
+    fontWeight: 'bold',
+    color: '#000',
+    marginRight: 6,
   },
   aboutValue: {
     fontSize: 14,
     color: '#333',
-    fontWeight: '500',
     flex: 1,
   },
   buttonRow: {
@@ -139,8 +131,78 @@ export const volunteerProgramStyles = StyleSheet.create({
     fontSize: 14,
   },
   progressFill: {
-  height: '100%',
-  backgroundColor: '#7B61FF',
-  borderRadius: 3,
-},
+    height: '100%',
+    backgroundColor: '#7B61FF',
+    borderRadius: 3,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginHorizontal: 15,
+    marginBottom: 20,
+    overflow: 'hidden',
+    elevation: 3,
+  },
+  cardSideImage: {
+    width: 140,
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  cardSideContent: {
+    flex: 1,
+    padding: 15,
+    justifyContent: 'space-between',
+  },
+  badgeBackground: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#e7ecf5ff',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 4,
+  },
+  badgeText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  badgeRow: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: 8,
+  },
+  badge: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+  },
+  locationText: {
+    color: '#0047AB', 
+    fontSize: 12, 
+    fontWeight: '500', 
+    marginLeft: 4, 
+  },
+  detailsButton: {
+    borderColor: '#0047AB',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    marginRight: 10,
+  },
+  detailsButtonText: {
+    color: '#0047AB',
+    fontSize: 14,
+  },
+  donateButton: {
+    backgroundColor: '#0047AB',
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+  },
+  donateButtonText: {
+    color: '#fff',
+    fontSize: 14,
+  }
 });
