@@ -10,7 +10,7 @@ function DoneeDonationsView() {
   }
 
   const goToMonetaryFormIndividual = () => {
-    navigate("/users/donee/monetary-form-individual");
+    navigate("/users/donee/form");
   }
 
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);

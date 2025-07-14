@@ -1,14 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
 import DoneeDashboard from './DoneeDashboard/DoneeDashboard';
 import DoneeDonationsView from './ViewDonations/screens/DoneeDonationsView/DoneeDonationsView';
-import Individual from './MonetaryFormIndividual/screens/Individual/Individual';
+import DonationForm from './DonationForms/DonationForm';
 
 function Donee() {
     return (
         <Routes>
             <Route path="*" element={<DoneeDashboard />} />
             <Route path="/view" element={<DoneeDonationsView />} />
-            <Route path="/monetary-form-individual" element={<Individual />} />
+            <Route path="/form" element={<DonationForm />} />
         </Routes>
     );
 }
