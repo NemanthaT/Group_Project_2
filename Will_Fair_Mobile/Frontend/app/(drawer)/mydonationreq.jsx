@@ -88,7 +88,7 @@ const MyDonationReq = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.viewButton}
             // onPress={() => navigation.navigate("donationform", { requestId: item.id })}
-          onPress={() => router.push('/donationform')}
+          onPress={() => router.push('mydonationreq_ind')}
             >
             <Text style={styles.viewText}>View</Text>
           </TouchableOpacity>
