@@ -1,0 +1,67 @@
+.ways-to-help {
+  background: #f8fafc;
+}
+
+.ways-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.way-card {
+  padding: 40px 30px;
+  text-align: center;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.way-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.way-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.way-card:hover .way-icon {
+  transform: scale(1.1);
+}
+
+.way-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1a202c;
+}
+
+.way-description {
+  color: #718096;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.way-card .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .ways-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .way-card {
+    padding: 30px 20px;
+  }
+}

@@ -16,7 +16,7 @@ function Header() {
       <nav className="container">
         <div className="logo-container">
           <img
-            src="src/assets/images/logo.png"
+            src="http://localhost:5173/src/assets/images/logo.png"
             alt="Logo"
             className="logo-img"
           />
@@ -34,13 +34,16 @@ function Header() {
             <a href="/authManagerDashboard">Dashboard</a>
           </li>
           <li>
-            <a href="/#volunteer">Volunteer</a>
+            <a href="/featured">Volunteer</a>
           </li>
           <li>
             <a href="/#contact">Contact Us</a>
           </li>
           <li>
             <a href="/#about">About</a>
+          </li>
+          <li>
+            <a href="/users">users</a>
           </li>
         </ul>
         <div className="btn-container">

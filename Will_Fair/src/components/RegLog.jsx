@@ -1,9 +1,14 @@
 import "./RegLog.css";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 //Form for Donor Login
 export function LoginD() {
   const navigate = useNavigate();
+
+  const goToDonor = () => {
+    navigate("/users/donor");
+  };
 
   const goToSignupD = () => {
     window.scrollTo({
@@ -52,7 +57,7 @@ export function LoginD() {
             </div>
           </div>
 
-          <button type="submit" className="login-btn">
+          <button type="submit" onClick={goToDonor} className="login-btn">
             Login
           </button>
         </form>
@@ -70,121 +75,157 @@ export function LoginD() {
 
 //Form for Donor Sign Up
 export function SignUpD() {
+
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Sign up successful!");
+        navigate("/loginD");
+      } else {
+        alert(data.error || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const goToLoginD = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth", // Optional: Smooth scrolling
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     navigate("/loginD");
   };
 
   return (
-    <>
-      <div className="signup-container">
-        {/*<div className="flogo">
-          <img
-            src="../src/assets/images/logo.png"
-            alt="Logo"
-            className="flogo-icon"
-          />
-        </div>*/}
-
-        <div className="welcome-text">
-          <h1>Join with us</h1>
-          <p>Connecting Hearts, Changing Lives</p>
-        </div>
-
-        <form id="signupForm">
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">👤</span>
-              <input
-                type="text"
-                id="fullName"
-                placeholder="Full Name"
-                required
-              />
-            </div>
-            <div className="error-message">Please enter your full name</div>
-          </div>
-
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">📧</span>
-              <input type="email" id="email" placeholder="Email" required />
-            </div>
-            <div className="error-message">
-              Please enter a valid email address
-            </div>
-          </div>
-
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                required
-              />
-              <button type="button" className="password-toggle">
-                👁️
-              </button>
-            </div>
-            <div className="error-message">
-              Password must be at least 8 characters long
-            </div>
-          </div>
-
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                id="confirmPassword"
-                placeholder="Confirm Password"
-                required
-              />
-              <button type="button" className="password-toggle">
-                👁️
-              </button>
-            </div>
-            <div className="error-message">Passwords do not match</div>
-          </div>
-
-          <div className="checkbox-group">
-            <div className="checkbox-wrapper">
-              <input type="checkbox" id="terms" required />
-              <div className="checkbox-custom"></div>
-            </div>
-            <label htmlFor="terms" className="checkbox-label">
-              I agree to{" "}
-              <span className="terms-link">Terms and Conditions</span> of
-              WillFair Community
-            </label>
-          </div>
-
-          <button type="submit" className="signup-btn" id="submitBtn">
-            Sign In
-          </button>
-        </form>
-
-        <div className="login-link">
-          Already have an account?{" "}
-          <button onClick={goToLoginD} className="link-button">
-            Login
-          </button>
-        </div>
+    <div className="signup-container">
+      <div className="welcome-text">
+        <h1>Join with us</h1>
+        <p>Connecting Hearts, Changing Lives</p>
       </div>
-    </>
+
+      <form id="signupForm" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">👤</span>
+            <input
+              type="text"
+              id="fullName"
+              placeholder="Full Name"
+              required
+              value={formData.fullName}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">📧</span>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">🔒</span>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">🔒</span>
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm Password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div className="checkbox-group">
+          <div className="checkbox-wrapper">
+            <input type="checkbox" id="terms" required />
+          </div>
+          <label htmlFor="terms" className="checkbox-label">
+            I agree to{" "}
+            <span className="terms-link">Terms and Conditions</span> of
+            WillFair Community
+          </label>
+        </div>
+
+        <button type="submit" className="signup-btn">
+          Sign In
+        </button>
+      </form>
+
+      <div className="login-link">
+        Already have an account?{" "}
+        <button onClick={goToLoginD} className="link-button">
+          Login
+        </button>
+      </div>
+    </div>
   );
 }
 
 //Form for Fundraiser Login
 export function LoginF() {
   const navigate = useNavigate();
+
+  const goToDonee = () => {
+    navigate("/users/donee");
+  };
 
   const goToSignupF = () => {
     window.scrollTo({
@@ -193,6 +234,8 @@ export function LoginF() {
     });
     navigate("/loginF/signupF");
   };
+
+  
 
   return (
     <>
@@ -237,7 +280,7 @@ export function LoginF() {
             </div>
           </div>
 
-          <button type="submit" className="login-btn">
+          <button onClick={goToDonee} type="submit" className="login-btn">
             Login
           </button>
         </form>

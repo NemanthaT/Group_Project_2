@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import "../styles/main.css";
 
-export const AdminDashboard = () => {
+function AdminDashboard (){
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Data for stat cards
@@ -298,4 +299,6 @@ export const AdminDashboard = () => {
       </main>
     </div>
   );
-};
+}
+
+export default AdminDashboard;

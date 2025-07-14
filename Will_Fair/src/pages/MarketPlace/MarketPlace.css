@@ -18,13 +18,13 @@ img {
 .hero-section {
   position: relative;
   width: 100%;
-  height: 55vh;
+  height: 50vh;
   min-height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #9333ea 0%, #0d429b 100%);
+  background: linear-gradient(135deg, #9233ea83 0%, #0d419b80 100%);
 }
 
 .hero-background {
@@ -57,6 +57,7 @@ img {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+
 .search-container {
   position: relative;
   max-width: 600px;
@@ -79,7 +80,7 @@ img {
 
 .search-box:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+ 
 }
 
 .search-input {
@@ -115,14 +116,6 @@ img {
 /* Category Section */
 .category-section {
   padding: 80px 0;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 64px;
-  font-weight: 700;
-  margin-bottom: 60px;
-  color: #000;
 }
 
 .category-grid {
@@ -289,7 +282,7 @@ img {
 
 /* Artisan Stories Section */
 .artisan-stories-section {
-  background-color: #9333ea;
+  background: linear-gradient(135deg, #8400ff 0%, #c180ff 100%);
   padding: 60px 0;
 }
 
@@ -386,6 +379,7 @@ img {
 
 /* Impact Section */
 .impact-section {
+  background: #fffafa !important;
   padding: 80px 0;
 }
 
