@@ -15,23 +15,20 @@ const donationRequests = [
   {
     id: 1,
     title: 'Renovations at Early Bird Child Care',
-    raised: '7,000.00',
-    target: '60,000.00',
-    image: require('../../assets/images/program1.png'),
+    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
+    image: require('../../assets/images/volunteer.png'),
   },
   {
     id: 2,
     title: 'Wheelchairs at Sathkara Elderly Care Centre',
-    raised: '23',
-    target: '40',
-    image: require('../../assets/images/program2.png'),
+    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
+    image: require('../../assets/images/volunteer.png'),
   },
   {
     id: 3,
     title: 'Renovations at Early Bird Child Care',
-    raised: '7,000.00',
-    target: '60,000.00',
-    image: require('../../assets/images/program1.png'),
+    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
+    image: require('../../assets/images/volunteer.png'),
   },
 ];
 
@@ -47,9 +44,9 @@ const VolunteerPrograms = () => {
         >
           <Ionicons name="menu-outline" size={28} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.heroTitle}>My Donation Requests</Text>
+        <Text style={styles.heroTitle}>Volunteer with Purpose</Text>
         <Text style={styles.heroSubtitle}>
-          Connect with generous donors who want to help your cause
+          Make an impact by giving your time where it matters most.
         </Text>
       </LinearGradient>
 
@@ -71,27 +68,12 @@ const VolunteerPrograms = () => {
           <Image source={item.image} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>{item.title}</Text>
-            <View style={styles.progressBarContainer}>
-              <View style={styles.progressBar} />
-              <Ionicons
-                name="checkmark-circle"
-                size={16}
-                color="#7B61FF"
-                style={styles.checkIcon}
-              />
-            </View>
-            <View style={styles.amountRow}>
-              <Text style={styles.amountLabel}>Raised:</Text>
-              <Text style={styles.amountValue}>{item.raised}</Text>
-            </View>
-            <View style={styles.amountRow}>
-              <Text style={styles.amountLabel}>Target:</Text>
-              <Text style={styles.amountValue}>{item.target}</Text>
+            
+            <View style={styles.aboutRow}>
+              <Text style={styles.aboutLabel}>About:</Text>
+              <Text style={styles.aboutValue}>{item.about}</Text>
             </View>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit</Text>
-              </TouchableOpacity>
               <TouchableOpacity style={styles.viewButton}>
                 <Text style={styles.viewButtonText}>View</Text>
               </TouchableOpacity>

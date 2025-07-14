@@ -95,19 +95,23 @@ export const volunteerProgramStyles = StyleSheet.create({
   checkIcon: {
     marginLeft: 5,
   },
-  amountRow: {
+  aboutRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginVertical: 3,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
-  amountLabel: {
+  aboutLabel: {
     fontSize: 14,
     color: '#555',
   },
-  amountValue: {
+  aboutValue: {
     fontSize: 14,
     color: '#333',
     fontWeight: '500',
+    flex: 1,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -134,4 +138,9 @@ export const volunteerProgramStyles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
   },
+  progressFill: {
+  height: '100%',
+  backgroundColor: '#7B61FF',
+  borderRadius: 3,
+},
 });
