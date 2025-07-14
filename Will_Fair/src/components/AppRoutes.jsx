@@ -2,8 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/landingPage/LandingPage";
 import FeaturedContent from "../pages/landingPage/FeaturedContent";
 import Reg from "../pages/signIn/Reg";
-import MarketplaceHomepage from "../pages/MarketPlace/MarketplaceHomepage";
+import Marketplace from "../pages/MarketPlace/MarketPlace";
 import Users from "../pages/users/users";
+import AuthManager from "../pages/AuthManager/AuthManager";
 
 
 
@@ -14,7 +15,8 @@ const AppRoutes = () => {
       <Route path="/featured/*" element={<FeaturedContent />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
-      <Route path="/marketplace/*" element={<MarketplaceHomepage />} />
+      <Route path="/marketplace/*" element={<Marketplace />} />
+      <Route path="/authManager" element={<AuthManager />} />
       <Route path="/users/*" element={<Users />} />
 
     </Routes>

@@ -67,6 +67,7 @@ function MarketplaceHomepage (){
 
   return (
     <div className="marketplace-homepage">
+      
       {/* Hero Section with Navigation */}
       <section className="hero-section">
         <img
@@ -149,7 +150,7 @@ function MarketplaceHomepage (){
       {/* Artisan Stories Section */}
       <ArtisanStoriesSection />
 
-      <Link to="/paymentCart" className="floating-cart-button">
+      <Link to="/marketplace/paymentCart" className="floating-cart-button">
         <img src="/cart-icon.svg" alt="Cart" className="floating-cart-icon" />
       </Link>
     </div>
