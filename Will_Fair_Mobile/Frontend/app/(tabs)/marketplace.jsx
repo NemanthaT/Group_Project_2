@@ -39,6 +39,7 @@ const Marketplace = () => {
           style={{ position: 'absolute', top: 10, left: 10 }}>
           <Ionicons name="menu-outline" size={30} color="#fff" />
         </TouchableOpacity>
+        <Image source={require('../../assets/images/logo-white.png')} style={homeStyles.logo} resizeMode="contain" />
         <Text style={homeStyles.heroTitle}>What Are You Looking For?</Text>
         <View style={homeStyles.searchBar}>
           <TextInput

@@ -34,6 +34,13 @@ export const homeStyles = StyleSheet.create({
     paddingRight: 8,
     color: '#333',
   },
+  logo: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      marginTop: 30,
+      alignSelf: 'center',
+  },
   sectionTitle: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -89,7 +96,7 @@ export const homeStyles = StyleSheet.create({
     marginBottom: 4,
   },
   productPrice: {
-    color: '#9333EA',
+    color: '#3e0078ff',
     fontWeight: '600',
     marginBottom: 6,
   },
@@ -99,7 +106,7 @@ export const homeStyles = StyleSheet.create({
     gap: 10,
   },
   buyNow: {
-    backgroundColor: '#9333EA',
+    backgroundColor: '#8c00cdff',
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 6,

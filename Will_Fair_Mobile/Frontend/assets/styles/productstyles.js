@@ -21,8 +21,8 @@ export const productStyles = StyleSheet.create({
     logo: {
         width: 80,
         height: 80,
-        backgroundColor: '#fff',
         borderRadius: 40,
+        marginTop: 30,
     },
     productImage: {
         width: width,

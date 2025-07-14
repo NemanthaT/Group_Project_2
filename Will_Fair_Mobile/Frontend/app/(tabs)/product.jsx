@@ -28,7 +28,7 @@ const Product = () => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={productStyles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Image source={require('../../assets/images/logo.png')} style={productStyles.logo} resizeMode="contain" />
+        <Image source={require('../../assets/images/logo-white.png')} style={productStyles.logo} resizeMode="contain" />
       </LinearGradient>
 
       {/* Product Info */}
