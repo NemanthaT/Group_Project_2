@@ -9,3 +9,10 @@
 .btn {
     border-radius: 20px !important;
 }
+
+.error-message {
+  text-align: center;
+  color: red;
+  font-size: 1rem;
+  margin-top: 1rem;
+}

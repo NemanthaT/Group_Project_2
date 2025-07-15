@@ -1,75 +1,137 @@
 import "./RegLog.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 //Form for Donor Login
 export function LoginD() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const goToDonor = () => {
-    navigate("/users/donor");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post("http://localhost:5000/auth/login", formData);
+      
+      // Store token and user data (consider using context or state management)
+      localStorage.setItem("authToken", response.data.token);
+      localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+      // Redirect based on user role
+      switch(response.data.user.role) {
+        case "donor":
+          navigate("/users/donor");
+          break;
+        case "auth_manager":
+          navigate("/manager/dashboard");
+          break;
+        case "regional_manager":
+          navigate("/regional/dashboard");
+          break;
+        case "system_admin":
+          navigate("/admin/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goToSignupD = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // Optional: Smooth scrolling
+      behavior: "smooth",
     });
     navigate("/loginD/signupD");
   };
 
   return (
-    <>
-      <div className="login-container">
-        <div className="flogo">
-          <img
-            src="src/assets/images/logo.png"
-            alt="Logo"
-            className="flogo-icon"
-          />
-        </div>
-
-        <div className="welcome-text">
-          <h1>Welcome Back!</h1>
-          <p>Connecting Hearts, Changing Lives</p>
-        </div>
-
-        <form>
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">📧</span>
-              <input type="email" placeholder="Email" required />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                required
-              />
-              <button type="button" className="password-toggle">
-                👁️
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" onClick={goToDonor} className="login-btn">
-            Login
-          </button>
-        </form>
-
-        <div className="signup-link">
-          Don't have an account?{" "}
-          <button onClick={goToSignupD} className="link-button">
-            Sign in
-          </button>
-        </div>
+    <div className="login-container">
+      <div className="flogo">
+        <img
+          src="src/assets/images/logo.png"
+          alt="Logo"
+          className="flogo-icon"
+        />
       </div>
-    </>
+
+      <div className="welcome-text">
+        <h1>Welcome Back!</h1>
+        <p>Connecting Hearts, Changing Lives</p>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">📧</span>
+            <input 
+              type="email" 
+              name="email"
+              placeholder="Email" 
+              value={formData.email}
+              onChange={handleChange}
+              required 
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <div className="input-wrapper">
+            <span className="input-icon">🔒</span>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <button type="button" className="password-toggle">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          className="login-btn"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
+
+      <div className="signup-link">
+        Don't have an account?{" "}
+        <button onClick={goToSignupD} className="link-button">
+          Sign up
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -100,7 +162,7 @@ export function SignUpD() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch("http://localhost:5000/donors/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
