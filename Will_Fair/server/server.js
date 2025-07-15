@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import donorRoutes from "./routes/donorRoutes.js";
+import authRoutes from  "./routes/authRoutes.js";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use("/donors", donorRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");
