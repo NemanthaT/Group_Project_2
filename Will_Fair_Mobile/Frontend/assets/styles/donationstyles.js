@@ -18,11 +18,8 @@ export const donationStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 30,
-    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
   },
   title: {
     fontSize: 20,

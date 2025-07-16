@@ -62,7 +62,7 @@ const DonationDetails = () => {
       {/* Header */}
       <LinearGradient colors={["#9333EA", "#2622A8"]} style={donationStyles.header}>
         <Image
-          source={require('../../assets/images/logo.png')}
+          source={require('../../assets/images/logo-white.png')}
           style={donationStyles.logo}
           resizeMode="contain"
         />
