@@ -57,7 +57,7 @@ export function LoginD() {
           navigate("/");
       }
     } catch (err) {
-      toast.success(err.response.data.message || "Invalid credentials!");
+      toast.error(err.response.data.message || "Invalid credentials!");
       //setError(err.response?.data?.error || "Login failed. Please try again.");
       console.error("Login error:", err);
     } finally {
@@ -190,7 +190,8 @@ export function SignUpD() {
     } catch (error) {
       console.error("Signup error:", error);
       setError(
-        error.response?.data?.error || "Signup failed. Please try again."
+        toast.error(error.response?.data?.message || "Signup failed"),
+        //error.response?.data?.error || "Signup failed. Please try again."
       );
     } finally {
       setLoading(false);

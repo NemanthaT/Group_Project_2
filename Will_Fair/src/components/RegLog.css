@@ -156,14 +156,14 @@ input::placeholder {
   color: #667eea;
 }
 
-.checkbox-group {
+.signup-container.checkbox-group {
   margin-bottom: 32px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
 
-.checkbox-wrapper {
+.signup-container.checkbox-wrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -178,7 +178,7 @@ input[type="checkbox"] {
   position: absolute;
 }
 
-.checkbox-custom {
+.signup-container.checkbox-custom {
   width: 18px;
   height: 18px;
   border: 2px solid #ddd;
@@ -202,20 +202,20 @@ input[type="checkbox"]:checked + .checkbox-custom::after {
   font-weight: bold;
 }
 
-.checkbox-label {
+.signup-container .checkbox-label {
   font-size: 14px;
   color: #666;
   line-height: 1.4;
   margin-left: 8px;
 }
 
-.checkbox-label a {
+.signup-container .checkbox-label a {
   color: #667eea;
   text-decoration: none;
   font-weight: 600;
 }
 
-.checkbox-label a:hover {
+.signup-container .checkbox-label a:hover {
   text-decoration: underline;
 }
 

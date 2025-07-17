@@ -15,6 +15,7 @@ async function registerDonor(fullName, email, hashedPassword) {
     );
 
     if (existingUser.rows.length > 0) {
+      console.log("Email already exists");
       return { success: false, message: "Email already exists" };
     }
 
