@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StatusBar, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native'; // Required for navigation
-import { styles } from '../../assets/styles/donorreg.styles'; // Adjust the path if necessary
+import { useNavigation } from '@react-navigation/native';
+import { styles } from '../../assets/styles/donorreg.styles';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
- // Adjust the path if necessary
-
 import { useState } from 'react';
 
 const Donor = ({ visible, onClose, onLoginPress }) => {
@@ -18,6 +16,109 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
   const [secureConfirm, setSecureConfirm] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Full Name validation
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    } else if (fullName.trim().length < 2) {
+      newErrors.fullName = 'Full name must be at least 2 characters';
+    }
+
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    // Confirm Password validation
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Terms agreement validation
+    if (!agreed) {
+      newErrors.agreed = 'You must agree to terms and conditions';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+// Submit to database
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    Alert.alert('Validation Error', 'Please fix the errors before submitting');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await fetch('http://192.168.71.72:5000/api/donor_reg', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fullName: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        password: password
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Clear form
+            setFullName('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+            setAgreed(false);
+            setErrors({});
+            // Navigate to login or close modal
+            navigation.navigate('login');
+          }
+        }
+      ]);
+    } else {
+      Alert.alert('Error', data.message || 'Registration failed');
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    Alert.alert('Error', 'Network error. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Modal
@@ -56,108 +157,141 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
               {/* Divider */}
               <View style={styles.divider} />
 
-             
-
-            {/* Full Name Input */}
-            <View style={styles.inputWrapper}>
-            <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
-            <TextInput
-                placeholder="Full Name"
-                style={styles.input}
-                placeholderTextColor="#999"
-                value={fullName}
-                onChangeText={setFullName}
-            />
-            </View>
-
-            {/* Email Input */}
-            <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={20} color="#999" style={styles.icon} />
-            <TextInput
-                placeholder="Email"
-                style={styles.input}
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-            />
-            </View>
-
-            {/* Password Input */}
-            <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
-            <TextInput
-                placeholder="Password"
-                style={styles.input}
-                placeholderTextColor="#999"
-                secureTextEntry={secure}
-                value={password}
-                onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => setSecure(!secure)}>
-                <Ionicons
-                name={secure ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color="#999"
-                style={styles.icon}
+              {/* Full Name Input */}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
+                <TextInput
+                  placeholder="Full Name"
+                  style={[styles.input, errors.fullName && { borderColor: 'red' }]}
+                  placeholderTextColor="#999"
+                  value={fullName}
+                  onChangeText={(text) => {
+                    setFullName(text);
+                    if (errors.fullName) {
+                      setErrors(prev => ({ ...prev, fullName: null }));
+                    }
+                  }}
                 />
-            </TouchableOpacity>
-            </View>
+              </View>
+              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
-            {/* Confirm Password Input */}
-            <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
-            <TextInput
-                placeholder="Confirm Password"
-                style={styles.input}
-                placeholderTextColor="#999"
-                secureTextEntry={secureConfirm}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-            />
-            <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)}>
-                <Ionicons
-                name={secureConfirm ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color="#999"
-                style={styles.icon}
+              {/* Email Input */}
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="mail-outline" size={20} color="#999" style={styles.icon} />
+                <TextInput
+                  placeholder="Email"
+                  style={[styles.input, errors.email && { borderColor: 'red' }]}
+                  placeholderTextColor="#999"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) {
+                      setErrors(prev => ({ ...prev, email: null }));
+                    }
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                 />
-            </TouchableOpacity>
-            </View>
+              </View>
 
-            {/* Terms & Conditions Checkbox */}
-            <View style={styles.checkboxContainer}>
-            <TouchableOpacity
-                style={styles.checkbox}
-                onPress={() => setAgreed(!agreed)}
-            >
-            {agreed && <Ionicons name="checkmark" size={14} color="#7B61FF" />}
-            </TouchableOpacity>
-            <Text style={styles.termsText}>
-                I agree to <Text style={styles.link}>Terms and Conditions</Text> of Welfair Community
-            </Text>
-            </View>
+              {/* Password Input */}
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
+                <TextInput
+                  placeholder="Password"
+                  style={[styles.input, errors.password && { borderColor: 'red' }]}
+                  placeholderTextColor="#999"
+                  secureTextEntry={secure}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) {
+                      setErrors(prev => ({ ...prev, password: null }));
+                    }
+                  }}
+                />
+                
+                <TouchableOpacity onPress={() => setSecure(!secure)}>
+                  <Ionicons
+                    name={secure ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color="#999"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
 
-            {/* Sign In Button */}
-            <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-                style={[styles.button, styles.loginButton]}
-                // onPress={onLoginPress}
-                onPress={() => navigation.navigate('login')} 
-                activeOpacity={0.8}
-            >
-                <LinearGradient
-                colors={['#7B61FF', '#9333EA']}
-                style={styles.buttonGradient}
+              {/* Confirm Password Input */}
+              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
+                <TextInput
+                  placeholder="Confirm Password"
+                  style={[styles.input, errors.confirmPassword && { borderColor: 'red' }]}
+                  placeholderTextColor="#999"
+                  secureTextEntry={secureConfirm}
+                  value={confirmPassword}
+                  onChangeText={(text) => {
+                    setConfirmPassword(text);
+                    if (errors.confirmPassword) {
+                      setErrors(prev => ({ ...prev, confirmPassword: null }));
+                    }
+                  }}
+                />
+                <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)}>
+                  <Ionicons
+                    name={secureConfirm ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color="#999"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Terms & Conditions Checkbox */}
+              {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
+              <View style={styles.checkboxContainer}>
+                <TouchableOpacity
+                  style={[styles.checkbox, errors.agreed && { borderColor: 'red' }]}
+                  onPress={() => {
+                    setAgreed(!agreed);
+                    if (errors.agreed) {
+                      setErrors(prev => ({ ...prev, agreed: null }));
+                    }
+                  }}
                 >
-                <Text style={styles.buttonText}>Sign In</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-            </View>
+                  {agreed && <Ionicons name="checkmark" size={14} color="#7B61FF" />}
+                </TouchableOpacity>
+                <Text style={styles.termsText}>
+                  I agree to <Text style={styles.link}>Terms and Conditions</Text> of Welfair Community
+                </Text>
+              </View>
 
-            {/* Login Link */}
+              {/* Sign Up Button */}
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.loginButton, loading && { opacity: 0.6 }]}
+                  onPress={handleSubmit}
+                  activeOpacity={0.8}
+                  disabled={loading}
+                >
+                  <LinearGradient
+                    colors={['#7B61FF', '#9333EA']}
+                    style={styles.buttonGradient}
+                  >
+                    <Text style={styles.buttonText}>
+                      {loading ? 'Creating Account...' : 'Sign Up'}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+
+              {/* Login Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('login')} // Must match your route name
+                onPress={() => navigation.navigate('login')}
               >
                 <Text style={styles.loginText}>
                   Already have an account?

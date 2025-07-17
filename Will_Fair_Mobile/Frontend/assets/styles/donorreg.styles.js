@@ -257,5 +257,11 @@ documentText: {
   fontSize: 14,
   color: '#999',
 },
+errorText: {
+  color: 'red',
+  fontSize: 12,
+  marginLeft: 10,
+  alignSelf: 'flex-start',
+},
 
 });
