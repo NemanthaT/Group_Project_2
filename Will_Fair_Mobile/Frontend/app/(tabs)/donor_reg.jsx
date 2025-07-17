@@ -158,6 +158,7 @@ const handleSubmit = async () => {
               <View style={styles.divider} />
 
               {/* Full Name Input */}
+              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -173,7 +174,6 @@ const handleSubmit = async () => {
                   }}
                 />
               </View>
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
               {/* Email Input */}
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}

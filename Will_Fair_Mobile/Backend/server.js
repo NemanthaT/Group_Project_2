@@ -69,4 +69,57 @@ app.post('/api/donor_reg', async (req, res) => {
   }
 });
 
+// ...existing code...
+
+// Login endpoint
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  try {
+    console.log('Login request received:', req.body);
+    
+    const { email, password } = req.body;
+    
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ 
+        message: 'Email and password are required'
+      });
+    }
+
+    // Check if user exists in database
+    const userResult = await pool.query(
+      'SELECT donor_id, email, password_hash, first_name, last_name FROM donors WHERE email = $1',
+      [email.toLowerCase()]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Compare password with hashed password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Login successful
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        id: user.donor_id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
