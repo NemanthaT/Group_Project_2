@@ -1,4 +1,4 @@
-import { authenticateUser,authenticateDonee } from "../models/authModel.js";
+import { authenticateUser,authenticateDonee, getNameById } from "../models/authModel.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -11,6 +11,7 @@ export const login = async (req, res) => {
   }
 
   const result = await authenticateUser(email, password);
+  const name = await getNameById(result.userId, result.role, result.userType);
 
   if (result.success) {
     // Create JWT token with user details
@@ -18,6 +19,7 @@ export const login = async (req, res) => {
       { 
         userId: result.userId,
         email: result.email,
+        name: name,
         role: result.role,
         userType: result.userType
       }, 
@@ -31,6 +33,7 @@ export const login = async (req, res) => {
       user: {
         id: result.userId,
         email: result.email,
+        name: name,
         role: result.role,
         userType: result.userType
       }
@@ -51,13 +54,15 @@ export const loginDonee = async (req, res) => {
   }
 
   const result = await authenticateDonee(phone, password);
+  const name = await getNameById(result.userId, result.role, result.userType);
 
   if (result.success) {
     // Create JWT token with user details
     const token = jwt.sign(
       { 
         userId: result.userId,
-        email: result.email,
+        phone: result.phone,
+        name: name,
         role: result.role,
         userType: result.userType
       }, 
@@ -70,7 +75,8 @@ export const loginDonee = async (req, res) => {
       token,
       user: {
         id: result.userId,
-        email: result.email,
+        phone: result.phone,
+        name: name,
         role: result.role,
         userType: result.userType
       }
@@ -78,7 +84,7 @@ export const loginDonee = async (req, res) => {
   } else {
     res.status(401).json({ 
       success: false,
-      error: result.message || "Invalid credentials" 
+      error: result.message || "Invalid credentials from Controller" 
     });
   }
 };

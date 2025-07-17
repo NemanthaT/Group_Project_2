@@ -28,3 +28,4 @@ dist-ssr
 *.docx
 *.xlsx
 *.pptx
+uploads/donees/*.png

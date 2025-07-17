@@ -10,11 +10,12 @@ import Users from "./pages/users/users";*/
 import AppRoutes from "./components/AppRoutes";
 
 function App() {
+  const user = JSON.parse(localStorage.getItem('userData'));
   return (
     <Router>
-      <Header />
+      <Header user={user} />
       <main>
-        <AppRoutes />
+        <AppRoutes user={user} />
       </main>
       <Footer />
     </Router>
