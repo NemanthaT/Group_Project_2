@@ -5,6 +5,6 @@ import {
 
 const router = express.Router();
 
-router.post("/signup", signUpDonor);
+router.post("/signupDonor", signUpDonor);
 
 export default router;
