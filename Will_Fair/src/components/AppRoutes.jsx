@@ -8,6 +8,7 @@ import Users from "../pages/users/users";
 
 
 const AppRoutes = () => {
+  const user = JSON.parse(localStorage.getItem('userData'));
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
@@ -15,8 +16,7 @@ const AppRoutes = () => {
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
       <Route path="/marketplace/*" element={<MarketplaceHomepage />} />
-      <Route path="/users/*" element={<Users />} />
-
+      <Route path="/users/*" element={<Users user={user} />} />
     </Routes>
   );
 };
