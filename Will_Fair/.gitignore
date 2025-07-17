@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Upload files
+*.pdf
+*.docx
+*.xlsx
+*.pptx

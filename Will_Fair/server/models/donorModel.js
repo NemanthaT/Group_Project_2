@@ -1,5 +1,4 @@
-// donorModel.js
-const pool = require("./db");
+import pool from "../db.js";
 
 async function registerDonor(fullName, email, password) {
   try {
@@ -19,7 +18,6 @@ async function registerDonor(fullName, email, password) {
     console.error("Database error during registerDonor():", err);
 
     if (err.code === '23505') {
-      // PostgreSQL duplicate key error
       return { success: false, message: "Email already exists" };
     }
 
@@ -27,6 +25,5 @@ async function registerDonor(fullName, email, password) {
   }
 }
 
-module.exports = {
-  registerDonor,
-};
+
+export { registerDonor};
