@@ -9,11 +9,11 @@ import ImpactSection from './components/ImpactSection';
 function Dashboard({ user }) {
   return (
     <div className="donor-dashboard">
-      <HeroSection />
-      <RecentDonationRequests />
-      <WaysToHelp />
-      <Marketplace />
-      <ImpactSection />
+      <HeroSection user={user} />
+      <RecentDonationRequests user={user} />
+      <WaysToHelp user={user} />
+      <Marketplace user={user} />
+      <ImpactSection user={user} />
     </div>
   );
 }
