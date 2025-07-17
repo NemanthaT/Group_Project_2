@@ -1,0 +1,1 @@
+export { RecentInventoryItemsSection } from "./RecentInventoryItemsSection";
