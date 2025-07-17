@@ -5,6 +5,17 @@ import path from 'path';
 
 async function registerDonee(fullName, phoneNo, password, type, proofDocument = null) {
   try {
+    // First check if phone number already exists
+    const phoneCheck = await pool.query(
+      `SELECT donee_id FROM donees WHERE phone = $1`,
+      [phoneNo]
+    );
+
+    if (phoneCheck.rows.length > 0) {
+      return { success: false, message: "Phone number already exists" };
+    }
+
+    // Proceed with registration if phone number doesn't exist
     const nameParts = fullName.trim().split(" ");
     const first_name = nameParts[0];
     const last_name = nameParts.slice(1).join(" ") || "";
@@ -52,13 +63,20 @@ async function registerDonee(fullName, phoneNo, password, type, proofDocument = 
   } catch (err) {
     await pool.query('ROLLBACK');
     console.error("Database error during registerDonee():", err);
-
-    if (err.code === '23505') {
-      return { success: false, message: "Phone number already exists" };
-    }
-
     return { success: false, message: "Database error" };
   }
 }
 
-export { registerDonee };
+function getProofDocumentPath(doneeId) {
+  return pool.query(
+    `SELECT proof_document_path FROM donees WHERE donee_id = $1`,
+    [doneeId]
+  ).then(result => {
+    if (result.rows.length > 0) {
+      return result.rows[0].proof_document_path;
+    }
+    throw new Error("Donee not found");
+  });
+}
+
+export { registerDonee, getProofDocumentPath };

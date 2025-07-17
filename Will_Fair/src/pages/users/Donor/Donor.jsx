@@ -4,11 +4,13 @@ import MonetoryDonation from './Monetary/MonetaryDonation';
 import NonMonetary from './NonMonetary/NonMonetary';
 
 function Donor () {
+    const user = JSON.parse(localStorage.getItem('userData'));
+    console.log(user);
     return (
         <Routes>
-            <Route path="*" element={<Dashboard />} />
-            <Route path="/monetory" element={<MonetoryDonation />} />
-            <Route path="/nonMonetory" element={<NonMonetary />} />
+            <Route path="*" element={<Dashboard user={user} />} />
+            <Route path="/monetory" element={<MonetoryDonation user={user} />} />
+            <Route path="/nonMonetory" element={<NonMonetary user={user} />} />
         </Routes>
     );
 }

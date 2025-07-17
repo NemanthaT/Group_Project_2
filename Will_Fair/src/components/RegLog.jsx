@@ -2,7 +2,7 @@ import "./RegLog.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import bcrypt from "bcryptjs";
+import bcrypt, { hash } from "bcryptjs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -57,7 +57,7 @@ export function LoginD() {
           navigate("/");
       }
     } catch (err) {
-      toast.error(err.response.data.message || "Invalid credentials!");
+      toast.error(err.response.data.message || "Invalid credentials! Please try again.");
       //setError(err.response?.data?.error || "Login failed. Please try again.");
       console.error("Login error:", err);
     } finally {
@@ -330,6 +330,7 @@ export function LoginF() {
     setError("");
 
     try {
+      console.log("Form Data:", formData);
       const response = await axios.post(
         "http://localhost:5000/auth/loginDonee",
         formData
@@ -338,6 +339,8 @@ export function LoginF() {
       // Store token and user data
       localStorage.setItem("authToken", response.data.token);
       localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+      console.log("loginDonee fetched");
 
       // Redirect based on user role
       switch (response.data.user.role) {
@@ -359,6 +362,7 @@ export function LoginF() {
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid credentials!");
       console.error("Login error:", err);
+      console.error("Error details:", err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -482,8 +486,9 @@ export function SignUpF() {
 
     try {
       // Hash the password before sending to server
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(formData.password, salt);
+      /*const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(formData.password, salt);*/
+      const hashedPassword = formData.password; // Use plain password for now
 
       const data = new FormData();
       data.append("type", formData.type);
