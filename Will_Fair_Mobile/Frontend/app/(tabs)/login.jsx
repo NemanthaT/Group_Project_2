@@ -213,10 +213,26 @@ const handleLogin = async () => {
                 onPress={() => navigation.navigate('signup')} 
               >
                 <Text style={styles.loginText}>
-                  Don&#39;t have an account?{' '}
+                  Don&#39;t have an account? - Donor{' '}
                   <Text
                     style={styles.loginLink}
                     onPress={() => router.push('signup')}
+                  >
+                    Sign Up
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+
+               {/* Signup Link */}
+              <TouchableOpacity
+                style={styles.loginContainer}
+                onPress={() => navigation.navigate('signup')} 
+              >
+                <Text style={styles.loginText}>
+                  Don&#39;t have an account? - Donee{' '}
+                  <Text
+                    style={styles.loginLink}
+                    onPress={() => router.push('donee_login')}
                   >
                     Sign Up
                   </Text>
