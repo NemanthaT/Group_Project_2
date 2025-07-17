@@ -183,14 +183,17 @@ export function SignUpD() {
 
       if (response.data.success) {
         toast.success(response.data.message || "Sign up successful!");
-        navigate("/loginD");
+        setTimeout(() => {
+          navigate("/loginD");
+        }, 3000);
       } else {
-        setError(response.data.message || "Signup failed");
+        //setError(response.data.message || "Signup failed email already exists");
+        toast.error(response.data.message || "Signup failed email already exists!!");
       }
     } catch (error) {
       console.error("Signup error:", error);
       setError(
-        toast.error(error.response?.data?.message || "Signup failed"),
+        toast.error(error.response?.data?.message || "Signup failed email already exists"),
         //error.response?.data?.error || "Signup failed. Please try again."
       );
     } finally {
