@@ -48,3 +48,39 @@ export const authenticateUser = async (email, password) => {
     return { success: false, message: "Authentication error" };
   }
 };
+
+export const authenticateDonee = async (phone, password) => {
+  try {
+      const userType = { table: 'donees', idField: 'donee_id', role: 'donee' };
+
+      const query = {
+        text: `SELECT ${userType.idField} as id, email, password_hash 
+               FROM ${userType.table} 
+               WHERE phone = $1`,
+        values: [phone]
+      };
+
+      const result = await pool.query(query);
+      
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+        
+        if (passwordMatch) {
+          return { 
+            success: true, 
+            userId: user.id, 
+            phone: user.phone,
+            role: userType.role,
+            userType: userType.table
+          };
+        }
+      }
+
+      return { success: false, message: "Invalid credentials" };
+  } catch (err) {
+    console.error("Authentication error:", err);
+    return { success: false, message: "Authentication error" };
+  }
+};

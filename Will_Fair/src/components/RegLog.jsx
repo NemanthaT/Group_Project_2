@@ -309,21 +309,72 @@ export function SignUpD() {
 //Form for Fundraiser Login
 export function LoginF() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    phone: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const goToDonee = () => {
-    navigate("/users/donee");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/auth/loginDonee",
+        formData
+      );
+
+      // Store token and user data
+      localStorage.setItem("authToken", response.data.token);
+      localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+      // Redirect based on user role
+      switch (response.data.user.role) {
+        case "donee":
+          navigate("/users/donee");
+          break;
+        case "auth_manager":
+          navigate("/manager/dashboard");
+          break;
+        case "regional_manager":
+          navigate("/regional/dashboard");
+          break;
+        case "system_admin":
+          navigate("/admin/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Invalid credentials!");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goToSignupF = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // Optional: Smooth scrolling
+      behavior: "smooth",
     });
     navigate("/loginF/signupF");
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="login-container">
         <div className="flogo">
           <img
@@ -337,15 +388,20 @@ export function LoginF() {
           <p>Connecting Hearts, Changing Lives</p>
         </div>
 
-        <form>
+        {error && <div className="error-message">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-wrapper">
               <span className="input-icon">📧</span>
               <input
                 type="tel"
+                name="phone"
                 placeholder="Phone no"
                 pattern="[0-9]{10}"
                 required
+                value={formData.phone}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -355,9 +411,11 @@ export function LoginF() {
               <span className="input-icon">🔒</span>
               <input
                 type="password"
-                id="password"
+                name="password"
                 placeholder="Password"
                 required
+                value={formData.password}
+                onChange={handleChange}
               />
               <button type="button" className="password-toggle">
                 👁️
@@ -365,15 +423,15 @@ export function LoginF() {
             </div>
           </div>
 
-          <button onClick={goToDonee} type="submit" className="login-btn">
-            Login
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <div className="signup-link">
           Don't have an account?{" "}
           <button onClick={goToSignupF} className="link-button">
-            Sign in
+            Sign up
           </button>
         </div>
       </div>
