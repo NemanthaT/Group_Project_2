@@ -6,7 +6,7 @@ import WaysToHelp from './components/WaysToHelp';
 import Marketplace from './components/Marketplace';
 import ImpactSection from './components/ImpactSection';
 
-function Dashboard() {
+function Dashboard({ user }) {
   return (
     <div className="donor-dashboard">
       <HeroSection />

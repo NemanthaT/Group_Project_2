@@ -1,27 +1,20 @@
 // server.js
-const express = require("express");
-const cors = require("cors");
-const { registerDonor } = require("./donorModel");
+import express from "express";
+import cors from "cors";
+import donorRoutes from "./routes/donorRoutes.js";
+import authRoutes from  "./routes/authRoutes.js";
+import doneeRoutes from "./routes/doneeRoute.js";
 
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-app.post("/signup", async (req, res) => {
-  const { fullName, email, password } = req.body;
-
-  if (!fullName || !email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
-  const result = await registerDonor(fullName, email, password);
-
-  if (result.success) {
-    res.status(201).json({ message: "User registered", userId: result.userId });
-  } else {
-    res.status(400).json({ error: result.message });
-  }
-});
+// Routes
+app.use("/donors", donorRoutes);
+app.use("/donees", doneeRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");

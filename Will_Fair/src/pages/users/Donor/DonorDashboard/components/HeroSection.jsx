@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import "./HeroSection.css";
 
-const HeroSection = () => {
+const HeroSection = ({ user }) => {
   return (
     <section className="hero">
       <div className="bg-container">
@@ -15,7 +15,7 @@ const HeroSection = () => {
 
       <div className="container">
         <div className="hero-content">
-          <h1 className="hero-title">Welcome to WillFair, dulim123!</h1>
+          <h1 className="hero-title">Welcome to WillFair, {user?.name || "Guest"}!</h1>
           <p className="hero-subtitle">
             Thank you for your generosity and support. Together, we can make a
             difference.
