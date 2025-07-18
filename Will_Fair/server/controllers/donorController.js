@@ -22,7 +22,7 @@ export const signUpDonor = async (req, res) => {
         userId: result.userId 
       });
     } else {
-      res.status(400).json({ 
+      res.status(401).json({ 
         success: false,
         error: result.message 
       });

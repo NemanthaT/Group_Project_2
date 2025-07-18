@@ -60,7 +60,7 @@ const mockRequests = [
   }
 ];
 
-function DoneeDashboard() {
+function DoneeDashboard( { user } ) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('This Month');
 
@@ -158,7 +158,7 @@ function DoneeDashboard() {
           <div className="hero-overlay"></div>
           <div className="hero-content">
             <div className="hero-text">
-              <h1 className="hero-title">Welcome, Test</h1>
+              <h1 className="hero-title">Welcome, {user.name} </h1>
               <p className="hero-subtitle">Your dashboard for monitoring donation requests and impact</p>
               <button onClick={goToDonationsView} className="hero-button">View Requests</button>
             </div>

@@ -1,7 +1,8 @@
 import "./Header.css";
-import { useNavigate , Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 
-function Header() {
+function Header({ user }) {
   // Initialize the useNavigate hook from react-router-dom
   const navigate = useNavigate();
 
@@ -11,6 +12,25 @@ function Header() {
   const goToLoginF = () => {
     navigate("/loginF");
   };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
+  // Hide login buttons when user is logged in
+
+  const hideLoginButtons = (user) => {
+    const loginButtons = document.querySelectorAll(".sign-in-btn");
+    loginButtons.forEach(
+      (button) => (button.style.display = user ? "none" : "block")
+    );
+  };
+
+  useEffect(() => {
+    hideLoginButtons(user);
+  }, [user]);
+
   return (
     <header>
       <nav className="container">
@@ -39,15 +59,35 @@ function Header() {
           <li>
             <a href="/#about">About</a>
           </li>
-          <li>
-            <a href="/users">users</a>
-          </li>
+          {user ? (
+            <li>
+              <a href={`/users/${user.role}`}>Dashboard</a>
+            </li>
+          ) : (
+            <li></li>
+          )}
         </ul>
         <div className="btn-container">
           <button className="sign-in-btn" onClick={goToLoginD}>
             Donate
           </button>
-          <button className="sign-in-btn" onClick={goToLoginF}>Fundraise</button>
+          <button className="sign-in-btn" onClick={goToLoginF}>
+            Fundraise
+          </button>
+          <div className="profile-container" style={{ display: user ? "block" : "none" }}>
+            {user ? (
+              <div className="user-info">
+                <span className="user-name">{user.name}</span>
+                <button className="logout-btn" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="guest-info">
+                <span className="guest-name">Guest</span>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </header>
