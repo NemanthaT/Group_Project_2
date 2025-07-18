@@ -27,7 +27,7 @@ function Reg() {
       <div className="bg-container">
         <img
           className="bg"
-          src="src/assets/images/homeBg.jpeg"
+          src="http://localhost:5173/src/assets/images/homeBg.jpeg"
           alt="Hero Background"
         />
       </div>
