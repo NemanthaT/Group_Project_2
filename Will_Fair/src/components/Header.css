@@ -63,6 +63,7 @@ nav {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
+  margin-right:10px;
 }
 
 .sign-in-btn:hover {

@@ -200,6 +200,23 @@
   text-align: center;
 }
 
+.btn-small1{
+  padding: 0.8rem 1.5rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.btn-small1:hover {
+  background: #5855eb;
+}
+
 /* Testimonials */
 .testimonials {
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);

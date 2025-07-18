@@ -125,7 +125,7 @@ function LandingPage() {
             </div>
           </div>
           <div className="see-more">
-            <button className="btn-small" onClick={goToFeatured}>
+            <button className="btn-small1" onClick={goToFeatured}>
               See more
             </button>
           </div>
