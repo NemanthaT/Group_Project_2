@@ -11,6 +11,24 @@ export default function MonetoryForm() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
+  const [imageFile, setImageFile] = useState(null);
+  const [documentFiles, setDocumentFiles] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files);
+    // Filter for PDFs only
+    const pdfFiles = files.filter(file => file.type === 'application/pdf');
+    setDocumentFiles([...documentFiles, ...pdfFiles]);
+  };
+
+  const removeDocument = (index) => {
+    const updatedFiles = [...documentFiles];
+    updatedFiles.splice(index, 1);
+    setDocumentFiles(updatedFiles);
+  };
+
+
   const categories = [
     "Medical Support",
     "Education Support",
@@ -66,7 +84,7 @@ export default function MonetoryForm() {
           </div>
 
           <section className="form-section">
-            <h2 className="section-title">Category</h2>
+            <h2 className="title">Category</h2>
 
             <div className="select-wrapper">
               <div
@@ -133,7 +151,7 @@ export default function MonetoryForm() {
 
           <div className="form-section">
             <div className="mb-4">
-              <h2 className="section-title">Reason</h2>
+              <h2 className="title">Reason for Request</h2>
             </div>
 
             <div className="form-card">
@@ -142,7 +160,7 @@ export default function MonetoryForm() {
           </div>
 
           <section className="form-section">
-            <h2 className="section-title">Target Amount</h2>
+            <h2 className="title">Target Amount</h2>
 
             <div className="form-card">
               <div className="amount-wrapper">
@@ -157,7 +175,7 @@ export default function MonetoryForm() {
           </section>
 
           <section className="form-section">
-            <h2 className="section-title">Deadline</h2>
+            <h2 className="title">Urgent need date (optional)</h2>
 
             <div className="form-card">
               <div className="date-wrapper">
@@ -165,34 +183,14 @@ export default function MonetoryForm() {
                   className="date-input"
                   placeholder="DD/MM/YYYY"
                   type="date"
+                  min={new Date().toISOString().split('T')[0]}
                 />
-                <button className="calendar-button" type="button">
-                  <svg
-                    className="calendar-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <rect
-                      x="3"
-                      y="4"
-                      width="18"
-                      height="18"
-                      rx="2"
-                      ry="2"
-                    ></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                  </svg>
-                  <span className="sr-only">Open calendar</span>
-                </button>
               </div>
             </div>
           </section>
 
           <section className="form-section">
-            <h2 className="section-title">Request Image (optional)</h2>
+            <h2 className="title">Request Image (optional)</h2>
 
             <div className="image-upload-card">
               <button className="choose-file-button">Choose file</button>
@@ -202,12 +200,38 @@ export default function MonetoryForm() {
           <div className="form-section">
             <section className="file-upload-section">
               <div className="file-upload-header">
-                <h1 className="section-title">Proof Documents</h1>
-
-                <button className="choose-files-button">Choose files</button>
+                 <h1 className="title">Proof Documents</h1>
+            <input
+              type="file"
+              id="documentUpload"
+              accept=".pdf"
+              onChange={handleDocumentUpload}
+              multiple
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="documentUpload" className="choose-files-button">
+              Choose files
+            </label>
+            </div>
+            <div className="file-display">
+            {documentFiles.length > 0 ? (
+              <div className="document-list">
+                {documentFiles.map((file, index) => (
+                  <div key={index} className="document-item">
+                    <span>{file.name}</span>
+                    <button 
+                      onClick={() => removeDocument(index)}
+                      className="remove-document-button"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
               </div>
-
-              <div className="file-display">Documents</div>
+            ) : (
+              <span>No documents selected</span>
+            )}
+          </div>
             </section>
 
             <p

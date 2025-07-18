@@ -4,19 +4,18 @@ import FeaturedContent from "../pages/landingPage/FeaturedContent";
 import Reg from "../pages/signIn/Reg";
 import MarketplaceHomepage from "../pages/MarketPlace/MarketplaceHomepage";
 import Users from "../pages/users/users";
-
-
+//import main from "../pages/users/Donee/DoneeDashboard/main";
 
 const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/featured/*" element={<FeaturedContent />} />
+      <Route path="/featured" element={<FeaturedContent />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
-      <Route path="/marketplace/*" element={<MarketplaceHomepage />} />
-      <Route path="/users/*" element={<Users user={user} />} />
+      <Route path="/marketplace" element={<MarketplaceHomepage />} />
+      <Route path="/users/*" element={<Users />} />
     </Routes>
   );
 };
