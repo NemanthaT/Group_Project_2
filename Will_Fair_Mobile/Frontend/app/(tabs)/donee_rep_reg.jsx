@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../assets/styles/donorreg.styles';
@@ -7,6 +7,8 @@ import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
+import BackButton from '../components/backbutton'
+
 
 const DoneeRep = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
@@ -20,6 +22,18 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
   const [proofDocument, setProofDocument] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+   // Add category state
+    const [category, setCategory] = useState('');
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  
+    // Category options
+    const categoryOptions = [
+      'child care',
+      'elder care',
+      'education',
+      'healthcare',
+    ];
 
 // Validation functions
   const validatePhone = (phone) => {
@@ -38,6 +52,12 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
       newErrors.fullName = 'Full name is required';
     } else if (fullName.trim().length < 2) {
       newErrors.fullName = 'Full name must be at least 2 characters';
+    }
+
+    
+    // Category validation
+    if (!category) {
+      newErrors.category = 'Please select a category';
     }
 
     // Phone validation
@@ -61,6 +81,11 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+       // Proof Document validation (REQUIRED)
+    if (!proofDocument) {
+      newErrors.proofDocument = 'Proof document is required';
+    }
+
     // Terms agreement validation
     if (!agreed) {
       newErrors.agreed = 'You must agree to terms and conditions';
@@ -80,6 +105,10 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setProofDocument(result.assets[0]);
+
+        if (errors.proofDocument) {
+        setErrors(prev => ({ ...prev, proofDocument: null }));
+      }
       }
     } catch (error) {
       console.log('Document pick error:', error);
@@ -98,6 +127,7 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
     try {
     const formData = new FormData();
     formData.append('fullName', fullName.trim());
+    formData.append('category', category); // ADD THIS LINE - This was missing!
     formData.append('contactno', contactno.trim());
     formData.append('password', password);
       
@@ -111,8 +141,9 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
     }
 
     console.log('Submitting form data...');
+    console.log('Category being sent:', category); // ADD THIS DEBUG LOG
 
-    const response = await fetch('http://192.168.71.72:5000/api/donee_rep_reg', {
+    const response = await fetch('http://192.168.182.72:5000/api/donee_rep_reg', {
       method: 'POST',
       // REMOVED: Don't set Content-Type for FormData
       body: formData,
@@ -132,24 +163,26 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
     const data = await response.json();
     console.log('Response data:', data);
 
-    if (response.ok) {
-      Alert.alert('Success', 'Representative donee account created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Clear form
-            setFullName('');
-            setContactNo('');
-            setPassword('');
-            setConfirmPassword('');
-            setProofDocument(null);
-            setAgreed(false);
-            setErrors({});
-            // Navigate to login
-            navigation.navigate('donee_login');
-          }
+  if (response.ok) {
+    Alert.alert('Success', 'Representative donee account created successfully!', [
+      {
+        text: 'OK',
+        onPress: () => {
+          // Clear form
+          setFullName('');
+          setCategory('');
+          setShowCategoryDropdown(false);
+          setContactNo('');
+          setPassword('');
+          setConfirmPassword('');
+          setProofDocument(''); 
+          setAgreed(false);
+          setErrors({});
+          // Navigate to login
+          navigation.navigate('donee_login');
         }
-      ]);
+      }
+    ]);
     } else {
       Alert.alert('Error', data.message || 'Registration failed');
     }
@@ -178,6 +211,7 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
         >
           <View style={styles.container}>
             <View style={styles.card}>
+              <BackButton />
 
               {/* Logo */}
               <View style={styles.logoContainer}>
@@ -211,7 +245,8 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                 </TouchableOpacity>
               </View>
 
-{/* Full Name Input */}
+              {/* Full Name Input */}
+              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -227,9 +262,68 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                   }}
                 />
               </View>
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
+
+              
+              {/* Category Dropdown */}
+              {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="list-outline" size={20} color="#999" style={styles.icon} />
+                <TouchableOpacity
+                  style={[styles.input, errors.category && { borderColor: 'red' }]}
+                  onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                >
+                  <Text style={[styles.input, { color: category ? '#000' : '#999' }]}>
+                    {category || 'Select Category'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}>
+                  <Ionicons
+                    name={showCategoryDropdown ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="#999"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
+
+             {/* Category Dropdown Options */}
+          {showCategoryDropdown && (
+            <View style={styles.dropdownContainer}>
+              <ScrollView 
+                style={{ maxHeight: 200 }}
+                showsVerticalScrollIndicator={true}
+                nestedScrollEnabled={true}
+              >
+                {categoryOptions.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dropdownOption,
+                      category === option && styles.selectedOption
+                    ]}
+                    onPress={() => {
+                      setCategory(option);
+                      setShowCategoryDropdown(false);
+                      if (errors.category) {
+                        setErrors(prev => ({ ...prev, category: null }));
+                      }
+                    }}
+                  >
+                    <Text style={[
+                      styles.dropdownOptionText,
+                      category === option && styles.selectedOptionText
+                    ]}>
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
 
               {/* Contact No Input */}
+              {errors.contactno && <Text style={styles.errorText}>{errors.contactno}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="call-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -246,9 +340,9 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                   keyboardType="phone-pad"
                 />
               </View>
-              {errors.contactno && <Text style={styles.errorText}>{errors.contactno}</Text>}
 
               {/* Password Input */}
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -273,9 +367,9 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
               {/* Confirm Password Input */}
+              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -300,24 +394,28 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
 
-              {/* Document Upload (Optional for Individual) */}
+             {/* Document Upload (REQUIRED) */}
+              {errors.proofDocument && <Text style={styles.errorText}>{errors.proofDocument}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="document-outline" size={20} color="#999" style={styles.icon} />
-                <TouchableOpacity onPress={pickDocument} style={styles.input}>
+                <TouchableOpacity 
+                  onPress={pickDocument} 
+                  style={[styles.input, errors.proofDocument && { borderColor: 'red' }]}
+                >
                   <Text
                     style={[
                       styles.documentText,
                       { color: proofDocument ? '#000' : '#999' },
                     ]}
                   >
-                    {proofDocument ? proofDocument.name : 'Upload Proof Document'}
+                    {proofDocument ? proofDocument.name : 'Upload Proof Document *'}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               {/* Terms & Conditions Checkbox */}
+              {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
               <View style={styles.checkboxContainer}>
                 <TouchableOpacity
                   style={[styles.checkbox, errors.agreed && { borderColor: 'red' }]}
@@ -334,7 +432,6 @@ const DoneeRep = ({ visible, onClose, onLoginPress }) => {
                   I agree to <Text style={styles.link}>Terms and Conditions</Text> of Welfair Community
                 </Text>
               </View>
-              {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
 
               {/* Sign Up Button (CHANGED) */}
               <View style={styles.buttonsContainer}>

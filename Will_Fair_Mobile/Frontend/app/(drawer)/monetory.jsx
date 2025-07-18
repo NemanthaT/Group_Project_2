@@ -36,10 +36,10 @@ const Monetary = () => {
   const [category, setCategory] = useState(null);
   const [categories, setCategories] = useState([
     { label: "Education", value: "education" },
-    { label: "Medical", value: "medical" },
-    { label: "Disaster Relief", value: "disaster" },
-    { label: "Elderly Care", value: "elderly" },
-    { label: "Child Support", value: "child" },
+    { label: "Health Care & Medical Aid", value: "health care & medical aid" },
+    { label: "Disaster & Crisis Relief", value: "disaster & crisis relief" },
+    { label: "Basic Needs & Essentials", value: "basic needs & essentials" },
+    { label: "Children & Orphan Care", value: "children & orphan care" },
   ]);
 
   const handleDocumentPick = async () => {

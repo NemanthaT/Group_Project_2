@@ -371,4 +371,51 @@ editButtonNew: {
   color: "#7B61FF", 
   textDecorationLine: "underline",
 },
+// Add these to your donorreg.styles.js file:
+
+// Add these new styles to the existing styles object:
+dropdownText: {
+  flex: 1,
+  fontSize: 16,
+  color: '#000',
+  paddingVertical: 12,
+},
+
+dropdownContainer: {
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 8,
+  marginBottom: 15,
+  maxHeight: 200,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 5,
+},
+
+dropdownOption: {
+  paddingHorizontal: 15,
+  paddingVertical: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#a75050ff',
+},
+
+selectedOption: {
+  backgroundColor: '#7B61FF',
+},
+
+dropdownOptionText: {
+  fontSize: 16,
+  color: '#222',
+},
+
+selectedOptionText: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
 });

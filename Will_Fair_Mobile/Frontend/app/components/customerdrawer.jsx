@@ -54,7 +54,7 @@ export default function CustomDrawer(props) {
 
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={() => navigateTo('/(tabs)/login')}>
+      <TouchableOpacity style={styles.logoutButton} onPress={() => navigateTo('/(tabs)/firstpage')}>
           <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </DrawerContentScrollView>

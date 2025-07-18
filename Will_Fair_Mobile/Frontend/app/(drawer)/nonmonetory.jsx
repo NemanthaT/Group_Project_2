@@ -28,11 +28,11 @@ const NonMonetary = () => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [category, setCategory] = useState(null);
   const [categories, setCategories] = useState([
-    { label: "Education", value: "education" },
-    { label: "Medical", value: "medical" },
-    { label: "Disaster Relief", value: "disaster" },
-    { label: "Elderly Care", value: "elderly" },
-    { label: "Child Support", value: "child" },
+    { label: "Dry rations", value: "dry rations" },
+    { label: "Medical Supplies(First Aid Kits,Mobility aids)", value: "medical supplies" },
+    { label: "Education Materials(Books,Notebooks,Stationery,Digital Devices)", value: "education materials" },
+    { label: "Shelter & Household Essentials(Blankets,Bedsheets,Sleeping Mats)", value: "shelter & household essentials" },
+    { label: "Used Toys", value: "used toys" },
   ]);
 
   const [provinceOpen, setProvinceOpen] = useState(false);

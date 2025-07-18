@@ -116,14 +116,14 @@ app.post('/api/donee_ind_reg', upload.single('proofDocument'), async (req, res) 
     console.log('Request body:', req.body);
     console.log('Uploaded file:', req.file);
     
-    const { fullName, contactno, password } = req.body;
-    
-    if (!fullName || !contactno || !password) {
+    const { fullName, contactno, password, category } = req.body;
+    if (!fullName || !category || !contactno || !password) {
       console.log('Missing required fields');
       return res.status(400).json({ 
         message: 'All fields are required',
         received: { 
           fullName: !!fullName, 
+          category: !!category,
           contactno: !!contactno, 
           password: !!password 
         }
@@ -162,8 +162,8 @@ app.post('/api/donee_ind_reg', upload.single('proofDocument'), async (req, res) 
     console.log('Document path:', documentPath);
     
     const result = await pool.query(
-      'INSERT INTO donees (password_hash, first_name, last_name, phone, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6) RETURNING donee_id',
-      [hashedPassword, firstName, lastName, contactno, 'individual', documentPath]
+      'INSERT INTO donees (password_hash, first_name, last_name, phone, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING donee_id',
+      [hashedPassword, firstName, lastName, contactno, category, 'individual', documentPath]
     );
     
     console.log('Database insert successful:', result.rows[0]);
@@ -190,14 +190,15 @@ app.post('/api/donee_rep_reg', upload.single('proofDocument'), async (req, res) 
     console.log('Request body:', req.body);
     console.log('Uploaded file:', req.file);
     
-    const { fullName, contactno, password } = req.body;
-    
-    if (!fullName || !contactno || !password) {
+    const { fullName, contactno, password, category } = req.body;
+
+    if (!fullName || !category || !contactno || !password) {
       console.log('Missing required fields');
       return res.status(400).json({ 
         message: 'All fields are required',
         received: { 
           fullName: !!fullName, 
+          category: !!category,
           contactno: !!contactno, 
           password: !!password 
         }
@@ -236,8 +237,8 @@ app.post('/api/donee_rep_reg', upload.single('proofDocument'), async (req, res) 
     console.log('Document path:', documentPath);
     
     const result = await pool.query(
-      'INSERT INTO donees (password_hash, first_name, last_name, phone, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6) RETURNING donee_id',
-      [hashedPassword, firstName, lastName, contactno, 'representative', documentPath]
+      'INSERT INTO donees (password_hash, first_name, last_name, phone, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING donee_id',
+      [hashedPassword, firstName, lastName, contactno, category, 'representative', documentPath]
     );
     
     console.log('Database insert successful:', result.rows[0]);

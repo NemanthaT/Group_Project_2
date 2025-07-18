@@ -6,6 +6,7 @@ import { styles } from '../../assets/styles/donorreg.styles';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import BackButton from '../components/backbutton'
 
 const Donor = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
@@ -78,7 +79,7 @@ const handleSubmit = async () => {
 
   setLoading(true);
   try {
-    const response = await fetch('http://192.168.71.72:5000/api/donor_reg', {
+    const response = await fetch('http://192.168.182.72:5000/api/donor_reg', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -136,7 +137,7 @@ const handleSubmit = async () => {
         >
           <View style={styles.container}>
             <View style={styles.card}>
-
+              <BackButton />
               {/* Logo */}
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>

@@ -7,6 +7,8 @@ import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import BackButton from '../components/backbutton'
+
 
 const Login = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
@@ -53,7 +55,7 @@ const handleLogin = async () => {
   try {
     console.log('Attempting login...');
     
-    const response = await fetch('http://192.168.71.72:5000/api/login', {
+    const response = await fetch('http://192.168.182.72:5000/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -111,6 +113,7 @@ const handleLogin = async () => {
       animationType="slide"
       onRequestClose={onClose}
     >
+      
       <StatusBar barStyle="light-content" backgroundColor="rgba(0,0,0,0.5)" />
 
       <View style={styles.overlay}>
@@ -119,8 +122,9 @@ const handleLogin = async () => {
           style={styles.background}
         >
           <View style={styles.container}>
+            
             <View style={styles.card}>
-
+            <BackButton />
               {/* Logo */}
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>
@@ -210,35 +214,18 @@ const handleLogin = async () => {
               {/* Signup Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('signup')} 
+                onPress={() => navigation.navigate('donor_reg')} 
               >
                 <Text style={styles.loginText}>
-                  Don&#39;t have an account? - Donor{' '}
+                  Don&#39;t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => router.push('signup')}
+                    onPress={() => router.push('donor_reg')}
                   >
                     Sign Up
                   </Text>
                 </Text>
               </TouchableOpacity>
-
-               {/* Signup Link */}
-              <TouchableOpacity
-                style={styles.loginContainer}
-                onPress={() => navigation.navigate('signup')} 
-              >
-                <Text style={styles.loginText}>
-                  Don&#39;t have an account? - Donee{' '}
-                  <Text
-                    style={styles.loginLink}
-                    onPress={() => router.push('donee_login')}
-                  >
-                    Sign Up
-                  </Text>
-                </Text>
-              </TouchableOpacity>
-
             </View>
           </View>
         </LinearGradient>

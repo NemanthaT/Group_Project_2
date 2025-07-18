@@ -7,6 +7,8 @@ import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import BackButton from '../components/backbutton'
+
 
 const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
@@ -51,7 +53,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Attempting donee login...');
       
       // FIXED: Use donee_login endpoint and send contactno
-      const response = await fetch('http://192.168.71.72:5000/api/donee_login', {
+      const response = await fetch('http://192.168.182.72:5000/api/donee_login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,6 +118,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
         >
           <View style={styles.container}>
             <View style={styles.card}>
+              <BackButton />
 
               {/* Logo */}
               <View style={styles.logoContainer}>
@@ -205,35 +208,18 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
 {/* Signup Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('signup')} 
+                onPress={() => navigation.navigate('donee_ind_reg')} 
               >
                 <Text style={styles.loginText}>
-                  Don&#39;t have an account? - Donor{' '}
+                  Don&#39;t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => router.push('signup')}
+                    onPress={() => router.push('donee_ind_reg')}
                   >
                     Sign Up
                   </Text>
                 </Text>
               </TouchableOpacity>
-
-               {/* Signup Link */}
-              <TouchableOpacity
-                style={styles.loginContainer}
-                onPress={() => navigation.navigate('signup')} 
-              >
-                <Text style={styles.loginText}>
-                  Don&#39;t have an account? - Donee{' '}
-                  <Text
-                    style={styles.loginLink}
-                    onPress={() => router.push('signup')}
-                  >
-                    Sign Up
-                  </Text>
-                </Text>
-              </TouchableOpacity>
-
             </View>
           </View>
         </LinearGradient>
