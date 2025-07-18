@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function MonetoryForm() {
   const [activeTab, setActiveTab] = useState("monetary");
-
+  
   // Define the support options data for easy maintenance
   const supportOptions = [
     { id: "monetary", label: "Monetary Support" },
@@ -18,7 +18,10 @@ export default function MonetoryForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  
+  // Non-monetary form fields
+  const [itemName, setItemName] = useState("");
+  const [itemQuantity, setItemQuantity] = useState("");
+
 
   const handleDocumentUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -33,13 +36,23 @@ export default function MonetoryForm() {
     setDocumentFiles(updatedFiles);
   };
 
-  const categories = [
+  const monetaryCategories = [
     "Education Support",
     "Healthcare and Medical Aid",
     "Basic Needs and Essentials",
     "Disaster and Crisis Relief",
     "Children and Orphan Care",
   ];
+
+  const nonMonetaryCategories = [
+    "Dry Rations",
+    "Books and Education Materials",
+    "Medical Supplies",
+    "Shelter and Household Essentials",
+    "Used Toys",
+  ];
+
+  const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -174,35 +187,81 @@ export default function MonetoryForm() {
               </div>
             </div>
 
-            <section className="form-section">
-              <h2 className="title">Target Amount</h2>
+            {activeTab === "monetary" ? (
+              <>
+                <section className="form-section">
+                  <h2 className="title">Target Amount</h2>
 
-              <div className="form-card">
-                <div className="amount-wrapper">
-                  <span className="currency-symbol">Rs.</span>
-                  <input
-                    className="form-input amount-input"
-                    aria-label="Target amount in Rupees"
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-            </section>
+                  <div className="form-card">
+                    <div className="amount-wrapper">
+                      <span className="currency-symbol">Rs.</span>
+                      <input
+                        className="form-input amount-input"
+                        aria-label="Target amount in Rupees"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                </section>
 
-            <section className="form-section">
-              <h2 className="title">Urgent need date (optional)</h2>
+                <section className="form-section">
+                  <h2 className="title">Urgent need date (optional)</h2>
 
-              <div className="form-card">
-                <div className="date-wrapper">
-                  <input
-                    className="date-input"
-                    placeholder="DD/MM/YYYY"
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-              </div>
-            </section>
+                  <div className="form-card">
+                    <div className="date-wrapper">
+                      <input
+                        className="date-input"
+                        placeholder="DD/MM/YYYY"
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                  </div>
+                </section>
+              </>
+            ) : (
+              <>
+                <section className="form-section">
+                  <h2 className="title">Item Name</h2>
+                  <div className="form-card">
+                    <input
+                      className="form-input"
+                      placeholder="Enter item name"
+                      value={itemName}
+                      onChange={(e) => setItemName(e.target.value)}
+                    />
+                  </div>
+                </section>
+
+                <section className="form-section">
+                  <h2 className="title">Item Quantity</h2>
+                  <div className="form-card">
+                    <input
+                      className="form-input"
+                      placeholder="Enter quantity needed"
+                      type="number"
+                      min="1"
+                      value={itemQuantity}
+                      onChange={(e) => setItemQuantity(e.target.value)}
+                    />
+                  </div>
+                </section>
+
+                <section className="form-section">
+                  <h2 className="title">Dropoff Date</h2>
+                  <div className="form-card">
+                    <div className="date-wrapper">
+                      <input
+                        className="date-input"
+                        placeholder="DD/MM/YYYY"
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                  </div>
+                </section>
+              </>
+            )}
 
             <section className="form-section">
               <h2 className="title">Request Image (optional)</h2>
@@ -267,7 +326,9 @@ export default function MonetoryForm() {
 
             {/* Create Request Button */}
             <div className="create-request-wrapper">
-              <button className="create-request-button" type="submit">Create Request</button>
+              <button className="create-request-button" type="submit">
+                Create Request
+              </button>
             </div>
           </div>
         </div>
