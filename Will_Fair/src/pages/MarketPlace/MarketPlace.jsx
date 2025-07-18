@@ -10,7 +10,6 @@ function MarketPlace () {
         </p>
       </div>
     </>
-  );
-}
+  );}
 
 export default MarketPlace;

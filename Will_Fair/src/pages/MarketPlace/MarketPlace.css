@@ -290,7 +290,7 @@ img {
 
 /* Artisan Stories Section */
 .artisan-stories-section {
-  background-color: #9333ea;
+  background: linear-gradient(135deg, #9333ea 0%, #0d429b 100%);
   padding: 60px 0;
 }
 
