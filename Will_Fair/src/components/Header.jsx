@@ -1,4 +1,5 @@
 import "./Header.css";
+import { UserCircle } from 'lucide-react';
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
@@ -23,7 +24,7 @@ function Header({ user }) {
   const hideLoginButtons = (user) => {
     const loginButtons = document.querySelectorAll(".sign-in-btn");
     loginButtons.forEach(
-      (button) => (button.style.display = user ? "none" : "block")
+      (button) => (button.style.display = user ? "none" : "flex")
     );
   };
 
@@ -77,14 +78,16 @@ function Header({ user }) {
           <div className="profile-container" style={{ display: user ? "block" : "none" }}>
             {user ? (
               <div className="user-info">
+                {/*
                 <span className="user-name">{user.name}</span>
+                */}
+                <UserCircle size={30} color="#555" />
                 <button className="logout-btn" onClick={handleLogout}>
                   Logout
                 </button>
               </div>
             ) : (
               <div className="guest-info">
-                <span className="guest-name">Guest</span>
               </div>
             )}
           </div>
