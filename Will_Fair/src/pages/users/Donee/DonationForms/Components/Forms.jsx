@@ -30,11 +30,11 @@ export default function MonetoryForm() {
 
 
   const categories = [
-    "Medical Support",
     "Education Support",
-    "Emergency Relief",
-    "Community Development",
-    "Other",
+    "Healthcare and Medical Aid",
+    "Basic Needs and Essentials",
+    "Disaster and Crisis Relief",
+    "Children and Orphan Care",
   ];
   return (
     <div className="flex flex-col w-full">
