@@ -28,4 +28,19 @@ async function getDonationsByDoneeId(doneeId) {
   }
 }
 
-export { createMonetoryDonation, getDonationsByDoneeId };
+async function getDonationCategories() {
+  try {
+    const results = await pool.query(
+      `SELECT DISTINCT category FROM donation_categories`
+    );
+    return {
+      success: true,
+      categories: results.rows.map((row) => row.category),
+    };
+  } catch (err) {
+    console.error("Database error during getDonationCategories():", err);
+    return { success: false, message: "Database error" };
+  }
+}
+
+export { createMonetoryDonation, getDonationsByDoneeId , getDonationCategories };
