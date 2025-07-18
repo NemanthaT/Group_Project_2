@@ -107,7 +107,7 @@ function DoneeDonationsView() {
           </p>
         </div>
       </section>
-      <main className="main-content">
+      <main className="donationView-content">
         <div className="container">
           {/* Filter Section */}
           <div className="filter-section">
