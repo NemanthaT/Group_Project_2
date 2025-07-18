@@ -3,10 +3,10 @@ import "./SellerDashboard.css";
 
 const navItems = [
   { name: 'Dashboard', icon: '📊', path: 'dashboard' },
-  { name: 'Products', icon: '📦', path: 'products' },
+  { name: 'Inventory', icon: '📦', path: 'inventory' },
   { name: 'Orders', icon: '📋', path: 'orders' },
   { name: 'Categories', icon: '📂', path: 'categories' },
-  { name: 'Customers', icon: '👥', path: 'customers' },
+  { name: 'Reviews', icon: '👥', path: 'reviews' },
   { name: 'Marketing', icon: '📢', path: 'marketing' },
   { name: 'Reports', icon: '📈', path: 'reports' },
   { name: 'Settings', icon: '⚙️', path: 'settings' }
@@ -40,11 +40,12 @@ function SellerDashboardLayout() {
             </NavLink>
           ))}
         </nav>
+        
       </div>
 
       {/* Main content */}
-      <div className="main-content">
-        <div className="header">
+      <div className="main-content-seller">
+        <div className="header-dashboard">
           <button className="mobile-menu-btn" onClick={() => {
             document.querySelector('.sidebar').classList.toggle('sidebar-open');
           }}>

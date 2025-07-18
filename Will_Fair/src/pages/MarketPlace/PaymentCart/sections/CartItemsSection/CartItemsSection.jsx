@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export const CartItemsSection = () => {
+const CartItemsSection = () => {
   const [cartItems, setCartItems] = useState([
     { 
       id: 1, 
@@ -209,3 +209,5 @@ export const CartItemsSection = () => {
     </div>
   );
 };
+
+export default CartItemsSection;

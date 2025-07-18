@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import SellerDashboardMain from "./SellerDashboardMain"; 
 import SellerDashboardLayout from "./SellerDashboardLayout"; 
 import Orders from "./Orders/Orders";
+import Inventory from "./Inventory/Inventory";
+import Reviews from "./Reviews/Reviews";
 // Add other tab components as needed
 
 import "./SellerDashboard.css";
@@ -14,6 +16,8 @@ function SellerDashboard() {
           <Route index element={<SellerDashboardMain />} /> 
           <Route path="dashboard" element={<SellerDashboardMain />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="reviews" element={<Reviews />} />
         </Route>
       </Routes>
     </div>

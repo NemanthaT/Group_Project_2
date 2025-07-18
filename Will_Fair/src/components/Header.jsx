@@ -34,6 +34,9 @@ function Header() {
             <a href="/authManager">Dashboard</a>
           </li>
           <li>
+            <a href="/sellerDashboard">S Dashboard</a>
+          </li>
+          <li>
             <a href="/featured">Volunteer</a>
           </li>
           <li>
