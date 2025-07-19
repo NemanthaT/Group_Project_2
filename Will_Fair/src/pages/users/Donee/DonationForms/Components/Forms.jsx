@@ -73,61 +73,41 @@ export default function MonetaryForm( {user} ) {
   const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    // Gather form data based on activeTab
-    console.log("DoneeID", user.id);
-    let formData = new FormData();
-    console.log("User ID:", user.id);
-    formData.append("doneeId", user.id);
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    formData.append("category", selectedCategory);
+  let formData = new FormData();
+  formData.append("doneeId", user.id);
+  formData.append("category", selectedCategory);
+  formData.append("requestName", e.target.querySelector('input[placeholder="Enter request name"]').value);
 
-    // Get values from inputs (you may want to use state for all fields for better control)
-    const requestName = e.target.querySelector('input[placeholder="Enter request name"]')?.value || "";
-    formData.append("requestName", requestName);
+  if (activeTab === "monetary") {
+    formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
+    formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
+  } else {
+    formData.append("itemName", itemName);
+    formData.append("itemQuantity", itemQuantity);
+    formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
+  }
 
-    if (activeTab === "monetary") {
-      const targetAmount = e.target.querySelector('input[placeholder="0"]')?.value || "";
-      const urgentDate = e.target.querySelector('input[type="date"]')?.value || "";
-      formData.append("targetAmount", targetAmount);
-      formData.append("urgentDate", urgentDate);
-    } else {
-      formData.append("itemName", itemName);
-      formData.append("itemQuantity", itemQuantity);
-      const dropoffDate = e.target.querySelector('input[type="date"]')?.value || "";
-      formData.append("dropoffDate", dropoffDate);
-    }
+  if (imageFile) formData.append("image", imageFile);
+  documentFiles.forEach((file) => formData.append("documents", file));
 
-    // Handle image file (if implemented)
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
-
-    // Handle document files
-    documentFiles.forEach((file, idx) => {
-      formData.append("documents", file);
+  try {
+    const url = activeTab === "monetary" 
+      ? "http://localhost:5000/donations/createMonDonation" 
+      : "http://localhost:5000/donations/createNonMonDonation";
+    await axios.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-
-    try {
-      const url =
-      activeTab === "monetary"
-        ? "http://localhost:5000/donations/createMonDonation"
-        : "http://localhost:5000/donations/createNonMonDonation";
-      await axios.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      });
-      // Optionally reset form or show success
-      setLoading(false);
-      alert("Request submitted successfully!");
-    } catch (err) {
-      setError("Failed to submit request. Please try again.");
-      setLoading(false);
-    }
-  };
+    alert("Request submitted successfully!");
+  } catch (err) {
+    setError("Failed to submit request. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>

@@ -1,4 +1,3 @@
-// donationRoute.js
 import express from "express";
 import { 
   createMonDonation,
@@ -7,17 +6,27 @@ import {
   getMonetaryCategories,
   getNonMonetaryCategories
 } from "../controllers/donationController.js";
-//import authMiddleware from "../middleware/authMiddleware.js";
+import multer from "multer";
 
 const router = express.Router();
+const upload = multer({ dest: "uploads/" });
 
 // Protected routes
-router.post('/createMonDonation', createMonDonation);
-router.post('/createNonMonDonation', createNonMonDonation);
+router.post('/createMonDonation', upload.fields([{
+  name: 'image', maxCount: 1
+}, {
+  name: 'documents', maxCount: 5
+}]), createMonDonation);
+
+router.post('/createNonMonDonation', upload.fields([{
+  name: 'image', maxCount: 1
+}, {
+  name: 'documents', maxCount: 5
+}]), createNonMonDonation);
 
 router.get('/donee/:doneeId', getDoneeDonations);
 
-// Public route
+// Public routes
 router.get('/monetaryCategories', getMonetaryCategories);
 router.get('/nonMonetaryCategories', getNonMonetaryCategories);
 
