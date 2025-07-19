@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function MonetaryForm() {
+export default function MonetaryForm( {user} ) {
   const [activeTab, setActiveTab] = useState("monetary");
   
   // Define the support options data for easy maintenance
@@ -38,31 +38,37 @@ export default function MonetaryForm() {
   };
 
   const [monetaryCategories, setMonetaryCategories] = useState([]);
+  const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
 
   React.useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchMonetaryCategories = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/donations/categories"
+          "http://localhost:5000/donations/monetaryCategories"
         );
         setMonetaryCategories(response.data.categories || []);
-        console.log("Fetched categories:", response.data.categories);
       } catch (err) {
         console.error("Error fetching categories:", err);
         setMonetaryCategories([]);
       }
     };
-    fetchCategories();
+    fetchMonetaryCategories();
   }, []);
 
-
-  const nonMonetaryCategories = [
-    "Dry Rations",
-    "Books and Education Materials",
-    "Medical Supplies",
-    "Shelter and Household Essentials",
-    "Used Toys",
-  ];
+  React.useEffect(() => {
+    const fetchNonMonetaryCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/donations/nonMonetaryCategories"
+        );
+        setNonMonetaryCategories(response.data.categories || []);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setNonMonetaryCategories([]);
+      }
+    };
+    fetchNonMonetaryCategories();
+  }, []);
 
   const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
@@ -70,6 +76,57 @@ export default function MonetaryForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    // Gather form data based on activeTab
+    console.log("DoneeID", user.id);
+    let formData = new FormData();
+    console.log("User ID:", user.id);
+    formData.append("doneeId", user.id);
+
+    formData.append("category", selectedCategory);
+
+    // Get values from inputs (you may want to use state for all fields for better control)
+    const requestName = e.target.querySelector('input[placeholder="Enter request name"]')?.value || "";
+    formData.append("requestName", requestName);
+
+    if (activeTab === "monetary") {
+      const targetAmount = e.target.querySelector('input[placeholder="0"]')?.value || "";
+      const urgentDate = e.target.querySelector('input[type="date"]')?.value || "";
+      formData.append("targetAmount", targetAmount);
+      formData.append("urgentDate", urgentDate);
+    } else {
+      formData.append("itemName", itemName);
+      formData.append("itemQuantity", itemQuantity);
+      const dropoffDate = e.target.querySelector('input[type="date"]')?.value || "";
+      formData.append("dropoffDate", dropoffDate);
+    }
+
+    // Handle image file (if implemented)
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    // Handle document files
+    documentFiles.forEach((file, idx) => {
+      formData.append("documents", file);
+    });
+
+    try {
+      const url =
+      activeTab === "monetary"
+        ? "http://localhost:5000/donations/createMonDonation"
+        : "http://localhost:5000/donations/createNonMonDonation";
+      await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      });
+      // Optionally reset form or show success
+      setLoading(false);
+      alert("Request submitted successfully!");
+    } catch (err) {
+      setError("Failed to submit request. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (

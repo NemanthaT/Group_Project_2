@@ -1,24 +1,27 @@
 // donationController.js
 import {
   createMonetoryDonation,
+  createNonMonetoryDonation,
   getDonationsByDoneeId,
-  getDonationCategories
+  getMonetaryDonationCategories,
+  getNonMonetaryDonationCategories
 } from "../models/donationModel.js";
 
-export const createDonation = async (req, res) => {
-  const { doneeId, amount, status } = req.body;
+// Controller for creating a monetary donation
+export const createMonDonation = async (req, res) => {
+  const { doneeId, targetAmount, status } = req.body;
 
-  if (!doneeId || !amount) {
-    return res.status(400).json({ 
+  if (!doneeId || !targetAmount) {
+    return res.status(400).json({
       success: false,
-      error: "Donee ID and amount are required" 
+      error: "Donee ID and target amount are required"
     });
   }
 
   try {
     const result = await createMonetoryDonation({
       doneeId,
-      amount,
+      targetAmount,
       status: status || 'pending'
     });
 
@@ -43,6 +46,47 @@ export const createDonation = async (req, res) => {
   }
 };
 
+// Controller for creating a non-monetary donation
+export const createNonMonDonation = async (req, res) => {
+  const { doneeId, category, status } = req.body;
+
+  if (!doneeId || !category) {
+    return res.status(400).json({
+      success: false,
+      error: "Donee ID and category are required"
+    });
+  }
+
+  try {
+    const result = await createNonMonetoryDonation({
+      doneeId,
+      category,
+      status: status || 'pending'
+    });
+
+    if (result.success) {
+      res.status(201).json({
+        success: true,
+        message: "Non-Monetary Donation created successfully",
+        donationId: result.donationId
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.message
+      });
+    }
+  } catch (err) {
+    console.error("Error in createNonMonDonation:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error during non-monetary donation creation"
+    });
+  }
+};
+
+
+// Controller for getting donations by donee ID
 export const getDoneeDonations = async (req, res) => {
   const { doneeId } = req.params;
 
@@ -76,9 +120,10 @@ export const getDoneeDonations = async (req, res) => {
   }
 };
 
-export const getCategories = async (req, res) => {
+// Controller for getting monetary donation categories
+export const getMonetaryCategories = async (req, res) => {
   try {
-    const result = await getDonationCategories();
+    const result = await getMonetaryDonationCategories();
 
     if (result.success) {
       res.status(200).json({
@@ -96,6 +141,31 @@ export const getCategories = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Server error while fetching categories"
+    });
+  }
+};
+
+// Controller for getting non-monetary donation categories
+export const getNonMonetaryCategories = async (req, res) => {
+  try {
+    const result = await getNonMonetaryDonationCategories();
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        categories: result.categories
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.message
+      });
+    }
+  } catch (err) {
+    console.error("Error in getNonMonetaryCategories:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching non-monetary categories"
     });
   }
 };

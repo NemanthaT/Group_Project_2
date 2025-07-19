@@ -1,19 +1,24 @@
 // donationRoute.js
 import express from "express";
 import { 
-  createDonation, 
+  createMonDonation,
+  createNonMonDonation, 
   getDoneeDonations,
-  getCategories
+  getMonetaryCategories,
+  getNonMonetaryCategories
 } from "../controllers/donationController.js";
 //import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Protected routes
-router.post('/', createDonation);
+router.post('/createMonDonation', createMonDonation);
+router.post('/createNonMonDonation', createNonMonDonation);
+
 router.get('/donee/:doneeId', getDoneeDonations);
 
 // Public route
-router.get('/categories', getCategories);
+router.get('/monetaryCategories', getMonetaryCategories);
+router.get('/nonMonetaryCategories', getNonMonetaryCategories);
 
 export default router;

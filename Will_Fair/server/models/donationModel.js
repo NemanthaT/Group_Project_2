@@ -3,14 +3,29 @@ import pool from "../db.js";
 async function createMonetoryDonation(donationData) {
   try {
     const result = await pool.query(
-      `INSERT INTO donations (donee_id, amount, status)
+      `INSERT INTO donation_requests (donee_id, quantity_needed, status)
        VALUES ($1, $2, $3)
-       RETURNING donation_id`,
-      [donationData.doneeId, donationData.amount, donationData.status]
+       RETURNING request_id`,
+      [donationData.doneeId, donationData.targetAmount, donationData.status]
     );
-    return { success: true, donationId: result.rows[0].donation_id };
+    return { success: true, donationId: result.rows[0].request_id };
   } catch (err) {
     console.error("Database error during createDonation():", err);
+    return { success: false, message: "Database error" };
+  }
+}
+
+async function createNonMonetoryDonation(donationData) {
+  try {
+    const result = await pool.query(
+      `INSERT INTO donation_requests (donee_id, category, status)
+       VALUES ($1, $2, $3)
+       RETURNING request_id`,
+      [donationData.doneeId, donationData.category, donationData.status]
+    );
+    return { success: true, donationId: result.rows[0].request_id };
+  } catch (err) {
+    console.error("Database error during createNonMonetoryDonation():", err);
     return { success: false, message: "Database error" };
   }
 }
@@ -18,7 +33,7 @@ async function createMonetoryDonation(donationData) {
 async function getDonationsByDoneeId(doneeId) {
   try {
     const result = await pool.query(
-      `SELECT * FROM donations WHERE donee_id = $1`,
+      `SELECT * FROM donation_requests WHERE donee_id = $1`,
       [doneeId]
     );
     return { success: true, donations: result.rows };
@@ -28,12 +43,11 @@ async function getDonationsByDoneeId(doneeId) {
   }
 }
 
-async function getDonationCategories() {
+async function getMonetaryDonationCategories() {
   try {
     const results = await pool.query(
-      `SELECT category_name FROM donation_categories`
+      `SELECT category_name FROM donation_categories WHERE is_monetary = true`
     );
-    console.log("Fetched categories:", results.rows);
     return {
       success: true,
       categories: results.rows.map((row) => row.category_name)
@@ -44,4 +58,19 @@ async function getDonationCategories() {
   }
 }
 
-export { createMonetoryDonation, getDonationsByDoneeId , getDonationCategories };
+async function getNonMonetaryDonationCategories() {
+  try {
+    const results = await pool.query(
+      `SELECT category_name FROM donation_categories WHERE is_monetary = false`
+    );
+    return {
+      success: true,
+      categories: results.rows.map((row) => row.category_name)
+    };
+  } catch (err) {
+    console.error("Database error during getNonMonetaryDonationCategories():", err);
+    return { success: false, message: "Database error" };
+  }
+}
+
+export { createMonetoryDonation, createNonMonetoryDonation, getDonationsByDoneeId , getMonetaryDonationCategories, getNonMonetaryDonationCategories };
