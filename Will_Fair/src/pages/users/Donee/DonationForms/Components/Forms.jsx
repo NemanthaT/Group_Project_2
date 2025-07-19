@@ -40,6 +40,7 @@ export default function MonetaryForm( {user} ) {
   const [monetaryCategories, setMonetaryCategories] = useState([]);
   const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
 
+  //get the categeories from the backend
   React.useEffect(() => {
     const fetchMonetaryCategories = async () => {
       try {
@@ -72,6 +73,7 @@ export default function MonetaryForm( {user} ) {
 
   const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
+  //subitting the form
   const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
