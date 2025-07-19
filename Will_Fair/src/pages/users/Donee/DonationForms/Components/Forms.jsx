@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-export default function MonetoryForm() {
+export default function MonetaryForm( {user} ) {
   const [activeTab, setActiveTab] = useState("monetary");
   
   // Define the support options data for easy maintenance
@@ -36,29 +37,79 @@ export default function MonetoryForm() {
     setDocumentFiles(updatedFiles);
   };
 
-  const monetaryCategories = [
-    "Education Support",
-    "Healthcare and Medical Aid",
-    "Basic Needs and Essentials",
-    "Disaster and Crisis Relief",
-    "Children and Orphan Care",
-  ];
+  const [monetaryCategories, setMonetaryCategories] = useState([]);
+  const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
 
-  const nonMonetaryCategories = [
-    "Dry Rations",
-    "Books and Education Materials",
-    "Medical Supplies",
-    "Shelter and Household Essentials",
-    "Used Toys",
-  ];
+  //get the categeories from the backend
+  React.useEffect(() => {
+    const fetchMonetaryCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/donations/monetaryCategories"
+        );
+        setMonetaryCategories(response.data.categories || []);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setMonetaryCategories([]);
+      }
+    };
+    fetchMonetaryCategories();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchNonMonetaryCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/donations/nonMonetaryCategories"
+        );
+        setNonMonetaryCategories(response.data.categories || []);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setNonMonetaryCategories([]);
+      }
+    };
+    fetchNonMonetaryCategories();
+  }, []);
 
   const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
+  //subitting the form
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-  };
+  e.preventDefault();
+  setLoading(true);
+  setError("");
+
+  let formData = new FormData();
+  formData.append("doneeId", user.id);
+  formData.append("category", selectedCategory);
+  formData.append("requestName", e.target.querySelector('input[placeholder="Enter request name"]').value);
+
+  if (activeTab === "monetary") {
+    formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
+    formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
+  } else {
+    formData.append("itemName", itemName);
+    formData.append("itemQuantity", itemQuantity);
+    formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
+  }
+
+  if (imageFile) formData.append("image", imageFile);
+  documentFiles.forEach((file) => formData.append("documents", file));
+
+  try {
+    const url = activeTab === "monetary" 
+      ? "http://localhost:5000/donations/createMonDonation" 
+      : "http://localhost:5000/donations/createNonMonDonation";
+    await axios.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    alert("Request submitted successfully!");
+  } catch (err) {
+    setError("Failed to submit request. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
