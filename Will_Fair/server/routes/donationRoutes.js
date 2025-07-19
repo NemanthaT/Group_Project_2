@@ -5,13 +5,13 @@ import {
   getDoneeDonations,
   getCategories
 } from "../controllers/donationController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+//import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Protected routes
-router.post('/', authMiddleware, createDonation);
-router.get('/donee/:doneeId', authMiddleware, getDoneeDonations);
+router.post('/', createDonation);
+router.get('/donee/:doneeId', getDoneeDonations);
 
 // Public route
 router.get('/categories', getCategories);

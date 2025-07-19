@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-export default function MonetoryForm() {
+export default function MonetaryForm() {
   const [activeTab, setActiveTab] = useState("monetary");
   
   // Define the support options data for easy maintenance
@@ -36,13 +37,24 @@ export default function MonetoryForm() {
     setDocumentFiles(updatedFiles);
   };
 
-  const monetaryCategories = [
-    "Education Support",
-    "Healthcare and Medical Aid",
-    "Basic Needs and Essentials",
-    "Disaster and Crisis Relief",
-    "Children and Orphan Care",
-  ];
+  const [monetaryCategories, setMonetaryCategories] = useState([]);
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/donations/categories"
+        );
+        setMonetaryCategories(response.data.categories || []);
+        console.log("Fetched categories:", response.data.categories);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setMonetaryCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
+
 
   const nonMonetaryCategories = [
     "Dry Rations",

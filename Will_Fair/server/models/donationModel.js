@@ -31,11 +31,12 @@ async function getDonationsByDoneeId(doneeId) {
 async function getDonationCategories() {
   try {
     const results = await pool.query(
-      `SELECT DISTINCT category FROM donation_categories`
+      `SELECT category_name FROM donation_categories`
     );
+    console.log("Fetched categories:", results.rows);
     return {
       success: true,
-      categories: results.rows.map((row) => row.category),
+      categories: results.rows.map((row) => row.category_name)
     };
   } catch (err) {
     console.error("Database error during getDonationCategories():", err);
