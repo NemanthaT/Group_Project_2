@@ -51,9 +51,10 @@ function IndividualProductsView() {
         <div className="individual-product-details">
           <h1 className="individual-product-title">{product.title}</h1>
 
-          <p className="individual-product-description">
-            This is a beautifully handcrafted item. Description and details can go here based on backend data.
-          </p>
+          <p className="individual-product-description">{product.description}</p>
+          <p className="individual-product-type"><strong>Type:</strong> {product.type}</p>
+          <p className="individual-product-stock"><strong>In Stock:</strong> {product.quantity_available}</p>
+
 
           <div className="individual-product-meta">
             <div className="price">{product.price}</div>

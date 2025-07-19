@@ -936,4 +936,16 @@ img {
 .product-detail-heading span {
   color: #fff;
 }
+.product-type {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.individual-product-type,
+.individual-product-stock {
+  margin-top: 6px;
+  font-size: 1rem;
+  color: #444;
+}
 
