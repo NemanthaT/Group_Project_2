@@ -1,6 +1,6 @@
 import React from "react";
 
-export const CategoryBrowseSection = () => {
+export const CategoryBrowseSection = ({ onCategorySelect = () => { } }) => {
   const categories = [
     {
       name: "Textiles",
@@ -29,7 +29,13 @@ export const CategoryBrowseSection = () => {
 
         <div className="category-grid">
           {categories.map((category, index) => (
-            <div key={index} className="category-card">
+            <div
+              key={index}
+              className="category-card"
+              onClick={() => onCategorySelect(category.name)}
+              role="button"
+              tabIndex={0}
+            >
               <img
                 className="category-image"
                 alt={category.name}
@@ -43,6 +49,7 @@ export const CategoryBrowseSection = () => {
           ))}
         </div>
       </div>
+      
     </section>
   );
 };

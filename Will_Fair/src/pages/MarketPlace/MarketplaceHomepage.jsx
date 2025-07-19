@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategoryBrowseSection } from "./sections/CategoryBrowseSection";
 import { ProductGridSection } from "./sections/ProductGridSection";
@@ -8,93 +8,103 @@ import "./MarketPlace.css";
 function MarketplaceHomepage() {
   const navigate = useNavigate();
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   const recentProducts = [
-  {
-    id: 1,
-    title: "Handcrafted Ceramic Jewelry Set",
-    description: "Beautifully crafted ceramic jewelry set with intricate patterns and vibrant colors.",
-    price: "2000",
-    quantity_available: 5,
-    type: "Jewelry",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 2,
-    title: "Traditional Woven Basket",
-    description: "A sturdy hand-woven basket made from natural fibers, ideal for home storage or decor.",
-    price: "1500",
-    quantity_available: 8,
-    type: "Handicraft",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 3,
-    title: "Embroidered Table Runner",
-    description: "Elegant table runner with hand-embroidered floral designs to enhance your dining table.",
-    price: "2500",
-    quantity_available: 3,
-    type: "Textiles",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 4,
-    title: "Wooden Carved Decorative Bowl",
-    description: "A beautifully carved wooden bowl perfect as a centerpiece or for serving dry fruits.",
-    price: "1800",
-    quantity_available: 10,
-    type: "Home Decor",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 5,
-    title: "Hand-painted Silk Scarf",
-    description: "Luxurious silk scarf with hand-painted traditional motifs and vibrant hues.",
-    price: "3000",
-    quantity_available: 6,
-    type: "Textiles",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 6,
-    title: "Beaded Bracelet Collection",
-    description: "A set of colorful beaded bracelets that blend traditional and modern designs.",
-    price: "1200",
-    quantity_available: 12,
-    type: "Jewelry",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 7,
-    title: "Macrame Wall Hanging",
-    description: "Handmade macrame wall hanging, adding a boho-chic touch to any living space.",
-    price: "2200",
-    quantity_available: 4,
-    type: "Home Decor",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-  {
-    id: 8,
-    title: "Clay Pottery Vase Set",
-    description: "Set of handcrafted clay pottery vases with a rustic finish, perfect for flowers or decor.",
-    price: "2500",
-    quantity_available: 7,
-    type: "Handicraft",
-    image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
-    heartIcon: "/heart-svgrepo-com--1--1.svg",
-  },
-];
+    {
+      id: 1,
+      title: "Handcrafted Ceramic Jewelry Set",
+      description: "Beautifully crafted ceramic jewelry set with intricate patterns and vibrant colors.",
+      price: "2000",
+      quantity_available: 5,
+      type: "Jewelry",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 2,
+      title: "Traditional Woven Basket",
+      description: "A sturdy hand-woven basket made from natural fibers, ideal for home storage or decor.",
+      price: "1500",
+      quantity_available: 8,
+      type: "Handicraft",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 3,
+      title: "Embroidered Table Runner",
+      description: "Elegant table runner with hand-embroidered floral designs to enhance your dining table.",
+      price: "2500",
+      quantity_available: 3,
+      type: "Textiles",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 4,
+      title: "Wooden Carved Decorative Bowl",
+      description: "A beautifully carved wooden bowl perfect as a centerpiece or for serving dry fruits.",
+      price: "1800",
+      quantity_available: 10,
+      type: "Home Decor",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 5,
+      title: "Hand-painted Silk Scarf",
+      description: "Luxurious silk scarf with hand-painted traditional motifs and vibrant hues.",
+      price: "3000",
+      quantity_available: 6,
+      type: "Textiles",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 6,
+      title: "Beaded Bracelet Collection",
+      description: "A set of colorful beaded bracelets that blend traditional and modern designs.",
+      price: "1200",
+      quantity_available: 12,
+      type: "Jewelry",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 7,
+      title: "Macrame Wall Hanging",
+      description: "Handmade macrame wall hanging, adding a boho-chic touch to any living space.",
+      price: "2200",
+      quantity_available: 4,
+      type: "Home Decor",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+    {
+      id: 8,
+      title: "Clay Pottery Vase Set",
+      description: "Set of handcrafted clay pottery vases with a rustic finish, perfect for flowers or decor.",
+      price: "2500",
+      quantity_available: 7,
+      type: "Handicraft",
+      image: "https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=400",
+      heartIcon: "/heart-svgrepo-com--1--1.svg",
+    },
+  ];
+
+  const filteredProducts = selectedCategory
+    ? recentProducts.filter((p) => p.type === selectedCategory)
+    : recentProducts;
 
 
-  const handleProductClick = (product) => {
+
+  const handleProductClick = useCallback(
+  (product) => {
     navigate("/marketplace/product", { state: { product } });
-  };
+  },
+  [navigate]
+);
 
   return (
     <div className="marketplace-homepage">
@@ -132,13 +142,26 @@ function MarketplaceHomepage() {
         </div>
       </section>
 
-      <CategoryBrowseSection />
+      <CategoryBrowseSection onCategorySelect={setSelectedCategory} />
 
       {/* Recent Products Section */}
       <section className="products-section">
-        <h2 className="section-title">Recent Products</h2>
+        <h2 className="section-title">
+          {selectedCategory ? `${selectedCategory} Products` : "Recent Products"}
+        </h2>
+        {/* Rest Button */}
+        {selectedCategory && (
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={() => setSelectedCategory(null)}
+            style={{ marginBottom: "20px" }}
+          >
+            Show All
+          </button>
+        )}
         <div className="products-grid">
-          {recentProducts.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="product-card"
@@ -150,9 +173,9 @@ function MarketplaceHomepage() {
               </div>
               <div className="product-content">
                 <div className="product-header">
-                  
+
                   <p className="product-title">{product.title}</p>
-                  <span className={`product-type-badge ${product.type.toLowerCase()}`}>{product.type}</span>  
+                  <span className={`product-type-badge ${product.type.toLowerCase()}`}>{product.type}</span>
 
                   {/* <img className="heart-icon" alt="Heart icon" src={product.heartIcon} /> */}
                 </div>
