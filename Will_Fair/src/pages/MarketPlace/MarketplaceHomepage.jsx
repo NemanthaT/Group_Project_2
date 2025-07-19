@@ -100,11 +100,11 @@ function MarketplaceHomepage() {
 
 
   const handleProductClick = useCallback(
-  (product) => {
-    navigate("/marketplace/product", { state: { product } });
-  },
-  [navigate]
-);
+    (product) => {
+      navigate("/marketplace/product", { state: { product } });
+    },
+    [navigate]
+  );
 
   return (
     <div className="marketplace-homepage">
@@ -142,24 +142,17 @@ function MarketplaceHomepage() {
         </div>
       </section>
 
-      <CategoryBrowseSection onCategorySelect={setSelectedCategory} />
+      <CategoryBrowseSection
+        selectedCategory={selectedCategory}
+        onCategorySelect={setSelectedCategory}
+      />
 
       {/* Recent Products Section */}
       <section className="products-section">
         <h2 className="section-title">
           {selectedCategory ? `${selectedCategory} Products` : "Recent Products"}
         </h2>
-        {/* Rest Button */}
-        {selectedCategory && (
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={() => setSelectedCategory(null)}
-            style={{ marginBottom: "20px" }}
-          >
-            Show All
-          </button>
-        )}
+        
         <div className="products-grid">
           {filteredProducts.map((product) => (
             <div

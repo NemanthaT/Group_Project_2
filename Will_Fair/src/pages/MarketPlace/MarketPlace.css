@@ -176,6 +176,30 @@ img {
 .category-card:nth-child(3) .category-overlay { background: rgba(231, 111, 81, 0.4); } /* Jewelry */
 .category-card:nth-child(4) .category-overlay { background: rgba(38, 70, 83, 0.4); }  /* Home Decor */
 
+.show-all-btn {
+  display: inline-block;
+  margin-bottom: 15px;
+  margin-left: 10px; /* Small spacing from left */
+}
+.category-section .section-title {
+  display: inline-block;
+  margin-right: 10px;
+}
+.all-category {
+  background: #f5f5f5; /* Light neutral background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.category-card.active,
+.all-category.active {
+  border: 5px solid #8a2be2; /* Highlight active card */
+}
+
 
 /* Products Section */
 .products-section {
