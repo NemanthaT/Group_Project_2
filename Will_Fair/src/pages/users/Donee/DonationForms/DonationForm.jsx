@@ -1,10 +1,10 @@
 import Forms from './Components/Forms';
 import './DonationForms.css';
 
-function DonationForm() {
+function DonationForm({user}) {
     return (
         <>
-            <Forms/>
+            <Forms user={user} />
         </>
     )
 }

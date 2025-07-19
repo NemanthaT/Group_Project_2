@@ -9,7 +9,9 @@ import {
 
 // Controller for creating a monetary donation
 export const createMonDonation = async (req, res) => {
-  const { doneeId, targetAmount, status } = req.body;
+  const { formData } = req.body;
+  const doneeId = formData.doneeId;
+  const targetAmount = formData.targetAmount;
 
   if (!doneeId || !targetAmount) {
     return res.status(400).json({
