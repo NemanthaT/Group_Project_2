@@ -115,22 +115,21 @@ img {
 
 /* Category Section */
 .category-section {
-  padding: 80px 0;
+  padding: 20px 0 40px; /* reduce top padding */
+  text-align: center;
 }
 
 .category-grid {
-  display: grid;
+  display: flex;
   justify-content: center;
-  gap: 30px;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  max-width: 1400px;
-  flex-wrap: wrap;
+  gap: 15px;
+  flex-wrap: nowrap;
 }
 
 .category-card {
   position: relative;
-  width: 286px;
-  height: 286px;
+  width: 200px;
+  height: 200px;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -149,13 +148,12 @@ img {
 
 .category-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 263px;
-  height: 80px;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.8) 0%, rgba(102, 102, 102, 0) 100%);
-  opacity: 0.8;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* default tint */
+  z-index: 1;
 }
 
 .category-name {
@@ -163,12 +161,21 @@ img {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: 600;
-  color: white;
-  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  font-size: 30px;
   text-align: center;
   white-space: nowrap;
+  z-index: 2;
+  text-shadow: 0 0 6px rgba(0,0,0,0.8), 2px 2px 6px rgba(0,0,0,0.5);
 }
+
+/* Overlay colors per category */
+.category-card:nth-child(1) .category-overlay { background: rgba(255, 140, 66, 0.4); }  /* Textiles */
+.category-card:nth-child(2) .category-overlay { background: rgba(42, 157, 143, 0.4); } /* Handicraft */
+.category-card:nth-child(3) .category-overlay { background: rgba(231, 111, 81, 0.4); } /* Jewelry */
+.category-card:nth-child(4) .category-overlay { background: rgba(38, 70, 83, 0.4); }  /* Home Decor */
+
 
 /* Products Section */
 .products-section {
