@@ -1,5 +1,6 @@
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
+import {MapPin, Phone, Mail} from "lucide-react";
 
 function LandingPage() {
   // Initialize the useNavigate hook from react-router-dom
@@ -49,13 +50,13 @@ function LandingPage() {
             <div className="program-card">
               <div className="program-image">🧸</div>
               <div className="program-content">
-                <h3>Renovations at Early Bird Child Care - Karnataka</h3>
+                <h3>Blood Donation Campaign - Karnataka</h3>
                 <div className="program-stats">
                   <span>
-                    <strong>Raised:</strong> 1,000.00
+                    <strong>signed up:</strong> 5 volunteers
                   </span>
                   <span>
-                    <strong>Target:</strong> 50,000.00
+                    <strong>Target:</strong>15 volunteers
                   </span>
                 </div>
                 <div className="program-progress">
@@ -63,10 +64,10 @@ function LandingPage() {
                 </div>
                 <div className="program-buttons">
                   <a href="#" className="btn-outline">
-                    Learn
+                    Learn more
                   </a>
                   <a href="#" className="btn-small">
-                    Donate
+                    Volunteer now
                   </a>
                 </div>
               </div>
@@ -75,13 +76,13 @@ function LandingPage() {
             <div className="program-card">
               <div className="program-image">👵</div>
               <div className="program-content">
-                <h3>Renovations at Elderly Care - Colombia</h3>
+                <h3>Renovations at Elderly Care - Panadura</h3>
                 <div className="program-stats">
                   <span>
-                    <strong>Raised:</strong> 25,000.00
+                    <strong>Signed up:</strong>  2 volunteers
                   </span>
                   <span>
-                    <strong>Target:</strong> 45,000.00
+                    <strong>Target:</strong>  8 volunteers
                   </span>
                 </div>
                 <div className="program-progress">
@@ -89,10 +90,10 @@ function LandingPage() {
                 </div>
                 <div className="program-buttons">
                   <a href="#" className="btn-outline">
-                    Learn
+                    Learn more
                   </a>
                   <a href="#" className="btn-small">
-                    Donate
+                    Volunteer now
                   </a>
                 </div>
               </div>
@@ -104,10 +105,10 @@ function LandingPage() {
                 <h3>Renovations at Special Care - Motors</h3>
                 <div className="program-stats">
                   <span>
-                    <strong>Raised:</strong> 30,000.00
+                    <strong>Signed up: </strong> 3 volunteers
                   </span>
                   <span>
-                    <strong>Target:</strong> 60,000.00
+                    <strong>Target:</strong> 10 volunteers
                   </span>
                 </div>
                 <div className="program-progress">
@@ -115,10 +116,10 @@ function LandingPage() {
                 </div>
                 <div className="program-buttons">
                   <a href="#" className="btn-outline">
-                    Learn
+                    Learn more
                   </a>
                   <a href="#" className="btn-small">
-                    Donate
+                    Volunteer now
                   </a>
                 </div>
               </div>
@@ -131,6 +132,42 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      
+      <section className="marketplace-cta">
+        <div className="container">
+          <div className="marketplace-cta-content">
+            <div className="marketplace-cta-text">
+              <h2>Support Artisans with Disabilities</h2>
+              <p>
+                Discover unique handcrafted products or join our community of sellers.
+                Every purchase supports independence and creativity.
+              </p>
+              <div className="marketplace-cta-buttons">
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => navigate('/marketplace')}
+                >
+                  Shop now 
+                </button>
+                <button 
+                  className="btn btn-outline" 
+                  onClick={() => navigate('/marketplace/seller')}
+                >
+                  Become a Seller
+                </button>
+              </div>
+            </div>
+            <div className="marketplace-cta-image">
+              <img 
+                src="https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg" 
+                alt="Artisans at work" 
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section className="testimonials">
         <div className="container">
@@ -259,19 +296,25 @@ function LandingPage() {
             <div className="contact-info">
               <h3>Contact Us</h3>
               <div className="contact-item">
-                <div className="contact-icon">📍</div>
+                <div className="contact-icon">
+                  <MapPin size={20}/>
+                </div>
                 <div>
                   <strong>Reid Avenue, Colombo</strong>
                 </div>
               </div>
               <div className="contact-item">
-                <div className="contact-icon">📞</div>
+                <div className="contact-icon">
+                  <Phone size={20}/>
+                </div>
                 <div>
                   <strong>+94 77 1234567890</strong>
                 </div>
               </div>
               <div className="contact-item">
-                <div className="contact-icon">✉️</div>
+                <div className="contact-icon">
+                  <Mail size={20}/>
+                </div>
                 <div>
                   <strong>info@willfair.org</strong>
                 </div>
