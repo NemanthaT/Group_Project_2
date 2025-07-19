@@ -49,7 +49,9 @@ function IndividualProductsView() {
         </div>
 
         <div className="individual-product-details">
+          <span className={`product-type-badge ${product.type.toLowerCase()}`}>{product.type}</span>
           <h1 className="individual-product-title">{product.title}</h1>
+          
 
           <p className="individual-product-description">{product.description}</p>
           <p className="individual-product-type"><strong>Type:</strong> {product.type}</p>

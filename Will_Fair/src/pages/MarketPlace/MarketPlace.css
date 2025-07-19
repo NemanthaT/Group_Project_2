@@ -948,4 +948,26 @@ img {
   font-size: 1rem;
   color: #444;
 }
+.product-type-badge {
+  display: inline-block;
+  background: #6c63ff;       /* Primary purple shade */
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.product-header .product-type-badge {
+  margin-right: auto;
+  margin-bottom: 4px;
+}
+.product-type-badge.textiles { background: #FF8C42; }
+.product-type-badge.handicraft { background: #2A9D8F; }
+.product-type-badge.jewelry { background: #E76F51; }
+.product-type-badge.home\ decor { background: #264653; }
+
 

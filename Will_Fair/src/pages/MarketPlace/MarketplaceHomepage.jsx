@@ -150,9 +150,13 @@ function MarketplaceHomepage() {
               </div>
               <div className="product-content">
                 <div className="product-header">
+                  
                   <p className="product-title">{product.title}</p>
-                  <img className="heart-icon" alt="Heart icon" src={product.heartIcon} />
+                  <span className={`product-type-badge ${product.type.toLowerCase()}`}>{product.type}</span>  
+
+                  {/* <img className="heart-icon" alt="Heart icon" src={product.heartIcon} /> */}
                 </div>
+
                 <p className="product-price">{product.price}</p>
                 <div className="product-actions">
                   <button className="btn btn-outline">Buy Now</button>
