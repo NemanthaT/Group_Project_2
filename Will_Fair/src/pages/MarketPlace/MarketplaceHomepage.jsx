@@ -118,27 +118,40 @@ function MarketplaceHomepage() {
         <div className="hero-content">
           <h1 className="hero-title">What are you Looking for?</h1>
           <div className="search-bar-wrapper">
-            <input
-              type="text"
-              className="search-bar-input"
-              placeholder="Search for handcrafted products..."
-            />
-            <button className="search-bar-button">
-              <svg
-                className="search-bar-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-          </div>
+  <input
+    type="text"
+    className="search-bar-input"
+    placeholder="Search for handcrafted products..."
+  />
+  <button className="search-bar-button" aria-label="Search">
+    <svg
+      className="search-bar-icon"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      />
+    </svg>
+  </button>
+
+  <p className="seller-signup-text">
+    Become a seller?{" "}
+    <button
+      className="signup-link-btn"
+      onClick={() => navigate("/signup")}
+      type="button"
+    >
+      Sign up
+    </button>
+  </p>
+</div>
+
+
         </div>
       </section>
 
@@ -152,7 +165,7 @@ function MarketplaceHomepage() {
         <h2 className="section-title">
           {selectedCategory ? `${selectedCategory} Products` : "Recent Products"}
         </h2>
-        
+
         <div className="products-grid">
           {filteredProducts.map((product) => (
             <div
@@ -173,7 +186,7 @@ function MarketplaceHomepage() {
                   {/* <img className="heart-icon" alt="Heart icon" src={product.heartIcon} /> */}
                 </div>
 
-                <p className="product-price">{product.price}</p>
+                <p className="product-price">{product.price} LKR</p>
                 <div className="product-actions">
                   <button className="btn btn-outline">Buy Now</button>
                   <button className="btn btn-primary">Add to Cart</button>

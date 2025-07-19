@@ -62,34 +62,30 @@ img {
   max-width: 600px;
   margin: 0 auto;
   position: relative;
+  display: block;
+  height: 55px; /* or same as input's height (padding + font size) */
 }
+
 
 .search-bar-input {
   width: 100%;
-  padding: 14px 50px 14px 20px;
+  padding: 14px 45px 14px 20px; /* right padding for icon */
   border-radius: 30px;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.6);
   font-size: 18px;
   font-weight: 500;
   outline: none;
-  background-color: rgba(255, 255, 255, 0.9); /* fallback */
+  background-color: rgba(255, 255, 255, 0.95);
   color: rgba(0, 0, 0, 0.85);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-
-  /* Safari + modern support */
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.search-bar-input::placeholder {
-  color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .search-bar-button {
   position: absolute;
-  right: 12px;
   top: 50%;
+  right: 15px;
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -98,17 +94,19 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
+
 
 .search-bar-icon {
   width: 26px;
   height: 26px;
-  color: #9333ea;
+  color: #0d429b; /* theme purple */
   transition: all 0.3s ease;
 }
 
 .search-bar-button:hover .search-bar-icon {
-  color: #0d429b;
+  color: #9333ea; /* theme blue */
   transform: scale(1.1);
 }
 
@@ -170,11 +168,15 @@ img {
   text-shadow: 0 0 6px rgba(0,0,0,0.8), 2px 2px 6px rgba(0,0,0,0.5);
 }
 
+
 /* Overlay colors per category */
-.category-card:nth-child(1) .category-overlay { background: rgba(255, 140, 66, 0.4); }  /* Textiles */
-.category-card:nth-child(2) .category-overlay { background: rgba(42, 157, 143, 0.4); } /* Handicraft */
-.category-card:nth-child(3) .category-overlay { background: rgba(231, 111, 81, 0.4); } /* Jewelry */
-.category-card:nth-child(4) .category-overlay { background: rgba(38, 70, 83, 0.4); }  /* Home Decor */
+.category-card.textiles .category-overlay { background: rgba(255, 140, 66, 0.4); }
+.category-card.handicraft .category-overlay { background: rgba(42, 157, 143, 0.4); }
+.category-card.jewelry .category-overlay { background: rgba(231, 111, 81, 0.4); }
+.category-card.home-decor .category-overlay { background: rgba(38, 70, 83, 0.4); }
+
+/* No overlay for All */
+.category-card.all-category .category-overlay { display: none; }
 
 .show-all-btn {
   display: inline-block;
@@ -208,11 +210,29 @@ img {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* Always 4 columns */
   gap: 30px;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr; /* 1 column on extra small screens */
+  }
 }
 
 .product-card {
@@ -221,6 +241,8 @@ img {
   box-shadow: 1.45px 2.89px 10.84px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 320px;
+  margin: 0 auto;
 }
 
 .product-card:hover {
@@ -246,12 +268,15 @@ img {
 }
 
 .product-title {
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 700;
   color: #000;
   flex: 1;
   margin-right: 10px;
   line-height: 1.3;
+}
+.product-card:hover .product-title {
+  color: #0d429b; /* Matches your theme */
 }
 
 .heart-icon {
@@ -1001,4 +1026,31 @@ img {
 .product-type-badge.jewelry { background: #E76F51; }
 .product-type-badge.home\ decor { background: #264653; }
 
+.seller-signup-text {
+  margin-top: 14px;
+  font-size: 16px;
+  color: white; /* contrast with hero bg */
+  font-weight: 500;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.signup-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  color: #0d429b; /* your purple theme */
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 16px;
+  font-family: inherit;
+  transition: color 0.3s ease;
+}
+
+.signup-link-btn:hover {
+  color: #9333ea; /* blue on hover */
+  text-decoration: none;
+}
 
