@@ -717,3 +717,24 @@ body {
   text-align: center;
 }
 
+/* Description Section Styles */
+.form-textarea {
+  width: 100%;
+  font-size: clamp(16px, 2vw, 24px);
+  color: #64748b;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 16px;
+  resize: vertical;
+  min-height: 150px;
+  line-height: 1.6;
+}
+
+.form-textarea::placeholder {
+  color: #94a3b8;
+}
+
+.form-textarea:focus {
+  color: #1e293b;
+}
