@@ -131,8 +131,7 @@ function DoneeDonationsView() {
             </div>
 
             <button onClick={goToMonetaryFormIndividual} className="new-request-btn">
-              <p className="plus-icon">+</p>
-              <span>New Request</span>
+              <span>+ New Request</span>
             </button>
           </div>
 

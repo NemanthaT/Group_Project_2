@@ -23,19 +23,19 @@ function FeaturedContent() {
       <section className="filters">
         <div className="filter-container">
           <div className="filter-dropdown">
-            <button className="filter-btn">Sort by ▼</button>
+            <button className="filter-btn">Sort by</button>
           </div>
           <div className="filter-dropdown">
-            <button className="filter-btn">Type ▼</button>
+            <button className="filter-btn">Type </button>
           </div>
           <div className="filter-dropdown">
-            <button className="filter-btn">Category ▼</button>
+            <button className="filter-btn">Category </button>
           </div>
           <div className="filter-dropdown">
-            <button className="filter-btn">Status ▼</button>
+            <button className="filter-btn">Status </button>
           </div>
           <div className="filter-dropdown">
-            <button className="filter-btn">Location ▼</button>
+            <button className="filter-btn">Location </button>
           </div>
         </div>
       </section>

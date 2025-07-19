@@ -68,7 +68,7 @@ export default function MonetoryForm() {
             <img
               className="hero-image"
               alt="Close up people"
-              src="/close-up-people-holding-box-3.png"
+              src="http://localhost:5173/src/assets/images/featuredBg.png"
             />
           </div>
 

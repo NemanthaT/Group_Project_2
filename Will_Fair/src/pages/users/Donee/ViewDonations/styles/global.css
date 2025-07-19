@@ -254,7 +254,7 @@ img {
 .new-request-btn {
   height: 60px; /* Reduced from 79px */
   width: 220px; /* Reduced from 332px */
-  border-radius: 15px; /* Reduced from 20px */
+  border-radius: 30px; /* Reduced from 20px */
   background: #0d429b;
   box-shadow: 0px 4px 12px rgba(13, 66, 155, 0.3);
   border: none;
