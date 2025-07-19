@@ -187,20 +187,6 @@ export default function MonetoryForm() {
               </div>
             </div>
 
-            <div className="form-section">
-              <div className="mb-4">
-                <h2 className="title">Detailed Description</h2>
-              </div>
-
-              <div className="form-card">
-                <textarea
-                  className="form-textarea"
-                  placeholder="Explain your situation, who will benefit, and how the donation will be used..."
-                  rows={6}
-                />
-              </div>
-            </div>
-
             {activeTab === "monetary" ? (
               <>
                 <section className="form-section">
