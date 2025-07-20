@@ -166,7 +166,10 @@ export const styles = StyleSheet.create({
     color: '#333',
   },
 
-
-
- 
+errorText: {
+  color: 'red',
+  fontSize: 12,
+  marginLeft: 10,
+  alignSelf: 'flex-start',
+},
 });
