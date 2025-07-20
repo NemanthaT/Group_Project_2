@@ -33,7 +33,7 @@ const DonationView = () => {
         <img
           className="donation-view-image"
           src={donation.image_path && donation.image_path.startsWith('uploads/')
-            ? `http://localhost:5000/${donation.image_path.replace(/\\/g, '/')}`
+            ? `http://localhost:5173/server/${donation.image_path.replace(/\\/g, '/')}`
             : ''}
           alt={donation.title}
         />

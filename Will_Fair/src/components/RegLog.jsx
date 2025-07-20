@@ -43,6 +43,7 @@ export function LoginD() {
       switch (response.data.user.role) {
         case "donor":
           navigate("/users/donor");
+          location.reload(); // Reload to update user state
           break;
         case "auth_manager":
           navigate("/manager/dashboard");
@@ -346,6 +347,7 @@ export function LoginF() {
       switch (response.data.user.role) {
         case "donee":
           navigate("/users/donee");
+          location.reload(); // Reload to update user state
           break;
         case "auth_manager":
           navigate("/manager/dashboard");
