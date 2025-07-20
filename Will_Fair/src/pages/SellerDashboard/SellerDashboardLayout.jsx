@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import "./SellerDashboard.css";
 
 const navItems = [
@@ -9,10 +9,17 @@ const navItems = [
   { name: 'Reviews', icon: '👥', path: 'reviews' },
   { name: 'Marketing', icon: '📢', path: 'marketing' },
   { name: 'Reports', icon: '📈', path: 'reports' },
+  { name: 'Profile', icon: '👤', path: 'profile' },
   { name: 'Settings', icon: '⚙️', path: 'settings' }
 ];
 
 function SellerDashboardLayout() {
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate('profile');
+  };
+
   return (
     <div className="dashboard">
       {/* Mobile overlay */}
@@ -27,18 +34,25 @@ function SellerDashboardLayout() {
           </div>
         </div>
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-text">{item.name}</span>
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            // Hide specific navigation items
+            if (['Categories', 'Marketing', 'Reports', 'Settings'].includes(item.name)) {
+              return null;
+            }
+            
+            return (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  `nav-item ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-text">{item.name}</span>
+              </NavLink>
+            );
+          })}
         </nav>
         
       </div>
@@ -66,7 +80,7 @@ function SellerDashboardLayout() {
               <span className="notification-badge">3</span>
             </div>
             <span className="logout-text">Logout</span>
-            <div className="profile-icon">👤</div>
+            <div className="profile-icon" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>👤</div>
           </div>
         </div>
         <div className="content-wrapper">
