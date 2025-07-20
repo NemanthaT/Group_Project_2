@@ -2,12 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import axios from "axios";
+import HealthcareImg from '../../../../../../assets/images/Healthcare.jpg';
+import EducationSupportImg from '../../../../../../assets/images/EducationSupport.jpg';
+import DisasterReliefImg from '../../../../../../assets/images/DisasterRelief.jpg';
+import UsedToysImg from '../../../../../../assets/images/UsedToys.jpg';
+import BasicNeedsImg from '../../../../../../assets/images/BasicNeeds.jpg';
+import ChildrenCareImg from '../../../../../../assets/images/childrenCare.jpg';
 
 function DoneeDonationsView({ user }) {
   const navigate = useNavigate();
   const [donationCards, setDonationCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const goToViewDonation = () => navigate("/users/view");
   const goToMonetaryFormIndividual = () => navigate("/users/donee/form");
@@ -36,6 +44,20 @@ function DoneeDonationsView({ user }) {
     fetchDonations();
   }, [user]);
 
+  // Filtering logic
+  const filteredCards = donationCards.filter(card => {
+    let typeMatch = true;
+    let statusMatch = true;
+    if (typeFilter !== 'all') {
+      typeMatch = (typeFilter === 'monetary' && card.type === 'Monetary') ||
+                  (typeFilter === 'non-monetary' && card.type === 'NonMonetary');
+    }
+    if (statusFilter !== 'all') {
+      statusMatch = card.status && card.status.toLowerCase() === statusFilter;
+    }
+    return typeMatch && statusMatch;
+  });
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (error) return <div className="min-h-screen flex items-center justify-center">Error: {error}</div>;
 
@@ -55,7 +77,7 @@ function DoneeDonationsView({ user }) {
           <div className="filter-section">
             <div className="filter-controls">
               <div className="select-wrapper">
-                <select className="select">
+                <select className="select" value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
                   <option value="all">All Types</option>
                   <option value="monetary">Monetary</option>
                   <option value="non-monetary">Non-monetary</option>
@@ -63,11 +85,11 @@ function DoneeDonationsView({ user }) {
               </div>
 
               <div className="select-wrapper">
-                <select className="select">
+                <select className="select" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
                   <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
-                  <option value="pending">Pending</option>
+                  <option value="active">active</option>
+                  <option value="completed">completed</option>
+                  <option value="pending">pending</option>
                 </select>
               </div>
             </div>
@@ -77,7 +99,7 @@ function DoneeDonationsView({ user }) {
             </button>
           </div>
 
-          {donationCards.length === 0 ? (
+          {filteredCards.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-lg">No donation requests found.</p>
               <button 
@@ -89,11 +111,25 @@ function DoneeDonationsView({ user }) {
             </div>
           ) : (
             <div className="cards-grid">
-              {donationCards.map((card) => (
+              {filteredCards.map((card) => (
                 <div key={card.request_id} className="donation-card">
                   <div className="card-image-container">
                     <img
-                      src={card.image}
+                      src={
+                        card.image_path
+                          ? `/${card.image_path}`
+                          : card.category === 'Healthcare'
+                            ? HealthcareImg
+                          : card.category === 'Education'
+                            ? EducationSupportImg
+                          : card.category === 'Disaster Relief'
+                            ? DisasterReliefImg
+                          : card.category === 'Basic Needs'
+                            ? BasicNeedsImg
+                          : card.category === 'Children Care'
+                            ? ChildrenCareImg
+                          : UsedToysImg
+                      }
                       alt={card.title}
                       className="card-image"
                       onError={(e) => {
