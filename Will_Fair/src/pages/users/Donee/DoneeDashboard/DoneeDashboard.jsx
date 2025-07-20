@@ -295,7 +295,7 @@ function DoneeDashboard( { user } ) {
                         <td>
                           <div className="request-image">
                             {request.image_path ? (
-                              <img src={`/${request.image_path}`} alt="request" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 8 }} />
+                              <img src={`http://localhost:5173/server/${request.image_path}`} alt="request" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 8 }} />
                             ) : (
                               <Heart className="icon" />
                             )}
