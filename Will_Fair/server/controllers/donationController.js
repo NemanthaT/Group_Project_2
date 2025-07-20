@@ -136,6 +136,24 @@ export const getDoneeDonations = async (req, res) => {
   }
 };
 
+// Controller for getting all donation requests for a donee
+export const getDonationsByDonee = async (req, res) => {
+  const { doneeId } = req.body;
+  if (!doneeId) {
+    return res.status(400).json({ success: false, error: 'Donee ID is required' });
+  }
+  try {
+    const result = await getDonationsByDoneeId(doneeId);
+    if (result.success) {
+      res.status(200).json({ success: true, donations: result.donations });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error while fetching donations' });
+  }
+};
+
 // Controller for getting monetary donation categories
 export const getMonetaryCategories = async (req, res) => {
   try {

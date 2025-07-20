@@ -5,7 +5,8 @@ import {
   createNonMonDonation, 
   getDoneeDonations,
   getMonetaryCategories,
-  getNonMonetaryCategories
+  getNonMonetaryCategories,
+  getDonationsByDonee
 } from "../controllers/donationController.js";
 import multer from "multer";
 
@@ -25,6 +26,9 @@ router.post('/createNonMonDonation', upload.fields([{
 }]), createNonMonDonation);
 
 router.post('/getDonationsById', getDoneeDonations);
+
+// Get all donation requests for a donee (dashboard)
+router.post('/dashboardRequests', getDonationsByDonee);
 
 // Public routes
 router.get('/monetaryCategories', getMonetaryCategories);
