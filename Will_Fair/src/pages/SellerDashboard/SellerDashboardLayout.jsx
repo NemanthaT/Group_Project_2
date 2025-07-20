@@ -52,6 +52,14 @@ function SellerDashboardLayout() {
             ☰
           </button>
           <h1 className="header-title">Seller Dashboard</h1>
+          
+          {/* Navigation Links */}
+          <div className="header-nav-links">
+            <a href="/" className="header-nav-link">Home</a>
+            <a href="/marketplace" className="header-nav-link">Marketplace</a>
+            <a href="/#contact" className="header-nav-link">Contact Us</a>
+          </div>
+          
           <div className="header-right">
             <div className="notifications">
               <span className="notification-icon">🔔</span>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "./SellerDashboard.css";
 
 const statsCards = [
@@ -38,6 +38,112 @@ const products = [
 ];
 
 const SellerDashboardMain = () => {
+  const [showAddProductForm, setShowAddProductForm] = useState(false);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    category: '',
+    price: '',
+    stock: '',
+    description: '',
+    status: 'Active',
+    images: []
+  });
+
+  // Configure accepted file types (can be easily modified)
+  const acceptedFileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+  const acceptedExtensions = ['.png', '.jpg', '.jpeg'];
+  const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+  const maxFiles = 5;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProductForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = [];
+    const errors = [];
+
+    files.forEach(file => {
+      // Check file type
+      if (!acceptedFileTypes.includes(file.type)) {
+        errors.push(`${file.name}: Invalid file type. Only PNG and JPG files are allowed.`);
+        return;
+      }
+
+      // Check file size
+      if (file.size > maxFileSize) {
+        errors.push(`${file.name}: File too large. Maximum size is 5MB.`);
+        return;
+      }
+
+      validFiles.push(file);
+    });
+
+    // Check total number of files
+    const currentImages = productForm.images.length;
+    if (currentImages + validFiles.length > maxFiles) {
+      errors.push(`Maximum ${maxFiles} images allowed. You can upload ${maxFiles - currentImages} more.`);
+      return;
+    }
+
+    if (errors.length > 0) {
+      alert(errors.join('\n'));
+      return;
+    }
+
+    // Add valid files to the form
+    setProductForm(prev => ({
+      ...prev,
+      images: [...prev.images, ...validFiles]
+    }));
+
+    // Clear the input
+    e.target.value = '';
+  };
+
+  const removeImage = (index) => {
+    setProductForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    console.log('Product submitted:', productForm);
+    // Reset form and close modal
+    setProductForm({
+      name: '',
+      category: '',
+      price: '',
+      stock: '',
+      description: '',
+      status: 'Active',
+      images: []
+    });
+    setShowAddProductForm(false);
+  };
+
+  const handleClose = () => {
+    // Reset form and close modal
+    setProductForm({
+      name: '',
+      category: '',
+      price: '',
+      stock: '',
+      description: '',
+      status: 'Active',
+      images: []
+    });
+    setShowAddProductForm(false);
+  };
+
   return (
     <div className="dashboard-content">
       {/* Welcome Section */}
@@ -47,7 +153,12 @@ const SellerDashboardMain = () => {
           <p>Here's what's happening with your store today</p>
         </div>
         <div className="quick-actions">
-          <button className="quick-action-btn primary">Add Product</button>
+          <button 
+            className="quick-action-btn primary"
+            onClick={() => setShowAddProductForm(true)}
+          >
+            Add Product
+          </button>
           <button className="quick-action-btn secondary">View Orders</button>
         </div>
       </div>
@@ -162,7 +273,12 @@ const SellerDashboardMain = () => {
               <option>Jewelry</option>
               <option>Home Decor</option>
             </select>
-            <button className="add-product-btn">Add Product</button>
+            <button 
+              className="add-product-btn"
+              onClick={() => setShowAddProductForm(true)}
+            >
+              Add Product
+            </button>
           </div>
         </div>
         <div className="table-container">
@@ -214,6 +330,172 @@ const SellerDashboardMain = () => {
           </table>
         </div>
       </div>
+
+      {/* Add Product Modal */}
+      {showAddProductForm && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <div className="modal-header">
+              <h3>Add New Product</h3>
+              <button className="modal-close-btn" onClick={handleClose}>×</button>
+            </div>
+            <form onSubmit={handleSubmit} className="product-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="productName">Product Name</label>
+                  <input
+                    type="text"
+                    id="productName"
+                    name="name"
+                    value={productForm.name}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Enter product name"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="category">Category</label>
+                  <select
+                    id="category"
+                    name="category"
+                    value={productForm.category}
+                    onChange={handleInputChange}
+                    className="form-select"
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Jewelry">Jewelry</option>
+                    <option value="Home Decor">Home Decor</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Art & Crafts">Art & Crafts</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="price">Price (Rs.)</label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={productForm.price}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="stock">Stock Quantity</label>
+                  <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    value={productForm.stock}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="0"
+                    min="0"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="status">Status</label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={productForm.status}
+                    onChange={handleInputChange}
+                    className="form-select"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-group full-width">
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={productForm.description}
+                  onChange={handleInputChange}
+                  className="form-textarea"
+                  placeholder="Enter product description..."
+                  rows="4"
+                />
+              </div>
+              
+              {/* Image Upload Section */}
+              <div className="form-group full-width">
+                <label htmlFor="images">Product Images</label>
+                <div className="image-upload-container">
+                  <div className="image-upload-dropzone">
+                    <input
+                      type="file"
+                      id="images"
+                      name="images"
+                      accept={acceptedExtensions.join(',')}
+                      onChange={handleImageUpload}
+                      className="image-input"
+                      multiple
+                    />
+                    <div className="upload-content">
+                      <div className="upload-icon">📁</div>
+                      <div className="upload-text">
+                        <span>Click to upload images</span>
+                        <small>PNG, JPG up to 5MB each (max {maxFiles} files)</small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Image Preview Section */}
+                  {productForm.images.length > 0 && (
+                    <div className="image-preview-container">
+                      <h4>Selected Images ({productForm.images.length}/{maxFiles})</h4>
+                      <div className="image-preview-grid">
+                        {productForm.images.map((file, index) => (
+                          <div key={index} className="image-preview-item">
+                            <img 
+                              src={URL.createObjectURL(file)} 
+                              alt={`Preview ${index + 1}`}
+                              className="preview-image"
+                            />
+                            <div className="image-info">
+                              <span className="image-name">{file.name}</span>
+                              <span className="image-size">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="remove-image-btn"
+                              title="Remove image"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="form-actions">
+                <button type="button" className="btn-secondary" onClick={handleClose}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary">
+                  Add Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
