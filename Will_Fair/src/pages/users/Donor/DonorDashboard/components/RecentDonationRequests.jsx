@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Target, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight } from 'lucide-react';
 import './RecentDonationRequests.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import DonationView from './DonationView.jsx';
-import MakeDonation from './MakeDonation.jsx';
 
 const RecentDonationRequests = () => {
   const [donations, setDonations] = useState([]);
@@ -17,7 +15,7 @@ const RecentDonationRequests = () => {
       try {
         const response = await axios.get('http://localhost:5000/donations/recent');
         setDonations(response.data.donations);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch recent donations');
       } finally {
         setLoading(false);
@@ -54,14 +52,19 @@ const RecentDonationRequests = () => {
                 
                 <div className="donation-progress">
                   <div className="progress-header">
-                    <span className="progress-text">{donation.quantity_received ? donation.quantity_received.toLocaleString() : 0} of {donation.quantity_needed ? donation.quantity_needed.toLocaleString() : 0} items</span>
-                    <span className="progress-percentage">{donation.quantity_needed ? Math.round((donation.quantity_received / donation.quantity_needed) * 100) : 0}%</span>
+                    <span className="progress-percentage">
+                      {donation.quantity_needed ? Math.round((donation.quantity_received / donation.quantity_needed) * 100) : 0}%
+                    </span>
                   </div>
                   <div className="progress-bar">
                     <div 
                       className="progress-fill" 
                       style={{ width: `${donation.quantity_needed ? Math.round((donation.quantity_received / donation.quantity_needed) * 100) : 0}%` }}
                     ></div>
+                  </div>
+                  <div className="donation-amounts">
+                    <span className="donation-target">Target: Rs. {donation.quantity_needed ? donation.quantity_needed.toLocaleString() : 0}</span>
+                    <span className="donation-received">Received: Rs. {donation.quantity_received ? donation.quantity_received.toLocaleString() : 0}</span>
                   </div>
                 </div>
                 
