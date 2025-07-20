@@ -1,6 +1,7 @@
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
 import {MapPin, Phone, Mail} from "lucide-react";
+import { useState } from 'react';
 
 function LandingPage() {
   // Initialize the useNavigate hook from react-router-dom
@@ -9,6 +10,46 @@ function LandingPage() {
   const goToFeatured = () => {
     navigate("/featured");
   };
+
+  const [volunteerOpportunities] = useState([
+  {
+    id: 1,
+    title: "Beach Cleanup in Mount Lavinia",
+    description: "Help clean up Mount Lavinia beach to protect marine life",
+    type: "environment",
+    commitment: "one-time",
+    location: "Colombo",
+    volunteersNeeded: 15,
+    volunteersSigned: 5,
+    image: "https://plus.unsplash.com/premium_photo-1663039947303-0fad26f737b8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmVhY2glMjBjbGVhbnVwfGVufDB8fDB8fHww",
+    date: "2023-08-15"
+  },
+  {
+    id: 2,
+    title: "Elderly Care Assistance - Panadura",
+    description: "Provide companionship and basic care for elderly in Panadura homes",
+    type: "caregiving",
+    commitment: "weekly",
+    location: "Panadura",
+    volunteersNeeded: 8,
+    volunteersSigned: 2,
+    image: "https://plus.unsplash.com/premium_photo-1661274147223-116687829d26?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWxkZXJseSUyMGNhcmV8ZW58MHx8MHx8fDA%3D",
+    date: "2023-08-10"
+  },
+  {
+    id: 3,
+    title: "Special Needs Center Support",
+    description: "Assist at centers for people with special needs in Colombo",
+    type: "caregiving",
+    commitment: "flexible",
+    location: "Colombo",
+    volunteersNeeded: 10,
+    volunteersSigned: 3,
+    image: "https://plus.unsplash.com/premium_photo-1713457016406-5e2c34fe501b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3BlY2lhbCUyMG5lZWRzJTIwY2VudGVyfGVufDB8fDB8fHww",
+    date: "2023-08-20"
+  }
+]);
+
   return (
     <>
       <section className="hero" id="home">
@@ -47,83 +88,50 @@ function LandingPage() {
         <div className="container">
           <h2 className="section-title">Featured Programs</h2>
           <div className="programs-grid">
-            <div className="program-card">
-              <div className="program-image">🧸</div>
-              <div className="program-content">
-                <h3>Blood Donation Campaign - Karnataka</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>signed up:</strong> 5 volunteers
-                  </span>
-                  <span>
-                    <strong>Target:</strong>15 volunteers
-                  </span>
+            {volunteerOpportunities.map(opp => (
+              <div className="program-card" key={opp.id}>
+                <div 
+                  className="card-image" 
+                  style={{ backgroundImage: `url(${opp.image})` }}
+                >
+                  <span className="card-badge">Active</span>
                 </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "20%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn more
-                  </a>
-                  <a href="#" className="btn-small">
-                    Volunteer now
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="program-card">
-              <div className="program-image">👵</div>
-              <div className="program-content">
-                <h3>Renovations at Elderly Care - Panadura</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>Signed up:</strong>  2 volunteers
-                  </span>
-                  <span>
-                    <strong>Target:</strong>  8 volunteers
-                  </span>
-                </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "55%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn more
-                  </a>
-                  <a href="#" className="btn-small">
-                    Volunteer now
-                  </a>
+                <div className="card-content">
+                  <h3 className="card-title">{opp.title}</h3>
+                  <p className="card-description">{opp.description}</p>
+                  
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ 
+                        width: `${(opp.volunteersSigned / opp.volunteersNeeded) * 100}%`,
+                        background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
+                      }}
+                    ></div>
+                  </div>
+                  
+                  <div className="funding-info">
+                    <div>
+                      <div className="funding-label">Volunteers Signed:</div>
+                      <div className="funding-amount">{opp.volunteersSigned}</div>
+                    </div>
+                    <div>
+                      <div className="funding-label">Volunteers Needed:</div>
+                      <div className="funding-amount">{opp.volunteersNeeded}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="card-actions">
+                    <button className="btn btn-outline">
+                      Details
+                    </button>
+                    <button className="btn btn-primary">
+                      Volunteer
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="program-card">
-              <div className="program-image">♿</div>
-              <div className="program-content">
-                <h3>Renovations at Special Care - Motors</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>Signed up: </strong> 3 volunteers
-                  </span>
-                  <span>
-                    <strong>Target:</strong> 10 volunteers
-                  </span>
-                </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "50%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn more
-                  </a>
-                  <a href="#" className="btn-small">
-                    Volunteer now
-                  </a>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
           <div className="see-more">
             <button className="btn-small1" onClick={goToFeatured}>
