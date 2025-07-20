@@ -313,6 +313,9 @@ img {
 
 .card-badge {
   position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   top: 1rem;
   right: 1rem;
   background: #0d429b;

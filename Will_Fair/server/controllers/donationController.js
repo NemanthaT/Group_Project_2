@@ -8,7 +8,7 @@ import {
 
 // Controller for creating a monetary donation
 export const createMonDonation = async (req, res) => {
-  const { doneeId, targetAmount, requestName, urgentDate } = req.body;
+  const { doneeId, category, targetAmount, description, requestName, urgentDate } = req.body;
   const image = req.files?.image?.[0];
   const documents = req.files?.documents;
 
@@ -22,11 +22,13 @@ export const createMonDonation = async (req, res) => {
   try {
     const result = await createMonetoryDonation({
       doneeId,
+      category,
       targetAmount,
       requestName,
+      description,
       urgentDate,
       imagePath: image?.path,
-      documentPaths: documents?.map(doc => doc.path),
+      documentPaths: documents,
       status: 'pending'
     });
 
@@ -100,7 +102,8 @@ export const createNonMonDonation = async (req, res) => {
 
 // Controller for getting donations by donee ID
 export const getDoneeDonations = async (req, res) => {
-  const { doneeId } = req.params;
+  const { doneeId } = req.body;
+  console.log("Fetching donations for donee ID:", doneeId);
 
   if (!doneeId) {
     return res.status(400).json({
@@ -116,7 +119,8 @@ export const getDoneeDonations = async (req, res) => {
       res.status(200).json({
         success: true,
         donations: result.donations
-      });
+      })
+      console.log("Donations fetched successfully:", result.donations);
     } else {
       res.status(400).json({
         success: false,

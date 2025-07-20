@@ -1,4 +1,5 @@
 import express from "express";
+import upload from "../middleware/upload.js";
 import { 
   createMonDonation,
   createNonMonDonation, 
@@ -9,7 +10,6 @@ import {
 import multer from "multer";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 
 // Protected routes
 router.post('/createMonDonation', upload.fields([{
@@ -24,7 +24,7 @@ router.post('/createNonMonDonation', upload.fields([{
   name: 'documents', maxCount: 5
 }]), createNonMonDonation);
 
-router.get('/donee/:doneeId', getDoneeDonations);
+router.post('/getDonationsById', getDoneeDonations);
 
 // Public routes
 router.get('/monetaryCategories', getMonetaryCategories);

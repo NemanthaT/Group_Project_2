@@ -1,25 +1,80 @@
+import fs from 'fs';
+import path from 'path';
 import pool from "../db.js";
 
 async function createMonetoryDonation(donationData) {
   try {
+    const getCategoryIdQuery = `
+      SELECT category_id FROM donation_categories
+      WHERE category_name = $1 AND is_monetary = true
+    `;
+    const categoryResult = await pool.query(getCategoryIdQuery, [donationData.category]);
+    if (categoryResult.rows.length === 0) {
+      return { success: false, message: "Invalid category for monetary donation" };
+    }
+    const categoryId = categoryResult.rows[0].category_id;
     const result = await pool.query(
       `INSERT INTO donation_requests (
-        donee_id, 
+        donee_id,
+        category_id, 
         quantity_needed, 
-        title, 
+        title,
+        description, 
         due_date,  
         status
-      ) VALUES ($1, $2, $3, $4, $5)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING request_id`,
       [
         donationData.doneeId,
+        categoryId,
         donationData.targetAmount,
         donationData.requestName,
+        donationData.description,
         donationData.urgentDate,
         donationData.status
       ]
     );
-    return { success: true, donationId: result.rows[0].request_id };
+    const donationId = result.rows[0].request_id;
+
+    // Handle file storage if files exist
+    let imagePath = null;
+    let documentPath = null;
+    if (donationData.imagePath) {
+      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      if (!fs.existsSync(donationDir)) {
+        fs.mkdirSync(donationDir, { recursive: true });
+      }
+      const ext = path.extname(donationData.imagePath);
+      const newImagePath = path.join(donationDir, `image${ext}`);
+      fs.renameSync(donationData.imagePath, newImagePath);
+      imagePath = newImagePath;
+    }
+    if (donationData.documentPaths) {
+      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      if (!fs.existsSync(donationDir)) {
+        fs.mkdirSync(donationDir, { recursive: true });
+      }
+      let docPath = null;
+      if (Array.isArray(donationData.documentPaths)) {
+        docPath = donationData.documentPaths[0];
+      } else if (typeof donationData.documentPaths === 'string') {
+        docPath = donationData.documentPaths;
+      } else if (donationData.documentPaths.path) {
+        docPath = donationData.documentPaths.path;
+      }
+      if (docPath && typeof docPath === 'string') {
+        const ext = path.extname(docPath);
+        const newDocPath = path.join(donationDir, `document${ext}`);
+        fs.renameSync(docPath, newDocPath);
+        documentPath = newDocPath;
+      }
+    }
+    // Update the donation record with file paths
+    await pool.query(
+      `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
+      [imagePath ? imagePath : null, documentPath ? documentPath : null, donationId]
+    );
+    return { success: true, donationId };
   } catch (err) {
     console.error("Database error during createMonetoryDonation():", err);
     return { success: false, message: "Database error" };
@@ -28,13 +83,22 @@ async function createMonetoryDonation(donationData) {
 
 async function createNonMonetoryDonation(donationData) {
   try {
+    const getCategoryIdQuery = `
+      SELECT category_id FROM donation_categories
+      WHERE category_name = $1 AND is_monetary = false
+    `;
+    const categoryResult = await pool.query(getCategoryIdQuery, [donationData.category]);
+    if (categoryResult.rows.length === 0) {
+      return { success: false, message: "Invalid category for monetary donation" };
+    }
+    const categoryId = categoryResult.rows[0].category_id;
     const result = await pool.query(
       `INSERT INTO donation_requests (
         donee_id, 
-        category, 
+        category_id, 
         request_name, 
-        item_name, 
-        item_quantity, 
+        description, 
+        quantity_needed, 
         dropoff_date, 
         image_path, 
         document_paths, 
@@ -43,17 +107,56 @@ async function createNonMonetoryDonation(donationData) {
       RETURNING request_id`,
       [
         donationData.doneeId,
-        donationData.category,
+        categoryId,
         donationData.requestName,
-        donationData.itemName,
-        donationData.itemQuantity,
+        donationData.description,
+        donationData.targetAmount,
         donationData.dropoffDate,
-        donationData.imagePath,
-        donationData.documentPaths,
+        null, // image_path
+        null, // document_paths
         donationData.status
       ]
     );
-    return { success: true, donationId: result.rows[0].request_id };
+    const donationId = result.rows[0].request_id;
+    // Handle file storage if files exist
+    let imagePath = null;
+    let documentPath = null;
+    if (donationData.imagePath) {
+      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      if (!fs.existsSync(donationDir)) {
+        fs.mkdirSync(donationDir, { recursive: true });
+      }
+      const ext = path.extname(donationData.imagePath);
+      const newImagePath = path.join(donationDir, `image${ext}`);
+      fs.renameSync(donationData.imagePath, newImagePath);
+      imagePath = newImagePath;
+    }
+    if (donationData.documentPaths) {
+      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      if (!fs.existsSync(donationDir)) {
+        fs.mkdirSync(donationDir, { recursive: true });
+      }
+      let docPath = null;
+      if (Array.isArray(donationData.documentPaths)) {
+        docPath = donationData.documentPaths[0];
+      } else if (typeof donationData.documentPaths === 'string') {
+        docPath = donationData.documentPaths;
+      } else if (donationData.documentPaths.path) {
+        docPath = donationData.documentPaths.path;
+      }
+      if (docPath && typeof docPath === 'string') {
+        const ext = path.extname(docPath);
+        const newDocPath = path.join(donationDir, `document${ext}`);
+        fs.renameSync(docPath, newDocPath);
+        documentPath = newDocPath;
+      }
+    }
+    // Update the donation record with file paths
+    await pool.query(
+      `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
+      [imagePath ? imagePath : null, documentPath ? documentPath : null, donationId]
+    );
+    return { success: true, donationId };
   } catch (err) {
     console.error("Database error during createNonMonetoryDonation():", err);
     return { success: false, message: "Database error" };
@@ -62,10 +165,18 @@ async function createNonMonetoryDonation(donationData) {
 
 async function getDonationsByDoneeId(doneeId) {
   try {
-    const result = await pool.query(
-      `SELECT * FROM donation_requests WHERE donee_id = $1`,
-      [doneeId]
-    );
+    const query = `
+      SELECT 
+        dr.*, 
+        dc.category_name AS category
+      FROM 
+        donation_requests dr
+      LEFT JOIN 
+        donation_categories dc ON dr.category_id = dc.category_id
+      WHERE 
+        dr.donee_id = $1
+    `;
+    const result = await pool.query(query, [doneeId]);
     return { success: true, donations: result.rows };
   } catch (err) {
     console.error("Database error during getDonationsByDoneeId():", err);

@@ -82,7 +82,8 @@ export default function MonetaryForm( {user} ) {
   let formData = new FormData();
   formData.append("doneeId", user.id);
   formData.append("category", selectedCategory);
-  formData.append("requestName", e.target.querySelector('input[placeholder="Enter request name"]').value);
+  formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
+  formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
 
   if (activeTab === "monetary") {
     formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
