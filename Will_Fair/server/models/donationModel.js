@@ -279,6 +279,27 @@ async function updateDonationById(id, data) {
   }
 }
 
+// Delete a donation by ID
+async function deleteDonationById(id) {
+  try {
+    // Remove files if present
+    const donation = await pool.query('SELECT image_path, document_path FROM donation_requests WHERE request_id = $1', [id]);
+    if (donation.rows.length > 0) {
+      const { image_path, document_path } = donation.rows[0];
+      if (image_path && fs.existsSync(image_path)) fs.unlinkSync(image_path);
+      if (document_path && fs.existsSync(document_path)) fs.unlinkSync(document_path);
+      // Optionally remove the donation folder
+      const donationDir = path.join('uploads', 'donations', id.toString());
+      if (fs.existsSync(donationDir)) fs.rmSync(donationDir, { recursive: true, force: true });
+    }
+    await pool.query('DELETE FROM donation_requests WHERE request_id = $1', [id]);
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during deleteDonationById():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export { 
   createMonetoryDonation, 
   createNonMonetoryDonation, 
@@ -286,5 +307,6 @@ export {
   getMonetaryDonationCategories, 
   getNonMonetaryDonationCategories,
   getDonationById,
-  updateDonationById
+  updateDonationById,
+  deleteDonationById,
 };

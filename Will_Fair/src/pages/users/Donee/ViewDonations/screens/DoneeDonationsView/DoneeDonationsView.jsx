@@ -57,6 +57,16 @@ function DoneeDonationsView({ user }) {
     return typeMatch && statusMatch;
   });
 
+  const handleDeleteDonation = async (requestId) => {
+    if (!window.confirm("Are you sure you want to delete this donation request?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/donations/${requestId}`);
+      setDonationCards((prev) => prev.filter((c) => c.request_id !== requestId));
+    } catch (err) {
+      alert("Failed to delete donation");
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (error) return <div className="min-h-screen flex items-center justify-center">Error: {error}</div>;
 
@@ -86,9 +96,9 @@ function DoneeDonationsView({ user }) {
               <div className="select-wrapper">
                 <select className="select" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
                   <option value="all">All Status</option>
-                  <option value="active">active</option>
-                  <option value="completed">completed</option>
-                  <option value="pending">pending</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
                 </select>
               </div>
             </div>
@@ -135,7 +145,7 @@ function DoneeDonationsView({ user }) {
                       e.target.src = "http://localhost:5173/src/assets/images/hands.jpg";
                     }}
                   />
-                  <div className="card-badge"><p>{card.category}</p><p>{card.status}</p></div>
+                  <div className="card-badge"><p>{card.category}</p><p className="status">{card.status}</p></div>
                 </div>
 
                   <div className="card-content">
@@ -170,7 +180,12 @@ function DoneeDonationsView({ user }) {
                   </div>
 
                   <div className="card-actions">
-                    <button className="btn btn-outline" nClick={() => navigate(`/users/donee/donation/${card.request_id}/edit`)}>Edit</button >
+                    {card.status && card.status.toLowerCase() === 'pending' && (
+                      <>
+                        <button className="btn btn-outline" onClick={() => navigate(`/users/donee/donation/${card.request_id}/edit`)}>Edit</button>
+                        <button className="btn btn-danger" onClick={() => handleDeleteDonation(card.request_id)}>Delete</button>
+                      </>
+                    )}
                     <button className="btn btn-primary" onClick={() => navigate(`/users/donee/donation/${card.request_id}/view`)}>
                       View
                     </button>

@@ -6,7 +6,8 @@ import {
   getDoneeDonations,
   getMonetaryCategories,
   getNonMonetaryCategories,
-  getDonationsByDonee
+  getDonationsByDonee,
+  deleteDonation
 } from "../controllers/donationController.js";
 import multer from "multer";
 
@@ -63,5 +64,8 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error while updating donation' });
   }
 });
+
+// Add DELETE endpoint for donation
+router.delete('/:id', deleteDonation);
 
 export default router;

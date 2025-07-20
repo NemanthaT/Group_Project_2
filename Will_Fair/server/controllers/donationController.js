@@ -3,7 +3,10 @@ import {
   createNonMonetoryDonation,
   getDonationsByDoneeId,
   getMonetaryDonationCategories,
-  getNonMonetaryDonationCategories
+  getNonMonetaryDonationCategories,
+  getDonationById,
+  updateDonationById,
+  deleteDonationById
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -201,5 +204,20 @@ export const getNonMonetaryCategories = async (req, res) => {
       success: false,
       error: "Server error while fetching non-monetary categories"
     });
+  }
+};
+
+// Add controller for deleting a donation
+export const deleteDonation = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await deleteDonationById(id);
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server error while deleting donation' });
   }
 };

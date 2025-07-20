@@ -338,6 +338,14 @@ img {
   line-height: 1.2;
 }
 
+.status{
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #0d429b;
+}
+
 .card-type {
   font-size: 1rem;
   font-weight: 200;
