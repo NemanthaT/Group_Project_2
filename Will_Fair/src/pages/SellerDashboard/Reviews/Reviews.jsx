@@ -4,12 +4,16 @@ const Reviews = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [ratingFilter, setRatingFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [replyText, setReplyText] = useState('');
 
   const reviews = [
     {
       id: 'REV001',
       productName: 'Saree dupatta',
       productId: 'PR01',
+      productImage: '/src/assets/images/featured1.jpg',
       customerName: 'Amara Perera',
       email: 'amara.perera@gmail.com',
       rating: 5,
@@ -22,6 +26,7 @@ const Reviews = () => {
       id: 'REV002',
       productName: 'Beaded necklace',
       productId: 'PR05',
+      productImage: '/src/assets/images/featured2.jpg',
       customerName: 'Nimal Silva',
       email: 'nimal.silva@yahoo.com',
       rating: 4,
@@ -34,6 +39,7 @@ const Reviews = () => {
       id: 'REV003',
       productName: 'Handloom saree',
       productId: 'PR04',
+      productImage: '/src/assets/images/featured3.jpg',
       customerName: 'Kumari Fernando',
       email: 'kumari.fernando@hotmail.com',
       rating: 3,
@@ -46,6 +52,7 @@ const Reviews = () => {
       id: 'REV004',
       productName: 'Flower vase',
       productId: 'PR12',
+      productImage: '/src/assets/images/featured4.jpg',
       customerName: 'Rashika Jayawardena',
       email: 'rashika.jaya@gmail.com',
       rating: 5,
@@ -58,6 +65,7 @@ const Reviews = () => {
       id: 'REV005',
       productName: 'Wall decor art',
       productId: 'PR14',
+      productImage: '/src/assets/images/featured5.jpg',
       customerName: 'Sandun Wickramasinghe',
       email: 'sandun.w@outlook.com',
       rating: 2,
@@ -70,6 +78,7 @@ const Reviews = () => {
       id: 'REV006',
       productName: 'Dried flower art',
       productId: 'PR13',
+      productImage: '/src/assets/images/featured6.jpg',
       customerName: 'Malini Rajapaksa',
       email: 'malini.rajapaksa@gmail.com',
       rating: 4,
@@ -82,6 +91,7 @@ const Reviews = () => {
       id: 'REV007',
       productName: 'Summertime kurta',
       productId: 'PR02',
+      productImage: '/src/assets/images/featured7.jpg',
       customerName: 'Tharanga Mendis',
       email: 'tharanga.mendis@yahoo.com',
       rating: 5,
@@ -94,6 +104,7 @@ const Reviews = () => {
       id: 'REV008',
       productName: 'Shirts',
       productId: 'PR03',
+      productImage: '/src/assets/images/featured8.jpg',
       customerName: 'Kamal Dissanayake',
       email: 'kamal.dissanayake@gmail.com',
       rating: 3,
@@ -106,6 +117,7 @@ const Reviews = () => {
       id: 'REV009',
       productName: 'Beaded necklace',
       productId: 'PR05',
+      productImage: '/src/assets/images/featured2.jpg',
       customerName: 'Chamari Gunasekara',
       email: 'chamari.guna@hotmail.com',
       rating: 1,
@@ -118,6 +130,7 @@ const Reviews = () => {
       id: 'REV010',
       productName: 'Flower vase',
       productId: 'PR12',
+      productImage: '/src/assets/images/featured4.jpg',
       customerName: 'Priyanka Abeysinghe',
       email: 'priyanka.abey@gmail.com',
       rating: 4,
@@ -130,15 +143,43 @@ const Reviews = () => {
 
   const filteredReviews = reviews.filter(review => {
     const matchesSearch = review.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.id.toLowerCase().includes(searchTerm.toLowerCase());
+      review.customerName.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRating = ratingFilter === '' || review.rating.toString() === ratingFilter;
     const matchesStatus = statusFilter === '' || review.status === statusFilter;
 
     return matchesSearch && matchesRating && matchesStatus;
   });
+
+  const handleViewReview = (review) => {
+    setSelectedReview(review);
+    setShowReviewModal(true);
+    setReplyText('');
+  };
+
+  const handleCloseModal = () => {
+    setShowReviewModal(false);
+    setSelectedReview(null);
+    setReplyText('');
+  };
+
+  const handleSendReply = () => {
+    if (replyText.trim()) {
+      console.log('Reply sent:', replyText);
+      // Here you would typically send the reply to your backend
+      alert('Reply sent successfully!');
+      setReplyText('');
+    }
+  };
+
+  const handleFlagReview = () => {
+    if (selectedReview) {
+      console.log('Review flagged:', selectedReview.id);
+      // Here you would typically update the review status in your backend
+      alert('Review has been flagged for moderation.');
+      handleCloseModal();
+    }
+  };
 
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
@@ -294,7 +335,6 @@ const Reviews = () => {
           <table>
             <thead>
               <tr>
-                <th>Review ID</th>
                 <th>Product</th>
                 <th>Customer</th>
                 <th>Rating</th>
@@ -308,17 +348,14 @@ const Reviews = () => {
             <tbody>
               {filteredReviews.map((review) => (
                 <tr key={review.id}>
-                  <td>{review.id}</td>
                   <td>
                     <div className="product-cell">
                       <div className="product-name">{review.productName}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{review.productId}</div>
                     </div>
                   </td>
                   <td>
                     <div className="product-cell">
                       <div className="product-name">{review.customerName}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{review.email}</div>
                     </div>
                   </td>
                   <td>
@@ -348,7 +385,13 @@ const Reviews = () => {
                   <td className="price-cell">{review.helpful}</td>
                   <td>
                     <div className="action-buttons">
-                      <button className="action-btn view" title="View Full Review">👁️</button>
+                      <button 
+                        className="action-btn view" 
+                        title="View Full Review"
+                        onClick={() => handleViewReview(review)}
+                      >
+                        👁️
+                      </button>
                       <button className="action-btn edit" title="Moderate">✏️</button>
                       <button className="action-btn delete" title="Delete">🗑️</button>
                     </div>
@@ -359,6 +402,108 @@ const Reviews = () => {
           </table>
         </div>
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && selectedReview && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Review Details</h3>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                ×
+              </button>
+            </div>
+            <div className="product-form">
+              {/* Product Information */}
+              <div className="review-product-section">
+                <div className="review-product-info">
+                  <img 
+                    src={selectedReview.productImage} 
+                    alt={selectedReview.productName}
+                    className="review-product-image"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/150x150?text=Product+Image';
+                    }}
+                  />
+                  <div className="review-product-details">
+                    <h4 className="review-product-name">{selectedReview.productName}</h4>
+                    <p className="review-product-id">Product ID: {selectedReview.productId}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer and Review Information */}
+              <div className="review-customer-section">
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Customer Name</label>
+                    <div className="review-display-value">{selectedReview.customerName}</div>
+                  </div>
+                  <div className="form-group">
+                    <label>Review Date</label>
+                    <div className="review-display-value">{selectedReview.date}</div>
+                  </div>
+                  <div className="form-group">
+                    <label>Rating</label>
+                    <div className="review-display-value">
+                      <span style={{ color: '#f59e0b', fontSize: '1.2rem', marginRight: '0.5rem' }}>
+                        {renderStars(selectedReview.rating)}
+                      </span>
+                      ({selectedReview.rating}/5)
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Status</label>
+                    <div className="review-display-value">
+                      <span className={`status-badge ${getStatusClass(selectedReview.status)}`}>
+                        {selectedReview.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Customer Review</label>
+                  <div className="review-text-display">
+                    {selectedReview.reviewText}
+                  </div>
+                </div>
+              </div>
+
+              {/* Reply Section */}
+              <div className="review-reply-section">
+                <div className="form-group full-width">
+                  <label>Reply to Customer</label>
+                  <textarea
+                    className="form-textarea"
+                    placeholder="Write your response to the customer's review..."
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    rows="4"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="review-actions">
+                <button 
+                  className="review-action-btn flag-btn"
+                  onClick={handleFlagReview}
+                >
+                  🚩 Flag Review
+                </button>
+                <button 
+                  className="review-action-btn reply-btn"
+                  onClick={handleSendReply}
+                  disabled={!replyText.trim()}
+                >
+                  📤 Send Reply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
