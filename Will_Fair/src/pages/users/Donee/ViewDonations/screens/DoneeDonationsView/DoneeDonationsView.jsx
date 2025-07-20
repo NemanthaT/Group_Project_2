@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import axios from "axios";
-import HealthcareImg from '../../../../../../assets/images/Healthcare.jpg';
-import EducationSupportImg from '../../../../../../assets/images/EducationSupport.jpg';
-import DisasterReliefImg from '../../../../../../assets/images/DisasterRelief.jpg';
-import UsedToysImg from '../../../../../../assets/images/UsedToys.jpg';
-import BasicNeedsImg from '../../../../../../assets/images/BasicNeeds.jpg';
-import ChildrenCareImg from '../../../../../../assets/images/childrenCare.jpg';
+import HealthcareImg from 'http://localhost:5173/src/assets/images/Healthcare.jpg';
+import EducationSupportImg from 'http://localhost:5173/src/assets/images/EducationSupport.jpg';
+import DisasterReliefImg from 'http://localhost:5173/src/assetsimages/DisasterRelief.jpg';
+import UsedToysImg from 'http://localhost:5173/src/assetsimages/UsedToys.jpg';
+import BasicNeedsImg from 'http://localhost:5173/src/assetsimages/BasicNeeds.jpg';
+import ChildrenCareImg from 'http://localhost:5173/src/assetsimages/childrenCare.jpg';
 
 function DoneeDonationsView({ user }) {
   const navigate = useNavigate();
@@ -17,7 +17,6 @@ function DoneeDonationsView({ user }) {
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const goToViewDonation = () => navigate("/users/view");
   const goToMonetaryFormIndividual = () => navigate("/users/donee/form");
 
   useEffect(() => {
@@ -114,30 +113,30 @@ function DoneeDonationsView({ user }) {
               {filteredCards.map((card) => (
                 <div key={card.request_id} className="donation-card">
                   <div className="card-image-container">
-                    <img
-                      src={
-                        card.image_path
-                          ? `/${card.image_path}`
-                          : card.category === 'Healthcare'
-                            ? HealthcareImg
-                          : card.category === 'Education'
-                            ? EducationSupportImg
-                          : card.category === 'Disaster Relief'
-                            ? DisasterReliefImg
-                          : card.category === 'Basic Needs'
-                            ? BasicNeedsImg
-                          : card.category === 'Children Care'
-                            ? ChildrenCareImg
-                          : UsedToysImg
-                      }
-                      alt={card.title}
-                      className="card-image"
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
-                      }}
-                    />
-                    <div className="card-badge"><p>{card.category}</p><p>{card.status}</p></div>
-                  </div>
+                  <img
+                    src={
+                      card.image_path && card.image_path.startsWith('uploads/')
+                        ? `http://localhost:5173/server/${card.image_path.replace(/\\/g, '/')}`
+                        : card.category === 'Healthcare'
+                        ? HealthcareImg
+                        : card.category === 'Education'
+                        ? EducationSupportImg
+                        : card.category === 'Disaster Relief'
+                        ? DisasterReliefImg
+                        : card.category === 'Basic Needs'
+                        ? BasicNeedsImg
+                        : card.category === 'Children Care'
+                        ? ChildrenCareImg
+                        : UsedToysImg
+                    }
+                    alt={card.title}
+                    className="card-image"
+                    onError={(e) => {
+                      e.target.src = "http://localhost:5173/src/assets/images/hands.jpg";
+                    }}
+                  />
+                  <div className="card-badge"><p>{card.category}</p><p>{card.status}</p></div>
+                </div>
 
                   <div className="card-content">
                     <h3 className="card-title">{card.title}</h3>
@@ -163,8 +162,6 @@ function DoneeDonationsView({ user }) {
                           ? `Rs.${card.quantity_received}` 
                           : card.quantity_received}
                         <br />
-                        {console.log("quantity_needed:", card.quantity_needed)}
-                        {console.log("quantity_recieved:", card.quantity_received)}
                         {card.type === "Monetary" 
                           ? `Rs.${card.quantity_needed}` 
                           : card.quantity_needed}
@@ -173,8 +170,8 @@ function DoneeDonationsView({ user }) {
                   </div>
 
                   <div className="card-actions">
-                    <button className="btn btn-outline">Edit</button>
-                    <button className="btn btn-primary" onClick={goToViewDonation}>
+                    <button className="btn btn-outline" nClick={() => navigate(`/users/donee/donation/${card.request_id}/edit`)}>Edit</button >
+                    <button className="btn btn-primary" onClick={() => navigate(`/users/donee/donation/${card.request_id}/view`)}>
                       View
                     </button>
                   </div>

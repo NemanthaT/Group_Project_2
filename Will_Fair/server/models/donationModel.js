@@ -69,6 +69,16 @@ async function createMonetoryDonation(donationData) {
         documentPath = newDocPath;
       }
     }
+    // If no image uploaded, use category's default image_path
+    if (!imagePath) {
+      const categoryImageResult = await pool.query(
+        'SELECT image_path FROM donation_categories WHERE category_id = $1',
+        [categoryId]
+      );
+      if (categoryImageResult.rows.length > 0) {
+        imagePath = categoryImageResult.rows[0].image_path || null;
+      }
+    }
     // Update the donation record with file paths
     await pool.query(
       `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
@@ -151,6 +161,16 @@ async function createNonMonetoryDonation(donationData) {
         documentPath = newDocPath;
       }
     }
+    // If no image uploaded, use category's default image_path
+    if (!imagePath) {
+      const categoryImageResult = await pool.query(
+        'SELECT image_path FROM donation_categories WHERE category_id = $1',
+        [categoryId]
+      );
+      if (categoryImageResult.rows.length > 0) {
+        imagePath = categoryImageResult.rows[0].image_path || null;
+      }
+    }
     // Update the donation record with file paths
     await pool.query(
       `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
@@ -214,10 +234,57 @@ async function getNonMonetaryDonationCategories() {
   }
 }
 
+// Get a single donation by ID
+async function getDonationById(id) {
+  try {
+    const result = await pool.query(
+      `SELECT dr.*, dc.category_name AS category FROM donation_requests dr LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id WHERE dr.request_id = $1`,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return { success: false, message: 'Donation not found' };
+    }
+    return { success: true, donation: result.rows[0] };
+  } catch (err) {
+    console.error('Database error during getDonationById():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+// Update a donation by ID
+async function updateDonationById(id, data) {
+  try {
+    // Only allow updating certain fields
+    const allowedFields = ['title', 'description', 'quantity_needed', 'status', 'dropoff_date', 'due_date'];
+    const setClauses = [];
+    const values = [];
+    let idx = 1;
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        setClauses.push(`${field} = $${idx}`);
+        values.push(data[field]);
+        idx++;
+      }
+    }
+    if (setClauses.length === 0) {
+      return { success: false, message: 'No valid fields to update' };
+    }
+    values.push(id);
+    const query = `UPDATE donation_requests SET ${setClauses.join(', ')} WHERE request_id = $${values.length}`;
+    await pool.query(query, values);
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during updateDonationById():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export { 
   createMonetoryDonation, 
   createNonMonetoryDonation, 
   getDonationsByDoneeId, 
   getMonetaryDonationCategories, 
-  getNonMonetaryDonationCategories 
+  getNonMonetaryDonationCategories,
+  getDonationById,
+  updateDonationById
 };

@@ -34,4 +34,34 @@ router.post('/dashboardRequests', getDonationsByDonee);
 router.get('/monetaryCategories', getMonetaryCategories);
 router.get('/nonMonetaryCategories', getNonMonetaryCategories);
 
+// Get a single donation by ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await import('../models/donationModel.js').then(m => m.getDonationById(id));
+    if (result.success) {
+      res.status(200).json({ success: true, donation: result.donation });
+    } else {
+      res.status(404).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server error while fetching donation' });
+  }
+});
+
+// Update a donation by ID
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await import('../models/donationModel.js').then(m => m.updateDonationById(id, req.body));
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server error while updating donation' });
+  }
+});
+
 export default router;

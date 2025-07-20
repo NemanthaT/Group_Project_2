@@ -75,20 +75,16 @@ function Header({ user }) {
           <button className="sign-in-btn" onClick={goToLoginF}>
             Fundraise
           </button>
-          <div className="profile-container" style={{ display: user ? "block" : "none" }}>
+          <div className="profile-container" style={{ display: user ? "flex" : "none", alignItems: "center", gap: "0.5rem" }}>
             {user ? (
-              <div className="user-info">
-                {/*
-                <span className="user-name">{user.name}</span>
-                */}
+              <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <UserCircle size={30} color="#555" />
-                <button className="logout-btn" onClick={handleLogout}>
+                <button className="logout-btn" style={{ marginLeft: 0 }} onClick={handleLogout}>
                   Logout
                 </button>
               </div>
             ) : (
-              <div className="guest-info">
-              </div>
+              <div className="guest-info"></div>
             )}
           </div>
         </div>
