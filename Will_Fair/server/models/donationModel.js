@@ -300,6 +300,23 @@ async function deleteDonationById(id) {
   }
 }
 
+// Get recent donations
+async function getRecentDonations() {
+  try {
+    const result = await pool.query(`
+      SELECT dr.*, dc.category_name AS category
+      FROM donation_requests dr
+      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+      ORDER BY dr.created_at DESC NULLS LAST, dr.request_id DESC
+      LIMIT 3
+    `);
+    return { success: true, donations: result.rows };
+  } catch (err) {
+    console.error('Database error during getRecentDonations():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export { 
   createMonetoryDonation, 
   createNonMonetoryDonation, 
@@ -309,4 +326,5 @@ export {
   getDonationById,
   updateDonationById,
   deleteDonationById,
+  getRecentDonations,
 };

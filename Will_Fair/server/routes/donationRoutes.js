@@ -7,7 +7,8 @@ import {
   getMonetaryCategories,
   getNonMonetaryCategories,
   getDonationsByDonee,
-  deleteDonation
+  deleteDonation,
+  getRecentDonationsController
 } from "../controllers/donationController.js";
 import multer from "multer";
 
@@ -34,6 +35,7 @@ router.post('/dashboardRequests', getDonationsByDonee);
 // Public routes
 router.get('/monetaryCategories', getMonetaryCategories);
 router.get('/nonMonetaryCategories', getNonMonetaryCategories);
+router.get('/recent', getRecentDonationsController);
 
 // Get a single donation by ID
 router.get('/:id', async (req, res) => {

@@ -1,0 +1,106 @@
+.donation-view-container {
+  display: flex;
+  flex-wrap: wrap;
+  background: #fff;
+  border:#0d429b 1px solid;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(13,66,155,0.08);
+  margin: 10% auto;
+  max-width: 900px;
+  overflow: hidden;
+}
+.donation-view-image-section {
+  flex: 1 1 320px;
+  min-width: 320px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.donation-view-image {
+  width: 100%;
+  max-width: 350px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 2rem;
+  background: #e5e7eb;
+}
+.donation-view-content-section {
+  flex: 2 1 400px;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.donation-view-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0d429b;
+  margin-bottom: 1rem;
+}
+.donation-view-description {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+.donation-view-progress {
+  margin-bottom: 1.5rem;
+}
+.donation-view-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.donation-view-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+.donation-view-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #374151;
+}
+.donation-view-meta {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 2rem;
+  font-size: 1rem;
+  color: #64748b;
+}
+.donation-view-deadline {
+  font-weight: 500;
+}
+.donation-view-status {
+  font-weight: 500;
+}
+.donation-view-loading, .donation-view-error {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #0d429b;
+  margin: 2rem 0;
+}
+@media (max-width: 900px) {
+  .donation-view-container {
+    flex-direction: column;
+    max-width: 98vw;
+  }
+  .donation-view-image-section {
+    min-width: 100%;
+    justify-content: flex-start;
+  }
+  .donation-view-image {
+    margin: 1rem auto;
+    height: 220px;
+    max-width: 98vw;
+  }
+  .donation-view-content-section {
+    padding: 1.5rem 1rem;
+  }
+}
