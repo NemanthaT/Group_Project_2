@@ -154,7 +154,6 @@ const BuyerHistory = () => {
           <table>
             <thead>
               <tr>
-                <th>Order ID</th>
                 <th>Date</th>
                 <th>Items</th>
                 <th>Seller</th>
@@ -167,7 +166,6 @@ const BuyerHistory = () => {
             <tbody>
               {currentPurchases.map((purchase) => (
                 <tr key={purchase.id}>
-                  <td className="buyer-order-id">{purchase.id}</td>
                   <td className="buyer-date">{purchase.date}</td>
                   <td className="buyer-items">
                     <div className="buyer-items-list">

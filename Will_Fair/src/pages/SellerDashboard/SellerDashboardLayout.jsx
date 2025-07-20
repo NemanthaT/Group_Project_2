@@ -20,20 +20,32 @@ function SellerDashboardLayout() {
     navigate('profile');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userData');
+    localStorage.clear();
+    window.location.href = '/';
+  };
+
   return (
-    <div className="dashboard">
+    <div className="seller-dashboard">
       {/* Mobile overlay */}
-      <div className="sidebar-overlay" onClick={() => {
-        document.querySelector('.sidebar').classList.remove('sidebar-open');
+      <div className="seller-sidebar-overlay" onClick={() => {
+        document.querySelector('.seller-sidebar').classList.remove('seller-sidebar-open');
       }}></div>
 
       {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="logo">
+      <div className="seller-sidebar">
+        <div className="seller-sidebar-header">
+          <div className="seller-logo">
+            <div className="seller-logo-icon">🛍️</div>
+            <div className="seller-logo-text">
+              <h2>Seller Portal</h2>
+              <p>Manage your business</p>
+            </div>
           </div>
         </div>
-        <nav className="sidebar-nav">
+        <nav className="seller-sidebar-nav">
           {navItems.map((item) => {
             // Hide specific navigation items
             if (['Categories', 'Marketing', 'Reports', 'Settings'].includes(item.name)) {
@@ -45,45 +57,44 @@ function SellerDashboardLayout() {
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) =>
-                  `nav-item ${isActive ? "active" : ""}`
+                  `seller-nav-item ${isActive ? "active" : ""}`
                 }
               >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-text">{item.name}</span>
+                <span className="seller-nav-icon">{item.icon}</span>
+                <span className="seller-nav-text">{item.name}</span>
               </NavLink>
             );
           })}
         </nav>
-        
       </div>
 
       {/* Main content */}
-      <div className="main-content-seller">
-        <div className="header-dashboard">
-          <button className="mobile-menu-btn" onClick={() => {
-            document.querySelector('.sidebar').classList.toggle('sidebar-open');
+      <div className="seller-main-content">
+        <div className="seller-header-dashboard">
+          <button className="seller-mobile-menu-btn" onClick={() => {
+            document.querySelector('.seller-sidebar').classList.toggle('seller-sidebar-open');
           }}>
             ☰
           </button>
-          <h1 className="header-title">Seller Dashboard</h1>
+          <h1 className="seller-header-title">Seller Dashboard</h1>
           
           {/* Navigation Links */}
-          <div className="header-nav-links">
-            <a href="/" className="header-nav-link">Home</a>
-            <a href="/marketplace" className="header-nav-link">Marketplace</a>
-            <a href="/#contact" className="header-nav-link">Contact Us</a>
+          <div className="seller-header-nav-links">
+            <a href="/" className="seller-header-nav-link">Home</a>
+            <a href="/marketplace" className="seller-header-nav-link">Marketplace</a>
+            <a href="/#contact" className="seller-header-nav-link">Contact Us</a>
           </div>
           
-          <div className="header-right">
-            <div className="notifications">
-              <span className="notification-icon">🔔</span>
-              <span className="notification-badge">3</span>
+          <div className="seller-header-right">
+            <div className="seller-notifications">
+              <span className="seller-notification-icon">🔔</span>
+              <span className="seller-notification-badge">3</span>
             </div>
-            <span className="logout-text">Logout</span>
-            <div className="profile-icon" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>👤</div>
+            <span className="seller-logout-text" onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</span>
+            <div className="seller-profile-icon" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>👤</div>
           </div>
         </div>
-        <div className="content-wrapper">
+        <div className="seller-content-wrapper">
           <Outlet />
         </div>
       </div>
