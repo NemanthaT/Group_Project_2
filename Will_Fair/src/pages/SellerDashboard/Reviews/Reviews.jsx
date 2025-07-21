@@ -184,13 +184,13 @@ const Reviews = () => {
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
       case 'published':
-        return 'active';
+        return 'seller-active';
       case 'pending':
-        return 'pending';
+        return 'seller-pending';
       case 'flagged':
-        return 'inactive';
+        return 'seller-inactive';
       default:
-        return 'active';
+        return 'seller-active';
     }
   };
 
@@ -214,41 +214,41 @@ const Reviews = () => {
   const ratingDistribution = getRatingDistribution();
 
   return (
-    <div className="reviews-content">
+    <div className="seller-dashboard-content">
       {/* Header Section */}
-      <div className="welcome-section">
-        <div className="welcome-content">
+      <div className="seller-welcome-section">
+        <div className="seller-welcome-content">
           <h2>Customer Reviews</h2>
           <p>Manage and monitor customer feedback for your products</p>
         </div>
-        <div className="quick-actions">
-          <button className="quick-action-btn secondary">Export Reviews</button>
-          <button className="quick-action-btn primary">Review Analytics</button>
+        <div className="seller-quick-actions">
+          <button className="seller-quick-action-btn seller-secondary">Export Reviews</button>
+          <button className="seller-quick-action-btn seller-primary">Review Analytics</button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#22c55e15', color: '#22c55e' }}>
+      <div className="seller-stats-grid">
+        <div className="seller-stat-card">
+          <div className="seller-stat-icon" style={{ backgroundColor: '#22c55e15', color: '#22c55e' }}>
             ⭐
           </div>
-          <div className="stat-info">
-            <div className="stat-value">{getAverageRating()}</div>
-            <div className="stat-label">Average Rating</div>
-            <div className="stat-trend" style={{ color: '#10b981' }}>
+          <div className="seller-stat-info">
+            <div className="seller-stat-value">{getAverageRating()}</div>
+            <div className="seller-stat-label">Average Rating</div>
+            <div className="seller-stat-trend" style={{ color: '#10b981' }}>
               +0.2 this month
             </div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#3b82f615', color: '#3b82f6' }}>
+        <div className="seller-stat-card">
+          <div className="seller-stat-icon" style={{ backgroundColor: '#3b82f615', color: '#3b82f6' }}>
             💬
           </div>
-          <div className="stat-info">
-            <div className="stat-value">{reviews.length}</div>
-            <div className="stat-label">Total Reviews</div>
-            <div className="stat-trend" style={{ color: '#10b981' }}>
+          <div className="seller-stat-info">
+            <div className="seller-stat-value">{reviews.length}</div>
+            <div className="seller-stat-label">Total Reviews</div>
+            <div className="seller-stat-trend" style={{ color: '#10b981' }}>
               +{reviews.filter(r => r.status === 'Published').length} published
             </div>
           </div>
@@ -256,21 +256,21 @@ const Reviews = () => {
       </div>
 
       {/* Rating Distribution */}
-      <div className="overview-grid">
-        <div className="overview-card">
-          <div className="card-header">
+      <div className="seller-overview-grid">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>Rating Distribution</h3>
-            <button className="view-all-btn">View Details</button>
+            <button className="seller-view-all-btn">View Details</button>
           </div>
-          <div className="card-content">
+          <div className="seller-card-content">
             {[5, 4, 3, 2, 1].map(rating => (
-              <div key={rating} className="order-item" style={{ alignItems: 'center' }}>
-                <div className="order-info" style={{ flex: 'none', minWidth: '100px' }}>
-                  <div className="order-id">{rating} Stars</div>
-                  <div className="customer-name">{renderStars(rating)}</div>
+              <div key={rating} className="seller-order-item" style={{ alignItems: 'center' }}>
+                <div className="seller-order-info" style={{ flex: 'none', minWidth: '100px' }}>
+                  <div className="seller-order-id">{rating} Stars</div>
+                  <div className="seller-customer-name">{renderStars(rating)}</div>
                 </div>
-                <div className="order-details" style={{ flex: 1, textAlign: 'left' }}>
-                  <div className="order-amount">{ratingDistribution[rating]} reviews</div>
+                <div className="seller-order-details" style={{ flex: 1, textAlign: 'left' }}>
+                  <div className="seller-order-amount">{ratingDistribution[rating]} reviews</div>
                   <div style={{ 
                     width: '100%', 
                     height: '8px', 
@@ -294,21 +294,21 @@ const Reviews = () => {
       </div>
 
       {/* Reviews Table */}
-      <div className="table-section">
-        <div className="section-header">
+      <div className="seller-table-section">
+        <div className="seller-section-header">
           <h3>All Reviews</h3>
-          <div className="table-actions">
-            <div className="search-box">
+          <div className="seller-table-actions">
+            <div className="seller-search-box">
               <input
                 type="text"
                 placeholder="Search reviews..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <span className="search-icon">🔍</span>
+              <span className="seller-search-icon">🔍</span>
             </div>
             <select
-              className="filter-select"
+              className="seller-filter-select"
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
             >
@@ -320,7 +320,7 @@ const Reviews = () => {
               <option value="1">1 Star</option>
             </select>
             <select
-              className="filter-select"
+              className="seller-filter-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -331,7 +331,7 @@ const Reviews = () => {
             </select>
           </div>
         </div>
-        <div className="table-container">
+        <div className="seller-table-container">
           <table>
             <thead>
               <tr>
@@ -349,13 +349,13 @@ const Reviews = () => {
               {filteredReviews.map((review) => (
                 <tr key={review.id}>
                   <td>
-                    <div className="product-cell">
-                      <div className="product-name">{review.productName}</div>
+                    <div className="seller-product-cell">
+                      <div className="seller-product-name">{review.productName}</div>
                     </div>
                   </td>
                   <td>
-                    <div className="product-cell">
-                      <div className="product-name">{review.customerName}</div>
+                    <div className="seller-product-cell">
+                      <div className="seller-product-name">{review.customerName}</div>
                     </div>
                   </td>
                   <td>
@@ -363,7 +363,7 @@ const Reviews = () => {
                       <span style={{ color: '#f59e0b', fontSize: '1.2rem' }}>
                         {renderStars(review.rating)}
                       </span>
-                      <span className="price-cell">({review.rating})</span>
+                      <span className="seller-price-cell">({review.rating})</span>
                     </div>
                   </td>
                   <td>
@@ -378,22 +378,22 @@ const Reviews = () => {
                   </td>
                   <td>{review.date}</td>
                   <td>
-                    <span className={`status-badge ${getStatusClass(review.status)}`}>
+                    <span className={`seller-status-badge ${getStatusClass(review.status)}`}>
                       {review.status}
                     </span>
                   </td>
-                  <td className="price-cell">{review.helpful}</td>
+                  <td className="seller-price-cell">{review.helpful}</td>
                   <td>
-                    <div className="action-buttons">
+                    <div className="seller-action-buttons">
                       <button 
-                        className="action-btn view" 
+                        className="seller-action-btn seller-view" 
                         title="View Full Review"
                         onClick={() => handleViewReview(review)}
                       >
                         👁️
                       </button>
-                      <button className="action-btn edit" title="Moderate">✏️</button>
-                      <button className="action-btn delete" title="Delete">🗑️</button>
+                      <button className="seller-action-btn seller-edit" title="Moderate">✏️</button>
+                      <button className="seller-action-btn seller-delete" title="Delete">🗑️</button>
                     </div>
                   </td>
                 </tr>
@@ -405,77 +405,77 @@ const Reviews = () => {
 
       {/* Review Modal */}
       {showReviewModal && selectedReview && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="seller-modal-overlay" onClick={handleCloseModal}>
+          <div className="seller-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="seller-modal-header">
               <h3>Review Details</h3>
-              <button className="modal-close-btn" onClick={handleCloseModal}>
+              <button className="seller-modal-close-btn" onClick={handleCloseModal}>
                 ×
               </button>
             </div>
-            <div className="product-form">
+            <div className="seller-product-form">
               {/* Product Information */}
-              <div className="review-product-section">
-                <div className="review-product-info">
+              <div className="seller-review-product-section">
+                <div className="seller-review-product-info">
                   <img 
                     src={selectedReview.productImage} 
                     alt={selectedReview.productName}
-                    className="review-product-image"
+                    className="seller-review-product-image"
                     onError={(e) => {
                       e.target.src = 'https://via.placeholder.com/150x150?text=Product+Image';
                     }}
                   />
-                  <div className="review-product-details">
-                    <h4 className="review-product-name">{selectedReview.productName}</h4>
-                    <p className="review-product-id">Product ID: {selectedReview.productId}</p>
+                  <div className="seller-review-product-details">
+                    <h4 className="seller-review-product-name">{selectedReview.productName}</h4>
+                    <p className="seller-review-product-id">Product ID: {selectedReview.productId}</p>
                   </div>
                 </div>
               </div>
 
               {/* Customer and Review Information */}
-              <div className="review-customer-section">
-                <div className="form-grid">
-                  <div className="form-group">
+              <div className="seller-review-customer-section">
+                <div className="seller-form-grid">
+                  <div className="seller-form-group">
                     <label>Customer Name</label>
-                    <div className="review-display-value">{selectedReview.customerName}</div>
+                    <div className="seller-review-display-value">{selectedReview.customerName}</div>
                   </div>
-                  <div className="form-group">
+                  <div className="seller-form-group">
                     <label>Review Date</label>
-                    <div className="review-display-value">{selectedReview.date}</div>
+                    <div className="seller-review-display-value">{selectedReview.date}</div>
                   </div>
-                  <div className="form-group">
+                  <div className="seller-form-group">
                     <label>Rating</label>
-                    <div className="review-display-value">
+                    <div className="seller-review-display-value">
                       <span style={{ color: '#f59e0b', fontSize: '1.2rem', marginRight: '0.5rem' }}>
                         {renderStars(selectedReview.rating)}
                       </span>
                       ({selectedReview.rating}/5)
                     </div>
                   </div>
-                  <div className="form-group">
+                  <div className="seller-form-group">
                     <label>Status</label>
-                    <div className="review-display-value">
-                      <span className={`status-badge ${getStatusClass(selectedReview.status)}`}>
+                    <div className="seller-review-display-value">
+                      <span className={`seller-status-badge ${getStatusClass(selectedReview.status)}`}>
                         {selectedReview.status}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="form-group full-width">
+                <div className="seller-form-group seller-full-width">
                   <label>Customer Review</label>
-                  <div className="review-text-display">
+                  <div className="seller-review-text-display">
                     {selectedReview.reviewText}
                   </div>
                 </div>
               </div>
 
               {/* Reply Section */}
-              <div className="review-reply-section">
-                <div className="form-group full-width">
+              <div className="seller-review-reply-section">
+                <div className="seller-form-group seller-full-width">
                   <label>Reply to Customer</label>
                   <textarea
-                    className="form-textarea"
+                    className="seller-form-textarea"
                     placeholder="Write your response to the customer's review..."
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
@@ -485,15 +485,15 @@ const Reviews = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="review-actions">
+              <div className="seller-review-actions">
                 <button 
-                  className="review-action-btn flag-btn"
+                  className="seller-review-action-btn seller-flag-btn"
                   onClick={handleFlagReview}
                 >
                   🚩 Flag Review
                 </button>
                 <button 
-                  className="review-action-btn reply-btn"
+                  className="seller-review-action-btn seller-reply-btn"
                   onClick={handleSendReply}
                   disabled={!replyText.trim()}
                 >

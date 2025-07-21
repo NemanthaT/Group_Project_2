@@ -145,35 +145,35 @@ const SellerDashboardMain = () => {
   };
 
   return (
-    <div className="dashboard-content">
+    <div className="seller-dashboard-content">
       {/* Welcome Section */}
-      <div className="welcome-section">
-        <div className="welcome-content">
+      <div className="seller-welcome-section">
+        <div className="seller-welcome-content">
           <h2>Welcome back, John!</h2>
           <p>Here's what's happening with your store today</p>
         </div>
-        <div className="quick-actions">
+        <div className="seller-quick-actions">
           <button 
-            className="quick-action-btn primary"
+            className="seller-quick-action-btn seller-primary"
             onClick={() => setShowAddProductForm(true)}
           >
             Add Product
           </button>
-          <button className="quick-action-btn secondary">View Orders</button>
+          <button className="seller-quick-action-btn seller-secondary">View Orders</button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-grid">
+      <div className="seller-stats-grid">
         {statsCards.map((card, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-icon" style={{ backgroundColor: `${card.color}15`, color: card.color }}>
+          <div key={index} className="seller-stat-card">
+            <div className="seller-stat-icon" style={{ backgroundColor: `${card.color}15`, color: card.color }}>
               {card.icon}
             </div>
-            <div className="stat-info">
-              <div className="stat-value">{card.value}</div>
-              <div className="stat-label">{card.label}</div>
-              <div className="stat-trend" style={{ color: card.trend.startsWith('+') ? '#10b981' : '#ef4444' }}>
+            <div className="seller-stat-info">
+              <div className="seller-stat-value">{card.value}</div>
+              <div className="seller-stat-label">{card.label}</div>
+              <div className="seller-stat-trend" style={{ color: card.trend.startsWith('+') ? '#10b981' : '#ef4444' }}>
                 {card.trend}
               </div>
             </div>
@@ -182,25 +182,25 @@ const SellerDashboardMain = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="overview-grid">
+      <div className="seller-overview-grid">
         {/* Recent Orders */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>Recent Orders</h3>
-            <button className="view-all-btn">View All</button>
+            <button className="seller-view-all-btn">View All</button>
           </div>
-          <div className="card-content">
-            <div className="orders-list">
+          <div className="seller-card-content">
+            <div className="seller-orders-list">
               {recentOrders.map((order) => (
-                <div key={order.id} className="order-item">
-                  <div className="order-info">
-                    <div className="order-id">{order.id}</div>
-                    <div className="customer-name">{order.customer}</div>
-                    <div className="order-date">{order.date}</div>
+                <div key={order.id} className="seller-order-item">
+                  <div className="seller-order-info">
+                    <div className="seller-order-id">{order.id}</div>
+                    <div className="seller-customer-name">{order.customer}</div>
+                    <div className="seller-order-date">{order.date}</div>
                   </div>
-                  <div className="order-details">
-                    <div className="order-amount">{order.amount}</div>
-                    <span className="status-badge" style={{ backgroundColor: order.statusColor }}>
+                  <div className="seller-order-details">
+                    <div className="seller-order-amount">{order.amount}</div>
+                    <span className="seller-status-badge" style={{ backgroundColor: order.statusColor }}>
                       {order.status}
                     </span>
                   </div>
@@ -211,24 +211,24 @@ const SellerDashboardMain = () => {
         </div>
 
         {/* Low Stock Alert */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>Low Stock Alert</h3>
-            <button className="view-all-btn">Manage Stock</button>
+            <button className="seller-view-all-btn">Manage Stock</button>
           </div>
-          <div className="card-content">
-            <div className="stock-list">
+          <div className="seller-card-content">
+            <div className="seller-stock-list">
               {lowStockProducts.map((product, index) => (
-                <div key={index} className="stock-item">
-                  <div className="stock-info">
-                    <div className="product-name">{product.product}</div>
-                    <div className="reorder-priority">{product.reorder}</div>
+                <div key={index} className="seller-stock-item">
+                  <div className="seller-stock-info">
+                    <div className="seller-product-name">{product.product}</div>
+                    <div className="seller-reorder-priority">{product.reorder}</div>
                   </div>
-                  <div className="stock-details">
-                    <div className="stock-count" style={{ color: product.stockColor }}>
+                  <div className="seller-stock-details">
+                    <div className="seller-stock-count" style={{ color: product.stockColor }}>
                       {product.stock} left
                     </div>
-                    <button className="reorder-btn">Reorder</button>
+                    <button className="seller-reorder-btn">Reorder</button>
                   </div>
                 </div>
               ))}
@@ -237,20 +237,20 @@ const SellerDashboardMain = () => {
         </div>
 
         {/* Top Products */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>Top Selling Products</h3>
-            <button className="view-all-btn">View Reports</button>
+            <button className="seller-view-all-btn">View Reports</button>
           </div>
-          <div className="card-content">
-            <div className="products-list">
+          <div className="seller-card-content">
+            <div className="seller-products-list">
               {topProducts.map((product, index) => (
-                <div key={index} className="product-item">
-                  <div className="product-info">
-                    <div className="product-name">{product.name}</div>
-                    <div className="product-sales">{product.sales} sales</div>
+                <div key={index} className="seller-product-item">
+                  <div className="seller-product-info">
+                    <div className="seller-product-name">{product.name}</div>
+                    <div className="seller-product-sales">{product.sales} sales</div>
                   </div>
-                  <div className="product-revenue">{product.revenue}</div>
+                  <div className="seller-product-revenue">{product.revenue}</div>
                 </div>
               ))}
             </div>
@@ -259,29 +259,29 @@ const SellerDashboardMain = () => {
       </div>
 
       {/* Products Table */}
-      <div className="table-section">
-        <div className="section-header">
+      <div className="seller-table-section">
+        <div className="seller-section-header">
           <h3>Your Products</h3>
-          <div className="table-actions">
-            <div className="search-box">
+          <div className="seller-table-actions">
+            <div className="seller-search-box">
               <input type="text" placeholder="Search products..." />
-              <span className="search-icon">🔍</span>
+              <span className="seller-search-icon">🔍</span>
             </div>
-            <select className="filter-select">
+            <select className="seller-filter-select">
               <option>All Categories</option>
               <option>Clothing</option>
               <option>Jewelry</option>
               <option>Home Decor</option>
             </select>
             <button 
-              className="add-product-btn"
+              className="seller-add-product-btn"
               onClick={() => setShowAddProductForm(true)}
             >
               Add Product
             </button>
           </div>
         </div>
-        <div className="table-container">
+        <div className="seller-table-container">
           <table>
             <thead>
               <tr>
@@ -299,29 +299,29 @@ const SellerDashboardMain = () => {
                 <tr key={product.id}>
                   <td>{product.id}</td>
                   <td>
-                    <div className="product-cell">
-                      <div className="product-name">{product.name}</div>
+                    <div className="seller-product-cell">
+                      <div className="seller-product-name">{product.name}</div>
                     </div>
                   </td>
                   <td>
-                    <span className="category-badge">{product.category}</span>
+                    <span className="seller-category-badge">{product.category}</span>
                   </td>
-                  <td className="price-cell">{product.price}</td>
+                  <td className="seller-price-cell">{product.price}</td>
                   <td>
-                    <span className={`stock-indicator ${product.stock < 20 ? 'low' : 'good'}`}>
+                    <span className={`seller-stock-indicator ${product.stock < 20 ? 'seller-low' : 'seller-good'}`}>
                       {product.stock}
                     </span>
                   </td>
                   <td>
-                    <span className={`status-badge ${product.status.toLowerCase()}`}>
+                    <span className={`seller-status-badge ${product.status.toLowerCase()}`}>
                       {product.status}
                     </span>
                   </td>
                   <td>
-                    <div className="action-buttons">
-                      <button className="action-btn view" title="View">👁️</button>
-                      <button className="action-btn edit" title="Edit">✏️</button>
-                      <button className="action-btn delete" title="Delete">🗑️</button>
+                    <div className="seller-action-buttons">
+                      <button className="seller-action-btn seller-view" title="View">👁️</button>
+                      <button className="seller-action-btn seller-edit" title="Edit">✏️</button>
+                      <button className="seller-action-btn seller-delete" title="Delete">🗑️</button>
                     </div>
                   </td>
                 </tr>
@@ -333,15 +333,15 @@ const SellerDashboardMain = () => {
 
       {/* Add Product Modal */}
       {showAddProductForm && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">
+        <div className="seller-modal-overlay">
+          <div className="seller-modal-container">
+            <div className="seller-modal-header">
               <h3>Add New Product</h3>
-              <button className="modal-close-btn" onClick={handleClose}>×</button>
+              <button className="seller-modal-close-btn" onClick={handleClose}>×</button>
             </div>
-            <form onSubmit={handleSubmit} className="product-form">
-              <div className="form-grid">
-                <div className="form-group">
+            <form onSubmit={handleSubmit} className="seller-product-form">
+              <div className="seller-form-grid">
+                <div className="seller-form-group">
                   <label htmlFor="productName">Product Name</label>
                   <input
                     type="text"
@@ -349,19 +349,19 @@ const SellerDashboardMain = () => {
                     name="name"
                     value={productForm.name}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="Enter product name"
                     required
                   />
                 </div>
-                <div className="form-group">
+                <div className="seller-form-group">
                   <label htmlFor="category">Category</label>
                   <select
                     id="category"
                     name="category"
                     value={productForm.category}
                     onChange={handleInputChange}
-                    className="form-select"
+                    className="seller-form-select"
                     required
                   >
                     <option value="">Select Category</option>
@@ -372,7 +372,7 @@ const SellerDashboardMain = () => {
                     <option value="Art & Crafts">Art & Crafts</option>
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="seller-form-group">
                   <label htmlFor="price">Price (Rs.)</label>
                   <input
                     type="number"
@@ -380,14 +380,14 @@ const SellerDashboardMain = () => {
                     name="price"
                     value={productForm.price}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
                     required
                   />
                 </div>
-                <div className="form-group">
+                <div className="seller-form-group">
                   <label htmlFor="stock">Stock Quantity</label>
                   <input
                     type="number"
@@ -395,56 +395,56 @@ const SellerDashboardMain = () => {
                     name="stock"
                     value={productForm.stock}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="0"
                     min="0"
                     required
                   />
                 </div>
-                <div className="form-group">
+                <div className="seller-form-group">
                   <label htmlFor="status">Status</label>
                   <select
                     id="status"
                     name="status"
                     value={productForm.status}
                     onChange={handleInputChange}
-                    className="form-select"
+                    className="seller-form-select"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
                 </div>
               </div>
-              <div className="form-group full-width">
+              <div className="seller-form-group seller-full-width">
                 <label htmlFor="description">Description</label>
                 <textarea
                   id="description"
                   name="description"
                   value={productForm.description}
                   onChange={handleInputChange}
-                  className="form-textarea"
+                  className="seller-form-textarea"
                   placeholder="Enter product description..."
                   rows="4"
                 />
               </div>
               
               {/* Image Upload Section */}
-              <div className="form-group full-width">
+              <div className="seller-form-group seller-full-width">
                 <label htmlFor="images">Product Images</label>
-                <div className="image-upload-container">
-                  <div className="image-upload-dropzone">
+                <div className="seller-image-upload-container">
+                  <div className="seller-image-upload-dropzone">
                     <input
                       type="file"
                       id="images"
                       name="images"
                       accept={acceptedExtensions.join(',')}
                       onChange={handleImageUpload}
-                      className="image-input"
+                      className="seller-image-input"
                       multiple
                     />
-                    <div className="upload-content">
-                      <div className="upload-icon">📁</div>
-                      <div className="upload-text">
+                    <div className="seller-upload-content">
+                      <div className="seller-upload-icon">📁</div>
+                      <div className="seller-upload-text">
                         <span>Click to upload images</span>
                         <small>PNG, JPG up to 5MB each (max {maxFiles} files)</small>
                       </div>
@@ -453,26 +453,26 @@ const SellerDashboardMain = () => {
                   
                   {/* Image Preview Section */}
                   {productForm.images.length > 0 && (
-                    <div className="image-preview-container">
+                    <div className="seller-image-preview-container">
                       <h4>Selected Images ({productForm.images.length}/{maxFiles})</h4>
-                      <div className="image-preview-grid">
+                      <div className="seller-image-preview-grid">
                         {productForm.images.map((file, index) => (
-                          <div key={index} className="image-preview-item">
+                          <div key={index} className="seller-image-preview-item">
                             <img 
                               src={URL.createObjectURL(file)} 
                               alt={`Preview ${index + 1}`}
-                              className="preview-image"
+                              className="seller-preview-image"
                             />
-                            <div className="image-info">
-                              <span className="image-name">{file.name}</span>
-                              <span className="image-size">
+                            <div className="seller-image-info">
+                              <span className="seller-image-name">{file.name}</span>
+                              <span className="seller-image-size">
                                 {(file.size / 1024 / 1024).toFixed(2)} MB
                               </span>
                             </div>
                             <button
                               type="button"
                               onClick={() => removeImage(index)}
-                              className="remove-image-btn"
+                              className="seller-remove-image-btn"
                               title="Remove image"
                             >
                               ×
@@ -484,11 +484,11 @@ const SellerDashboardMain = () => {
                   )}
                 </div>
               </div>
-              <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={handleClose}>
+              <div className="seller-form-actions">
+                <button type="button" className="seller-btn-secondary" onClick={handleClose}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="seller-btn-primary">
                   Add Product
                 </button>
               </div>

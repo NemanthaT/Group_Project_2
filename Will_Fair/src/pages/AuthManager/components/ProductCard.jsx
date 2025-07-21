@@ -16,20 +16,20 @@ export const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className="product-card">
-      <div className="product-image-container">
+    <div className="authmanager-product-card">
+      <div className="authmanager-product-image-container">
         <img
-          className="product-image"
+          className="authmanager-product-image"
           alt={product.title}
           src={product.image}
         />
         <button 
-          className="heart-btn" 
+          className="authmanager-heart-btn" 
           onClick={toggleLike}
           aria-label="Add to favorites"
         >
           <svg 
-            className="heart-icon" 
+            className="authmanager-heart-icon" 
             fill={isLiked ? "#ff6b6b" : "none"} 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -44,20 +44,20 @@ export const ProductCard = ({ product }) => {
         </button>
       </div>
 
-      <div className="product-content">
-        <h3 className="product-title">
+      <div className="authmanager-product-content">
+        <h3 className="authmanager-product-title">
           {product.title}
         </h3>
 
-        <p className="product-price">
+        <p className="authmanager-product-price">
           {product.price}
         </p>
 
-        <div className="product-actions">
-          <button className="view-btn" onClick={handleView}>
+        <div className="authmanager-product-actions">
+          <button className="authmanager-view-btn" onClick={handleView}>
             View
           </button>
-          <button className="accept-btn" onClick={handleAccept}>
+          <button className="authmanager-accept-btn" onClick={handleAccept}>
             Accept
           </button>
         </div>
