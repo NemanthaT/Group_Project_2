@@ -10,12 +10,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { productStyles } from '../../assets/styles/productstyles';
+import { DrawerActions } from '@react-navigation/native';
+
 
 const Product = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const product = {
-    name: 'Very nice asa hithena smart jewelry',
+    name: 'Smart Jewelry',
     price: 'Rs. 2000',
     image: require('../../assets/images/jewelry-sample.png'),
     };
@@ -25,15 +27,23 @@ const Product = () => {
 
       {/* Header */}
       <LinearGradient colors={['#9333EA', '#2622A8']} style={productStyles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={productStyles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
+        <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
         <Image source={require('../../assets/images/logo-white.png')} style={productStyles.logo} resizeMode="contain" />
       </LinearGradient>
 
       {/* Product Info */}
       <View style={productStyles.detailsContainer}>
-        <Text style={productStyles.title}>{product.name}</Text>
+        <Text style={productStyles.headerTitle}>{product.name}</Text>
 
         {/* Product Image */}
         <Image source={product.image} style={productStyles.productImage} resizeMode="contain" />

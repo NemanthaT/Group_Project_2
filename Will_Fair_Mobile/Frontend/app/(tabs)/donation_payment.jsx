@@ -9,6 +9,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions } from "@react-navigation/native";
 import { payment as styles } from "../../assets/styles/payment";
 
 const DonationPayment = () => {
@@ -27,6 +28,17 @@ const DonationPayment = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+        <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
         <View style={styles.logoContainer}>
           <View style={styles.logoBackground}>
             <Image

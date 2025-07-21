@@ -3,12 +3,26 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { programStyles as styles } from '../../assets/styles/programstyles';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 const Program = () => {
+  const navigation = useNavigation();
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient colors={['#7B61FF', '#9333EA']} style={styles.header}>
+        <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
+
         <Image
           source={require('../../assets/images/logo-white.png')}
           style={styles.headerLogo}
@@ -66,16 +80,16 @@ const Program = () => {
       {/* Action Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.feedbackButton}>
-          <Text style={styles.feedbackText}>Send Feedback</Text>
+          <Text style={styles.feedbackText}>Participate</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.editButton}>
+        {/* <TouchableOpacity style={styles.editButton}>
           <Ionicons name="create-outline" size={16} color="#fff" />
           <Text style={styles.editText}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.removeButton}>
           <Ionicons name="trash-outline" size={16} color="#fff" />
           <Text style={styles.removeText}>Remove</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );

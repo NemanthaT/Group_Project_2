@@ -5,25 +5,33 @@ export const programStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+  header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
+
+    sectionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginVertical: 10,
+    color: "#333",
   },
+
+  headerTitle: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  headerSubtitle: {
+    color: "#EEDCFF",
+    fontSize: 13,
+    textAlign: "center",
+    marginTop: 4,
+  },
+
   headerLogo: {
     width: 60,
     height: 60,
     borderRadius: 30,
     marginBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   mainImage: {
     width: '90%',

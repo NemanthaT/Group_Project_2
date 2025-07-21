@@ -38,10 +38,10 @@ export default function CustomDrawer(props) {
          <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
           <Text style={styles.menuText}>My Donation Requests</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/volunteerprograms')} style={styles.menuButton}>
           <Text style={styles.menuText}>Programs</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/marketplace')} style={styles.menuButton}>
           <Text style={styles.menuText}>Marketplace</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>

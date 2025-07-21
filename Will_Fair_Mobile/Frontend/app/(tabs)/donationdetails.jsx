@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { donationStyles } from '../../assets/styles/donationstyles';
 
 const DonationDetails = () => {
@@ -61,6 +61,17 @@ const DonationDetails = () => {
     <ScrollView style={donationStyles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient colors={["#9333EA", "#2622A8"]} style={donationStyles.header}>
+        <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
         <Image
           source={require('../../assets/images/logo-white.png')}
           style={donationStyles.logo}

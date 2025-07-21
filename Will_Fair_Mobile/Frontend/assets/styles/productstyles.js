@@ -7,22 +7,40 @@ export const productStyles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    header: {
-        height: 180,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-    },
+    header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
+
+    sectionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginVertical: 10,
+    color: "#333",
+  },
+
+  headerTitle: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  headerSubtitle: {
+    color: "#EEDCFF",
+    fontSize: 13,
+    textAlign: "center",
+    marginTop: 4,
+  },
+
     backButton: {
         position: 'absolute',
         top: 40,
         left: 20,
     },
     logo: {
-        width: 80,
-        height: 80,
+        width: 60,
+        height: 60,
         borderRadius: 40,
         marginTop: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     productImage: {
         width: width,
@@ -41,22 +59,22 @@ export const productStyles = StyleSheet.create({
         marginBottom: 10,
     },
     description: {
-        fontSize: 18,
-        color: '#555',
-        marginBottom: 20,
-        lineHeight: 22,
+    marginVertical: 12,
+    color: "#555",
+    fontSize: 16,
+    lineHeight: 20,
     },
     price: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#111',
-        marginTop: 20,
-        marginBottom: 50,
+        marginTop: 5,
+        marginBottom: 10,
     },
     buttonRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 15,
+        gap: 10,
     },
     buyNowButton: {
         backgroundColor: '#2622A8',

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { homeStyles } from '../../assets/styles/marketplacestyles';
 
 const categories = [
@@ -33,12 +33,18 @@ const Marketplace = () => {
     <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
 
       {/* Hero Search Bar */}
-      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
+      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.header}>
         <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
-          style={{ position: 'absolute', top: 10, left: 10 }}>
-          <Ionicons name="menu-outline" size={30} color="#fff" />
-        </TouchableOpacity>
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              zIndex: 5,
+            }}
+          >
+            <Ionicons name="menu-outline" size={30} color="#fff" />
+          </TouchableOpacity>
         <Image source={require('../../assets/images/logo-white.png')} style={homeStyles.logo} resizeMode="contain" />
         <Text style={homeStyles.heroTitle}>What Are You Looking For?</Text>
         <View style={homeStyles.searchBar}>
@@ -64,15 +70,27 @@ const Marketplace = () => {
 
       {/* Products */}
       <Text style={homeStyles.sectionTitle}>Recent Products</Text>
-      {products.map((item, index) => (
+        {products.map((item, index) => (
         <View key={index} style={homeStyles.productCard}>
           <Image source={item.image} style={homeStyles.productImage} />
           <View style={homeStyles.productInfo}>
             <Text style={homeStyles.productTitle}>{item.name}</Text>
             <Text style={homeStyles.productPrice}>{item.price}</Text>
             <View style={homeStyles.productButtons}>
-              <TouchableOpacity style={homeStyles.buyNow}><Text style={homeStyles.buyNowText}>Buy Now</Text></TouchableOpacity>
-              <TouchableOpacity style={homeStyles.addToCart}><Text style={homeStyles.cartText}>Add to Cart</Text></TouchableOpacity>
+              <TouchableOpacity 
+                style={homeStyles.buyNow}
+                onPress={() => navigation.navigate('product', {
+                  productId: item.id,
+                  productName: item.name,
+                  productPrice: item.price,
+                  productImage: item.image
+                })}
+              >
+                <Text style={homeStyles.buyNowText}>Buy Now</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={homeStyles.addToCart}>
+                <Text style={homeStyles.cartText}>Add to Cart</Text>
+              </TouchableOpacity>
               <Ionicons name="heart-outline" size={20} color="gray" />
             </View>
           </View>
@@ -80,7 +98,7 @@ const Marketplace = () => {
       ))}
 
       {/* Artisan Stories */}
-      <View style={homeStyles.storySection}>
+      {/* <View style={homeStyles.storySection}>
         <Text style={homeStyles.sectionTitle}>Artisan Stories</Text>
             <LinearGradient 
               colors = {['#9333EA', '#2622A8']}
@@ -90,7 +108,7 @@ const Marketplace = () => {
                 <View style={homeStyles.storyCard}><Text>Artisan - Handicraft</Text></View>
                 <View style={homeStyles.storyCard}><Text>Artisan - Textiles</Text></View>
             </LinearGradient>
-      </View>
+      </View> */}
 
       {/* How it Works */}
       <Text style={homeStyles.sectionTitle}>How it Works</Text>
