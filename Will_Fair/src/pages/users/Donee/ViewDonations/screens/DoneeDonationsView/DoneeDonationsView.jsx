@@ -156,7 +156,9 @@ function DoneeDonationsView({ user }) {
                       <div className="progress-bar">
                         <div
                           className="progress-fill"
-                          style={{ width: `${card.quantity_recieved/card.quantity_needed}%` }}
+                          style={{ 
+                            width: `${Math.min(100, (card.quantity_received / card.quantity_needed) * 100)}%` 
+                          }}
                         ></div>
                       </div>
                     </div>
