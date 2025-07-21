@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 const Inventory = () => {
   return (
-    <div className="dashboard-content">
-      <div className="welcome-section">
-        <div className="welcome-content">
+    <div className="seller-dashboard-content">
+      <div className="seller-welcome-section">
+        <div className="seller-welcome-content">
           <h2>Inventory Dashboard</h2>
           <p>Manage your products and track stock levels</p>
         </div>
@@ -12,7 +12,7 @@ const Inventory = () => {
       
       <InventoryStats />
       
-      <div className="overview-grid">
+      <div className="seller-overview-grid">
         <TopSelling />
         <LowStockAlerts />
       </div>
@@ -31,15 +31,15 @@ const InventoryStats = () => {
   ];
 
   return (
-    <div className="stats-grid">
+    <div className="seller-stats-grid">
       {stats.map((stat, index) => (
-        <div key={index} className={`stat-card ${stat.color}`}>
-          <div className="stat-icon">{stat.icon}</div>
-          <div className="stat-info">
-            <div className="stat-value">{stat.value}</div>
-            <div className="stat-label">{stat.label}</div>
+        <div key={index} className={`seller-stat-card ${stat.color}`}>
+          <div className="seller-stat-icon">{stat.icon}</div>
+          <div className="seller-stat-info">
+            <div className="seller-stat-value">{stat.value}</div>
+            <div className="seller-stat-label">{stat.label}</div>
           </div>
-          <div className="stat-trend" style={{ color: stat.percentage.startsWith('+') ? '#10b981' : '#ef4444' }}>{stat.percentage}</div>
+          <div className="seller-stat-trend" style={{ color: stat.percentage.startsWith('+') ? '#10b981' : '#ef4444' }}>{stat.percentage}</div>
         </div>
       ))}
     </div>
@@ -55,13 +55,13 @@ const TopSelling = () => {
   ];
 
   return (
-    <div className="overview-card">
-      <div className="card-header">
+    <div className="seller-overview-card">
+      <div className="seller-card-header">
         <h3>Top Selling Products</h3>
-        <button className="view-all-btn">View All</button>
+        <button className="seller-view-all-btn">View All</button>
       </div>
-      <div className="card-content">
-        <div className="table-container">
+      <div className="seller-card-content">
+        <div className="seller-table-container">
           <table>
             <thead>
               <tr>
@@ -79,12 +79,12 @@ const TopSelling = () => {
                   <td>{product.sold}</td>
                   <td>{product.stock}</td>
                   <td>
-                    <span className={`status-badge ${product.status}`}>
+                    <span className={`seller-status-badge ${product.status}`}>
                       {product.status}
                     </span>
                   </td>
                   <td>
-                    <button className="action-btn view">👁️</button>
+                    <button className="seller-action-btn seller-view">👁️</button>
                   </td>
                 </tr>
               ))}
@@ -102,13 +102,13 @@ const LowStockAlerts = () => {
   ];
 
   return (
-    <div className="overview-card">
-      <div className="card-header">
+    <div className="seller-overview-card">
+      <div className="seller-card-header">
         <h3>Low Stock Alerts</h3>
-        <button className="view-all-btn">Manage Stock</button>
+        <button className="seller-view-all-btn">Manage Stock</button>
       </div>
-      <div className="card-content">
-        <div className="table-container">
+      <div className="seller-card-content">
+        <div className="seller-table-container">
           <table>
             <thead>
               <tr>
@@ -122,10 +122,10 @@ const LowStockAlerts = () => {
               {alerts.map((alert, index) => (
                 <tr key={index}>
                   <td>{alert.name}</td>
-                  <td className="stock-warning">{alert.stock}</td>
+                  <td className="seller-stock-warning">{alert.stock}</td>
                   <td>{alert.category}</td>
                   <td>
-                    <button className="reorder-btn">Restock</button>
+                    <button className="seller-reorder-btn">Restock</button>
                   </td>
                 </tr>
               ))}
@@ -164,18 +164,18 @@ const AllInventory = () => {
   });
 
   return (
-    <div className="table-section">
-      <div className="section-header">
+    <div className="seller-table-section">
+      <div className="seller-section-header">
         <h3>All Inventory</h3>
-        <div className="table-actions">
-          <select className="filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+        <div className="seller-table-actions">
+          <select className="seller-filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
             <option value="all">All Categories</option>
             <option value="home">Home</option>
             <option value="jewelry">Jewelry</option>
             <option value="stationery">Stationery</option>
             <option value="crafting">Crafting</option>
           </select>
-          <select className="filter-select" value={stockFilter} onChange={(e) => setStockFilter(e.target.value)}>
+          <select className="seller-filter-select" value={stockFilter} onChange={(e) => setStockFilter(e.target.value)}>
             <option value="all">Stock level</option>
             <option value="low">Low Stock</option>
             <option value="out">Out of Stock</option>
@@ -183,7 +183,7 @@ const AllInventory = () => {
         </div>
       </div>
       
-      <div className="table-container">
+      <div className="seller-table-container">
         <table>
           <thead>
             <tr>
@@ -202,30 +202,30 @@ const AllInventory = () => {
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>
-                  <div className="product-cell">
-                    <div className="product-name">{item.name}</div>
+                  <div className="seller-product-cell">
+                    <div className="seller-product-name">{item.name}</div>
                   </div>
                 </td>
                 <td>
-                  <span className="category-badge">{item.category}</span>
+                  <span className="seller-category-badge">{item.category}</span>
                 </td>
-                <td className="price-cell">Rs. {item.price.toFixed(2)}</td>
+                <td className="seller-price-cell">Rs. {item.price.toFixed(2)}</td>
                 <td>
-                  <span className={`stock-indicator ${item.stock < 10 ? 'low' : 'good'}`}>
+                  <span className={`seller-stock-indicator ${item.stock < 10 ? 'seller-low' : 'seller-good'}`}>
                     {item.stock}
                   </span>
                 </td>
                 <td>
-                  <span className={`status-badge ${item.status}`}>
+                  <span className={`seller-status-badge ${item.status}`}>
                     {item.status === 'out-of-stock' ? 'Out of Stock' : 
                      item.status === 'low-stock' ? 'Low Stock' : 'Active'}
                   </span>
                 </td>
                 <td>{item.updated}</td>
                 <td>
-                  <div className="action-buttons">
-                    <button className="action-btn edit" title="Edit">✏️</button>
-                    <button className="action-btn delete" title="Delete">🗑️</button>
+                  <div className="seller-action-buttons">
+                    <button className="seller-action-btn seller-edit" title="Edit">✏️</button>
+                    <button className="seller-action-btn seller-delete" title="Delete">🗑️</button>
                   </div>
                 </td>
               </tr>
