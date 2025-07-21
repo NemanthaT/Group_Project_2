@@ -80,7 +80,8 @@ const Program = () => {
       {/* Action Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.feedbackButton}>
-          <Text style={styles.feedbackText}>Participate</Text>
+          <Text style={styles.headerTitle}>Would you like to volunteer that event ? Please click the volunteer button</Text>
+          <Text style={styles.feedbackText}>Volunteer</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity style={styles.editButton}>
           <Ionicons name="create-outline" size={16} color="#fff" />

@@ -156,7 +156,7 @@ const Monetary = () => {
         />
 
         {/* Deadline */}
-        <Text style={donationRequestsStyles.sectionTitle}>Deadline</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Finalize Date</Text>
         <TouchableOpacity
           onPress={() => setShowDatePicker(true)}
           style={styles.inputField}

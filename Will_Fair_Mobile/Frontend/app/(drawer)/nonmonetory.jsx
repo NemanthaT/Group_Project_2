@@ -145,7 +145,7 @@ const NonMonetary = () => {
           placeholder="Describe your request in detail. Include why you need"
         />
 
-        <Text style={styles.sectionTitle}>Deadline</Text>
+        <Text style={styles.sectionTitle}>Finalize Date</Text>
         <TouchableOpacity
           style={styles.inputField}
           onPress={() => setShowDatePicker(true)}
