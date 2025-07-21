@@ -883,9 +883,12 @@ img {
 
 .individual-product-image img {
   width: 100%;
-  max-width: 450px;
+  max-width: 400px;    /* Reduce max width slightly */
+  height: 300px;       /* Fixed height to crop images uniformly */
+  object-fit: cover;   /* Ensures image is cropped instead of stretched */
   border-radius: 10px;
-  object-fit: cover;
+  display: block;
+  margin: 0 auto;      /* Center image */
 }
 
 .individual-product-details {
