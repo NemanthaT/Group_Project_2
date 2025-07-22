@@ -33,7 +33,7 @@ const AuthManager = () => {
       <div className={`authmanager-sidebar-overlay ${sidebarVisible ? 'authmanager-visible' : ''}`} onClick={closeSidebar}></div>
         <div className={`authmanager-sidebar ${sidebarVisible ? 'authmanager-mobile-visible' : 'authmanager-mobile-hidden'}`}>
 
-          <img className="authmanager-profile-icon" alt="Profile" src="/profile-icon-5.png" />
+          <img className="authmanager-profile-icon" alt="Profile" src="http://localhost:5173/src/assets/images/logo.png" />
 
           <div className="authmanager-sidebar-nav">
             {navItems.map((item) => (

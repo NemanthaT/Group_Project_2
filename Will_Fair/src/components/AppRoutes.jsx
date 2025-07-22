@@ -4,7 +4,7 @@ import FeaturedContent from "../pages/landingPage/FeaturedContent";
 import Reg from "../pages/signIn/Reg";
 import Marketplace from "../pages/MarketPlace/MarketPlace";
 import Users from "../pages/users/users";
-import AuthManager from "../pages/AuthManager/AuthManager";
+//import AuthManager from "../pages/AuthManager/AuthManager";
 import SellerDashboard from "../pages/SellerDashboard/SellerDashboard";
 import BuyerDashboard from "../pages/BuyerDashboard/BuyerDashboard";
 import AuthManagerDonationDetail from "../pages/users/AuthManager/AuthManagerDonationDetail";
@@ -20,7 +20,6 @@ const AppRoutes = () => {
       <Route path="/marketplace/*" element={<Marketplace />} />
       <Route path="/sellerDashboard/*" element={<SellerDashboard />} />
       <Route path="/buyerDashboard/*" element={<BuyerDashboard />} />
-      <Route path="/authManager" element={<AuthManager />} />
       <Route path="/users/*" element={<Users />} />
       <Route path="/authmanager/donations/:id" element={<AuthManagerDonationDetail />} />
     </Routes>
