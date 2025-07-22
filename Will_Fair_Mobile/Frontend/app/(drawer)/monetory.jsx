@@ -150,13 +150,6 @@ const Monetary = () => {
       
       {/* Form */}
       <View style={styles.form}>
-        {/* Request Name */}
-        <Text style={donationRequestsStyles.sectionTitle}>Request Name</Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Enter request name"
-          placeholderTextColor="#999"
-        />
 
         {/* Category Dropdown */}
         <Text style={donationRequestsStyles.sectionTitle}>Category</Text>
@@ -176,6 +169,21 @@ const Monetary = () => {
           }}
         />
 
+        {/* Request Name */}
+        <Text style={donationRequestsStyles.sectionTitle}>Reason for Request</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Enter request name"
+          placeholderTextColor="#999"
+        />
+
+        <Text style={styles.sectionTitle}>Detailed Description</Text>
+        <TextInput
+        style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
+          multiline
+          placeholder="Describe your request in detail. Include why you need"
+        />
+
         {/* Target Amount */}
         <Text style={donationRequestsStyles.sectionTitle}>Target Amount</Text>
         <TextInput
@@ -186,7 +194,7 @@ const Monetary = () => {
         />
 
         {/* Deadline */}
-        <Text style={donationRequestsStyles.sectionTitle}>Finalize Date</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Urgent Need Date(Optional)</Text>
         <TouchableOpacity
           onPress={() => setShowDatePicker(true)}
           style={styles.inputField}
@@ -249,7 +257,7 @@ const Monetary = () => {
 
 
         {/* Request Image Upload */}
-        <Text style={donationRequestsStyles.sectionTitle}>Request Image</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Request Image(optional)</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
           <Text style={{ textAlign: "center" }}>Choose Image</Text>
         </TouchableOpacity>
