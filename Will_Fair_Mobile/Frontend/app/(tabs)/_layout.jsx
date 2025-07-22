@@ -64,7 +64,7 @@ export default function Layout() {
       <Stack.Screen name="mydonationreq" options={{ headerShown: false }} />
       <Stack.Screen name="mydonationreq_ind" options={{ headerShown: false }} />
       <Stack.Screen name="marketplace" options={{ headerShown: false }} />
-      <Stack.Screen name="product" options={{ headerShown: false }} />
+      <Stack.Screen name="ind_product" options={{ headerShown: false }} />
       <Stack.Screen name="volunteerprograms" options={{ headerShown: false }} />
       <Stack.Screen name="program" options={{ headerShown: false }} />
     </Stack>

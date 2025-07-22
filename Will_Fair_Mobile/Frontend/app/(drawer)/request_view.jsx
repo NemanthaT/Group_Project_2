@@ -18,7 +18,7 @@ const RequestView = () => {
     {
       id: 1,
       title: "Renovations at Early Bird Child Care",
-      image: require("../../assets/images/program1.png"),
+      image: require("../../assets/images/child.jpg"),
       raised: 7000,
       target: 60000,
       status: "In Review",
@@ -26,7 +26,7 @@ const RequestView = () => {
     {
       id: 2,
       title: "Wheelchairs at Sathkara Elderly Care Centre",
-      image: require("../../assets/images/program2.png"),
+      image: require("../../assets/images/cloth1.jpg"),
       raised: 23000,
       target: 40000,
       status: "Executed",
@@ -34,7 +34,7 @@ const RequestView = () => {
     {
       id: 3,
       title: "Renovations at Early Bird Child Care",
-      image: require("../../assets/images/program1.png"),
+      image: require("../../assets/images/program2.png"),
       raised: 7000,
       target: 60000,
       status: "In Review",

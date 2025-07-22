@@ -33,7 +33,7 @@ export default function CustomDrawer(props) {
           <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/monetory')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Donation</Text>
+          <Text style={styles.menuText}>Donee - Donation Request</Text>
         </TouchableOpacity>
          <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
           <Text style={styles.menuText}>My Donation Requests</Text>

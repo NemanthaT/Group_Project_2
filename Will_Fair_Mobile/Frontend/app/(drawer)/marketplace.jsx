@@ -79,7 +79,7 @@ const Marketplace = () => {
             <View style={homeStyles.productButtons}>
               <TouchableOpacity 
                 style={homeStyles.buyNow}
-                onPress={() => navigation.navigate('product', {
+                onPress={() => navigation.navigate('ind_product', {
                   productId: item.id,
                   productName: item.name,
                   productPrice: item.price,

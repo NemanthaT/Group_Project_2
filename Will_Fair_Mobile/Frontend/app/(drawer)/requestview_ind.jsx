@@ -17,14 +17,14 @@ const MyDonationReq = () => {
   const request = {
     id: 1,
     title: "Renovations at Early Bird Child Care",
-    location: "Karapitiya",
+    location: "Colombo",
     category: "Education",
-    image: require("../../assets/images/program1.png"),
+    image: require("../../assets/images/child.jpg"),
     raised: 7000,
     target: 60000,
     status: "Active",
     description:
-      "Early Bird Child Care is in need of essential renovations to provide a safer, more engaging, and nurturing environment for our children. With your generous support, we aim to upgrade classrooms, improve play areas, and ensure our facilities meet the highest standards of care and learning. Every contribution brings us closer to giving these young learners the bright and supportive space they deserve.",
+    "Our school library desperately needs updated books and learning materials to serve over 300 students effectively. Many of our current books are outdated or damaged beyond repair. We aim to create a vibrant learning hub filled with age-appropriate literature, educational resources, and reference materials that will inspire a love for reading and support academic excellence. Your donation will help us build a comprehensive library that nurtures curious minds and supports educational success.",
   };
 
   const progress = (request.raised / request.target) * 100;
@@ -85,6 +85,9 @@ const MyDonationReq = () => {
         <View style={styles.amountRow}>
         {/* Left: Raised and Target */}
         <View>
+           <Text style={styles.headerTitle}>
+            Book Funding
+            </Text>
             <Text style={styles.amountLabel}>
             Raised: {request.raised.toLocaleString()}.00
             </Text>

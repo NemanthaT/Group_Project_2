@@ -15,20 +15,20 @@ import { MaterialIcons } from '@expo/vector-icons'; // add this import at the to
 const donationRequests = [
   {
     id: 1,
-    title: 'Renovations at Early Bird Child Care',
-    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
-    image: require('../../assets/images/volunteer.png'),
+    title: 'Blood Donation Camp',
+    about: 'Help us to save a life by donating blood. Your contribution can make a significant difference in the lives of those in need.',
+    image: require('../../assets/images/blood.jpg'),
   },
   {
     id: 2,
     title: 'Cleaning at Sathkara Elderly Care Centre',
-    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
+    about: 'Join us in making a difference at the Sathkara Elderly Care Centre by participating in our cleaning and maintenance program. ',
     image: require('../../assets/images/volunteer.png'),
   },
   {
     id: 3,
     title: 'Shramadana at Pet Centre',
-    about: 'Help us renovate the Early Bird Child Care center to create a better environment for our children.',
+    about: 'Join us for a Shramadana (community service) event at the Pet Centre, where we will help care for and clean the facilities for our furry friends.',
     image: require('../../assets/images/volunteer.png'),
   },
 ];
@@ -83,11 +83,11 @@ const VolunteerPrograms = () => {
             <View style={styles.badge}>
               <MaterialIcons name="location-on" size={16} color="#0047AB" />
               <Text style={styles.locationText}>
-                Karapitiya
+                Panadura
               </Text>
             </View>
             <View style={styles.badgeBackground}>
-              <Text style={styles.badgeText}>Education</Text>
+              <Text style={styles.badgeText}>Volunteer</Text>
             </View>
           </View>
           <Text style={styles.cardTitle}>{item.title}</Text>
@@ -103,8 +103,8 @@ const VolunteerPrograms = () => {
                 programTitle: item.title,
                 programAbout: item.about,
                 programImage: item.image,
-                programLocation: 'Karapitiya',
-                programCategory: 'Education'
+                programLocation: 'Panadura',
+                programCategory: 'Volunteer'
               })}
             >
               <Text style={styles.detailsButtonText}>Details</Text>

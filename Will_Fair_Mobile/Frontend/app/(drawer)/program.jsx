@@ -32,7 +32,7 @@ const Program = () => {
 
       {/* Image */}
       <Image
-        source={require('../../assets/images/volunteer.png')}
+        source={require('../../assets/images/blood.jpg')}
         style={styles.mainImage}
       />
 
@@ -40,47 +40,42 @@ const Program = () => {
       <View style={styles.locationCategoryRow}>
         <View style={styles.locationRow}>
           <MaterialIcons name="location-on" size={16} color="#0047AB" />
-          <Text style={styles.locationText}>Karapitiya</Text>
+          <Text style={styles.locationText}>Colombo</Text>
         </View>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Education</Text>
+          <Text style={styles.badgeText}>Blood Donation Camp</Text>
         </View>
       </View>
 
-      {/* Progress */}
-      <View style={styles.progressRow}>
-        <View style={styles.progressBarBackground}>
-          <View style={[styles.progressFill, { width: '12%' }]} />
-        </View>
-        <View style={styles.progressKnob}>
-            <MaterialIcons name="check" size={16} color="#5600abff" />
-        </View>
-      </View>
-
-      {/* Raised/Target */}
-      <View style={styles.amountRow}>
-        <View>
-          <Text style={styles.label}>Raised: <Text style={styles.value}>7,000.00</Text></Text>
-          <Text style={styles.label}>Target: <Text style={styles.value}>60,000.00</Text></Text>
-        </View>
-        <View style={styles.statusPill}>
-          <Text style={styles.statusText}>Active</Text>
-        </View>
-      </View>
+       <View style={styles.amountRow}>
+              <View>
+                  <Text style={styles.label}>
+                  Date : 2022 -05 -05
+                  </Text>
+                  <Text style={styles.label}>
+                    Time : 9.30 AM - 3.00 PM
+                  </Text>
+                  <Text style={styles.label}>
+                    Venue : Sagra Building Near by Sri Jayawardhanapura University
+                  </Text>
+              </View>
+              </View>
 
       {/* Description */}
       <Text style={styles.description}>
-        Early Bird Child Care is in need of essential renovations to provide a safer,
-        more engaging, and nurturing environment for our children. With your generous support,
-        we aim to upgrade classrooms, improve play areas, and ensure our facilities meet
-        the highest standards of care and learning. Every contribution brings us closer
-        to giving these young learners the bright and supportive space they deserve.
+       Our local hospitals are facing a critical blood shortage, especially 
+       for O-negative and B-positive blood types. This emergency blood donation
+        drive is our urgent response to help save lives in our community. Every 
+        donation counts and every donor is a lifesaver. The process is safe, simple, 
+        and takes less than an hour of your time, but the impact lasts a lifetime for 
+        those who receive your gift. Please join us in this life-saving mission and help
+         us replenish the blood banks that serve our community&#39;s most vulnerable patients.
       </Text>
 
       {/* Action Buttons */}
+      <Text style={styles.headerSubtitle}>Would you like to volunteer this event ? Please click the volunteer button</Text>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.feedbackButton}>
-          <Text style={styles.headerTitle}>Would you like to volunteer that event ? Please click the volunteer button</Text>
           <Text style={styles.feedbackText}>Volunteer</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity style={styles.editButton}>

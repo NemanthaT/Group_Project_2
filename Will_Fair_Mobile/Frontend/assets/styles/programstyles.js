@@ -21,10 +21,12 @@ export const programStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   headerSubtitle: {
-    color: "#EEDCFF",
-    fontSize: 13,
+    color: "#6005b5ff",
+    fontSize: 16,
     textAlign: "center",
-    marginTop: 4,
+    marginTop: 20,
+    fontWeight: "700",
+    
   },
 
   headerLogo: {
@@ -101,9 +103,10 @@ export const programStyles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 15,
     marginBottom: 2,
+    fontWeight:'bold',
+    color : '#000',
   },
   value: {
     fontWeight: 'bold',

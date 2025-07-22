@@ -146,7 +146,8 @@ const MyDonationReq = () => {
         </View>
 
         <TouchableOpacity style={styles.newRequestButton}>
-          <Text style={styles.newRequestText}>+ New Request</Text>
+          <Text style={styles.newRequestText}
+          onPress={() => navigation.navigate('monetory')}>+ New Request</Text>
         </TouchableOpacity>
       </View>
 
