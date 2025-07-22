@@ -418,4 +418,72 @@ selectedOptionText: {
   color: '#fff',
   fontWeight: 'bold',
 },
+activeFilterButton: {
+  backgroundColor: '#7B61FF',
+  borderColor: '#7B61FF',
+},
+filterButtonText: {
+  fontSize: 14,
+  color: '#666',
+  marginRight: 4,
+},
+activeFilterButtonText: {
+  color: '#fff',
+},
+clearFiltersButton: {
+  backgroundColor: '#FF4444',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  borderRadius: 15,
+},
+clearFiltersText: {
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: '600',
+},
+dropdownOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+typeBadge: {
+  position: 'absolute',
+  top: 8,
+  right: 8,
+  paddingHorizontal: 8,
+  paddingVertical: 4,
+  borderRadius: 12,
+},
+typeText: {
+  color: '#fff',
+  fontSize: 10,
+  fontWeight: '600',
+},
+resultsContainer: {
+  paddingHorizontal: 20,
+  paddingVertical: 10,
+},
+resultsText: {
+  fontSize: 14,
+  color: '#666',
+  textAlign: 'center',
+},
+noResultsContainer: {
+  alignItems: 'center',
+  paddingVertical: 60,
+  paddingHorizontal: 40,
+},
+noResultsText: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#666',
+  marginTop: 16,
+},
+noResultsSubtext: {
+  fontSize: 14,
+  color: '#999',
+  marginTop: 8,
+  textAlign: 'center',
+},
 });

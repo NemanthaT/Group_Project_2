@@ -109,7 +109,8 @@ const MyDonationReq = () => {
         {/* Action Buttons */}
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.statusBadgeNew}>
-            <Text style={styles.statusTextNew}>Donate</Text>
+            <Text style={styles.statusTextNew}
+             onPress={() => navigation.navigate('donation_payment')}>Donate</Text>
           </TouchableOpacity>
         </View>
       </View>

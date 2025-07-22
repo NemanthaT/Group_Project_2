@@ -109,7 +109,8 @@ const VolunteerPrograms = () => {
             >
               <Text style={styles.detailsButtonText}>Details</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.donateButton}>
+            <TouchableOpacity style={styles.donateButton}
+             onPress={() => navigation.navigate('program')}>
               <Text style={styles.donateButtonText}>Volunteer</Text>
             </TouchableOpacity>
           </View>
