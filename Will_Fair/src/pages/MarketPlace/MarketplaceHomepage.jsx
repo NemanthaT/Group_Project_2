@@ -79,12 +79,8 @@ function MarketplaceHomepage() {
 
   return (
     <div className="marketplace-homepage">
-<<<<<<< HEAD
       
       {/* Hero Section with Navigation */}
-=======
-      {/* Hero Section */}
->>>>>>> rachitha
       <section className="hero-section">
         <img
           className="hero-background"

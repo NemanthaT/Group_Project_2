@@ -19,19 +19,7 @@ function App() {
     <Router>
       {(user == null || user.role !== "auth_manager") && <Header user={user} />}
       <main>
-<<<<<<< HEAD
         <AppRoutes user={user}/>
-=======
-        {/* <AppRoutes user={user} /> */}
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path={feat} element={<FeaturedContent />} />
-          <Route path="/loginD/*" element={<Reg />} />
-          <Route path="/loginF/*" element={<Reg />} />
-          <Route path="/marketplace" element={<MarketplaceHomepage />} />
-          <Route path="/marketplace/product" element={<IndividualProductsView/>} />
-        </Routes>
->>>>>>> rachitha
       </main>
       {(user == null || user.role !== "auth_manager") && <Footer />}
     </Router>
