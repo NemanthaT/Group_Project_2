@@ -81,6 +81,18 @@ img {
   position: relative;
   z-index: 1;
 }
+/* Widen search bar */
+.marketplace-hero .search-bar-wrapper {
+  max-width: 700px; /* adjust as needed */
+  margin: 20px auto;
+}
+
+.marketplace-hero .search-bar-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1.1rem; /* increase font size inside search box */
+}
+
 
 .search-bar-button {
   position: absolute;
@@ -1102,6 +1114,13 @@ img {
   font-size: 36px;       /* slightly smaller */
   margin-bottom: 20px;
 }
+.marketplace-hero .hero-title {
+  font-size: 2.5rem; /* was likely 2rem or lower */
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 
 .marketplace-hero-content {
   margin-top: 0;         /* remove extra offset */
@@ -1122,6 +1141,20 @@ img {
   justify-content: space-between;
 }
 
+@media (max-width: 768px) {
+  .marketplace-hero .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .marketplace-hero .search-bar-wrapper {
+    max-width: 90%;
+  }
+}
+.marketplace-hero .seller-signup-text {
+  display: block;
+  margin-top: 12px;
+  font-size: 1rem;
+}
 
 
 

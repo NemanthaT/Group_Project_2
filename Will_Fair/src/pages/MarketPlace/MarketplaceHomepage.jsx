@@ -82,6 +82,17 @@ function MarketplaceHomepage() {
     },
     [navigate]
   );
+  const handleCardAddToCart = useCallback((e, product) => {
+    e.stopPropagation();
+    e.preventDefault();
+    alert(`Added 1 item of "${product.title}" to cart!`); // TODO: wire to cart API
+  }, []);
+
+  const handleCardBuyNow = useCallback((e, product) => {
+    e.stopPropagation();
+    e.preventDefault();
+    alert(`Proceeding to checkout with 1 item of "${product.title}"!`); // TODO: checkout flow
+  }, []);
 
   return (
     <div className="marketplace-homepage">
@@ -143,6 +154,8 @@ function MarketplaceHomepage() {
           sortOrder={sortOrder}
           onSortChange={setSortOrder}
           onProductClick={handleProductClick}
+          onAddToCart={handleCardAddToCart}   // NEW
+          onBuyNow={handleCardBuyNow}         // NEW
         />
       ) : (
         <>
@@ -169,15 +182,15 @@ function MarketplaceHomepage() {
                   style={{ cursor: "pointer" }}
                 >
                   <img
-                className="product-image"
-                alt={product.title}
-                src={product.image}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://images.pexels.com/photos/6461513/pexels-photo-6461513.jpeg";
-                }}
-              />
+                    className="product-image"
+                    alt={product.title}
+                    src={product.image}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://images.pexels.com/photos/6461513/pexels-photo-6461513.jpeg";
+                    }}
+                  />
                   <div className="product-content">
                     <div className="product-header">
                       <p className="product-title">{product.title}</p>
@@ -191,8 +204,20 @@ function MarketplaceHomepage() {
                     </div>
                     <p className="product-price">{product.price} LKR</p>
                     <div className="product-actions">
-                      <button className="btn btn-outline">Buy Now</button>
-                      <button className="btn btn-primary">Add to Cart</button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={(e) => handleCardBuyNow(e, product)}
+                      >
+                        Buy Now
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={(e) => handleCardAddToCart(e, product)}
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
                 </div>

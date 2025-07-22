@@ -9,6 +9,8 @@ export function ProductSearchResultsSection({
     sortOrder,
     onSortChange,
     onProductClick,
+    onAddToCart,    // NEW
+    onBuyNow,       // NEW
 }) {
     return (
         <section className="products-section search-active">
@@ -69,9 +71,30 @@ export function ProductSearchResultsSection({
                             </div>
                             <p className="product-price">{product.price} LKR</p>
                             <div className="product-actions">
-                                <button className="btn btn-outline">Buy Now</button>
-                                <button className="btn btn-primary">Add to Cart</button>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        onBuyNow ? onBuyNow(e, product) : alert(`Buy "${product.title}"!`);
+                                    }}
+                                >
+                                    Buy Now
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        onAddToCart ? onAddToCart(e, product) : alert(`Add "${product.title}" to cart!`);
+                                    }}
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
+
                         </div>
                     </div>
                 ))}
