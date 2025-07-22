@@ -11,6 +11,7 @@ export const login = async (req, res) => {
   }
 
   const result = await authenticateUser(email, password);
+  console.log("Login result:", result);
   const name = await getNameById(result.userId, result.role, result.userType);
 
   if (result.success) {
