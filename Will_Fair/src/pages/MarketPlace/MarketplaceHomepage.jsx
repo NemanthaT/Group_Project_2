@@ -153,7 +153,7 @@ function MarketplaceHomepage() {
             >
               <div>
                 <img
-                  className="product-image"
+                  className="marketplace-product-image"
                   alt={product.title}
                   src={product.image}
                   onError={(e) => {
