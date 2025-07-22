@@ -2,9 +2,12 @@ import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/landingPage/LandingPage";
 import FeaturedContent from "../pages/landingPage/FeaturedContent";
 import Reg from "../pages/signIn/Reg";
-import MarketplaceHomepage from "../pages/MarketPlace/MarketplaceHomepage";
+import Marketplace from "../pages/MarketPlace/MarketPlace";
 import Users from "../pages/users/users";
-//import main from "../pages/users/Donee/DoneeDashboard/main";
+//import AuthManager from "../pages/AuthManager/AuthManager";
+import SellerDashboard from "../pages/SellerDashboard/SellerDashboard";
+import BuyerDashboard from "../pages/BuyerDashboard/BuyerDashboard";
+import AuthManagerDonationDetail from "../pages/users/AuthManager/AuthManagerDonationDetail";
 
 const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
@@ -14,8 +17,11 @@ const AppRoutes = () => {
       <Route path="/featured" element={<FeaturedContent user={user} />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
-      <Route path="/marketplace" element={<MarketplaceHomepage user={user} />} />
-      <Route path="/users/*" element={<Users user={user} />} />
+      <Route path="/marketplace/*" element={<Marketplace />} />
+      <Route path="/sellerDashboard/*" element={<SellerDashboard />} />
+      <Route path="/buyerDashboard/*" element={<BuyerDashboard />} />
+      <Route path="/users/*" element={<Users />} />
+      <Route path="/authmanager/donations/:id" element={<AuthManagerDonationDetail />} />
     </Routes>
   );
 };
