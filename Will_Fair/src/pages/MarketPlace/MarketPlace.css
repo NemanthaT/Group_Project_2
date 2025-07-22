@@ -992,6 +992,7 @@ img {
 
 /* Wrapper to ensure footer stays at bottom */
 .individual-product-page-wrapper {
+  background-color: #f9f9f9;
   min-height: calc(100vh - 140px); /* Adjust height based on header + footer size */
   display: flex;
   flex-direction: column;
@@ -999,7 +1000,11 @@ img {
 }
 
 .product-detail-hero {
+  margin-left: 10%;
+  margin-right: 10%;
+  border-radius: 25px;
   background: linear-gradient(135deg, #9333ea 0%, #0d429b 100%);
+  margin-top: 7%;
   padding: 40px 20px;
   display: flex;
   align-items: center;

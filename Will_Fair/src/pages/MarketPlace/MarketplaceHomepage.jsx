@@ -116,7 +116,7 @@ function MarketplaceHomepage() {
               Become a seller?{" "}
               <button
                 className="signup-link-btn"
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate("/sellerDashboard")}
                 type="button"
               >
                 Sign up
