@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DashboardPage from "./DashboardPage";
 import ProductReviewPage from "./ProductReviewPage";
+import PendingDonationRequests from "./PendingDonationRequests";
 import "./AuthManagerDashboard.css";
 
 const AuthManager = () => {
@@ -65,6 +66,7 @@ const AuthManager = () => {
         <div className="authmanager-content-wrapper">
           {activeTab === 'dashboard' && <DashboardPage user={user}/>}
           {activeTab === 'products' && <ProductReviewPage user={user}/>}
+          {activeTab === 'requests' && <PendingDonationRequests />}
         </div>
       </div>
     </div>
