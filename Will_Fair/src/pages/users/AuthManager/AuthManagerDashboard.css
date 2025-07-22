@@ -248,8 +248,9 @@
 }
 
 .authmanager-profile-icon {
-  width: 45px;
-  height: 45px;
+  width: 70px;
+  height: 70px;
+  margin: 20px auto;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;

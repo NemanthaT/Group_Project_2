@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DashboardPage from "./DashboardPage";
 import ProductReviewPage from "./ProductReviewPage";
+import PendingDonationRequests from "./PendingDonationRequests";
 import "./AuthManagerDashboard.css";
 
 const AuthManager = () => {
@@ -32,7 +33,7 @@ const AuthManager = () => {
       <div className={`authmanager-sidebar-overlay ${sidebarVisible ? 'authmanager-visible' : ''}`} onClick={closeSidebar}></div>
         <div className={`authmanager-sidebar ${sidebarVisible ? 'authmanager-mobile-visible' : 'authmanager-mobile-hidden'}`}>
 
-          <img className="authmanager-profile-icon" alt="Profile" src="/profile-icon-5.png" />
+          <img className="authmanager-profile-icon" alt="Profile" src="http://localhost:5173/src/assets/images/logo.png" />
 
           <div className="authmanager-sidebar-nav">
             {navItems.map((item) => (
@@ -65,6 +66,7 @@ const AuthManager = () => {
         <div className="authmanager-content-wrapper">
           {activeTab === 'dashboard' && <DashboardPage user={user}/>}
           {activeTab === 'products' && <ProductReviewPage user={user}/>}
+          {activeTab === 'requests' && <PendingDonationRequests />}
         </div>
       </div>
     </div>

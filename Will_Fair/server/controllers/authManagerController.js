@@ -1,0 +1,55 @@
+import {
+  getPendingDonations,
+  acceptDonationRequest,
+  rejectDonationRequest,
+  getPendingDonationDetail,
+  getDonationStats
+} from "../models/authManagerModel.js";
+
+export const getPendingDonationsController = async (req, res) => {
+  const result = await getPendingDonations();
+  if (result.success) {
+    res.status(200).json({ requests: result.requests });
+  } else {
+    res.status(500).json({ error: result.message });
+  }
+};
+
+export const acceptDonationRequestController = async (req, res) => {
+  const { id } = req.params;
+  const result = await acceptDonationRequest(id);
+  if (result.success) {
+    res.status(200).json({ success: true });
+  } else {
+    res.status(500).json({ error: result.message });
+  }
+};
+
+export const rejectDonationRequestController = async (req, res) => {
+  const { id } = req.params;
+  const result = await rejectDonationRequest(id);
+  if (result.success) {
+    res.status(200).json({ success: true });
+  } else {
+    res.status(500).json({ error: result.message });
+  }
+};
+
+export const getPendingDonationDetailController = async (req, res) => {
+  const { id } = req.params;
+  const result = await getPendingDonationDetail(id);
+  if (result.success) {
+    res.status(200).json({ donation: result.donation });
+  } else {
+    res.status(404).json({ error: result.message });
+  }
+};
+
+export const getDonationStatsController = async (req, res) => {
+  try {
+    const stats = await getDonationStats();
+    res.status(200).json({ stats });
+  } catch {
+    res.status(500).json({ error: "Failed to fetch donation stats" });
+  }
+};

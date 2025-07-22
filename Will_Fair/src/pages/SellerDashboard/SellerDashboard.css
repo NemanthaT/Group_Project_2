@@ -1010,7 +1010,7 @@ td {
   display: block;
 }
 
-.logout-btn {
+/*.logout-btn {
   margin: 1rem;
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
@@ -1033,7 +1033,7 @@ td {
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-}
+}*/
 
 .logout-btn:active {
   transform: translateY(0);
