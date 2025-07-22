@@ -11,7 +11,32 @@
 
 .signup-container{
   margin-top: 15%;
+  box-shadow: none !important;
 }
+
+/* Special layout for fundraiser signup */
+.fundraiser-signup-layout {
+  background-color: white;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  border-radius: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  margin-top:120px;
+  margin-bottom: 100px;
+}
+
+.fundraiser-signup-layout .signup-container {
+  margin-top: 0;
+  flex: 1;
+  max-width: 450px;
+  min-width: 400px;
+}
+
 .signup-container .form-group {
   margin: 0px !important;
 }
@@ -135,7 +160,7 @@ input[type="password"]:focus {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-input::placeholder {
+input::placeholder,.category {
   color: #999;
 }
 
@@ -172,9 +197,9 @@ input::placeholder {
 input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  margin: 0;
+  margin: 5px;
   cursor: pointer;
-  opacity: 0;
+  opacity: 5;
   position: absolute;
 }
 
@@ -206,7 +231,7 @@ input[type="checkbox"]:checked + .checkbox-custom::after {
   font-size: 14px;
   color: #666;
   line-height: 1.4;
-  margin-left: 8px;
+  margin-left: 30px;
 }
 
 .signup-container .checkbox-label a {
@@ -465,4 +490,144 @@ input[type="checkbox"]:checked + .checkbox-custom::after {
   color: white;
   font-size: 12px;
   font-weight: bold;
+}
+
+/* Custom Select Dropdown */
+.user-type-select {
+  width: 100%;
+  padding: 16px 16px 16px 48px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+.user-type-select:focus {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Instructions Panel Styles */
+.fundraiser-signup-layout .instructions-panel {
+  flex: 1;
+  max-width: 600px;
+  min-width: 500px;
+  height: 100vh;
+  background: white;
+  /*border-radius: 20px;*/
+  /*box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);*/
+  padding: 30px;
+  /*border: 2px solid #e2e8f0;*/
+  border-right: #475569 1px solid;
+  position: sticky;
+  top: 20px;
+
+}
+
+.instructions-panel h2 {
+  color: #7c3aed;
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.instruction-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #8b5cf6;
+}
+
+.instruction-section h3 {
+  color: #7c3aed;
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.instruction-section p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.instruction-section ul {
+  margin: 8px 0;
+  padding-left: 16px;
+}
+
+.instruction-section li {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.instruction-section li strong {
+  color: #475569;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .fundraiser-signup-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  .instructions-panel {
+    position: relative;
+    top: 0;
+    max-width: 600px;
+    order: 1;
+  }
+  
+  .fundraiser-signup-layout .signup-container {
+    order: 2;
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fundraiser-signup-layout {
+    padding: 20px 15px;
+  }
+  
+  .instructions-panel,
+  .fundraiser-signup-layout .signup-container {
+    min-width: 300px;
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  .instructions-panel h2 {
+    font-size: 20px;
+  }
+  
+  .instruction-section {
+    padding: 12px;
+  }
+  
+  .instruction-section h3 {
+    font-size: 14px;
+  }
+  
+  .instruction-section p,
+  .instruction-section li {
+    font-size: 13px;
+  }
 }

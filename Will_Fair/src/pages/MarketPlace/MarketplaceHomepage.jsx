@@ -1,6 +1,7 @@
 import { CategoryBrowseSection } from "./sections/CategoryBrowseSection";
 import { ProductGridSection } from "./sections/ProductGridSection";
 import { ArtisanStoriesSection } from "./sections/ArtisanStoriesSection";
+import { Link } from "react-router-dom";
 import "./MarketPlace.css";
 
 function MarketplaceHomepage (){
@@ -66,6 +67,7 @@ function MarketplaceHomepage (){
 
   return (
     <div className="marketplace-homepage">
+      
       {/* Hero Section with Navigation */}
       <section className="hero-section">
         <img
@@ -147,6 +149,10 @@ function MarketplaceHomepage (){
 
       {/* Artisan Stories Section */}
       <ArtisanStoriesSection />
+
+      <Link to="/marketplace/paymentCart" className="floating-cart-button">
+        <img src="/cart-icon.svg" alt="Cart" className="floating-cart-icon" />
+      </Link>
     </div>
   );
 }

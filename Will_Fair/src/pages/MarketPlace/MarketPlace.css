@@ -92,6 +92,7 @@ img {
   color: rgba(0, 0, 0, 0.8);
   outline: none;
   padding-left: 12px;
+  height: 50px;
 }
 
 .search-input::placeholder {
@@ -246,7 +247,7 @@ img {
   gap: 12px;
 }
 
-.btn {
+/*.btn {
   padding: 10px 16px;
   border-radius: 20px;
   font-weight: 500;
@@ -278,7 +279,7 @@ img {
 .btn-primary:hover {
   background-color: #0a3580;
 }
-
+*/
 /* Artisan Stories Section */
 .artisan-stories-section {
   background: linear-gradient(135deg, #8400ff 0%, #c180ff 100%);
@@ -421,6 +422,33 @@ img {
   font-size: 24px;
   font-weight: 200;
   color: #000;
+}
+
+.floating-cart-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #0d429b;
+  border-radius: 50%;
+  display: flex;               
+  align-items: center;         
+  justify-content: center;     
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.floating-cart-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.floating-cart-icon {
+  width: 32px;
+  height: 32px;
+  filter: invert(100%);
 }
 
 /* Footer */

@@ -11,13 +11,14 @@ import AppRoutes from "./components/AppRoutes";
 
 function App() {
   const user = JSON.parse(localStorage.getItem("userData"));
+  console.log(user);
   return (
     <Router>
-      <Header user={user}/>
+      {(user == null || user.role !== "auth_manager") && <Header user={user} />}
       <main>
         <AppRoutes user={user}/>
       </main>
-      <Footer />
+      {(user == null || user.role !== "auth_manager") && <Footer />}
     </Router>
   );
 }

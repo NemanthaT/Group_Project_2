@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import axios from "axios";
@@ -16,6 +16,26 @@ function DoneeDonationsView({ user }) {
   const [error, setError] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [monetaryCategoryFilter, setMonetaryCategoryFilter] = useState('all');
+  const [nonMonetaryCategoryFilter, setNonMonetaryCategoryFilter] = useState('all');
+
+  // Monetary categories
+  const monetaryCategories = [
+    'Education Support',
+    'HealthCare and Medical Aid',
+    'Basic Needs and Essentials',
+    'Disaster and Crisis Relief',
+    'Children and Orphan Care'
+  ];
+
+  // Non-monetary categories
+  const nonMonetaryCategories = [
+    'Dry rations',
+    'Education Materials',
+    'Medical Supplies',
+    'Shelter and Household Essentials',
+    'Used Toys'
+  ];
 
   const goToMonetaryFormIndividual = () => navigate("/users/donee/form");
 
@@ -47,14 +67,31 @@ function DoneeDonationsView({ user }) {
   const filteredCards = donationCards.filter(card => {
     let typeMatch = true;
     let statusMatch = true;
+    let monetaryCategoryMatch = true;
+    let nonMonetaryCategoryMatch = true;
+    
+    // Type filter
     if (typeFilter !== 'all') {
       typeMatch = (typeFilter === 'monetary' && card.type === 'Monetary') ||
                   (typeFilter === 'non-monetary' && card.type === 'NonMonetary');
     }
+    
+    // Status filter
     if (statusFilter !== 'all') {
       statusMatch = card.status && card.status.toLowerCase() === statusFilter;
     }
-    return typeMatch && statusMatch;
+    
+    // Monetary category filter
+    if (typeFilter === 'monetary' && monetaryCategoryFilter !== 'all') {
+      monetaryCategoryMatch = card.category === monetaryCategoryFilter;
+    }
+    
+    // Non-monetary category filter
+    if (typeFilter === 'non-monetary' && nonMonetaryCategoryFilter !== 'all') {
+      nonMonetaryCategoryMatch = card.category === nonMonetaryCategoryFilter;
+    }
+    
+    return typeMatch && statusMatch && monetaryCategoryMatch && nonMonetaryCategoryMatch;
   });
 
   const handleDeleteDonation = async (requestId) => {
@@ -101,6 +138,38 @@ function DoneeDonationsView({ user }) {
                   <option value="pending">Pending</option>
                 </select>
               </div>
+
+              {/* Monetary Category Filter - only shown when type is monetary */}
+              {typeFilter === 'monetary' && (
+                <div className="select-wrapper">
+                  <select 
+                    className="select" 
+                    value={monetaryCategoryFilter} 
+                    onChange={e => setMonetaryCategoryFilter(e.target.value)}
+                  >
+                    <option value="all">All Monetary Categories</option>
+                    {monetaryCategories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Non-Monetary Category Filter - only shown when type is non-monetary */}
+              {typeFilter === 'non-monetary' && (
+                <div className="select-wrapper">
+                  <select 
+                    className="select" 
+                    value={nonMonetaryCategoryFilter} 
+                    onChange={e => setNonMonetaryCategoryFilter(e.target.value)}
+                  >
+                    <option value="all">All Non-Monetary Categories</option>
+                    {nonMonetaryCategories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <button onClick={goToMonetaryFormIndividual} className="new-request-btn">
@@ -156,7 +225,9 @@ function DoneeDonationsView({ user }) {
                       <div className="progress-bar">
                         <div
                           className="progress-fill"
-                          style={{ width: `${card.quantity_recieved/card.quantity_needed}%` }}
+                          style={{ 
+                            width: `${Math.min(100, (card.quantity_received / card.quantity_needed) * 100)}%` 
+                          }}
                         ></div>
                       </div>
                     </div>
