@@ -23,6 +23,9 @@ export default function MonetaryForm( {user} ) {
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
 
+  // Bank details fields
+  const [accountNumber, setAccountNumber] = useState("");
+  const [bankName, setBankName] = useState("");
 
   const handleDocumentUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -75,42 +78,44 @@ export default function MonetaryForm( {user} ) {
 
   //subitting the form
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  let formData = new FormData();
-  formData.append("doneeId", user.id);
-  formData.append("category", selectedCategory);
-  formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
-  formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
+    let formData = new FormData();
+    formData.append("doneeId", user.id);
+    formData.append("category", selectedCategory);
+    formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
+    formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
 
-  if (activeTab === "monetary") {
-    formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
-    formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
-  } else {
-    formData.append("itemName", itemName);
-    formData.append("itemQuantity", itemQuantity);
-    formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
-  }
+    if (activeTab === "monetary") {
+      formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
+      formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
+      formData.append("bankName", bankName);
+      formData.append("accountNumber", accountNumber);
+    } else {
+      formData.append("itemName", itemName);
+      formData.append("itemQuantity", itemQuantity);
+      formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
+    }
 
-  if (imageFile) formData.append("image", imageFile);
-  documentFiles.forEach((file) => formData.append("documents", file));
+    if (imageFile) formData.append("image", imageFile);
+    documentFiles.forEach((file) => formData.append("documents", file));
 
-  try {
-    const url = activeTab === "monetary" 
-      ? "http://localhost:5000/donations/createMonDonation" 
-      : "http://localhost:5000/donations/createNonMonDonation";
-    await axios.post(url, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    alert("Request submitted successfully!");
-  } catch (err) {
-    setError("Failed to submit request. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const url = activeTab === "monetary" 
+        ? "http://localhost:5000/donations/createMonDonation" 
+        : "http://localhost:5000/donations/createNonMonDonation";
+      await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Request submitted successfully!");
+    } catch (err) {
+      setError("Failed to submit request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
@@ -265,8 +270,34 @@ export default function MonetaryForm( {user} ) {
                         className="form-input amount-input"
                         aria-label="Target amount in Rupees"
                         placeholder="0"
+                        style={{ paddingLeft: "60px" }}
                       />
                     </div>
+                  </div>
+                </section>
+
+                <section className="form-section">
+                  <h2 className="title">Bank Account Details</h2>
+                  
+                  <div className="form-card">
+                    <input
+                      className="form-input"
+                      placeholder="Bank Name"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-card" style={{ marginTop: "16px" }}>
+                    <input
+                      className="form-input"
+                      placeholder="Account Number"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      required
+                      type="number"
+                    />
                   </div>
                 </section>
 
