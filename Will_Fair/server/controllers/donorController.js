@@ -10,8 +10,9 @@ export const signUpDonor = async (req, res) => {
 
   try {
     // Hash password before passing to model
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    /*const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);*/
+    const hashedPassword = password;
 
     const result = await registerDonor(fullName, email, hashedPassword);
 

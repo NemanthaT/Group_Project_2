@@ -65,6 +65,7 @@
   padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   gap: 0.5rem;
 }
 
@@ -133,6 +134,7 @@
 
 .buyer-header-dashboard {
   width: 100%;
+  position: fixed;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 1.5rem 2rem;
@@ -282,6 +284,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 4% !important;
   margin-bottom: 2rem;
   padding: 2rem;
   background: white;

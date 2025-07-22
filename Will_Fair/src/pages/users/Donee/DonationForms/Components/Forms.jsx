@@ -12,30 +12,15 @@ export default function MonetaryForm( {user} ) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const [imageFile, setImageFile] = useState(null);
   const [documentFiles, setDocumentFiles] = useState([]);
-  const [imagePreview, setImagePreview] = useState(null);
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   // Non-monetary form fields
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
 
-
-  const handleDocumentUpload = (e) => {
-    const files = Array.from(e.target.files);
-    // Filter for PDFs only
-    const pdfFiles = files.filter((file) => file.type === "application/pdf");
-    setDocumentFiles([...documentFiles, ...pdfFiles]);
-  };
-
-  const removeDocument = (index) => {
-    const updatedFiles = [...documentFiles];
-    updatedFiles.splice(index, 1);
-    setDocumentFiles(updatedFiles);
-  };
+  // Bank details fields
+  const [accountNumber, setAccountNumber] = useState("");
+  const [bankName, setBankName] = useState("");
 
   const [monetaryCategories, setMonetaryCategories] = useState([]);
   const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
@@ -75,42 +60,53 @@ export default function MonetaryForm( {user} ) {
 
   //subitting the form
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    e.preventDefault();
 
-  let formData = new FormData();
-  formData.append("doneeId", user.id);
-  formData.append("category", selectedCategory);
-  formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
-  formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
+    let formData = new FormData();
+    formData.append("doneeId", user.id);
+    formData.append("category", selectedCategory);
+    formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
+    formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
 
-  if (activeTab === "monetary") {
-    formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
-    formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
-  } else {
-    formData.append("itemName", itemName);
-    formData.append("itemQuantity", itemQuantity);
-    formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
-  }
+    if (activeTab === "monetary") {
+      formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
+      formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
+      formData.append("bankName", bankName);
+      formData.append("accountNumber", accountNumber);
+    } else {
+      formData.append("itemName", itemName);
+      formData.append("itemQuantity", itemQuantity);
+      formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
+    }
 
-  if (imageFile) formData.append("image", imageFile);
-  documentFiles.forEach((file) => formData.append("documents", file));
+    documentFiles.forEach((file) => formData.append("documents", file));
 
-  try {
-    const url = activeTab === "monetary" 
-      ? "http://localhost:5000/donations/createMonDonation" 
-      : "http://localhost:5000/donations/createNonMonDonation";
-    await axios.post(url, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    alert("Request submitted successfully!");
-  } catch (err) {
-    setError("Failed to submit request. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const url = activeTab === "monetary" 
+        ? "http://localhost:5000/donations/createMonDonation" 
+        : "http://localhost:5000/donations/createNonMonDonation";
+      await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Request submitted successfully!");
+    } catch {
+      // handle error
+    }
+  };
+
+  // Document upload handler (PDF only)
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files);
+    // Filter for PDFs only
+    const pdfFiles = files.filter((file) => file.type === "application/pdf");
+    setDocumentFiles([...documentFiles, ...pdfFiles]);
+  };
+
+  const removeDocument = (index) => {
+    const updatedFiles = [...documentFiles];
+    updatedFiles.splice(index, 1);
+    setDocumentFiles(updatedFiles);
+  };
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
@@ -265,8 +261,34 @@ export default function MonetaryForm( {user} ) {
                         className="form-input amount-input"
                         aria-label="Target amount in Rupees"
                         placeholder="0"
+                        style={{ paddingLeft: "60px" }}
                       />
                     </div>
+                  </div>
+                </section>
+
+                <section className="form-section">
+                  <h2 className="title">Bank Account Details</h2>
+                  
+                  <div className="form-card">
+                    <input
+                      className="form-input"
+                      placeholder="Bank Name"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-card" style={{ marginTop: "16px" }}>
+                    <input
+                      className="form-input"
+                      placeholder="Account Number"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      required
+                      type="number"
+                    />
                   </div>
                 </section>
 

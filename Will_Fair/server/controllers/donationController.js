@@ -15,6 +15,7 @@ export const createMonDonation = async (req, res) => {
   const { doneeId, category, targetAmount, description, requestName, urgentDate } = req.body;
   const image = req.files?.image?.[0];
   const documents = req.files?.documents;
+  console.log("Docs: ", documents);
 
   if (!doneeId || !targetAmount || !requestName) {
     return res.status(400).json({
@@ -131,12 +132,8 @@ export const getDoneeDonations = async (req, res) => {
         error: result.message
       });
     }
-  } catch (err) {
-    console.error("Error in getDoneeDonations:", err);
-    res.status(500).json({
-      success: false,
-      error: "Server error while fetching donations"
-    });
+  } catch {
+    res.status(500).json({ success: false, error: 'Server error while fetching donations' });
   }
 };
 
@@ -153,7 +150,7 @@ export const getDonationsByDonee = async (req, res) => {
     } else {
       res.status(400).json({ success: false, error: result.message });
     }
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Server error while fetching donations' });
   }
 };
@@ -218,7 +215,7 @@ export const deleteDonation = async (req, res) => {
     } else {
       res.status(400).json({ success: false, error: result.message });
     }
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false, error: 'Server error while deleting donation' });
   }
 };
@@ -232,7 +229,7 @@ export const getRecentDonationsController = async (req, res) => {
     } else {
       res.status(400).json({ success: false, error: result.message });
     }
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false, error: 'Server error while fetching recent donations' });
   }
 };

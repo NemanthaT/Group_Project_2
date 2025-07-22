@@ -1598,3 +1598,14 @@ td {
   }
 }
 
+.coverImageContainer {
+  width: 50%;
+  height: 100%;
+}
+
+.donation-detail-card {
+  margin: 0 auto;
+  width: 100%;
+  border: #1d4ed8;
+  border-radius: 16px;
+}

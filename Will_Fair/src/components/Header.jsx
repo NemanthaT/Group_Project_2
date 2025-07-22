@@ -1,7 +1,7 @@
 import "./Header.css";
 import { UserCircle } from 'lucide-react';
 import { useNavigate, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 
 function Header({ user }) {
   // Initialize the useNavigate hook from react-router-dom
@@ -28,6 +28,24 @@ function Header({ user }) {
     );
   };
 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
+
   useEffect(() => {
     hideLoginButtons(user);
   }, [user]);
@@ -50,12 +68,6 @@ function Header({ user }) {
           </li>
           <li>
             <a href="/marketplace">Market Place</a>
-          </li>
-          <li>
-            <a href="/sellerDashboard">S Dashboard</a>
-          </li>
-          <li>
-            <a href="/buyerDashboard">B Dashboard</a>
           </li>
           <li>
             <a href="/featured">Volunteer</a>
@@ -81,9 +93,9 @@ function Header({ user }) {
           <button className="sign-in-btn" onClick={goToLoginF}>
             Fundraise
           </button>
-          <div className="profile-container" style={{ display: user ? "flex" : "none", alignItems: "center", gap: "0.5rem" }}>
+          <div className="profile-container" style={{ display: user ? "flex" : "none", alignItems: "center", gap: "0.5rem", position: "relative" }} ref={profileRef}>
             {user ? (
-              <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }} onClick={() => setDropdownOpen((open) => !open)}>
                 <UserCircle size={30} color="#555" />
                 <button className="logout-btn" style={{ marginLeft: 0 }} onClick={handleLogout}>
                   Logout
@@ -91,6 +103,16 @@ function Header({ user }) {
               </div>
             ) : (
               <div className="guest-info"></div>
+            )}
+            {dropdownOpen && (
+              <div className="profile-dropdown" style={{ position: "absolute", top: 40, right: 0, background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.12)", borderRadius: 8, zIndex: 10, minWidth: 160 }}>
+                <Link to="/profile" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
+                  Profile
+                </Link>
+                <Link to="/sellerDashboard" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
+                  Seller Dashboard
+                </Link>
+              </div>
             )}
           </div>
         </div>
