@@ -11,8 +11,10 @@ import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerActions } from "@react-navigation/native";
 import { payment as styles } from "../../assets/styles/payment";
+import { useRouter } from "expo-router";
 
 const DonationPayment = () => {
+  const router = useRouter();
   const [anonymous, setAnonymous] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [selectedFile1, setSelectedFile1] = useState(null);
@@ -189,8 +191,10 @@ const DonationPayment = () => {
       </View> */}
 
       {/* Complete Button */}
-      <TouchableOpacity style={styles.submitButton}>
-            <Text style={styles.submitText}>Complete Donation</Text>
+      <TouchableOpacity style={styles.submitButton}
+       onPress={() => router.push('/(drawer)/monetory')}>
+            <Text style={styles.submitText}
+            >Complete Donation</Text>
     </TouchableOpacity>
     </ScrollView>
   );

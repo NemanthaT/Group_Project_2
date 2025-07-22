@@ -42,6 +42,36 @@ const Monetary = () => {
     { label: "Children & Orphan Care", value: "children & orphan care" },
   ]);
 
+  const [openBranch, setOpenBranch] = useState(false);
+  const [branchName, setBranchName] = useState(null);
+  const [branches, setBranches] = useState([
+    { label: "Colombo Main Branch", value: "colombo_main" },
+    { label: "Kandy Branch", value: "kandy" },
+    { label: "Galle Branch", value: "galle" },
+    { label: "Negombo Branch", value: "negombo" },
+    { label: "Kurunegala Branch", value: "kurunegala" },
+    { label: "Anuradhapura Branch", value: "anuradhapura" },
+    { label: "Matara Branch", value: "matara" },
+    { label: "Ratnapura Branch", value: "ratnapura" },
+    { label: "Jaffna Branch", value: "jaffna" },
+    { label: "Batticaloa Branch", value: "batticaloa" },
+  ]);
+
+  // Bank Name Dropdown
+  const [openBank, setOpenBank] = useState(false);
+  const [bankName, setBankName] = useState(null);
+  const [banks, setBanks] = useState([
+    { label: "Bank of Ceylon", value: "bank_of_ceylon" },
+    { label: "People's Bank", value: "peoples_bank" },
+    { label: "Commercial Bank", value: "commercial_bank" },
+    { label: "Hatton National Bank", value: "hatton_national_bank" },
+    { label: "Sampath Bank", value: "sampath_bank" },
+    { label: "Nations Trust Bank", value: "nations_trust_bank" },
+    { label: "Seylan Bank", value: "seylan_bank" },
+    { label: "Union Bank", value: "union_bank" },
+    { label: "DFCC Bank", value: "dfcc_bank" },
+    { label: "National Development Bank", value: "ndb_bank" },
+  ]);
   const handleDocumentPick = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
@@ -171,6 +201,52 @@ const Monetary = () => {
             onChange={onChangeDate}
           />
         )}
+
+        {/* Bank Name Dropdown */}
+        <Text style={donationRequestsStyles.sectionTitle}>Bank Name</Text>
+        <DropDownPicker
+          open={openBank}
+          value={bankName}
+          items={banks}
+          setOpen={setOpenBank}
+          setValue={setBankName}
+          setItems={setBanks}
+          placeholder="Select Bank"
+          listMode="SCROLLVIEW"
+          zIndex={2000}
+          zIndexInverse={2000}
+          style={{
+            marginBottom: openBank ? 150 : 20,
+            borderColor: "#ccc",
+            borderRadius: 8,
+          }}
+        />
+
+        {/* Category Dropdown */}
+        <Text style={donationRequestsStyles.sectionTitle}>Branch Name</Text>
+        <DropDownPicker
+          open={openBranch}
+          value={branchName}
+          items={branches}
+          setOpen={setOpenBranch}
+          setValue={setBranchName}
+          setItems={setBranches}
+          placeholder="Select Branch"
+          listMode="SCROLLVIEW" // ✅ Show inline dropdown (not modal, not FlatList)
+          style={{
+            marginBottom: openBranch ? 150 : 20,
+            borderColor: "#ccc",
+            borderRadius: 8,
+          }}
+        />
+        <Text style={donationRequestsStyles.sectionTitle}>Account Number</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Enter account number"
+          placeholderTextColor="#999"
+          keyboardType="numeric"
+        />
+
 
         {/* Request Image Upload */}
         <Text style={donationRequestsStyles.sectionTitle}>Request Image</Text>

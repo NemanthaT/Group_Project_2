@@ -58,6 +58,12 @@ const Program = () => {
                   <Text style={styles.label}>
                     Venue : Sagra Building Near by Sri Jayawardhanapura University
                   </Text>
+                  <Text style={styles.label}>
+                    Volunteer Signed : 20
+                  </Text>
+                  <Text style={styles.label}>
+                    Volunteer Needed : 50
+                  </Text>
               </View>
               </View>
 
