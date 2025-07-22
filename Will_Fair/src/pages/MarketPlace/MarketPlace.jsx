@@ -5,6 +5,7 @@ import "./MarketPlace.css";
 
 function MarketPlace () {
   return (
+<<<<<<< HEAD
     <div>
       <Routes>
         <Route path="/" element={<MarketplaceHomepage />} />
@@ -13,5 +14,16 @@ function MarketPlace () {
     </div>
   );
 }
+=======
+    <>
+      <div className="mark">
+        <h1 >Welcome to the Marketplace</h1>
+        <p className="text-lg">
+          Explore a wide range of products and services.
+        </p>
+      </div>
+    </>
+  );}
+>>>>>>> rachitha
 
 export default MarketPlace;
