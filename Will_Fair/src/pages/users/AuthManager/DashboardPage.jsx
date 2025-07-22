@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const DashboardPage = () => {
+const DashboardPage = ( {user} ) => {
   const [activeTab, setActiveTab] = useState("donations");
 
   const statsCards = [
@@ -66,7 +66,7 @@ const DashboardPage = () => {
       {/* Welcome Section */}
       <div className="authmanager-welcome-section">
         <div className="authmanager-welcome-content">
-          <h2>Welcome back, Admin!</h2>
+          <h2>Welcome back, {user.name}</h2>
           <p>Here's what's happening with your platform today</p>
         </div>
         <div className="authmanager-quick-actions">

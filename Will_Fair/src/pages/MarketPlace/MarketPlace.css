@@ -247,7 +247,7 @@ img {
   gap: 12px;
 }
 
-.btn {
+/*.btn {
   padding: 10px 16px;
   border-radius: 20px;
   font-weight: 500;
@@ -279,7 +279,7 @@ img {
 .btn-primary:hover {
   background-color: #0a3580;
 }
-
+*/
 /* Artisan Stories Section */
 .artisan-stories-section {
   background: linear-gradient(135deg, #8400ff 0%, #c180ff 100%);

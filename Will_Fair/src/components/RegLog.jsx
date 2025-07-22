@@ -46,7 +46,8 @@ export function LoginD() {
           location.reload(); // Reload to update user state
           break;
         case "auth_manager":
-          navigate("/manager/dashboard");
+          navigate("/users/authManager");
+          location.reload(); 
           break;
         case "regional_manager":
           navigate("/regional/dashboard");
@@ -172,9 +173,10 @@ export function SignUpD() {
     }
 
     try {
-      // Hash the password before sending to server
+      /* Hash the password before sending to server
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(formData.password, salt);
+      const hashedPassword = await bcrypt.hash(formData.password, salt);*/
+      const hashedPassword = formData.password; // Use plain password for now
 
       const response = await axios.post(
         "http://localhost:5000/donors/signupDonor",

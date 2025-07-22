@@ -52,9 +52,6 @@ function Header({ user }) {
             <a href="/marketplace">Market Place</a>
           </li>
           <li>
-            <a href="/authManager">Dashboard</a>
-          </li>
-          <li>
             <a href="/sellerDashboard">S Dashboard</a>
           </li>
           <li>
