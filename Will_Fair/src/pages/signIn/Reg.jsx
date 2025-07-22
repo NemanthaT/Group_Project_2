@@ -1,9 +1,11 @@
 import "./Reg.css";
 import { SignUpD, LoginD, SignUpF, LoginF } from "../../components/RegLog";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 function CheckRoutes() {
-  if(location.pathname=== "/loginD") {
+  const location = useLocation();
+  
+  if(location.pathname.includes("/loginD")) {
     return (
         <Routes>
           <Route path="" element={<LoginD />} />
@@ -22,8 +24,11 @@ function CheckRoutes() {
 }
 
 function Reg() {
+  const location = useLocation();
+  const isFundraiserSignup = location.pathname.includes("signupF");
+
   return (
-    <section className="hero">
+    <section className={`hero ${isFundraiserSignup ? "fundraiser-signup" : ""}`}>
       <div className="bg-container">
         <img
           className="bg"
