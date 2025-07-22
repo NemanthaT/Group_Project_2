@@ -125,30 +125,32 @@ const Orders = () => {
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
       case 'delivered':
-        return 'status-delivered';
+        return 'seller-status-delivered';
       case 'pending':
-        return 'status-pending';
+        return 'seller-status-pending';
       case 'processing':
-        return 'status-processing';
+        return 'seller-status-processing';
       case 'cancelled':
-        return 'status-cancelled';
+        return 'seller-status-cancelled';
       default:
-        return 'status-default';
+        return 'seller-status-default';
     }
   };
 
   return (
-    <div className="orders-content">
-      <div className="content-header">
-        <h1>Order Details</h1>
-        <p className="subtitle">Managing Orders</p>
+    <div className="seller-dashboard-content">
+      <div className="seller-welcome-section">
+        <div className="seller-welcome-content">
+          <h2>Order Details</h2>
+          <p>Managing Orders</p>
+        </div>
       </div>
 
-      <div className="filters-section">
-        <div className="filters-left">
-          <div className="filter-group">
+      <div className="seller-filters-section">
+        <div className="seller-filters-left">
+          <div className="seller-filter-group">
             <select
-              className="filter-select"
+              className="seller-filter-select"
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
             >
@@ -158,9 +160,9 @@ const Orders = () => {
               <option value="month">This Month</option>
             </select>
           </div>
-          <div className="filter-group">
+          <div className="seller-filter-group">
             <select
-              className="filter-select"
+              className="seller-filter-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -172,20 +174,20 @@ const Orders = () => {
             </select>
           </div>
         </div>
-        <div className="search-section">
-          <div className="search-box">
+        <div className="seller-search-section">
+          <div className="seller-search-box">
             <input
               type="text"
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="search-btn">🔍</button>
+            <button className="seller-search-btn">🔍</button>
           </div>
         </div>
       </div>
 
-      <div className="orders-table">
+      <div className="seller-orders-table">
         <table>
           <thead>
             <tr>
@@ -201,19 +203,19 @@ const Orders = () => {
           <tbody>
             {filteredOrders.map((order, index) => (
               <tr key={`${order.id}-${index}`}>
-                <td className="order-id">{order.id}</td>
-                <td className="customer">{order.customer}</td>
-                <td className="email">{order.email}</td>
-                <td className="date">{order.date}</td>
-                <td className="amount">{order.totalAmount}</td>
-                <td className="status">
-                  <span className={`status-badge ${getStatusClass(order.status)}`}>
+                <td className="seller-order-id">{order.id}</td>
+                <td className="seller-customer">{order.customer}</td>
+                <td className="seller-email">{order.email}</td>
+                <td className="seller-date">{order.date}</td>
+                <td className="seller-amount">{order.totalAmount}</td>
+                <td className="seller-status">
+                  <span className={`seller-status-badge ${getStatusClass(order.status)}`}>
                     {order.status}
                   </span>
                 </td>
-                <td className="actions">
-                  <button className="action-btn view-btn">View</button>
-                  <button className="action-btn edit-btn">Edit</button>
+                <td className="seller-actions">
+                  <button className="seller-action-btn seller-view-btn">View</button>
+                  <button className="seller-action-btn seller-edit-btn">Edit</button>
                 </td>
               </tr>
             ))}

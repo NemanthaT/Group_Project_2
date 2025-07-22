@@ -26,36 +26,36 @@ const AuthManager = () => {
   };
 
   return (
-    <div className="dashboard">
+    <div className="authmanager-dashboard">
       {/* Mobile overlay */}
-      <div className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`} onClick={closeSidebar}></div>
+      <div className={`authmanager-sidebar-overlay ${sidebarVisible ? 'authmanager-visible' : ''}`} onClick={closeSidebar}></div>
 
       {/* Sidebar Section - moved inline */}
-      <div className={`sidebar ${sidebarVisible ? 'mobile-visible' : 'mobile-hidden'}`}>
+      <div className={`authmanager-sidebar ${sidebarVisible ? 'authmanager-mobile-visible' : 'authmanager-mobile-hidden'}`}>
 
-        <img className="profile-icon" alt="Profile" src="/profile-icon-5.png" />
+        <img className="authmanager-profile-icon" alt="Profile" src="/profile-icon-5.png" />
 
-        <div className="sidebar-nav">
+        <div className="authmanager-sidebar-nav">
           {navItems.map((item) => (
             <div
               key={item.id}
-              className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+              className={`authmanager-nav-item ${activeTab === item.id ? 'authmanager-active' : ''}`}
               onClick={() => handleNavClick(item.id)}
             >
-              <span className="nav-item-text">
+              <span className="authmanager-nav-item-text">
                 {item.label}
               </span>
             </div>
           ))}
         </div>
 
-        <button className="logout-btn">Logout</button>
+        <button className="authmanager-logout-btn">Logout</button>
       </div>
 
       {/* Main content */}
-      <div className="main-content">
+      <div className="authmanager-main-content">
         
-        <div className="content-wrapper">
+        <div className="authmanager-content-wrapper">
           {activeTab === 'dashboard' && <DashboardPage />}
           {activeTab === 'products' && <ProductReviewPage />}
         </div>

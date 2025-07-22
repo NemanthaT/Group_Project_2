@@ -47,17 +47,17 @@ const Profile = () => {
   };
 
   return (
-    <div className="dashboard-content profile-page">
+    <div className="seller-dashboard-content">
       {/* Header Section */}
-      <div className="welcome-section">
-        <div className="welcome-content">
+      <div className="seller-welcome-section">
+        <div className="seller-welcome-content">
           <h2>Profile Settings</h2>
           <p>Manage your personal and business information</p>
         </div>
-        <div className="quick-actions">
+        <div className="seller-quick-actions">
           {!isEditing ? (
             <button 
-              className="quick-action-btn primary"
+              className="seller-quick-action-btn seller-primary"
               onClick={() => setIsEditing(true)}
             >
               📝 Edit Profile
@@ -65,13 +65,13 @@ const Profile = () => {
           ) : (
             <>
               <button 
-                className="quick-action-btn secondary"
+                className="seller-quick-action-btn seller-secondary"
                 onClick={handleCancel}
               >
                 ❌ Cancel
               </button>
               <button 
-                className="quick-action-btn primary"
+                className="seller-quick-action-btn seller-primary"
                 onClick={handleSave}
               >
                 💾 Save Changes
@@ -82,15 +82,15 @@ const Profile = () => {
       </div>
 
       {/* Profile Information Grid */}
-      <div className="overview-grid">
+      <div className="seller-overview-grid">
         {/* Personal Information */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>👤 Personal Information</h3>
           </div>
-          <div className="card-content">
-            <div className="profile-form-grid">
-              <div className="profile-form-group">
+          <div className="seller-card-content">
+            <div className="seller-profile-form-grid">
+              <div className="seller-profile-form-group">
                 <label>First Name</label>
                 {isEditing ? (
                   <input
@@ -98,14 +98,14 @@ const Profile = () => {
                     name="firstName"
                     value={profileData.firstName}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="Enter your first name"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.firstName}</div>
+                  <div className="seller-profile-display-value">{profileData.firstName}</div>
                 )}
               </div>
-              <div className="profile-form-group">
+              <div className="seller-profile-form-group">
                 <label>Last Name</label>
                 {isEditing ? (
                   <input
@@ -113,14 +113,14 @@ const Profile = () => {
                     name="lastName"
                     value={profileData.lastName}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="Enter your last name"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.lastName}</div>
+                  <div className="seller-profile-display-value">{profileData.lastName}</div>
                 )}
               </div>
-              <div className="profile-form-group profile-form-group-full">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>📧 Email</label>
                 {isEditing ? (
                   <input
@@ -128,14 +128,14 @@ const Profile = () => {
                     name="email"
                     value={profileData.email}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="your.email@example.com"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.email}</div>
+                  <div className="seller-profile-display-value">{profileData.email}</div>
                 )}
               </div>
-              <div className="profile-form-group profile-form-group-full">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>📱 Phone</label>
                 {isEditing ? (
                   <input
@@ -143,11 +143,11 @@ const Profile = () => {
                     name="phone"
                     value={profileData.phone}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="+1 (555) 123-4567"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.phone}</div>
+                  <div className="seller-profile-display-value">{profileData.phone}</div>
                 )}
               </div>
             </div>
@@ -155,13 +155,13 @@ const Profile = () => {
         </div>
 
         {/* Business Information */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>🏢 Business Information</h3>
           </div>
-          <div className="card-content">
-            <div className="profile-form-grid">
-              <div className="profile-form-group profile-form-group-full">
+          <div className="seller-card-content">
+            <div className="seller-profile-form-grid">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>Business Name</label>
                 {isEditing ? (
                   <input
@@ -169,20 +169,20 @@ const Profile = () => {
                     name="businessName"
                     value={profileData.businessName}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.businessName}</div>
+                  <div className="seller-profile-display-value">{profileData.businessName}</div>
                 )}
               </div>
-              <div className="profile-form-group profile-form-group-full">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>Business Type</label>
                 {isEditing ? (
                   <select
                     name="businessType"
                     value={profileData.businessType}
                     onChange={handleInputChange}
-                    className="form-select"
+                    className="seller-form-select"
                   >
                     <option value="Handicrafts & Art">Handicrafts & Art</option>
                     <option value="Clothing & Textiles">Clothing & Textiles</option>
@@ -192,10 +192,10 @@ const Profile = () => {
                     <option value="Other">Other</option>
                   </select>
                 ) : (
-                  <div className="profile-display-value">{profileData.businessType}</div>
+                  <div className="seller-profile-display-value">{profileData.businessType}</div>
                 )}
               </div>
-              <div className="profile-form-group profile-form-group-full">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>🌐 Website</label>
                 {isEditing ? (
                   <input
@@ -203,13 +203,13 @@ const Profile = () => {
                     name="website"
                     value={profileData.website}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                     placeholder="www.yourbusiness.com"
                   />
                 ) : (
-                  <div className="profile-display-value">
+                  <div className="seller-profile-display-value">
                     {profileData.website ? (
-                      <a href={`https://${profileData.website}`} target="_blank" rel="noopener noreferrer" className="profile-link">
+                      <a href={`https://${profileData.website}`} target="_blank" rel="noopener noreferrer" className="seller-profile-link">
                         🔗 {profileData.website}
                       </a>
                     ) : (
@@ -223,13 +223,13 @@ const Profile = () => {
         </div>
 
         {/* Address Information */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="seller-overview-card">
+          <div className="seller-card-header">
             <h3>📍 Address Information</h3>
           </div>
-          <div className="card-content">
-            <div className="profile-form-grid">
-              <div className="profile-form-group profile-form-group-full">
+          <div className="seller-card-content">
+            <div className="seller-profile-form-grid">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>Street Address</label>
                 {isEditing ? (
                   <input
@@ -237,13 +237,13 @@ const Profile = () => {
                     name="address"
                     value={profileData.address}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.address}</div>
+                  <div className="seller-profile-display-value">{profileData.address}</div>
                 )}
               </div>
-              <div className="profile-form-group">
+              <div className="seller-profile-form-group">
                 <label>City</label>
                 {isEditing ? (
                   <input
@@ -251,13 +251,13 @@ const Profile = () => {
                     name="city"
                     value={profileData.city}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.city}</div>
+                  <div className="seller-profile-display-value">{profileData.city}</div>
                 )}
               </div>
-              <div className="profile-form-group">
+              <div className="seller-profile-form-group">
                 <label>Postal Code</label>
                 {isEditing ? (
                   <input
@@ -265,20 +265,20 @@ const Profile = () => {
                     name="postalCode"
                     value={profileData.postalCode}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="seller-form-input"
                   />
                 ) : (
-                  <div className="profile-display-value">{profileData.postalCode}</div>
+                  <div className="seller-profile-display-value">{profileData.postalCode}</div>
                 )}
               </div>
-              <div className="profile-form-group profile-form-group-full">
+              <div className="seller-profile-form-group seller-profile-form-group-full">
                 <label>Country</label>
                 {isEditing ? (
                   <select
                     name="country"
                     value={profileData.country}
                     onChange={handleInputChange}
-                    className="form-select"
+                    className="seller-form-select"
                   >
                     <option value="Sri Lanka">Sri Lanka</option>
                     <option value="India">India</option>
@@ -287,7 +287,7 @@ const Profile = () => {
                     <option value="Other">Other</option>
                   </select>
                 ) : (
-                  <div className="profile-display-value">{profileData.country}</div>
+                  <div className="seller-profile-display-value">{profileData.country}</div>
                 )}
               </div>
             </div>
@@ -296,25 +296,25 @@ const Profile = () => {
       </div>
 
       {/* Account Settings */}
-      <div className="table-section">
-        <div className="section-header">
+      <div className="seller-table-section">
+        <div className="seller-section-header">
           <h3>⚙️ Account Settings</h3>
         </div>
-        <div className="card-content" style={{ padding: '2rem' }}>
-          <div className="profile-settings-grid">
-            <div className="profile-setting-item">
-              <div className="setting-info">
+        <div className="seller-card-content" style={{ padding: '2rem' }}>
+          <div className="seller-profile-settings-grid">
+            <div className="seller-profile-setting-item">
+              <div className="seller-setting-info">
                 <h4>🔒 Change Password</h4>
                 <p>Update your account password for security</p>
               </div>
-              <button className="quick-action-btn secondary">Change Password</button>
+              <button className="seller-quick-action-btn seller-secondary">Change Password</button>
             </div>
-            <div className="profile-setting-item">
-              <div className="setting-info">
+            <div className="seller-profile-setting-item">
+              <div className="seller-setting-info">
                 <h4> Email Notifications</h4>
                 <p>Manage your email notification preferences</p>
               </div>
-              <button className="quick-action-btn secondary">Configure</button>
+              <button className="seller-quick-action-btn seller-secondary">Configure</button>
             </div>
           </div>
         </div>

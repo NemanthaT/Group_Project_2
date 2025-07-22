@@ -62,30 +62,30 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="dashboard-content">
+    <div className="authmanager-dashboard-content">
       {/* Welcome Section */}
-      <div className="welcome-section">
-        <div className="welcome-content">
+      <div className="authmanager-welcome-section">
+        <div className="authmanager-welcome-content">
           <h2>Welcome back, Admin!</h2>
           <p>Here's what's happening with your platform today</p>
         </div>
-        <div className="quick-actions">
-          <button className="quick-action-btn primary">Review Pending</button>
-          <button className="quick-action-btn secondary">Generate Report</button>
+        <div className="authmanager-quick-actions">
+          <button className="authmanager-quick-action-btn authmanager-primary">Review Pending</button>
+          <button className="authmanager-quick-action-btn authmanager-secondary">Generate Report</button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-grid">
+      <div className="authmanager-stats-grid">
         {statsCards.map((card, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-icon" style={{ backgroundColor: `${card.color}15`, color: card.color }}>
+          <div key={index} className="authmanager-stat-card">
+            <div className="authmanager-stat-icon" style={{ backgroundColor: `${card.color}15`, color: card.color }}>
               {card.icon}
             </div>
-            <div className="stat-info">
-              <div className="stat-value">{card.value}</div>
-              <div className="stat-label">{card.label}</div>
-              <div className="stat-trend" style={{ color: card.trend.startsWith('+') ? '#10b981' : '#ef4444' }}>
+            <div className="authmanager-stat-info">
+              <div className="authmanager-stat-value">{card.value}</div>
+              <div className="authmanager-stat-label">{card.label}</div>
+              <div className="authmanager-stat-trend" style={{ color: card.trend.startsWith('+') ? '#10b981' : '#ef4444' }}>
                 {card.trend}
               </div>
             </div>
@@ -94,29 +94,29 @@ const DashboardPage = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="overview-grid">
+      <div className="authmanager-overview-grid">
         {/* Recent Activities */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="authmanager-overview-card">
+          <div className="authmanager-card-header">
             <h3>Recent Activities</h3>
-            <button className="view-all-btn">View All</button>
+            <button className="authmanager-view-all-btn">View All</button>
           </div>
-          <div className="card-content">
-            <div className="activities-list">
+          <div className="authmanager-card-content">
+            <div className="authmanager-activities-list">
               {recentActivities.map((activity, index) => (
-                <div key={index} className="activity-item">
-                  <div className="activity-icon" style={{ 
+                <div key={index} className="authmanager-activity-item">
+                  <div className="authmanager-activity-icon" style={{ 
                     backgroundColor: activity.type === 'donation' ? '#3b82f615' : '#e879f915',
                     color: activity.type === 'donation' ? '#3b82f6' : '#e879f9'
                   }}>
                     {activity.type === 'donation' ? '💰' : '📦'}
                   </div>
-                  <div className="activity-info">
-                    <div className="activity-title">{activity.title}</div>
-                    <div className="activity-user">by {activity.user}</div>
-                    <div className="activity-time">{activity.time}</div>
+                  <div className="authmanager-activity-info">
+                    <div className="authmanager-activity-title">{activity.title}</div>
+                    <div className="authmanager-activity-user">by {activity.user}</div>
+                    <div className="authmanager-activity-time">{activity.time}</div>
                   </div>
-                  <span className="status-badge" style={{ backgroundColor: getStatusColor(activity.status) }}>
+                  <span className="authmanager-status-badge" style={{ backgroundColor: getStatusColor(activity.status) }}>
                     {activity.status}
                   </span>
                 </div>
@@ -126,59 +126,59 @@ const DashboardPage = () => {
         </div>
 
         {/* Pending Requests Summary */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="authmanager-overview-card">
+          <div className="authmanager-card-header">
             <h3>Pending Requests</h3>
-            <button className="view-all-btn">Manage All</button>
+            <button className="authmanager-view-all-btn">Manage All</button>
           </div>
-          <div className="card-content">
-            <div className="pending-summary">
-              <div className="summary-item">
-                <div className="summary-icon" style={{ backgroundColor: '#3b82f615', color: '#3b82f6' }}>
+          <div className="authmanager-card-content">
+            <div className="authmanager-pending-summary">
+              <div className="authmanager-summary-item">
+                <div className="authmanager-summary-icon" style={{ backgroundColor: '#3b82f615', color: '#3b82f6' }}>
                   💰
                 </div>
-                <div className="summary-info">
-                  <div className="summary-value">{donationRequests.filter(r => r.status === 'pending').length}</div>
-                  <div className="summary-label">Donation Requests</div>
+                <div className="authmanager-summary-info">
+                  <div className="authmanager-summary-value">{donationRequests.filter(r => r.status === 'pending').length}</div>
+                  <div className="authmanager-summary-label">Donation Requests</div>
                 </div>
-                <button className="summary-action">Review</button>
+                <button className="authmanager-summary-action">Review</button>
               </div>
-              <div className="summary-item">
-                <div className="summary-icon" style={{ backgroundColor: '#e879f915', color: '#e879f9' }}>
+              <div className="authmanager-summary-item">
+                <div className="authmanager-summary-icon" style={{ backgroundColor: '#e879f915', color: '#e879f9' }}>
                   📦
                 </div>
-                <div className="summary-info">
-                  <div className="summary-value">{productRequests.filter(r => r.status === 'pending').length}</div>
-                  <div className="summary-label">Product Reviews</div>
+                <div className="authmanager-summary-info">
+                  <div className="authmanager-summary-value">{productRequests.filter(r => r.status === 'pending').length}</div>
+                  <div className="authmanager-summary-label">Product Reviews</div>
                 </div>
-                <button className="summary-action">Review</button>
+                <button className="authmanager-summary-action">Review</button>
               </div>
             </div>
           </div>
         </div>
 
         {/* High Priority Items */}
-        <div className="overview-card">
-          <div className="card-header">
+        <div className="authmanager-overview-card">
+          <div className="authmanager-card-header">
             <h3>High Priority</h3>
-            <button className="view-all-btn">View All</button>
+            <button className="authmanager-view-all-btn">View All</button>
           </div>
-          <div className="card-content">
-            <div className="priority-list">
+          <div className="authmanager-card-content">
+            <div className="authmanager-priority-list">
               {donationRequests.filter(r => r.urgency === 'High').map((item, index) => (
-                <div key={index} className="priority-item">
-                  <div className="priority-info">
-                    <div className="priority-title">{item.title}</div>
-                    <div className="priority-meta">
+                <div key={index} className="authmanager-priority-item">
+                  <div className="authmanager-priority-info">
+                    <div className="authmanager-priority-title">{item.title}</div>
+                    <div className="authmanager-priority-meta">
                       <span style={{ color: getUrgencyColor(item.urgency) }}>
                         {item.urgency} Priority
                       </span>
                       <span>{item.amount}</span>
                     </div>
                   </div>
-                  <div className="priority-actions">
-                    <button className="action-btn approve">✓</button>
-                    <button className="action-btn decline">✗</button>
+                  <div className="authmanager-priority-actions">
+                    <button className="authmanager-action-btn authmanager-approve">✓</button>
+                    <button className="authmanager-action-btn authmanager-decline">✗</button>
                   </div>
                 </div>
               ))}
@@ -188,29 +188,29 @@ const DashboardPage = () => {
       </div>
 
       {/* Detailed Activities Table */}
-      <div className="table-section">
-        <div className="section-header">
+      <div className="authmanager-table-section">
+        <div className="authmanager-section-header">
           <h3>Recent Requests</h3>
-          <div className="table-actions">
-            <div className="search-box">
+          <div className="authmanager-table-actions">
+            <div className="authmanager-search-box">
               <input type="text" placeholder="Search requests..." />
-              <span className="search-icon">🔍</span>
+              <span className="authmanager-search-icon">🔍</span>
             </div>
-            <select className="filter-select">
+            <select className="authmanager-filter-select">
               <option>All Status</option>
               <option>Pending</option>
               <option>Approved</option>
               <option>Declined</option>
             </select>
-            <div className="tab-buttons">
+            <div className="authmanager-tab-buttons">
               <button 
-                className={`tab-btn ${activeTab === 'donations' ? 'active' : ''}`}
+                className={`authmanager-tab-btn ${activeTab === 'donations' ? 'authmanager-active' : ''}`}
                 onClick={() => setActiveTab('donations')}
               >
                 Donations ({donationRequests.filter(item => item.status === 'pending').length})
               </button>
               <button 
-                className={`tab-btn ${activeTab === 'products' ? 'active' : ''}`}
+                className={`authmanager-tab-btn ${activeTab === 'products' ? 'authmanager-active' : ''}`}
                 onClick={() => setActiveTab('products')}
               >
                 Products ({productRequests.filter(item => item.status === 'pending').length})
@@ -219,7 +219,7 @@ const DashboardPage = () => {
           </div>
         </div>
         
-        <div className="table-container">
+        <div className="authmanager-table-container">
           <table>
             <thead>
               <tr>
@@ -238,35 +238,35 @@ const DashboardPage = () => {
                 <tr key={item.id}>
                   <td>#{item.id}</td>
                   <td>
-                    <div className="item-cell">
-                      <div className="item-title">{item.title}</div>
-                      <div className="item-description">{item.description}</div>
+                    <div className="authmanager-item-cell">
+                      <div className="authmanager-item-title">{item.title}</div>
+                      <div className="authmanager-item-description">{item.description}</div>
                     </div>
                   </td>
                   <td>{activeTab === 'donations' ? item.requester : item.seller}</td>
-                  <td className="amount-cell">{activeTab === 'donations' ? item.amount : item.price}</td>
+                  <td className="authmanager-amount-cell">{activeTab === 'donations' ? item.amount : item.price}</td>
                   <td>{item.date}</td>
                   <td>
                     {activeTab === 'donations' ? (
-                      <span className="urgency-badge" style={{ backgroundColor: getUrgencyColor(item.urgency) }}>
+                      <span className="authmanager-urgency-badge" style={{ backgroundColor: getUrgencyColor(item.urgency) }}>
                         {item.urgency}
                       </span>
                     ) : (
-                      <span className="category-badge">{item.category}</span>
+                      <span className="authmanager-category-badge">{item.category}</span>
                     )}
                   </td>
                   <td>
-                    <span className="status-badge" style={{ backgroundColor: getStatusColor(item.status) }}>
+                    <span className="authmanager-status-badge" style={{ backgroundColor: getStatusColor(item.status) }}>
                       {item.status}
                     </span>
                   </td>
                   <td>
-                    <div className="action-buttons">
-                      <button className="action-btn view" title="View" onClick={() => handleView(item.id, activeTab)}>👁️</button>
+                    <div className="authmanager-action-buttons">
+                      <button className="authmanager-action-btn authmanager-view" title="View" onClick={() => handleView(item.id, activeTab)}>👁️</button>
                       {item.status === 'pending' && (
                         <>
-                          <button className="action-btn approve" title="Approve" onClick={() => handleApprove(item.id, activeTab)}>✅</button>
-                          <button className="action-btn decline" title="Decline" onClick={() => handleDecline(item.id, activeTab)}>❌</button>
+                          <button className="authmanager-action-btn authmanager-approve" title="Approve" onClick={() => handleApprove(item.id, activeTab)}>✅</button>
+                          <button className="authmanager-action-btn authmanager-decline" title="Decline" onClick={() => handleDecline(item.id, activeTab)}>❌</button>
                         </>
                       )}
                     </div>
