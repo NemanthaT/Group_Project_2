@@ -18,6 +18,8 @@ const donationRequests = [
     title: 'Blood Donation Camp',
     about: 'Help us to save a life by donating blood. Your contribution can make a significant difference in the lives of those in need.',
     image: require('../../assets/images/blood.jpg'),
+    raised: 70,
+    target: 15,
   },
   {
     id: 2,
@@ -75,47 +77,58 @@ const VolunteerPrograms = () => {
         </TouchableOpacity>
       </View>
 
-    {donationRequests.map((item) => (
-      <View key={item.id} style={styles.card}>
-        <Image source={item.image} style={styles.cardImage} />
-        <View style={styles.cardContent}>
-          <View style={styles.badgeRow}>
-            <View style={styles.badge}>
-              <MaterialIcons name="location-on" size={16} color="#0047AB" />
-              <Text style={styles.locationText}>
-                Panadura
-              </Text>
+    {donationRequests.map((item) => {
+      // Calculate progress if raised and target are defined, else default to 0
+      const progress =
+        typeof item.raised === 'number' && typeof item.target === 'number' && item.target > 0
+          ? Math.min((item.raised / item.target) * 100, 100)
+          : 0;
+      return (
+        <View key={item.id} style={styles.card}>
+          <Image source={item.image} style={styles.cardImage} />
+          <View style={styles.cardContent}>
+            <View style={styles.badgeRow}>
+              <View style={styles.badge}>
+                <MaterialIcons name="location-on" size={16} color="#0047AB" />
+                <Text style={styles.locationText}>
+                  Panadura
+                </Text>
+              </View>
+              <View style={styles.badgeBackground}>
+                <Text style={styles.badgeText}>Volunteer</Text>
+              </View>
             </View>
-            <View style={styles.badgeBackground}>
-              <Text style={styles.badgeText}>Volunteer</Text>
+            {/* Progress Bar */}
+            <View style={styles.progressBarBackground}>
+              <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
             </View>
-          </View>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <View style={styles.aboutRow}>
-            <Text style={styles.aboutLabel}>About:</Text>
-            <Text style={styles.aboutValue} numberOfLines={2} ellipsizeMode="tail">{item.about}</Text>
-          </View>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={styles.detailsButton}
-              onPress={() => navigation.navigate('program', {
-                programId: item.id,
-                programTitle: item.title,
-                programAbout: item.about,
-                programImage: item.image,
-                programLocation: 'Panadura',
-                programCategory: 'Volunteer'
-              })}
-            >
-              <Text style={styles.detailsButtonText}>Details</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.donateButton}>
-              <Text style={styles.donateButtonText}>Donate</Text>
-            </TouchableOpacity>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <View style={styles.aboutRow}>
+              <Text style={styles.aboutLabel}>About:</Text>
+              <Text style={styles.aboutValue} numberOfLines={2} ellipsizeMode="tail">{item.about}</Text>
+            </View>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity 
+                style={styles.detailsButton}
+                onPress={() => navigation.navigate('program', {
+                  programId: item.id,
+                  programTitle: item.title,
+                  programAbout: item.about,
+                  programImage: item.image,
+                  programLocation: 'Panadura',
+                  programCategory: 'Volunteer'
+                })}
+              >
+                <Text style={styles.detailsButtonText}>Details</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.donateButton}>
+                <Text style={styles.donateButtonText}>Volunteer</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    ))}
+      );
+    })}
     </ScrollView>
   );
 };

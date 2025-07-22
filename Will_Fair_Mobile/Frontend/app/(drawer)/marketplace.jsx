@@ -21,7 +21,7 @@ const categories = [
 
 const products = Array(5).fill({
   id: Math.random(),
-  name: 'Very Nice Beautiful Asa Hithena Smart Jewelry',
+  name: 'Smart Jewelry',
   price: 'Rs. 2000',
   image: require('../../assets/images/jewelry-sample.png')
 });

@@ -70,30 +70,17 @@ export const programStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  progressRow: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   progressBarBackground: {
-    flex: 1,
     height: 6,
-    backgroundColor: '#ddd',
-    borderRadius: 3,
+    backgroundColor: "#eee",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginBottom: 10,
+    marginTop: 15,
   },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#7B61FF',
-    borderRadius: 3,
-  },
-  progressKnob: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#ccc',
-    marginLeft: 6,
-    alignItems: 'center',
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#9333EA",
   },
   amountRow: {
     flexDirection: 'row',

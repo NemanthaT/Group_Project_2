@@ -122,9 +122,6 @@ const NonMonetary = () => {
 
       {/* Form */}
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Request Name</Text>
-        <TextInput style={styles.inputField} placeholder="Enter request name" />
-
         <Text style={styles.sectionTitle}>Category</Text>
         <DropDownPicker
           open={categoryOpen}
@@ -138,14 +135,21 @@ const NonMonetary = () => {
           style={{ marginBottom: categoryOpen ? 150 : 20 }}
         />
 
-        <Text style={styles.sectionTitle}>Description</Text>
+        <Text style={styles.sectionTitle}>Reason for Request</Text>
+        <TextInput style={styles.inputField} placeholder="Enter request name" />
+
+
+        <Text style={styles.sectionTitle}>Item Name</Text>
+        <TextInput style={styles.inputField} placeholder="Enter item name" />
+
+        <Text style={styles.sectionTitle}>Item Quantity</Text>
         <TextInput
-          style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
-          multiline
-          placeholder="Describe your request in detail. Include why you need"
+          style={styles.inputField}
+          placeholder="Enter quantity"
+          keyboardType="numeric"
         />
 
-        <Text style={styles.sectionTitle}>Finalize Date</Text>
+        <Text style={styles.sectionTitle}>Dropoff Date</Text>
         <TouchableOpacity
           style={styles.inputField}
           onPress={() => setShowDatePicker(true)}
@@ -161,17 +165,8 @@ const NonMonetary = () => {
           />
         )}
 
-        <Text style={styles.sectionTitle}>Item Name</Text>
-        <TextInput style={styles.inputField} placeholder="Enter item name" />
 
-        <Text style={styles.sectionTitle}>Quantity Needed</Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Enter quantity"
-          keyboardType="numeric"
-        />
-
-        <Text style={styles.sectionTitle}>Province</Text>
+        {/* <Text style={styles.sectionTitle}>Province</Text>
         <DropDownPicker
           open={provinceOpen}
           value={province}
@@ -182,9 +177,9 @@ const NonMonetary = () => {
           placeholder="Select province"
           listMode="SCROLLVIEW" // ✅ Prevents nesting error
           style={{ marginBottom: provinceOpen ? 150 : 20 }}
-        />
+        /> */}
 
-        <Text style={styles.sectionTitle}>Request Image</Text>
+        <Text style={styles.sectionTitle}>Request Image(Optioal)</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
           <Text style={{ textAlign: "center" }}>Choose Image</Text>
         </TouchableOpacity>
