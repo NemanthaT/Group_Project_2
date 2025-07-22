@@ -11,7 +11,7 @@ img {
 }
 
 .section {
-  padding: 60px 0;
+  padding: 30px 0;
 }
 
 /* Hero Section */
@@ -205,7 +205,7 @@ img {
 
 /* Products Section */
 .products-section {
-  padding: 80px 0;
+  padding: 40px 0;
 }
 
 .products-grid {
@@ -339,7 +339,7 @@ img {
 /* Artisan Stories Section */
 .artisan-stories-section {
   background: linear-gradient(135deg, #9333ea 0%, #0d429b 100%);
-  padding: 60px 0;
+  padding: 40px 0;
 }
 
 .artisan-stories-section .section-title {
@@ -1056,4 +1056,73 @@ img {
   color: #9333ea; /* blue on hover */
   text-decoration: none;
 }
+
+.products-section .search-sort-select {
+  min-width: 180px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.products-section .search-sort-select:hover {
+  border-color: #888;
+}
+
+.products-section .search-sort-select:focus {
+  border-color: #5c9ded;
+  box-shadow: 0 0 0 2px rgba(92, 157, 237, 0.3);
+  outline: none;
+}
+
+
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Marketplace-specific hero section */
+.hero-section.marketplace-hero {
+  height: 40vh;          /* shorter height */
+  min-height: 320px;     /* reduce min-height */
+  margin-bottom: 20px;   /* spacing below */
+}
+
+.hero-section.marketplace-hero .hero-title {
+  font-size: 36px;       /* slightly smaller */
+  margin-bottom: 20px;
+}
+
+.marketplace-hero-content {
+  margin-top: 0;         /* remove extra offset */
+}
+.marketplace-homepage .products-section {
+  padding: 40px 0;       /* reduced padding */
+}
+
+.marketplace-homepage .category-section {
+  padding: 10px 0 20px;  /* less padding */
+}
+
+.products-grid-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+
 

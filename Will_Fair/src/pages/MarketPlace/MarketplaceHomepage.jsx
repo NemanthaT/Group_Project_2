@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { CategoryBrowseSection } from "./sections/CategoryBrowseSection";
 import { ProductGridSection } from "./sections/ProductGridSection";
 import { ArtisanStoriesSection } from "./sections/ArtisanStoriesSection";
+import { ProductSearchResultsSection } from "./sections/ProductSearchResultsSection";
 import "./MarketPlace.css";
 
 function MarketplaceHomepage() {
   const navigate = useNavigate();
-
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [recentProducts, setRecentProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -15,7 +15,12 @@ function MarketplaceHomepage() {
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE = "http://localhost:5000"; // Change if needed (e.g., production URL)
+  // Search
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const [sortOrder, setSortOrder] = useState("price_asc");
+  const API_BASE = "http://localhost:5000";
 
   // Load categories
   useEffect(() => {
@@ -23,15 +28,13 @@ function MarketplaceHomepage() {
     fetch(`${API_BASE}/categories`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load categories");
-      })
+      .catch(() => setError("Failed to load categories"))
       .finally(() => setLoadingCategories(false));
   }, []);
 
-  // Load products when category changes
+  // Load products by category (when no search)
   useEffect(() => {
+    if (searchTerm.trim() !== "") return;
     setLoadingProducts(true);
     const url = selectedCategory
       ? `${API_BASE}/products?category=${encodeURIComponent(selectedCategory)}`
@@ -40,34 +43,38 @@ function MarketplaceHomepage() {
     fetch(url)
       .then((res) => res.json())
       .then((data) => setRecentProducts(data.map(normalizeProductFromApi)))
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load products");
-      })
+      .catch(() => setError("Failed to load products"))
       .finally(() => setLoadingProducts(false));
-  }, [selectedCategory]);
+  }, [selectedCategory, searchTerm]);
 
-  // Normalize product data
+  // Search (debounced)
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (term === "") {
+      setSearchResults([]);
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setLoadingSearch(true);
+      fetch(
+        `${API_BASE}/products?search=${encodeURIComponent(term)}&sort=${sortOrder}`
+      )
+        .then((res) => res.json())
+        .then((data) => setSearchResults(data.map(normalizeProductFromApi)))
+        .catch(() => setError("Failed to search products"))
+        .finally(() => setLoadingSearch(false));
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchTerm, sortOrder]);
+
   function normalizeProductFromApi(p) {
     const price = typeof p.price === "string" ? parseFloat(p.price) : p.price;
-    const image = p.image && !p.image.startsWith("http")
-      ? `/images/products/${p.image}`
-      : p.image || "/placeholder-product.jpg";
-    return {
-      id: p.id,
-      title: p.title,
-      description: p.description,
-      price,
-      quantity_available: p.quantity_available,
-      type: p.type,
-      image,
-      heartIcon: "/heart-svgrepo-com--1--1.svg",
-    };
+    const image =
+      p.image && !p.image.startsWith("http")
+        ? `/images/products/${p.image}`
+        : p.image || "/placeholder-product.jpg";
+    return { ...p, price, image, heartIcon: "/heart-svgrepo-com--1--1.svg" };
   }
-
-  const filteredProducts = selectedCategory
-    ? recentProducts.filter((p) => p.type === selectedCategory)
-    : recentProducts;
 
   const handleProductClick = useCallback(
     (product) => {
@@ -79,13 +86,13 @@ function MarketplaceHomepage() {
   return (
     <div className="marketplace-homepage">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section marketplace-hero">
         <img
           className="hero-background"
           alt="Hero background"
           src="https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=1200"
         />
-        <div className="hero-content">
+        <div className="hero-content marketplace-hero-content">
           <h1 className="hero-title">What are you Looking for?</h1>
 
           <div className="search-bar-wrapper">
@@ -93,6 +100,8 @@ function MarketplaceHomepage() {
               type="text"
               className="search-bar-input"
               placeholder="Search for handcrafted products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className="search-bar-button" aria-label="Search">
               <svg
@@ -124,72 +133,78 @@ function MarketplaceHomepage() {
         </div>
       </section>
 
-      {/* Categories */}
-      <CategoryBrowseSection
-        selectedCategory={selectedCategory}
-        onCategorySelect={setSelectedCategory}
-        categories={categories}
-        loading={loadingCategories}
-      />
+      {/* Search Results OR Default Sections */}
+      {searchTerm.trim() !== "" ? (
+        <ProductSearchResultsSection
+          results={searchResults}
+          loading={loadingSearch}
+          error={error}
+          searchTerm={searchTerm}
+          sortOrder={sortOrder}
+          onSortChange={setSortOrder}
+          onProductClick={handleProductClick}
+        />
+      ) : (
+        <>
+          <CategoryBrowseSection
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+            categories={categories}
+            loading={loadingCategories}
+          />
 
-      {/* Recent Products */}
-      <section className="products-section">
-        <h2 className="section-title">
-          {selectedCategory ? `${selectedCategory} Products` : "Recent Products"}
-        </h2>
+          <section className="products-section">
+            <h2 className="section-title">
+              {selectedCategory ? `${selectedCategory} Products` : "Recent Products"}
+            </h2>
+            {loadingProducts && <p>Loading products...</p>}
+            {error && <p className="error-text">{error}</p>}
 
-        {loadingProducts && <p>Loading products...</p>}
-        {error && <p className="error-text">{error}</p>}
-
-        <div className="products-grid">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="product-card"
-              onClick={() => handleProductClick(product)}
-              style={{ cursor: "pointer" }}
-            >
-              <div>
-                <img
-                  className="product-image"
-                  alt={product.title}
-                  src={product.image}
-                  onError={(e) => {
-    e.target.onerror = null; // prevents looping if fallback fails
-    e.target.src =
-      "https://images.pexels.com/photos/6461513/pexels-photo-6461513.jpeg?_gl=1*o10vko*_ga*MzcyNzE3NDYxLjE3NTMxMTMxMzA.*_ga_8JE65Q40S6*czE3NTMxMTMxMzAkbzEkZzEkdDE3NTMxMTMxNzgkajEyJGwwJGgw";
-  }}
-                />
-              </div>
-              <div className="product-content">
-                <div className="product-header">
-                  <p className="product-title">{product.title}</p>
-                  <span
-                    className={`product-type-badge ${product.type
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    {product.type}
-                  </span>
+            <div className="products-grid">
+              {recentProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="product-card"
+                  onClick={() => handleProductClick(product)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <img
+                className="product-image"
+                alt={product.title}
+                src={product.image}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://images.pexels.com/photos/6461513/pexels-photo-6461513.jpeg";
+                }}
+              />
+                  <div className="product-content">
+                    <div className="product-header">
+                      <p className="product-title">{product.title}</p>
+                      <span
+                        className={`product-type-badge ${product.type
+                          ?.toLowerCase()
+                          .replace(" ", "-")}`}
+                      >
+                        {product.type}
+                      </span>
+                    </div>
+                    <p className="product-price">{product.price} LKR</p>
+                    <div className="product-actions">
+                      <button className="btn btn-outline">Buy Now</button>
+                      <button className="btn btn-primary">Add to Cart</button>
+                    </div>
+                  </div>
                 </div>
-
-                <p className="product-price">{product.price} LKR</p>
-                <div className="product-actions">
-                  <button className="btn btn-outline">Buy Now</button>
-                  <button className="btn btn-primary">Add to Cart</button>
-                </div>
-              </div>
+              ))}
+              {!loadingProducts && recentProducts.length === 0 && <p>No products found.</p>}
             </div>
-          ))}
+          </section>
 
-          {!loadingProducts && filteredProducts.length === 0 && (
-            <p>No products found.</p>
-          )}
-        </div>
-      </section>
-
-      <ProductGridSection />
-      <ArtisanStoriesSection />
+          <ProductGridSection />
+          <ArtisanStoriesSection />
+        </>
+      )}
     </div>
   );
 }
