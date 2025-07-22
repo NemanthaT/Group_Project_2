@@ -110,7 +110,7 @@ const VolunteerPrograms = () => {
               <Text style={styles.detailsButtonText}>Details</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.donateButton}>
-              <Text style={styles.donateButtonText}>Donate</Text>
+              <Text style={styles.donateButtonText}>Volunteer</Text>
             </TouchableOpacity>
           </View>
         </View>

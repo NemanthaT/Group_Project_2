@@ -104,9 +104,9 @@ export const programStyles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    marginBottom: 2,
+    marginBottom: 7,
     fontWeight:'bold',
-    color : '#000',
+    color : '#604662ff',
   },
   value: {
     fontWeight: 'bold',
