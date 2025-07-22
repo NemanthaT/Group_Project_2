@@ -126,30 +126,6 @@ const VolunteerPrograms = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <View style={styles.aboutRow}>
-            <Text style={styles.aboutLabel}>About:</Text>
-            <Text style={styles.aboutValue} numberOfLines={2} ellipsizeMode="tail">{item.about}</Text>
-          </View>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={styles.detailsButton}
-              onPress={() => navigation.navigate('program', {
-                programId: item.id,
-                programTitle: item.title,
-                programAbout: item.about,
-                programImage: item.image,
-                programLocation: 'Panadura',
-                programCategory: 'Volunteer'
-              })}
-            >
-              <Text style={styles.detailsButtonText}>Details</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.donateButton}
-             onPress={() => navigation.navigate('program')}>
-              <Text style={styles.donateButtonText}>Volunteer</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       );
     })}
