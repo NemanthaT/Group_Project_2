@@ -7,6 +7,25 @@ import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 const Program = () => {
   const navigation = useNavigation();
+    const handleSubmit = () => {
+    // You can add form validation here if needed
+    // For now, just show success message
+    Alert.alert(
+      "Success! 🎉",
+      "Thank you for your interest in volunteering for this event. Your support is greatly appreciated!",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // Optional: Navigate back to previous screen or clear form
+            navigation.navigate("homescreen");
+            // Or navigate to a specific screen:
+            // navigation.navigate('mydonationreq');
+          }
+        }
+      ]
+    );
+  };
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
@@ -46,11 +65,6 @@ const Program = () => {
           <Text style={styles.badgeText}>Blood Donation Camp</Text>
         </View>
       </View>
-
-        {/* Progress Bar */}
-        <View style={styles.progressBarBackground}>
-          <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-        </View>
 
       {/* Details */}
       <View style={styles.locationCategoryRow}>
