@@ -10,7 +10,6 @@ import {
   deleteDonation,
   getRecentDonationsController
 } from "../controllers/donationController.js";
-import multer from "multer";
 
 const router = express.Router();
 
@@ -47,7 +46,7 @@ router.get('/:id', async (req, res) => {
     } else {
       res.status(404).json({ success: false, error: result.message });
     }
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false, error: 'Server error while fetching donation' });
   }
 });
@@ -62,7 +61,7 @@ router.put('/:id', async (req, res) => {
     } else {
       res.status(400).json({ success: false, error: result.message });
     }
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false, error: 'Server error while updating donation' });
   }
 });

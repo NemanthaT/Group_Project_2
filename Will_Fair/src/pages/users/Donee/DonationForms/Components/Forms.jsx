@@ -12,12 +12,7 @@ export default function MonetaryForm( {user} ) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const [imageFile, setImageFile] = useState(null);
   const [documentFiles, setDocumentFiles] = useState([]);
-  const [imagePreview, setImagePreview] = useState(null);
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   // Non-monetary form fields
   const [itemName, setItemName] = useState("");
@@ -26,19 +21,6 @@ export default function MonetaryForm( {user} ) {
   // Bank details fields
   const [accountNumber, setAccountNumber] = useState("");
   const [bankName, setBankName] = useState("");
-
-  const handleDocumentUpload = (e) => {
-    const files = Array.from(e.target.files);
-    // Filter for PDFs only
-    const pdfFiles = files.filter((file) => file.type === "application/pdf");
-    setDocumentFiles([...documentFiles, ...pdfFiles]);
-  };
-
-  const removeDocument = (index) => {
-    const updatedFiles = [...documentFiles];
-    updatedFiles.splice(index, 1);
-    setDocumentFiles(updatedFiles);
-  };
 
   const [monetaryCategories, setMonetaryCategories] = useState([]);
   const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
@@ -79,8 +61,6 @@ export default function MonetaryForm( {user} ) {
   //subitting the form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
 
     let formData = new FormData();
     formData.append("doneeId", user.id);
@@ -99,7 +79,6 @@ export default function MonetaryForm( {user} ) {
       formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
     }
 
-    if (imageFile) formData.append("image", imageFile);
     documentFiles.forEach((file) => formData.append("documents", file));
 
     try {
@@ -110,11 +89,23 @@ export default function MonetaryForm( {user} ) {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Request submitted successfully!");
-    } catch (err) {
-      setError("Failed to submit request. Please try again.");
-    } finally {
-      setLoading(false);
+    } catch {
+      // handle error
     }
+  };
+
+  // Document upload handler (PDF only)
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files);
+    // Filter for PDFs only
+    const pdfFiles = files.filter((file) => file.type === "application/pdf");
+    setDocumentFiles([...documentFiles, ...pdfFiles]);
+  };
+
+  const removeDocument = (index) => {
+    const updatedFiles = [...documentFiles];
+    updatedFiles.splice(index, 1);
+    setDocumentFiles(updatedFiles);
   };
 
   return (

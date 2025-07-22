@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 import pool from "../db.js";
 
 async function createMonetoryDonation(donationData) {
@@ -8,9 +8,14 @@ async function createMonetoryDonation(donationData) {
       SELECT category_id FROM donation_categories
       WHERE category_name = $1 AND is_monetary = true
     `;
-    const categoryResult = await pool.query(getCategoryIdQuery, [donationData.category]);
+    const categoryResult = await pool.query(getCategoryIdQuery, [
+      donationData.category,
+    ]);
     if (categoryResult.rows.length === 0) {
-      return { success: false, message: "Invalid category for monetary donation" };
+      return {
+        success: false,
+        message: "Invalid category for monetary donation",
+      };
     }
     const categoryId = categoryResult.rows[0].category_id;
     const result = await pool.query(
@@ -31,48 +36,51 @@ async function createMonetoryDonation(donationData) {
         donationData.requestName,
         donationData.description,
         donationData.urgentDate,
-        donationData.status
+        donationData.status,
       ]
     );
     const donationId = result.rows[0].request_id;
 
-    // Handle file storage if files exist
+    // Handle file storage if files exist (match donee model logic)
     let imagePath = null;
     let documentPath = null;
     if (donationData.imagePath) {
-      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      const donationDir = path.join(
+        "uploads",
+        "donations",
+        donationId.toString()
+      );
       if (!fs.existsSync(donationDir)) {
         fs.mkdirSync(donationDir, { recursive: true });
       }
-      const ext = path.extname(donationData.imagePath);
-      const newImagePath = path.join(donationDir, `image${ext}`);
-      fs.renameSync(donationData.imagePath, newImagePath);
-      imagePath = newImagePath;
+      if (typeof donationData.imagePath === 'string') {
+        const ext = path.extname(donationData.imagePath);
+        const newImagePath = path.join(donationDir, `image${ext}`);
+        fs.renameSync(donationData.imagePath, newImagePath);
+        imagePath = newImagePath;
+      }
     }
-    if (donationData.documentPaths) {
-      const donationDir = path.join('uploads', 'donations', donationId.toString());
+    const proofDoc = donationData.documentPaths;
+    const file = proofDoc[0];
+    if (file && file.path && file.originalname) {
+      const donationDir = path.join(
+        "uploads",
+        "donations",
+        donationId.toString()
+      );
       if (!fs.existsSync(donationDir)) {
         fs.mkdirSync(donationDir, { recursive: true });
       }
-      let docPath = null;
-      if (Array.isArray(donationData.documentPaths)) {
-        docPath = donationData.documentPaths[0];
-      } else if (typeof donationData.documentPaths === 'string') {
-        docPath = donationData.documentPaths;
-      } else if (donationData.documentPaths.path) {
-        docPath = donationData.documentPaths.path;
-      }
-      if (docPath && typeof docPath === 'string') {
-        const ext = path.extname(docPath);
-        const newDocPath = path.join(donationDir, `document${ext}`);
-        fs.renameSync(docPath, newDocPath);
-        documentPath = newDocPath;
-      }
+      const fileExt = path.extname(file.originalname);
+      const fileName = `proof${fileExt}`;
+      documentPath = path.join(donationDir, fileName);
+      fs.renameSync(file.path, documentPath);
+      console.log("Proof Doc path after: ", documentPath);
     }
     // If no image uploaded, use category's default image_path
     if (!imagePath) {
       const categoryImageResult = await pool.query(
-        'SELECT image_path FROM donation_categories WHERE category_id = $1',
+        "SELECT image_path FROM donation_categories WHERE category_id = $1",
         [categoryId]
       );
       if (categoryImageResult.rows.length > 0) {
@@ -82,7 +90,11 @@ async function createMonetoryDonation(donationData) {
     // Update the donation record with file paths
     await pool.query(
       `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
-      [imagePath ? imagePath : null, documentPath ? documentPath : null, donationId]
+      [
+        imagePath ? imagePath : null,
+        documentPath ? documentPath : null,
+        donationId,
+      ]
     );
     return { success: true, donationId };
   } catch (err) {
@@ -97,9 +109,14 @@ async function createNonMonetoryDonation(donationData) {
       SELECT category_id FROM donation_categories
       WHERE category_name = $1 AND is_monetary = false
     `;
-    const categoryResult = await pool.query(getCategoryIdQuery, [donationData.category]);
+    const categoryResult = await pool.query(getCategoryIdQuery, [
+      donationData.category,
+    ]);
     if (categoryResult.rows.length === 0) {
-      return { success: false, message: "Invalid category for monetary donation" };
+      return {
+        success: false,
+        message: "Invalid category for monetary donation",
+      };
     }
     const categoryId = categoryResult.rows[0].category_id;
     const result = await pool.query(
@@ -124,7 +141,7 @@ async function createNonMonetoryDonation(donationData) {
         donationData.dropoffDate,
         null, // image_path
         null, // document_paths
-        donationData.status
+        donationData.status,
       ]
     );
     const donationId = result.rows[0].request_id;
@@ -132,7 +149,11 @@ async function createNonMonetoryDonation(donationData) {
     let imagePath = null;
     let documentPath = null;
     if (donationData.imagePath) {
-      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      const donationDir = path.join(
+        "uploads",
+        "donations",
+        donationId.toString()
+      );
       if (!fs.existsSync(donationDir)) {
         fs.mkdirSync(donationDir, { recursive: true });
       }
@@ -142,19 +163,23 @@ async function createNonMonetoryDonation(donationData) {
       imagePath = newImagePath;
     }
     if (donationData.documentPaths) {
-      const donationDir = path.join('uploads', 'donations', donationId.toString());
+      const donationDir = path.join(
+        "uploads",
+        "donations",
+        donationId.toString()
+      );
       if (!fs.existsSync(donationDir)) {
         fs.mkdirSync(donationDir, { recursive: true });
       }
       let docPath = null;
       if (Array.isArray(donationData.documentPaths)) {
         docPath = donationData.documentPaths[0];
-      } else if (typeof donationData.documentPaths === 'string') {
+      } else if (typeof donationData.documentPaths === "string") {
         docPath = donationData.documentPaths;
       } else if (donationData.documentPaths.path) {
         docPath = donationData.documentPaths.path;
       }
-      if (docPath && typeof docPath === 'string') {
+      if (docPath && typeof docPath === "string") {
         const ext = path.extname(docPath);
         const newDocPath = path.join(donationDir, `document${ext}`);
         fs.renameSync(docPath, newDocPath);
@@ -164,7 +189,7 @@ async function createNonMonetoryDonation(donationData) {
     // If no image uploaded, use category's default image_path
     if (!imagePath) {
       const categoryImageResult = await pool.query(
-        'SELECT image_path FROM donation_categories WHERE category_id = $1',
+        "SELECT image_path FROM donation_categories WHERE category_id = $1",
         [categoryId]
       );
       if (categoryImageResult.rows.length > 0) {
@@ -174,7 +199,11 @@ async function createNonMonetoryDonation(donationData) {
     // Update the donation record with file paths
     await pool.query(
       `UPDATE donation_requests SET image_path = $1, document_path = $2 WHERE request_id = $3`,
-      [imagePath ? imagePath : null, documentPath ? documentPath : null, donationId]
+      [
+        imagePath ? imagePath : null,
+        documentPath ? documentPath : null,
+        donationId,
+      ]
     );
     return { success: true, donationId };
   } catch (err) {
@@ -211,10 +240,13 @@ async function getMonetaryDonationCategories() {
     );
     return {
       success: true,
-      categories: results.rows.map((row) => row.category_name)
+      categories: results.rows.map((row) => row.category_name),
     };
   } catch (err) {
-    console.error("Database error during getMonetaryDonationCategories():", err);
+    console.error(
+      "Database error during getMonetaryDonationCategories():",
+      err
+    );
     return { success: false, message: "Database error" };
   }
 }
@@ -226,10 +258,13 @@ async function getNonMonetaryDonationCategories() {
     );
     return {
       success: true,
-      categories: results.rows.map((row) => row.category_name)
+      categories: results.rows.map((row) => row.category_name),
     };
   } catch (err) {
-    console.error("Database error during getNonMonetaryDonationCategories():", err);
+    console.error(
+      "Database error during getNonMonetaryDonationCategories():",
+      err
+    );
     return { success: false, message: "Database error" };
   }
 }
@@ -242,12 +277,12 @@ async function getDonationById(id) {
       [id]
     );
     if (result.rows.length === 0) {
-      return { success: false, message: 'Donation not found' };
+      return { success: false, message: "Donation not found" };
     }
     return { success: true, donation: result.rows[0] };
   } catch (err) {
-    console.error('Database error during getDonationById():', err);
-    return { success: false, message: 'Database error' };
+    console.error("Database error during getDonationById():", err);
+    return { success: false, message: "Database error" };
   }
 }
 
@@ -255,7 +290,14 @@ async function getDonationById(id) {
 async function updateDonationById(id, data) {
   try {
     // Only allow updating certain fields
-    const allowedFields = ['title', 'description', 'quantity_needed', 'status', 'dropoff_date', 'due_date'];
+    const allowedFields = [
+      "title",
+      "description",
+      "quantity_needed",
+      "status",
+      "dropoff_date",
+      "due_date",
+    ];
     const setClauses = [];
     const values = [];
     let idx = 1;
@@ -267,15 +309,17 @@ async function updateDonationById(id, data) {
       }
     }
     if (setClauses.length === 0) {
-      return { success: false, message: 'No valid fields to update' };
+      return { success: false, message: "No valid fields to update" };
     }
     values.push(id);
-    const query = `UPDATE donation_requests SET ${setClauses.join(', ')} WHERE request_id = $${values.length}`;
+    const query = `UPDATE donation_requests SET ${setClauses.join(
+      ", "
+    )} WHERE request_id = $${values.length}`;
     await pool.query(query, values);
     return { success: true };
   } catch (err) {
-    console.error('Database error during updateDonationById():', err);
-    return { success: false, message: 'Database error' };
+    console.error("Database error during updateDonationById():", err);
+    return { success: false, message: "Database error" };
   }
 }
 
@@ -283,20 +327,27 @@ async function updateDonationById(id, data) {
 async function deleteDonationById(id) {
   try {
     // Remove files if present
-    const donation = await pool.query('SELECT image_path, document_path FROM donation_requests WHERE request_id = $1', [id]);
+    const donation = await pool.query(
+      "SELECT image_path, document_path FROM donation_requests WHERE request_id = $1",
+      [id]
+    );
     if (donation.rows.length > 0) {
       const { image_path, document_path } = donation.rows[0];
       if (image_path && fs.existsSync(image_path)) fs.unlinkSync(image_path);
-      if (document_path && fs.existsSync(document_path)) fs.unlinkSync(document_path);
+      if (document_path && fs.existsSync(document_path))
+        fs.unlinkSync(document_path);
       // Optionally remove the donation folder
-      const donationDir = path.join('uploads', 'donations', id.toString());
-      if (fs.existsSync(donationDir)) fs.rmSync(donationDir, { recursive: true, force: true });
+      const donationDir = path.join("uploads", "donations", id.toString());
+      if (fs.existsSync(donationDir))
+        fs.rmSync(donationDir, { recursive: true, force: true });
     }
-    await pool.query('DELETE FROM donation_requests WHERE request_id = $1', [id]);
+    await pool.query("DELETE FROM donation_requests WHERE request_id = $1", [
+      id,
+    ]);
     return { success: true };
   } catch (err) {
-    console.error('Database error during deleteDonationById():', err);
-    return { success: false, message: 'Database error' };
+    console.error("Database error during deleteDonationById():", err);
+    return { success: false, message: "Database error" };
   }
 }
 
@@ -313,16 +364,16 @@ async function getRecentDonations() {
     `);
     return { success: true, donations: result.rows };
   } catch (err) {
-    console.error('Database error during getRecentDonations():', err);
-    return { success: false, message: 'Database error' };
+    console.error("Database error during getRecentDonations():", err);
+    return { success: false, message: "Database error" };
   }
 }
 
-export { 
-  createMonetoryDonation, 
-  createNonMonetoryDonation, 
-  getDonationsByDoneeId, 
-  getMonetaryDonationCategories, 
+export {
+  createMonetoryDonation,
+  createNonMonetoryDonation,
+  getDonationsByDoneeId,
+  getMonetaryDonationCategories,
   getNonMonetaryDonationCategories,
   getDonationById,
   updateDonationById,

@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 # Upload files
-*.pdf
+
 *.docx
 *.xlsx
 *.pptx

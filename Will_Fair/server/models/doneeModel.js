@@ -40,7 +40,7 @@ async function registerDonee(fullName, phoneNo, password, type, proofDocument = 
       if (!fs.existsSync(doneeDir)) {
         fs.mkdirSync(doneeDir, { recursive: true });
       }
-
+      console.log("Proof Doc: ", proofDocument);
       // Save file with original name in the donee's directory
       const fileExt = path.extname(proofDocument.originalname);
       const fileName = `proof${fileExt}`;
