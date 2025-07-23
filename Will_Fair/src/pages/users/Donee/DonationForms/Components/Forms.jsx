@@ -108,6 +108,26 @@ export default function MonetaryForm( {user} ) {
     setDocumentFiles(updatedFiles);
   };
 
+  const sriLankanBanks = [
+  "Bank of Ceylon",
+  "People's Bank",
+  "Commercial Bank of Ceylon",
+  "Hatton National Bank",
+  "Sampath Bank",
+  "National Development Bank",
+  "DFCC Bank",
+  "Seylan Bank",
+  "Pan Asia Banking Corporation",
+  "Union Bank of Colombo",
+  "Amana Bank",
+  "HSBC Sri Lanka",
+  "Nations Trust Bank",
+  "Sanasa Development Bank",
+  "Regional Development Bank",
+  "Lanka Orix Leasing Company (LOLC)",
+  "HDFC Bank Sri Lanka"
+];
+
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
       <div className="flex flex-col w-full">
@@ -271,16 +291,22 @@ export default function MonetaryForm( {user} ) {
                   <h2 className="title">Bank Account Details</h2>
                   
                   <div className="form-card">
-                    <input
+                    <select
                       className="form-input"
-                      placeholder="Bank Name"
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       required
-                    />
+                    >
+                      <option value="">Select your bank</option>
+                      {sriLankanBanks.map((bank, index) => (
+                        <option key={index} value={bank}>
+                          {bank}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   
-                  <div className="form-card" style={{ marginTop: "16px" }}>
+                  <div className="form-card bank-detail" style={{ marginTop: "16px" }}>
                     <input
                       className="form-input"
                       placeholder="Account Number"

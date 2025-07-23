@@ -161,7 +161,7 @@ body {
   border: none;
   outline: none;
   background: transparent;
-  padding: 12px 16px;
+  padding: 5px 16px;
 }
 
 .form-input::placeholder {
@@ -738,3 +738,4 @@ body {
 .form-textarea:focus {
   color: #1e293b;
 }
+
