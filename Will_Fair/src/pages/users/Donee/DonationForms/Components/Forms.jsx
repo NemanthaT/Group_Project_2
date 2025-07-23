@@ -80,6 +80,7 @@ export default function MonetaryForm( {user} ) {
     }
 
     documentFiles.forEach((file) => formData.append("documents", file));
+    console.log("Form Data:", formData);
 
     try {
       const url = activeTab === "monetary" 
