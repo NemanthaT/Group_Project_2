@@ -69,4 +69,23 @@ router.put('/:id', async (req, res) => {
 // Add DELETE endpoint for donation
 router.delete('/:id', deleteDonation);
 
+// Add donation endpoint for donor to update received amount
+router.post('/:id/donate', async (req, res) => {
+  const { id } = req.params;
+  const { amount } = req.body;
+  if (!amount || isNaN(amount) || Number(amount) <= 0) {
+    return res.status(400).json({ success: false, error: 'Invalid donation amount' });
+  }
+  try {
+    const result = await import('../models/donationModel.js').then(m => m.addDonationAmount(id, Number(amount)));
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch {
+    res.status(500).json({ success: false, error: 'Server error while processing donation' });
+  }
+});
+
 export default router;

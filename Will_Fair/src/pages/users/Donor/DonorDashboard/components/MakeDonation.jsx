@@ -33,10 +33,16 @@ const MakeDonation = () => {
       setError('Please enter a valid amount.');
       return;
     }
-    // Simulate success
-    setTimeout(() => {
+    try {
+      // Update donation amount in backend
+      await axios.post(`http://localhost:5000/donations/${id}/donate`, { amount: Number(amount) });
       setSuccess(true);
-    }, 800);
+      // Optionally, refresh donation details
+      const response = await axios.get(`http://localhost:5000/donations/${id}`);
+      setDonation(response.data.donation);
+    } catch (err) {
+      setError('Failed to process donation.');
+    }
   };
 
   if (loading) return <div className="make-donation-container">Loading...</div>;

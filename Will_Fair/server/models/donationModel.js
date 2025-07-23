@@ -369,6 +369,30 @@ async function getRecentDonations() {
   }
 }
 
+// Add donation amount to a donation
+async function addDonationAmount(id, amount) {
+  try {
+    // Get current received amount
+    const result = await pool.query(
+      'SELECT quantity_received FROM donation_requests WHERE request_id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return { success: false, message: 'Donation not found' };
+    }
+    const current = Number(result.rows[0].quantity_received) || 0;
+    const newAmount = current + amount;
+    await pool.query(
+      'UPDATE donation_requests SET quantity_received = $1 WHERE request_id = $2',
+      [newAmount, id]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during addDonationAmount():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export {
   createMonetoryDonation,
   createNonMonetoryDonation,
@@ -379,4 +403,5 @@ export {
   updateDonationById,
   deleteDonationById,
   getRecentDonations,
+  addDonationAmount,
 };
