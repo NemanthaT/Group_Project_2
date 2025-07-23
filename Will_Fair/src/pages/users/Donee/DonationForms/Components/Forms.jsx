@@ -119,16 +119,7 @@ export default function MonetaryForm( {user} ) {
   "Sampath Bank",
   "National Development Bank",
   "DFCC Bank",
-  "Seylan Bank",
-  "Pan Asia Banking Corporation",
-  "Union Bank of Colombo",
-  "Amana Bank",
-  "HSBC Sri Lanka",
-  "Nations Trust Bank",
-  "Sanasa Development Bank",
-  "Regional Development Bank",
-  "Lanka Orix Leasing Company (LOLC)",
-  "HDFC Bank Sri Lanka"
+  "Seylan Bank"
 ];
 
   return (
