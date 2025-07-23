@@ -109,8 +109,8 @@ function Header({ user }) {
                 <Link to="/profile" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
                   Profile
                 </Link>
-                <Link to="/sellerDashboard" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
-                  Seller Dashboard
+                <Link to="/buyerDashboard" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
+                  Buyer Dashboard
                 </Link>
               </div>
             )}
