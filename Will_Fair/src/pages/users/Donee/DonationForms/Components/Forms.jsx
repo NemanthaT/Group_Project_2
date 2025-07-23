@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function MonetaryForm( {user} ) {
   const [activeTab, setActiveTab] = useState("monetary");
@@ -61,7 +63,6 @@ export default function MonetaryForm( {user} ) {
   //subitting the form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     let formData = new FormData();
     formData.append("doneeId", user.id);
     formData.append("category", selectedCategory);
@@ -83,15 +84,16 @@ export default function MonetaryForm( {user} ) {
     console.log("Form Data:", formData);
 
     try {
-      const url = activeTab === "monetary" 
-        ? "http://localhost:5000/donations/createMonDonation" 
+      const url = activeTab === "monetary"
+        ? "http://localhost:5000/donations/createMonDonation"
         : "http://localhost:5000/donations/createNonMonDonation";
       await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Request submitted successfully!");
-    } catch {
-      // handle error
+      toast.success("Request submitted successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit request. Please try again.");
     }
   };
 
@@ -111,6 +113,7 @@ export default function MonetaryForm( {user} ) {
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
+      <ToastContainer />
       <div className="flex flex-col w-full">
         <div className="hero-section">
           <div className="hero-bg">
