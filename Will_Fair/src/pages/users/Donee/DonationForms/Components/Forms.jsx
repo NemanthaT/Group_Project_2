@@ -3,9 +3,9 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function MonetaryForm( {user} ) {
+export default function MonetaryForm({ user }) {
   const [activeTab, setActiveTab] = useState("monetary");
-  
+
   // Define the support options data for easy maintenance
   const supportOptions = [
     { id: "monetary", label: "Monetary Support" },
@@ -26,6 +26,8 @@ export default function MonetaryForm( {user} ) {
 
   const [monetaryCategories, setMonetaryCategories] = useState([]);
   const [nonMonetaryCategories, setNonMonetaryCategories] = useState([]);
+
+  const [targetAmount, setTargetAmount] = useState("");
 
   //get the categeories from the backend
   React.useEffect(() => {
@@ -58,7 +60,8 @@ export default function MonetaryForm( {user} ) {
     fetchNonMonetaryCategories();
   }, []);
 
-  const categories = activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
+  const categories =
+    activeTab === "monetary" ? monetaryCategories : nonMonetaryCategories;
 
   //subitting the form
   const handleSubmit = async (e) => {
@@ -66,27 +69,43 @@ export default function MonetaryForm( {user} ) {
     let formData = new FormData();
     formData.append("doneeId", user.id);
     formData.append("category", selectedCategory);
-    formData.append("description", e.target.querySelector('textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]').value);
-    formData.append("requestName", e.target.querySelector('input[placeholder="Enter reason for request"]').value);
+    formData.append(
+      "description",
+      e.target.querySelector(
+        'textarea[placeholder="Explain your situation, who will benefit, and how the donation will be used..."]'
+      ).value
+    );
+    formData.append(
+      "requestName",
+      e.target.querySelector('input[placeholder="Enter reason for request"]')
+        .value
+    );
 
     if (activeTab === "monetary") {
-      formData.append("targetAmount", e.target.querySelector('input[placeholder="0"]').value);
-      formData.append("urgentDate", e.target.querySelector('input[type="date"]').value);
+      formData.append("targetAmount", targetAmount);
+      formData.append(
+        "urgentDate",
+        e.target.querySelector('input[type="date"]').value
+      );
       formData.append("bankName", bankName);
       formData.append("accountNumber", accountNumber);
     } else {
       formData.append("itemName", itemName);
       formData.append("itemQuantity", itemQuantity);
-      formData.append("dropoffDate", e.target.querySelector('input[type="date"]').value);
+      formData.append(
+        "dropoffDate",
+        e.target.querySelector('input[type="date"]').value
+      );
     }
 
     documentFiles.forEach((file) => formData.append("documents", file));
     console.log("Form Data:", formData);
 
     try {
-      const url = activeTab === "monetary"
-        ? "http://localhost:5000/donations/createMonDonation"
-        : "http://localhost:5000/donations/createNonMonDonation";
+      const url =
+        activeTab === "monetary"
+          ? "http://localhost:5000/donations/createMonDonation"
+          : "http://localhost:5000/donations/createNonMonDonation";
       await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -112,15 +131,15 @@ export default function MonetaryForm( {user} ) {
   };
 
   const sriLankanBanks = [
-  "Bank of Ceylon",
-  "People's Bank",
-  "Commercial Bank of Ceylon",
-  "Hatton National Bank",
-  "Sampath Bank",
-  "National Development Bank",
-  "DFCC Bank",
-  "Seylan Bank"
-];
+    "Bank of Ceylon",
+    "People's Bank",
+    "Commercial Bank of Ceylon",
+    "Hatton National Bank",
+    "Sampath Bank",
+    "National Development Bank",
+    "DFCC Bank",
+    "Seylan Bank",
+  ];
 
   return (
     <form className="donation-form" onSubmit={handleSubmit}>
@@ -268,7 +287,6 @@ export default function MonetaryForm( {user} ) {
               <>
                 <section className="form-section">
                   <h2 className="title">Target Amount</h2>
-
                   <div className="form-card">
                     <div className="amount-wrapper">
                       <span className="currency-symbol">Rs.</span>
@@ -277,6 +295,15 @@ export default function MonetaryForm( {user} ) {
                         aria-label="Target amount in Rupees"
                         placeholder="0"
                         style={{ paddingLeft: "60px" }}
+                        value={targetAmount}
+                        onChange={(e) => {
+                          // Remove all non-digit characters
+                          const value = e.target.value.replace(/\D/g, "");
+                          setTargetAmount(value);
+                        }}
+                        type="text" // Using type="text" to have full control over input
+                        inputMode="numeric" // Shows numeric keyboard on mobile devices
+                        pattern="[0-9]*" // Helps with numeric keyboard on some devices
                       />
                     </div>
                   </div>
@@ -284,7 +311,7 @@ export default function MonetaryForm( {user} ) {
 
                 <section className="form-section">
                   <h2 className="title">Bank Account Details</h2>
-                  
+
                   <div className="form-card">
                     <select
                       className="form-input"
@@ -300,8 +327,11 @@ export default function MonetaryForm( {user} ) {
                       ))}
                     </select>
                   </div>
-                  
-                  <div className="form-card bank-detail" style={{ marginTop: "16px" }}>
+
+                  <div
+                    className="form-card bank-detail"
+                    style={{ marginTop: "16px" }}
+                  >
                     <input
                       className="form-input"
                       placeholder="Account Number"
