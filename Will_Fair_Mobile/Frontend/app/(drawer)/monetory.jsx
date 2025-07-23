@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Platform,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
@@ -99,6 +100,26 @@ const Monetary = () => {
     const currentDate = selectedDate || date;
     setShowDatePicker(Platform.OS === "ios");
     setDate(currentDate);
+  };
+
+  const handleSubmit = () => {
+    // You can add form validation here if needed
+    // For now, just show success message
+    Alert.alert(
+      "Success! 🎉",
+      "Your donation request has been submitted successfully. We will review it and get back to you soon.",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // Optional: Navigate back to previous screen or clear form
+            navigation.navigate("homescreen");
+            // Or navigate to a specific screen:
+            // navigation.navigate('mydonationreq');
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -299,7 +320,8 @@ const Monetary = () => {
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.submitButton}
-        onPress={() => router.push('/donation_payment')} // Must match your route name
+        onPress={handleSubmit}
+        // onPress={() => router.push('/donation_payment')} 
         >
           <Text style={styles.submitText}>Create Request</Text>
         </TouchableOpacity>

@@ -61,14 +61,6 @@ function DoneeDonationDetail({ mode = "view" }) {
     <div className="donation-detail-container">
       <h2 className="donation-detail-title">
         {mode === "edit" ? "Edit Donation" : "Donation Details"}
-        {mode === "view" && (
-          <button
-            className="btn btn-outline ml-4"
-            onClick={() => navigate(`/users/donee/donation/${id}/edit`)}
-          >
-            Edit
-          </button>
-        )}
       </h2>
       {mode === "edit" ? (
         <form onSubmit={handleSubmit} className="donation-detail-form">
@@ -170,14 +162,14 @@ function DoneeDonationDetail({ mode = "view" }) {
               <div className="progress-amounts">
                 <div className="raised-amount">
                   <span className="label">Raised:</span>
-                  <span className="amount">{donation.raisedAmount || 0}.00</span>
+                  <span className="amount">{donation.quantity_recieved || 0}.00</span>
                 </div>
                 <div className="target-amount">
                   <span className="label">Target:</span>
-                  <span className="amount">{donation.targetAmount || 0}.00</span>
+                  <span className="amount">{donation.quantity_needed || 0}.00</span>
                 </div>
               </div>
-              <div className="status-badge">Active</div>
+              <div className="status-badge">{donation.status}</div>
             </div>
             
             {/* Progress Bar */}
@@ -196,27 +188,26 @@ function DoneeDonationDetail({ mode = "view" }) {
             <div className="info-section">
               <h3 className="section-title">Timeline</h3>
               <div className="section-content">
-                <p>Campaign started: {donation.createdAt ? new Date(donation.createdAt).toLocaleDateString() : "Not specified"}</p>
-                <p>Status: Active</p>
+                <p>Campaign started: {donation.created_at ? new Date(donation.created_at).toLocaleDateString() : "Not specified"}</p>
+                <p>Status: {donation.status.toUpperCase()}</p>
               </div>
             </div>
             
             <div className="info-section">
               <h3 className="section-title">Details</h3>
               <div className="section-content">
-                <p><strong>Organization:</strong> {donation.organization || "Early Bird Child Care"}</p>
-                <p><strong>Campaign ID:</strong> #{donation._id || id}</p>
                 <p><strong>Total Donations:</strong> {donation.donationsCount || 0}</p>
               </div>
             </div>
           </div>
         </div>
       )}
-      {mode !== "edit" && (
+      
         <div className="button-group">
           <button className="btn btn-back" onClick={() => navigate(-1)}>
             ← Back
           </button>
+          {mode !== "edit" && donation.status === "pending" && (
           <div className="action-buttons">
             <button className="btn btn-delete" onClick={handleDelete}>
              Delete
@@ -228,8 +219,9 @@ function DoneeDonationDetail({ mode = "view" }) {
               Edit
             </button>
           </div>
+          )}
         </div>
-      )}
+
     </div>
   );
 }

@@ -22,10 +22,11 @@ export default function CustomDrawer(props) {
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       <View style={styles.profileSection}>
         <Image
-            source={require('../../assets/images/program1.png')} // 🔁 Use your image path here
+            source={require('../../assets/images/profile.jpg')} // 🔁 Use your image path here
             style={styles.profileImage}
           />
-          <Text style={styles.username}>Ms. Kawmini</Text>
+          <Text style={styles.username}>Ms. Leena</Text>
+          <Text style={styles.label}>Donee</Text>
       </View>
 
       <View style={styles.menuItems}>
@@ -38,14 +39,14 @@ export default function CustomDrawer(props) {
          <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
           <Text style={styles.menuText}>My Donation Requests</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Donor - Requests View </Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/volunteerprograms')} style={styles.menuButton}>
           <Text style={styles.menuText}>Programs</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/marketplace')} style={styles.menuButton}>
           <Text style={styles.menuText}>Marketplace</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Donor - Requests View </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>
         <Text style={styles.menuText}>About</Text>
@@ -92,10 +93,14 @@ const styles = StyleSheet.create({
   menuItems: {
     marginTop: 10,
   },
+  label: {
+    color: '#fff',
+    marginTop: 0,
+  },
   menuButton: {
     backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     borderRadius: 8,
     marginBottom: 10,
   },

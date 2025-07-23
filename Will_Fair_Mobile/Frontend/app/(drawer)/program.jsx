@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity,Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { programStyles as styles } from '../../assets/styles/programstyles';
@@ -7,8 +7,25 @@ import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 const Program = () => {
   const navigation = useNavigation();
-  // Set progress to a value between 0 and 100
-  const progress = 50; // Example: 50% progress
+    const handleSubmit = () => {
+    // You can add form validation here if needed
+    // For now, just show success message
+    Alert.alert(
+      "Success! 🎉",
+      "Thank you for your interest in volunteering for this event. Your support is greatly appreciated!",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // Optional: Navigate back to previous screen or clear form
+            navigation.navigate("homescreen");
+            // Or navigate to a specific screen:
+            // navigation.navigate('mydonationreq');
+          }
+        }
+      ]
+    );
+  };
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
@@ -48,11 +65,6 @@ const Program = () => {
           <Text style={styles.badgeText}>Blood Donation Camp</Text>
         </View>
       </View>
-
-        {/* Progress Bar */}
-        <View style={styles.progressBarBackground}>
-          <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-        </View>
 
       {/* Details */}
       <View style={styles.locationCategoryRow}>
@@ -96,7 +108,8 @@ const Program = () => {
       {/* Action Buttons */}
       <Text style={styles.headerSubtitle}>Would you like to volunteer this event ? Please click the volunteer button</Text>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.feedbackButton}>
+        <TouchableOpacity style={styles.feedbackButton}
+        onPress={handleSubmit}>
           <Text style={styles.feedbackText}>Volunteer</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity style={styles.editButton}>

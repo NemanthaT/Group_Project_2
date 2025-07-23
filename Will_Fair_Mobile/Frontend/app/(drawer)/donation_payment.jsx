@@ -5,15 +5,17 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
-import { DrawerActions } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { payment as styles } from "../../assets/styles/payment";
 import { useRouter } from "expo-router";
 
 const DonationPayment = () => {
+  const navigation = useNavigation();  
   const router = useRouter();
   const [anonymous, setAnonymous] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -27,6 +29,25 @@ const DonationPayment = () => {
     }
   };
 
+    const handleSubmit = () => {
+      // You can add form validation here if needed
+      // For now, just show success message
+      Alert.alert(
+        "Success! 🎉",
+        "Your donation has been submitted successfully. Thank you for your contribution.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Optional: Navigate back to previous screen or clear form
+              navigation.navigate("homescreen");
+              // Or navigate to a specific screen:
+              // navigation.navigate('mydonationreq');
+            }
+          }
+        ]
+      );
+    };
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
@@ -192,10 +213,10 @@ const DonationPayment = () => {
 
       {/* Complete Button */}
       <TouchableOpacity style={styles.submitButton}
-       onPress={() => router.push('/(drawer)/monetory')}>
-            <Text style={styles.submitText}
-            >Complete Donation</Text>
-    </TouchableOpacity>
+        onPress={handleSubmit}
+      >
+        <Text style={styles.submitText}>Complete Donation</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

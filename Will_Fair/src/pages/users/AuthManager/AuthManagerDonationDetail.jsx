@@ -164,17 +164,24 @@ const AuthManagerDonationDetail = () => {
               )}
               {/* Proof Document Section */}
               {donation.document_path && (
-                <div style={{ margin: "12px 0" }}>
-                  <b>Uploaded Proof Document:</b>
-                  <br />
+                <div className="proof-doc-section" style={{ margin: "18px 0", padding: "16px", background: "#f8fafc", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF" style={{ width: 40, height: 40, objectFit: "contain" }} />
+                    <div>
+                      <b>Proof Document:</b>
+                      <div style={{ fontSize: "15px", color: "#555", marginTop: 2 }}>
+                        {donation.document_path.split('/').pop()}
+                      </div>
+                    </div>
+                  </div>
                   <a
                     href={`http://localhost:5173/server/${donation.document_path}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-outline-info"
-                    style={{ marginTop: 4 }}
+                    style={{ marginTop: 12, display: "inline-block", fontWeight: 500 }}
                   >
-                    View Proof Document
+                    <span role="img" aria-label="view">📄</span> View Proof Document
                   </a>
                 </div>
               )}
