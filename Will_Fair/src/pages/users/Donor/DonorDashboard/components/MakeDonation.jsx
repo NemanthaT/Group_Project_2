@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './MakeDonation.css';
 import axios from 'axios';
 
-const MakeDonation = () => {
+const MakeDonation = ( {user}) => {
   const { id } = useParams();
   const [amount, setAmount] = useState('');
   const [success, setSuccess] = useState(false);
@@ -29,23 +29,47 @@ const MakeDonation = () => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
+
+    if (!user || !user.id) {
+      setError('You must be signed in to donate.');
+      return;
+    }
+
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
       setError('Please enter a valid amount.');
       return;
     }
     try {
       // Update donation amount in backend
-      await axios.post(`http://localhost:5000/donations/${id}/donate`, { amount: Number(amount) });
+      await axios.post(`http://localhost:5000/donations/${id}/donate`, { amount: Number(amount), donorId: user.id });
+      console.log('Submitting donation:', { amount, donorId: user.id });
       setSuccess(true);
       // Optionally, refresh donation details
       const response = await axios.get(`http://localhost:5000/donations/${id}`);
       setDonation(response.data.donation);
     } catch (err) {
+      console.error(err);
       setError('Failed to process donation.');
     }
   };
 
   if (loading) return <div className="make-donation-container">Loading...</div>;
+
+  // If user is not signed in, show a login prompt instead of the form
+  if (!user || !user.id) {
+    return (
+      <div className="make-donation-container">
+        <h2 className="make-donation-title">Make a Donation</h2>
+        <div className="donation-details-summary">
+          <div><strong>Title:</strong> {donation?.title || '-'}</div>
+          <div><strong>Target Amount:</strong> Rs. {donation?.quantity_needed?.toLocaleString() || '-'}</div>
+          <div><strong>Received Amount:</strong> Rs. {donation?.quantity_received?.toLocaleString() || '-'}</div>
+        </div>
+        <div className="make-donation-error">You must be signed in to make a donation.</div>
+        <Link to="/sign-in" className="make-donation-btn">Sign In</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="make-donation-container">

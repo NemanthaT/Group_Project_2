@@ -4,6 +4,7 @@ import MonetoryDonation from './Monetary/MonetaryDonation';
 import NonMonetary from './NonMonetary/NonMonetary';
 import DonationView from './DonorDashboard/components/DonationView';
 import MakeDonation from './DonorDashboard/components/MakeDonation';
+import AllDonations from './DonorDashboard/components/AllDonations';
 
 function Donor () {
     const user = JSON.parse(localStorage.getItem('userData'));
@@ -13,6 +14,7 @@ function Donor () {
             <Route path="*" element={<Dashboard user={user} />} />
             <Route path="/monetory" element={<MonetoryDonation user={user} />} />
             <Route path="/nonMonetory" element={<NonMonetary user={user} />} />
+            <Route path="/all-donations" element={<AllDonations user={user} />} />
             <Route path="/donations/:id/view" element={<DonationView user={user} />} />
             <Route path="/donations/:id/donate" element={<MakeDonation user={user} />} />
         </Routes>

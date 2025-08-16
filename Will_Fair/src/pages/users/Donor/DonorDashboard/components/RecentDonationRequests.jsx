@@ -32,7 +32,7 @@ const RecentDonationRequests = () => {
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">Recent Donation Requests</h2>
-          <button className="btn btn-outline">
+          <button className="btn btn-outline" onClick={() => navigate('/users/donor/all-donations')}>
             View All Requests
             <ArrowRight className="icon" />
           </button>
@@ -48,7 +48,7 @@ const RecentDonationRequests = () => {
               
               <div className="donation-content">
                 <h3 className="donation-title">{donation.title}</h3>
-                <p className="donation-description">{donation.description}</p>
+                {/*<p className="donation-description">{donation.description}</p>*/}
                 
                 <div className="donation-progress">
                   <div className="progress-header">
