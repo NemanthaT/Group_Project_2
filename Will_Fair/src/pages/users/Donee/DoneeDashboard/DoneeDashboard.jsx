@@ -22,47 +22,36 @@ import {
   Instagram,
   Linkedin
 } from 'lucide-react';
+import axios from 'axios';
 import './App.css';
-
-const mockRequests = [
-  {
-    id: 1,
-    title: 'හෘදයකට ගෙදරයක්',
-    category: 'Healthcare',
-    type: 'Monetary',
-    status: 'PENDING',
-    deadline: 'Jun 27, 2025',
-    progress: 45,
-    image: '/api/placeholder/40/40',
-    createdDate: 'Jan 11, 2025'
-  },
-  {
-    id: 2,
-    title: 'need wheelchair',
-    category: 'Community',
-    type: 'NonMonetary',
-    status: 'PENDING',
-    deadline: 'May 31, 2025',
-    progress: 45,
-    image: '/api/placeholder/40/40',
-    createdDate: 'May 21, 2025'
-  },
-  {
-    id: 3,
-    title: 'school supplies needed',
-    category: 'Education',
-    type: 'Monetary',
-    status: 'PENDING',
-    deadline: 'Jun 07, 2025',
-    progress: 45,
-    image: '/api/placeholder/40/40',
-    createdDate: 'May 19, 2025'
-  }
-];
 
 function DoneeDashboard( { user } ) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('This Month');
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  React.useEffect(() => {
+    const fetchRequests = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.post('http://localhost:5000/donations/getDonationsById', { doneeId: user.id });
+        if (response.data && response.data.donations) {
+          setRequests(response.data.donations);
+        } else {
+          setRequests([]);
+        }
+      } catch (err) {
+        setError('Failed to fetch requests');
+        setRequests([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+  }, [user.id]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -90,6 +79,12 @@ function DoneeDashboard( { user } ) {
   const goToDonationsView = () => {
     navigate('/users/donee/view');
   }
+
+  // Stats calculation
+  const totalRequests = requests.length;
+  const completedRequests = requests.filter(r => r.status === 'completed').length;
+  const inProgressRequests = requests.filter(r => r.status === 'approved' || r.status === 'PENDING').length;
+  const donors = 0; // Placeholder, update if donor info is available
 
   return (
     <div className="app">
@@ -189,7 +184,7 @@ function DoneeDashboard( { user } ) {
                 <div className="stat-content">
                   <div className="stat-info">
                     <p className="stat-label">Total Requests</p>
-                    <p className="stat-value">3</p>
+                    <p className="stat-value">{totalRequests}</p>
                   </div>
                   <div className="stat-icon blue">
                     <FileText className="icon" />
@@ -201,7 +196,7 @@ function DoneeDashboard( { user } ) {
                 <div className="stat-content">
                   <div className="stat-info">
                     <p className="stat-label">Completed</p>
-                    <p className="stat-value">0</p>
+                    <p className="stat-value">{completedRequests}</p>
                   </div>
                   <div className="stat-icon green">
                     <TrendingUp className="icon" />
@@ -213,7 +208,7 @@ function DoneeDashboard( { user } ) {
                 <div className="stat-content">
                   <div className="stat-info">
                     <p className="stat-label">In Progress</p>
-                    <p className="stat-value">0</p>
+                    <p className="stat-value">{inProgressRequests}</p>
                   </div>
                   <div className="stat-icon yellow">
                     <Calendar className="icon" />
@@ -225,7 +220,7 @@ function DoneeDashboard( { user } ) {
                 <div className="stat-content">
                   <div className="stat-info">
                     <p className="stat-label">Donors</p>
-                    <p className="stat-value">0</p>
+                    <p className="stat-value">{donors}</p>
                   </div>
                   <div className="stat-icon purple">
                     <Users className="icon" />
@@ -276,69 +271,79 @@ function DoneeDashboard( { user } ) {
               <button className="primary-button">New Request</button>
             </div>
             <div className="table-container">
-              <table className="requests-table">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                    <th>Deadline</th>
-                    <th>Progress</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockRequests.map((request) => (
-                    <tr key={request.id}>
-                      <td>
-                        <div className="request-image">
-                          <Heart className="icon" />
-                        </div>
-                      </td>
-                      <td>
-                        <div className="request-title">
-                          <div className="title-text">{request.title}</div>
-                          <div className="created-date">Created: {request.createdDate}</div>
-                        </div>
-                      </td>
-                      <td>{request.category}</td>
-                      <td>{request.type}</td>
-                      <td>
-                        <span className={`status-badge ${getStatusColor(request.status)}`}>
-                          {request.status}
-                        </span>
-                      </td>
-                      <td>{request.deadline}</td>
-                      <td>
-                        <div className="progress-container">
-                          <div className="progress-bar">
-                            <div 
-                              className="progress-fill" 
-                              style={{ width: `${request.progress}%` }}
-                            ></div>
-                          </div>
-                          <span className="progress-text">{request.progress}%</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="action-button view">
-                            <Eye className="icon" />
-                          </button>
-                          <button className="action-button edit">
-                            <Edit3 className="icon" />
-                          </button>
-                          <button className="action-button more">
-                            <MoreHorizontal className="icon" />
-                          </button>
-                        </div>
-                      </td>
+              {loading ? (
+                <div>Loading...</div>
+              ) : error ? (
+                <div style={{ color: 'red' }}>{error}</div>
+              ) : (
+                <table className="requests-table">
+                  <thead>
+                    <tr>
+                      <th>Image</th>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th>Deadline</th>
+                      <th>Progress</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {requests.map((request) => (
+                      <tr key={request.request_id}>
+                        <td>
+                          <div className="request-image">
+                            {request.image_path ? (
+                              <img src={`http://localhost:5173/server/${request.image_path}`} alt="request" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 8 }} />
+                            ) : (
+                              <Heart className="icon" />
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="request-title">
+                            <div className="title-text">{request.title || request.request_name}</div>
+                            <div className="created-date">Created: {request.created_at ? new Date(request.created_at).toLocaleDateString() : ''}</div>
+                          </div>
+                        </td>
+                        <td>{request.category}</td>
+                        <td>{request.quantity_needed ? 'Monetary' : 'NonMonetary'}</td>
+                        <td>
+                          <span className={`status-badge ${getStatusColor(request.status)}`}>
+                            {request.status}
+                          </span>
+                        </td>
+                        <td>{request.due_date || request.dropoff_date || '-'}</td>
+                        <td>
+                          <div className="progress-container">
+                            <div className="progress-bar">
+                              <div 
+                                className="progress-fill" 
+                                style={{ width: `${request.progress || 0}%` }}
+                              ></div>
+                            </div>
+                            <span className="progress-text">{request.progress || 0}%</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button className="action-button view">
+                              <Eye className="icon" />
+                            </button>
+                            <button className="action-button edit">
+                              <Edit3 className="icon" />
+                            </button>
+                            <button className="action-button more">
+                              <MoreHorizontal className="icon" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>

@@ -68,6 +68,11 @@
   margin-bottom: 20px;
 }
 
+.donation-amounts {
+  display: flex;
+  flex-direction: column;
+}
+
 .progress-header {
   display: flex;
   justify-content: space-between;

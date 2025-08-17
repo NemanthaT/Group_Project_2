@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 export const signUpDonee = async (req, res) => {
   const { type, name, phone, password } = req.body;
   const proofDocument = req.file; // Get uploaded file
-
+  console.log("Proof Document: ", proofDocument);
+  
   if (!type || !name || !phone || !password) {
     return res.status(400).json({ error: "All fields are required" });
   }

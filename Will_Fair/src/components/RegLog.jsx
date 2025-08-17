@@ -43,9 +43,11 @@ export function LoginD() {
       switch (response.data.user.role) {
         case "donor":
           navigate("/users/donor");
+          location.reload(); // Reload to update user state
           break;
         case "auth_manager":
-          navigate("/manager/dashboard");
+          navigate("/users/authManager");
+          location.reload(); 
           break;
         case "regional_manager":
           navigate("/regional/dashboard");
@@ -171,9 +173,10 @@ export function SignUpD() {
     }
 
     try {
-      // Hash the password before sending to server
+      /* Hash the password before sending to server
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(formData.password, salt);
+      const hashedPassword = await bcrypt.hash(formData.password, salt);*/
+      const hashedPassword = formData.password; // Use plain password for now
 
       const response = await axios.post(
         "http://localhost:5000/donors/signupDonor",
@@ -346,6 +349,7 @@ export function LoginF() {
       switch (response.data.user.role) {
         case "donee":
           navigate("/users/donee");
+          location.reload(); // Reload to update user state
           break;
         case "auth_manager":
           navigate("/manager/dashboard");
@@ -449,6 +453,7 @@ export function SignUpF() {
   const [formData, setFormData] = useState({
     type: "individual",
     name: "",
+    userType: "",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -485,9 +490,6 @@ export function SignUpF() {
     }
 
     try {
-      // Hash the password before sending to server
-      /*const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(formData.password, salt);*/
       const hashedPassword = formData.password; // Use plain password for now
 
       const data = new FormData();
@@ -540,170 +542,241 @@ export function SignUpF() {
   return (
     <>
       <ToastContainer />
-      <div className="signup-container">
-        <div className="welcome-text">
-          <h1>Join with us</h1>
-          <p>Connecting Hearts, Changing Lives</p>
+      <div className="fundraiser-signup-layout">
+        {/* Instructions Panel - LEFT SIDE */}
+        <div className="instructions-panel">
+          <h2>Fundraiser Signup Guide</h2>
+          
+          <div className="instruction-section">
+            <h3>Individual vs Representative</h3>
+            <p><strong>Individual:</strong> For personal fundraising needs (medical bills, education, etc.)</p>
+            <p><strong>Representative:</strong> For organizations raising funds for others (non-profits, community groups)</p>
+          </div>
+
+          <div className="instruction-section">
+            <h3>User Categories</h3>
+            <ul>
+              <li><strong>Student:</strong> Educational expenses, tuition fees</li>
+              <li><strong>Differently Abled:</strong> Medical equipment, accessibility needs</li>
+              <li><strong>Senior Citizen:</strong> Retirement, healthcare costs</li>
+              <li><strong>Unemployed:</strong> Basic living expenses during job search</li>
+              <li><strong>Crisis-Affected:</strong> Disaster relief, emergency situations</li>
+              <li><strong>Medical Needs:</strong> Treatment costs, surgeries, medications</li>
+            </ul>
+          </div>
+
+          <div className="instruction-section">
+            <h3>Approval Process</h3>
+            <p>All fundraiser accounts require admin approval (24-48 hours).</p>
+            <p>You'll receive an email when your account is activated.</p>
+            <p>Representatives must upload valid organization documents.</p>
+          </div>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="toggle-buttons">
-            <button
-              type="button"
-              className={`toggle-btn${
-                formData.type === "individual" ? " active" : ""
-              }`}
-              onClick={() => handleToggleType("individual")}
-            >
-              Individual
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn${
-                formData.type === "representative" ? " active" : ""
-              }`}
-              onClick={() => handleToggleType("representative")}
-            >
-              Representative
-            </button>
-          </div>
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">👤</span>
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name/ Organization Name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">📧</span>
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone no"
-                pattern="[0-9]{10}"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
+        {/* Signup Form - RIGHT SIDE */}
+        <div className="signup-container">
+          <div className="welcome-text">
+            <h1>Join with us</h1>
+            <p>Connecting Hearts, Changing Lives</p>
           </div>
 
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+          {error && <div className="error-message">{error}</div>}
 
-          <div className="form-group">
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="toggle-buttons">
+              <button
+                type="button"
+                className={`toggle-btn${
+                  formData.type === "individual" ? " active" : ""
+                }`}
+                onClick={() => handleToggleType("individual")}
+              >
+                Individual
+              </button>
+              <button
+                type="button"
+                className={`toggle-btn${
+                  formData.type === "representative" ? " active" : ""
+                }`}
+                onClick={() => handleToggleType("representative")}
+              >
+                Representative
+              </button>
             </div>
-          </div>
-
-          <div className="upload-section">
-            {/* File input and upload button */}
-            <div
-              className="upload-group"
-              onClick={() => document.getElementById("proofDocument").click()}
-              style={{ cursor: "pointer" }}
-            >
-              <input
-                type="file"
-                id="proofDocument"
-                name="proofDocument"
-                accept=".pdf,.doc,.docx,.jpg,.png"
-                style={{ display: "none" }}
-                onChange={handleChange}
-              />
-              <div className="upload-content">
-                <span className="upload-text">
-                  {formData.proofDocument
-                    ? "📄 " + formData.proofDocument.name
-                    : "📄 Proof Document"}
-                </span>
-                <span className="upload-btn">Upload</span>
+            
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">👤</span>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name/ Organization Name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                />
               </div>
             </div>
             
-            {formData.proofDocument &&
-              formData.proofDocument.type.startsWith("image/") && (
-                <div className="image-preview">
-                  <img
-                    src={URL.createObjectURL(formData.proofDocument)}
-                    alt="Document preview"
-                    className="preview-image"
-                  />
-                  <button
-                    type="button"
-                    className="remove-image-btn"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, proofDocument: null }))
-                    }
-                  >
-                    ×
-                  </button>
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">👥</span>
+                <select
+                  name="userType"
+                  required
+                  value={formData.userType}
+                  onChange={handleChange}
+                  className="user-type-select"
+                >
+                  <option value="" className="category">Select Category</option>
+                  
+                  {formData.type === "individual" && (
+                    <>
+                      <option value="Student">Student</option>
+                      <option value="Differently abled">Differently Abled</option>
+                      <option value="Senior Citizen">Senior Citizen</option>
+                      <option value="Unemployed">Unemployed</option>
+                      <option value="Crisis-Affected">Crisis-Affected</option>
+                      <option value="Medical Needs">Medical Needs</option>
+                    </>
+                  )}
+                  {formData.type === "representative" && (
+                    <>
+                      <option value="Student">Student</option>
+                      <option value="Differently abled">Differently Abled</option>
+                      <option value="Senior Citizen">Senior Citizen</option>
+                      <option value="Unemployed">Unemployed</option>
+                      <option value="Crisis-Affected">Crisis-Affected</option>
+                      <option value="Medical Needs">Medical Needs</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">📧</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone no"
+                  pattern="[0-9]{10}"
+                  required
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">🔒</span>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">🔒</span>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="upload-section">
+              <div
+                className="upload-group"
+                onClick={() => document.getElementById("proofDocument").click()}
+                style={{ cursor: "pointer" }}
+              >
+                <input
+                  type="file"
+                  id="proofDocument"
+                  name="proofDocument"
+                  accept=".pdf,.doc,.docx,.jpg,.png"
+                  style={{ display: "none" }}
+                  onChange={handleChange}
+                />
+                <div className="upload-content">
+                  <span className="upload-text">
+                    {formData.proofDocument
+                      ? "📄 " + formData.proofDocument.name
+                      : "📄 Proof Document"}
+                  </span>
+                  <span className="upload-btn">Upload</span>
+                </div>
+              </div>
+              
+              {formData.proofDocument &&
+                formData.proofDocument.type.startsWith("image/") && (
+                  <div className="image-preview">
+                    <img
+                      src={URL.createObjectURL(formData.proofDocument)}
+                      alt="Document preview"
+                      className="preview-image"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, proofDocument: null }))
+                      }
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="progress-indicator">
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                  <span className="progress-text">{uploadProgress}%</span>
                 </div>
               )}
-
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="progress-indicator">
-                <div
-                  className="progress-bar"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-                <span className="progress-text">{uploadProgress}%</span>
-              </div>
-            )}
-          </div>
-
-          <div className="checkbox-group">
-            <div className="checkbox-wrapper">
-              <input type="checkbox" id="terms" required />
             </div>
-            <label htmlFor="terms" className="checkbox-label">
-              I agree to{" "}
-              <span className="terms-link">Terms and Conditions</span> of
-              WillFair Community
-            </label>
+
+            <div className="checkbox-group">
+              <div className="checkbox-wrapper">
+                <input type="checkbox" id="terms" required />
+              </div>
+              <label htmlFor="terms" className="checkbox-label">
+                I agree to{" "}
+                <span className="terms-link">Terms and Conditions</span> of
+                WillFair Community
+              </label>
+            </div>
+
+            <button type="submit" className="signup-btn" disabled={loading}>
+              {loading ? "Signing up..." : "Sign Up"}
+            </button>
+          </form>
+
+          <div className="signup-link">
+            Already have an account?{" "}
+            <button onClick={goToLoginF} className="link-button">
+              Login
+            </button>
           </div>
-
-          <button type="submit" className="signup-btn" disabled={loading}>
-            {loading ? "Signing up..." : "Sign Up"}
-          </button>
-        </form>
-
-        <div className="signup-link">
-          Already have an account?{" "}
-          <button onClick={goToLoginF} className="link-button">
-            Login
-          </button>
         </div>
       </div>
     </>
   );
 }
+

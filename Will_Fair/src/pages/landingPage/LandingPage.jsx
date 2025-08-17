@@ -1,5 +1,7 @@
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
+import {MapPin, Phone, Mail} from "lucide-react";
+import { useState } from 'react';
 
 function LandingPage() {
   // Initialize the useNavigate hook from react-router-dom
@@ -8,6 +10,46 @@ function LandingPage() {
   const goToFeatured = () => {
     navigate("/featured");
   };
+
+  const [volunteerOpportunities] = useState([
+  {
+    id: 1,
+    title: "Beach Cleanup in Mount Lavinia",
+    description: "Help clean up Mount Lavinia beach to protect marine life",
+    type: "environment",
+    commitment: "one-time",
+    location: "Colombo",
+    volunteersNeeded: 15,
+    volunteersSigned: 5,
+    image: "https://plus.unsplash.com/premium_photo-1663039947303-0fad26f737b8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmVhY2glMjBjbGVhbnVwfGVufDB8fDB8fHww",
+    date: "2023-08-15"
+  },
+  {
+    id: 2,
+    title: "Elderly Care Assistance - Panadura",
+    description: "Provide companionship and basic care for elderly in Panadura homes",
+    type: "caregiving",
+    commitment: "weekly",
+    location: "Panadura",
+    volunteersNeeded: 8,
+    volunteersSigned: 2,
+    image: "https://plus.unsplash.com/premium_photo-1661274147223-116687829d26?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWxkZXJseSUyMGNhcmV8ZW58MHx8MHx8fDA%3D",
+    date: "2023-08-10"
+  },
+  {
+    id: 3,
+    title: "Special Needs Center Support",
+    description: "Assist at centers for people with special needs in Colombo",
+    type: "caregiving",
+    commitment: "flexible",
+    location: "Colombo",
+    volunteersNeeded: 10,
+    volunteersSigned: 3,
+    image: "https://plus.unsplash.com/premium_photo-1713457016406-5e2c34fe501b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3BlY2lhbCUyMG5lZWRzJTIwY2VudGVyfGVufDB8fDB8fHww",
+    date: "2023-08-20"
+  }
+]);
+
   return (
     <>
       <section className="hero" id="home">
@@ -46,91 +88,94 @@ function LandingPage() {
         <div className="container">
           <h2 className="section-title">Featured Programs</h2>
           <div className="programs-grid">
-            <div className="program-card">
-              <div className="program-image">🧸</div>
-              <div className="program-content">
-                <h3>Renovations at Early Bird Child Care - Karnataka</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>Raised:</strong> 1,000.00
-                  </span>
-                  <span>
-                    <strong>Target:</strong> 50,000.00
-                  </span>
+            {volunteerOpportunities.map(opp => (
+              <div className="program-card" key={opp.id}>
+                <div 
+                  className="card-image" 
+                  style={{ backgroundImage: `url(${opp.image})` }}
+                >
+                  <span className="card-badge">Active</span>
                 </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "20%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn
-                  </a>
-                  <a href="#" className="btn-small">
-                    Donate
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="program-card">
-              <div className="program-image">👵</div>
-              <div className="program-content">
-                <h3>Renovations at Elderly Care - Colombia</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>Raised:</strong> 25,000.00
-                  </span>
-                  <span>
-                    <strong>Target:</strong> 45,000.00
-                  </span>
-                </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "55%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn
-                  </a>
-                  <a href="#" className="btn-small">
-                    Donate
-                  </a>
+                <div className="card-content">
+                  <h3 className="card-title">{opp.title}</h3>
+                  <p className="card-description">{opp.description}</p>
+                  
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ 
+                        width: `${(opp.volunteersSigned / opp.volunteersNeeded) * 100}%`,
+                        background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
+                      }}
+                    ></div>
+                  </div>
+                  
+                  <div className="funding-info">
+                    <div>
+                      <div className="funding-label">Volunteers Signed:</div>
+                      <div className="funding-amount">{opp.volunteersSigned}</div>
+                    </div>
+                    <div>
+                      <div className="funding-label">Volunteers Needed:</div>
+                      <div className="funding-amount">{opp.volunteersNeeded}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="card-actions">
+                    <button className="btn btn-outline">
+                      Details
+                    </button>
+                    <button className="btn btn-primary">
+                      Volunteer
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="program-card">
-              <div className="program-image">♿</div>
-              <div className="program-content">
-                <h3>Renovations at Special Care - Motors</h3>
-                <div className="program-stats">
-                  <span>
-                    <strong>Raised:</strong> 30,000.00
-                  </span>
-                  <span>
-                    <strong>Target:</strong> 60,000.00
-                  </span>
-                </div>
-                <div className="program-progress">
-                  <div className="progress-bar" style={{ width: "50%" }}></div>
-                </div>
-                <div className="program-buttons">
-                  <a href="#" className="btn-outline">
-                    Learn
-                  </a>
-                  <a href="#" className="btn-small">
-                    Donate
-                  </a>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
           <div className="see-more">
-            <button className="btn-small" onClick={goToFeatured}>
+            <button className="btn-small1" onClick={goToFeatured}>
               See more
             </button>
           </div>
         </div>
       </section>
+
+      
+      <section className="marketplace-cta">
+        <div className="container">
+          <div className="marketplace-cta-content">
+            <div className="marketplace-cta-text">
+              <h2>Support Artisans with Disabilities</h2>
+              <p>
+                Discover unique handcrafted products or join our community of sellers.
+                Every purchase supports independence and creativity.
+              </p>
+              <div className="marketplace-cta-buttons">
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => navigate('/marketplace')}
+                >
+                  Shop now 
+                </button>
+                <button 
+                  className="btn btn-outline" 
+                  onClick={() => navigate('/marketplace/seller')}
+                >
+                  Become a Seller
+                </button>
+              </div>
+            </div>
+            <div className="marketplace-cta-image">
+              <img 
+                src="https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg" 
+                alt="Artisans at work" 
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section className="testimonials">
         <div className="container">
@@ -259,19 +304,25 @@ function LandingPage() {
             <div className="contact-info">
               <h3>Contact Us</h3>
               <div className="contact-item">
-                <div className="contact-icon">📍</div>
+                <div className="contact-icon">
+                  <MapPin size={20}/>
+                </div>
                 <div>
                   <strong>Reid Avenue, Colombo</strong>
                 </div>
               </div>
               <div className="contact-item">
-                <div className="contact-icon">📞</div>
+                <div className="contact-icon">
+                  <Phone size={20}/>
+                </div>
                 <div>
                   <strong>+94 77 1234567890</strong>
                 </div>
               </div>
               <div className="contact-item">
-                <div className="contact-icon">✉️</div>
+                <div className="contact-icon">
+                  <Mail size={20}/>
+                </div>
                 <div>
                   <strong>info@willfair.org</strong>
                 </div>

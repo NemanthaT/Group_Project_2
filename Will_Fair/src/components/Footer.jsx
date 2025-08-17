@@ -1,4 +1,5 @@
 import "./Footer.css";
+import { Facebook, Instagram, Twitter} from "lucide-react";
 
 function Footer() {
   return (
@@ -14,9 +15,15 @@ function Footer() {
                 yourself.
               </p>
               <div className="social-links">
-                <a href="#">📘</a>
-                <a href="#">📷</a>
-                <a href="#">🐦</a>
+                <a href="#" aria-label="Facebook">
+                <Facebook className="social-icon" />
+              </a>
+              <a href="#" aria-label="Instagram">
+                <Instagram className="social-icon" />
+              </a>
+              <a href="#" aria-label="Twitter">
+                <Twitter className="social-icon" />
+              </a>
               </div>
             </div>
 

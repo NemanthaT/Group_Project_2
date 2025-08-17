@@ -63,6 +63,7 @@ nav {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
+  margin-right:10px;
 }
 
 .sign-in-btn:hover {
@@ -76,13 +77,26 @@ nav {
   width: 18%;
 }
 
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 110%;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  border-radius: 6px;
-  min-width: 140px;
-  z-index: 1000;
+.profile-container {
+  position: relative;
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logout-btn {
+  background: #4a6cf7;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.logout-btn:hover {
+  background: #4a6cf7;
+  transform: translateY(-2px);
 }

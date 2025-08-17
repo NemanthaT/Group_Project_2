@@ -295,20 +295,20 @@ body {
 }
 
 .app .hero-button {
-  background: rgba(255, 255, 255, 0.2);
+  background: #0d429b;
   color: white;
   padding: 0.75rem 2rem;
-  border-radius: 0.5rem;
+  border-radius: 30px;
   font-weight: 500;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
-  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
 .app .hero-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #5855eb;
+  transform: translateY(-3px);
 }
 
 /* Content Container */
@@ -330,6 +330,12 @@ body {
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
 }
 
 .period-selector {
@@ -552,7 +558,7 @@ body {
   background: #2563eb;
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 30px;
   font-weight: 500;
   border: none;
   cursor: pointer;

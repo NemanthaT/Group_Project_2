@@ -1,50 +1,38 @@
-import React from 'react';
-import { Calendar, Target, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Calendar, ArrowRight } from 'lucide-react';
 import './RecentDonationRequests.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const RecentDonationRequests = () => {
-  const donations = [
-    {
-      id: 1,
-      title: 'Need Books',
-      description: 'Requested for Shareable Education',
-      image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=400',
-      progress: 5,
-      target: 20000,
-      raised: 1000,
-      deadline: 'Jul 31, 2025',
-      urgent: true
-    },
-    {
-      id: 2,
-      title: 'School Supplies',
-      description: 'Educational materials for underprivileged children',
-      image: 'https://images.pexels.com/photos/265076/pexels-photo-265076.jpeg?auto=compress&cs=tinysrgb&w=400',
-      progress: 15,
-      target: 15000,
-      raised: 2250,
-      deadline: 'Aug 15, 2025',
-      urgent: false
-    },
-    {
-      id: 3,
-      title: 'Medical Equipment',
-      description: 'Life-saving equipment for local clinic',
-      image: 'https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=400',
-      progress: 25,
-      target: 50000,
-      raised: 12500,
-      deadline: 'Sep 10, 2025',
-      urgent: false
-    }
-  ];
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRecentDonations = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/donations/recent');
+        setDonations(response.data.donations);
+      } catch {
+        setError('Failed to fetch recent donations');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecentDonations();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <section className="section">
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">Recent Donation Requests</h2>
-          <button className="btn btn-outline">
+          <button className="btn btn-outline" onClick={() => navigate('/users/donor/all-donations')}>
             View All Requests
             <ArrowRight className="icon" />
           </button>
@@ -52,39 +40,44 @@ const RecentDonationRequests = () => {
         
         <div className="donation-grid">
           {donations.map(donation => (
-            <div key={donation.id} className="donation-card card">
+            <div key={donation.request_id} className="donation-card card">
               <div className="donation-image">
-                <img src={donation.image} alt={donation.title} />
+                <img src={donation.image_path && donation.image_path.startsWith('uploads/') ? `http://localhost:5173/server/${donation.image_path.replace(/\\/g, '/')}` : donation.image || ''} alt={donation.title} />
                 {donation.urgent && <span className="urgent-badge">Urgent</span>}
               </div>
               
               <div className="donation-content">
                 <h3 className="donation-title">{donation.title}</h3>
-                <p className="donation-description">{donation.description}</p>
+                {/*<p className="donation-description">{donation.description}</p>*/}
                 
                 <div className="donation-progress">
                   <div className="progress-header">
-                    <span className="progress-text">{donation.raised.toLocaleString()} of {donation.target.toLocaleString()} items</span>
-                    <span className="progress-percentage">{donation.progress}%</span>
+                    <span className="progress-percentage">
+                      {donation.quantity_needed ? Math.round((donation.quantity_received / donation.quantity_needed) * 100) : 0}%
+                    </span>
                   </div>
                   <div className="progress-bar">
                     <div 
                       className="progress-fill" 
-                      style={{ width: `${donation.progress}%` }}
+                      style={{ width: `${donation.quantity_needed ? Math.round((donation.quantity_received / donation.quantity_needed) * 100) : 0}%` }}
                     ></div>
+                  </div>
+                  <div className="donation-amounts">
+                    <span className="donation-target">Target: Rs. {donation.quantity_needed ? donation.quantity_needed.toLocaleString() : 0}</span>
+                    <span className="donation-received">Received: Rs. {donation.quantity_received ? donation.quantity_received.toLocaleString() : 0}</span>
                   </div>
                 </div>
                 
                 <div className="donation-meta">
                   <div className="deadline">
                     <Calendar className="icon" />
-                    <span>Deadline: {donation.deadline}</span>
+                    <span>Deadline: {donation.due_date ? new Date(donation.due_date).toLocaleDateString() : '-'}</span>
                   </div>
                 </div>
                 
                 <div className="donation-actions">
-                  <button className="btn btn-primary">Donate Now</button>
-                  <button className="btn btn-secondary">View Details</button>
+                  <button className="btn btn-primary" onClick={() => navigate(`/users/donor/donations/${donation.request_id}/donate`)}>Donate Now</button>
+                  <button className="btn btn-secondary" onClick={() => navigate(`/users/donor/donations/${donation.request_id}/view`)}>View Details</button>
                 </div>
               </div>
             </div>
