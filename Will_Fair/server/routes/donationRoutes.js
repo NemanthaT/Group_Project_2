@@ -10,7 +10,8 @@ import {
   deleteDonation,
   getRecentDonationsController,
   getActiveDonationsController,
-  getDonationStatsController
+  getDonationStatsController,
+  getDonationByIdController
 } from "../controllers/donationController.js";
 
 const router = express.Router();
@@ -39,6 +40,7 @@ router.get('/nonMonetaryCategories', getNonMonetaryCategories);
 router.get('/recent', getRecentDonationsController);
 router.get('/active', getActiveDonationsController);
 router.get('/stats', getDonationStatsController);
+router.get('/donations/:id', getDonationByIdController);
 
 // Get a single donation by ID
 router.get('/:id', async (req, res) => {

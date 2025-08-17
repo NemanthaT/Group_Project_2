@@ -269,16 +269,24 @@ async function getNonMonetaryDonationCategories() {
   }
 }
 
-// Get a single donation by ID
+//getDonationById function:
 async function getDonationById(id) {
   try {
     const result = await pool.query(
-      `SELECT dr.*, dc.category_name AS category FROM donation_requests dr LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id WHERE dr.request_id = $1`,
+      `SELECT 
+        dr.*, 
+        dc.category_name AS category,
+        (SELECT COUNT(DISTINCT donor_id) FROM donations WHERE request_id = dr.request_id) AS donor_count
+       FROM donation_requests dr 
+       LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+       WHERE dr.request_id = $1`,
       [id]
     );
+    
     if (result.rows.length === 0) {
       return { success: false, message: "Donation not found" };
     }
+    
     return { success: true, donation: result.rows[0] };
   } catch (err) {
     console.error("Database error during getDonationById():", err);

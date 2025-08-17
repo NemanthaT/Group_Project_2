@@ -5,7 +5,8 @@ import {
   getMonetaryDonationCategories,
   getNonMonetaryDonationCategories,
   deleteDonationById,
-  getRecentDonations
+  getRecentDonations,
+  getDonationById
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -266,5 +267,39 @@ export const getDonationStatsController = async (req, res) => {
   } catch (err) {
     console.error('Error in getDonationStatsController:', err);
     res.status(500).json({ success: false, error: 'Server error while fetching stats' });
+  }
+};
+
+export const getDonationByIdController = async (req, res) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      error: "Donation ID is required"
+    });
+  }
+
+  try {
+    const result = await getDonationById(id);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        donation: result.donation,
+        recentDonations: result.recentDonations || [] 
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: result.message
+      });
+    }
+  } catch (err) {
+    console.error("Error in getDonationByIdController:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching donation details"
+    });
   }
 };
