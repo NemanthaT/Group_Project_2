@@ -1,16 +1,59 @@
-import React from 'react';
-import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 
-const BackButton = ({ onPress, style, color = '#000', size = 24 }) => {
+const BackButton = ({ 
+  onPress, 
+  style, 
+  color = '#000', 
+  size = 24, 
+  navigateTo
+}) => {
+  const pathname = usePathname();
+
+  // Handle hardware back button for this screen
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      console.log('🔙 Hardware back pressed on:', pathname);
+      
+      if (onPress) {
+        onPress();
+        return true; // Prevent default behavior
+      }
+      
+      if (navigateTo) {
+        router.push(navigateTo);
+        return true;
+      }
+      
+      // Default back behavior
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.push('/firstpage');
+      }
+      return true;
+    });
+
+    return () => backHandler.remove();
+  }, [onPress, navigateTo, pathname]);
+
   const handlePress = () => {
+    console.log('👆 BackButton pressed programmatically on:', pathname);
+    
     if (onPress) {
       onPress();
-    } else if (router.canGoBack()) {
-      router.back();
+    } else if (navigateTo) {
+      router.push(navigateTo);
     } else {
-      router.push('/firstpage');
+      // Try to go back
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        // Fallback to home
+        router.push('/firstpage');
+      }
     }
   };
 
@@ -28,7 +71,7 @@ const BackButton = ({ onPress, style, color = '#000', size = 24 }) => {
 const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
-    top: 50, // Adjust based on your status bar
+    top: 50,
     left: 20,
     zIndex: 1000,
     padding: 10,

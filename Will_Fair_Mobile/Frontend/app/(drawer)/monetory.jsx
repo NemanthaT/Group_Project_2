@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Platform,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
@@ -42,6 +43,36 @@ const Monetary = () => {
     { label: "Children & Orphan Care", value: "children & orphan care" },
   ]);
 
+  const [openBranch, setOpenBranch] = useState(false);
+  const [branchName, setBranchName] = useState(null);
+  const [branches, setBranches] = useState([
+    { label: "Colombo Main Branch", value: "colombo_main" },
+    { label: "Kandy Branch", value: "kandy" },
+    { label: "Galle Branch", value: "galle" },
+    { label: "Negombo Branch", value: "negombo" },
+    { label: "Kurunegala Branch", value: "kurunegala" },
+    { label: "Anuradhapura Branch", value: "anuradhapura" },
+    { label: "Matara Branch", value: "matara" },
+    { label: "Ratnapura Branch", value: "ratnapura" },
+    { label: "Jaffna Branch", value: "jaffna" },
+    { label: "Batticaloa Branch", value: "batticaloa" },
+  ]);
+
+  // Bank Name Dropdown
+  const [openBank, setOpenBank] = useState(false);
+  const [bankName, setBankName] = useState(null);
+  const [banks, setBanks] = useState([
+    { label: "Bank of Ceylon", value: "bank_of_ceylon" },
+    { label: "People's Bank", value: "peoples_bank" },
+    { label: "Commercial Bank", value: "commercial_bank" },
+    { label: "Hatton National Bank", value: "hatton_national_bank" },
+    { label: "Sampath Bank", value: "sampath_bank" },
+    { label: "Nations Trust Bank", value: "nations_trust_bank" },
+    { label: "Seylan Bank", value: "seylan_bank" },
+    { label: "Union Bank", value: "union_bank" },
+    { label: "DFCC Bank", value: "dfcc_bank" },
+    { label: "National Development Bank", value: "ndb_bank" },
+  ]);
   const handleDocumentPick = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
@@ -69,6 +100,26 @@ const Monetary = () => {
     const currentDate = selectedDate || date;
     setShowDatePicker(Platform.OS === "ios");
     setDate(currentDate);
+  };
+
+  const handleSubmit = () => {
+    // You can add form validation here if needed
+    // For now, just show success message
+    Alert.alert(
+      "Success! 🎉",
+      "Your donation request has been submitted successfully. We will review it and get back to you soon.",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // Optional: Navigate back to previous screen or clear form
+            navigation.navigate("homescreen");
+            // Or navigate to a specific screen:
+            // navigation.navigate('mydonationreq');
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -120,13 +171,6 @@ const Monetary = () => {
       
       {/* Form */}
       <View style={styles.form}>
-        {/* Request Name */}
-        <Text style={donationRequestsStyles.sectionTitle}>Request Name</Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Enter request name"
-          placeholderTextColor="#999"
-        />
 
         {/* Category Dropdown */}
         <Text style={donationRequestsStyles.sectionTitle}>Category</Text>
@@ -146,6 +190,21 @@ const Monetary = () => {
           }}
         />
 
+        {/* Request Name */}
+        <Text style={donationRequestsStyles.sectionTitle}>Reason for Request</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Enter request name"
+          placeholderTextColor="#999"
+        />
+
+        <Text style={styles.sectionTitle}>Detailed Description</Text>
+        <TextInput
+        style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
+          multiline
+          placeholder="Describe your request in detail. Include why you need"
+        />
+
         {/* Target Amount */}
         <Text style={donationRequestsStyles.sectionTitle}>Target Amount</Text>
         <TextInput
@@ -156,7 +215,7 @@ const Monetary = () => {
         />
 
         {/* Deadline */}
-        <Text style={donationRequestsStyles.sectionTitle}>Deadline</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Urgent Need Date(Optional)</Text>
         <TouchableOpacity
           onPress={() => setShowDatePicker(true)}
           style={styles.inputField}
@@ -172,8 +231,54 @@ const Monetary = () => {
           />
         )}
 
+        {/* Bank Name Dropdown */}
+        <Text style={donationRequestsStyles.sectionTitle}>Bank Name</Text>
+        <DropDownPicker
+          open={openBank}
+          value={bankName}
+          items={banks}
+          setOpen={setOpenBank}
+          setValue={setBankName}
+          setItems={setBanks}
+          placeholder="Select Bank"
+          listMode="SCROLLVIEW"
+          zIndex={2000}
+          zIndexInverse={2000}
+          style={{
+            marginBottom: openBank ? 150 : 20,
+            borderColor: "#ccc",
+            borderRadius: 8,
+          }}
+        />
+
+        {/* Category Dropdown */}
+        <Text style={donationRequestsStyles.sectionTitle}>Branch Name</Text>
+        <DropDownPicker
+          open={openBranch}
+          value={branchName}
+          items={branches}
+          setOpen={setOpenBranch}
+          setValue={setBranchName}
+          setItems={setBranches}
+          placeholder="Select Branch"
+          listMode="SCROLLVIEW" // ✅ Show inline dropdown (not modal, not FlatList)
+          style={{
+            marginBottom: openBranch ? 150 : 20,
+            borderColor: "#ccc",
+            borderRadius: 8,
+          }}
+        />
+        <Text style={donationRequestsStyles.sectionTitle}>Account Number</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Enter account number"
+          placeholderTextColor="#999"
+          keyboardType="numeric"
+        />
+
+
         {/* Request Image Upload */}
-        <Text style={donationRequestsStyles.sectionTitle}>Request Image</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Request Image(optional)</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
           <Text style={{ textAlign: "center" }}>Choose Image</Text>
         </TouchableOpacity>
@@ -215,7 +320,8 @@ const Monetary = () => {
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.submitButton}
-        onPress={() => router.push('/donation_payment')} // Must match your route name
+        onPress={handleSubmit}
+        // onPress={() => router.push('/donation_payment')} 
         >
           <Text style={styles.submitText}>Create Request</Text>
         </TouchableOpacity>

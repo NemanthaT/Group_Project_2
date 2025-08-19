@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   Image,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
@@ -74,6 +75,25 @@ const NonMonetary = () => {
     setDate(currentDate);
   };
 
+  const handleSubmit = () => {
+      // You can add form validation here if needed
+      // For now, just show success message
+      Alert.alert(
+        "Success! 🎉",
+        "Your donation request has been submitted successfully. We will review it and get back to you soon.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Optional: Navigate back to previous screen or clear form
+              navigation.navigate("homescreen");
+              // Or navigate to a specific screen:
+              // navigation.navigate('mydonationreq');
+            }
+          }
+        ]
+      );
+    };
   return (
     <ScrollView
       style={styles.container}
@@ -122,9 +142,6 @@ const NonMonetary = () => {
 
       {/* Form */}
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Request Name</Text>
-        <TextInput style={styles.inputField} placeholder="Enter request name" />
-
         <Text style={styles.sectionTitle}>Category</Text>
         <DropDownPicker
           open={categoryOpen}
@@ -138,14 +155,21 @@ const NonMonetary = () => {
           style={{ marginBottom: categoryOpen ? 150 : 20 }}
         />
 
-        <Text style={styles.sectionTitle}>Description</Text>
+        <Text style={styles.sectionTitle}>Reason for Request</Text>
+        <TextInput style={styles.inputField} placeholder="Enter request name" />
+
+
+        <Text style={styles.sectionTitle}>Item Name</Text>
+        <TextInput style={styles.inputField} placeholder="Enter item name" />
+
+        <Text style={styles.sectionTitle}>Item Quantity</Text>
         <TextInput
-          style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
-          multiline
-          placeholder="Describe your request in detail. Include why you need"
+          style={styles.inputField}
+          placeholder="Enter quantity"
+          keyboardType="numeric"
         />
 
-        <Text style={styles.sectionTitle}>Deadline</Text>
+        <Text style={styles.sectionTitle}>Dropoff Date</Text>
         <TouchableOpacity
           style={styles.inputField}
           onPress={() => setShowDatePicker(true)}
@@ -161,17 +185,8 @@ const NonMonetary = () => {
           />
         )}
 
-        <Text style={styles.sectionTitle}>Item Name</Text>
-        <TextInput style={styles.inputField} placeholder="Enter item name" />
 
-        <Text style={styles.sectionTitle}>Quantity Needed</Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Enter quantity"
-          keyboardType="numeric"
-        />
-
-        <Text style={styles.sectionTitle}>Province</Text>
+        {/* <Text style={styles.sectionTitle}>Province</Text>
         <DropDownPicker
           open={provinceOpen}
           value={province}
@@ -182,9 +197,9 @@ const NonMonetary = () => {
           placeholder="Select province"
           listMode="SCROLLVIEW" // ✅ Prevents nesting error
           style={{ marginBottom: provinceOpen ? 150 : 20 }}
-        />
+        /> */}
 
-        <Text style={styles.sectionTitle}>Request Image</Text>
+        <Text style={styles.sectionTitle}>Request Image(Optioal)</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
           <Text style={{ textAlign: "center" }}>Choose Image</Text>
         </TouchableOpacity>
@@ -209,7 +224,7 @@ const NonMonetary = () => {
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.submitButton}
-        onPress={() => router.push('/(drawer)/donationform')} // Must match your route name
+        onPress={handleSubmit}
         >
           <Text style={styles.submitText}>Create Request</Text>
         </TouchableOpacity>

@@ -22,10 +22,11 @@ export default function CustomDrawer(props) {
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       <View style={styles.profileSection}>
         <Image
-            source={require('../../assets/images/program1.png')} // 🔁 Use your image path here
+            source={require('../../assets/images/profile.jpg')} // 🔁 Use your image path here
             style={styles.profileImage}
           />
-          <Text style={styles.username}>Ms. Kawmini</Text>
+          <Text style={styles.username}>Ms. Leena</Text>
+          <Text style={styles.label}>Donee</Text>
       </View>
 
       <View style={styles.menuItems}>
@@ -33,15 +34,18 @@ export default function CustomDrawer(props) {
           <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/monetory')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Donation</Text>
+          <Text style={styles.menuText}>Donee - Donation Request</Text>
         </TouchableOpacity>
          <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
           <Text style={styles.menuText}>My Donation Requests</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Donor - Requests View </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/volunteerprograms')} style={styles.menuButton}>
           <Text style={styles.menuText}>Programs</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/marketplace')} style={styles.menuButton}>
           <Text style={styles.menuText}>Marketplace</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>
@@ -89,27 +93,31 @@ const styles = StyleSheet.create({
   menuItems: {
     marginTop: 10,
   },
+  label: {
+    color: '#fff',
+    marginTop: 0,
+  },
   menuButton: {
     backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    marginBottom: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 10,
   },
   menuText: {
     color: '#9333EA',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     fontWeight: 'bold',
   },
  logoutButton: {
     backgroundColor: '#fff',
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
     alignSelf: 'center',
     width: '60%',
     marginBottom: 30,
-    marginTop: 20,
+    marginTop: 10,
   },
   logoutText: {
     color: '#FF5252',

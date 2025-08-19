@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   Image,
+  Alert
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -14,6 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { router } from 'expo-router';
+import BackButton from '../components/backbutton'
+
 
 
 const DonationForm = () => {
@@ -50,6 +53,26 @@ const DonationForm = () => {
     </TouchableOpacity>
   );
 
+  const handleSubmit = () => {
+        // You can add form validation here if needed
+        // For now, just show success message
+        Alert.alert(
+          "Success! 🎉",
+          "Your donation has been submitted successfully. Thank you for your contribution.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Optional: Navigate back to previous screen or clear form
+                navigation.navigate("homescreen");
+                // Or navigate to a specific screen:
+                // navigation.navigate('mydonationreq');
+              }
+            }
+          ]
+        );
+      };
+      
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
@@ -142,9 +165,9 @@ const DonationForm = () => {
         {/* Submit Button */}
          {/* Submit Button */}
         <TouchableOpacity style={styles.submitButton}
-        onPress={() => router.push('donation_payment')} // Must match your route name
+        onPress={handleSubmit}
         >
-            <Text style={styles.submitText}>Create Request</Text>
+            <Text style={styles.submitText}>Submit Donation</Text>
             </TouchableOpacity>
       </View>
     </ScrollView>

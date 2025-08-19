@@ -1,0 +1,541 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-title {
+  position: absolute;
+  top: 190px; /* Adjusted for increased navbar height */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 48px; /* Reduced from 64px */
+  color: #fff;
+  text-align: center;
+  z-index: 5;
+  max-width: 90%;
+}
+
+/* Main Content */
+.page-wrapper .main-content {
+  display: flex;
+  gap: 40px;
+  padding: 50px 114px; /* Reduced from 64px */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-wrapper .hero-section{
+  height: 300px;
+  min-height: 300px;
+}
+
+.left-column {
+  flex: 1;
+}
+
+.right-column {
+  width: 500px; /* Reduced from 730px */
+  flex-shrink: 0;
+}
+
+.main-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 24px; /* Reduced from 32px */
+}
+
+.location-category {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px; /* Reduced from 32px */
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Reduced from 16px */
+}
+
+.location-icon {
+  width: 40px; /* Reduced from 57px */
+  height: 40px; /* Reduced from 56px */
+}
+
+.location-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px; /* Reduced from 29px */
+  color: #000;
+}
+
+.category-badge {
+  background: rgba(13, 66, 155, 0.1);
+  color: #000;
+  padding: 8px 16px; /* Reduced from 12px 24px */
+  border-radius: 45px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px; /* Reduced from 29px */
+}
+
+.description {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 28px; /* Reduced from 36px */
+  line-height: 1.4;
+  color: #000;
+  margin-bottom: 48px; /* Reduced from 64px */
+}
+
+.feedback-btn {
+  background: #8b5cf6;
+  color: #fff;
+  border: none;
+  padding: 18px 36px; /* Reduced from 24px 48px */
+  border-radius: 20px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px; /* Reduced from 32px */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-btn:hover {
+  background: #7c3aed;
+}
+
+/* Timeline Card */
+.timeline-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px; /* Reduced from 32px */
+  margin-bottom: 24px; /* Reduced from 32px */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px; /* Constrain width */
+}
+
+.timeline-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 32px; /* Reduced from 50px */
+  text-align: center;
+  margin-bottom: 20px; /* Reduced from 32px */
+  color: #000;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Reduced from 24px */
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Reduced from 16px */
+  padding: 12px; /* Reduced from 16px */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-icon {
+  width: 32px; /* Reduced from 40px */
+  height: 32px; /* Reduced from 40px */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px; /* Added font size */
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.timeline-icon.created {
+  background: #10b981;
+}
+
+.timeline-icon.approved {
+  background: #3b82f6;
+}
+
+.timeline-icon.end {
+  background: #f59e0b;
+}
+
+.timeline-icon.pending {
+  background: #6b7280;
+}
+
+.timeline-details {
+  flex: 1;
+}
+
+.timeline-label {
+  font-weight: 600;
+  font-size: 16px; /* Reduced from 18px */
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.timeline-date {
+  font-size: 14px; /* Reduced from 16px */
+  color: #6b7280;
+}
+
+/* Progress Section */
+.progress-section {
+  margin-bottom: 32px; /* Increased margin for spacing */
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Reduced from 16px */
+  margin-bottom: 20px; /* Reduced from 24px */
+}
+
+.progress-bar {
+  flex: 1;
+  height: 14px; /* Reduced from 17px */
+  background: #e5e7eb;
+  border-radius: 38px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 38px;
+  transition: width 0.3s ease;
+}
+
+.tick-icon {
+  width: 36px; /* Reduced from 49px */
+  height: 36px; /* Reduced from 51px */
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.progress-amounts {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px; /* Reduced from 44px */
+}
+
+.progress-amounts .label {
+  font-weight: 600;
+}
+
+.progress-amounts .amount {
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.status-btn {
+  background: #0d429b;
+  color: #fff;
+  border: none;
+  padding: 20px 32px; /* Reduced from 32px 48px */
+  border-radius: 50px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 28px; /* Reduced from 45px */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.status-btn:hover {
+  background: rgba(13, 66, 155, 0.9);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px; /* Reduced from 24px */
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px; /* Reduced from 16px */
+  padding: 16px 24px; /* Reduced from 24px 32px */
+  border: none;
+  border-radius: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px; /* Reduced from 32px */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 1px 2px 0px rgba(255, 255, 255, 0.3);
+  width: 180px; /* Reduced from 270px */
+  height: 60px; /* Reduced from 84px */
+}
+
+.action-btn.delete {
+  background: #ef4444;
+  color: #fff;
+}
+
+.action-btn.delete:hover {
+  background: #dc2626;
+}
+
+.action-btn.edit {
+  background: #8b5cf6;
+  color: #fff;
+}
+
+.action-btn.edit:hover {
+  background: #7c3aed;
+}
+
+.action-icon {
+  width: 24px; /* Reduced from 40px */
+  height: 24px; /* Reduced from 40px */
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    padding: 50px 40px;
+  }
+  
+  .right-column {
+    width: 450px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+  
+  .right-column {
+    width: 100%;
+  }
+  
+  .page-title {
+    font-size: 36px;
+  }
+  
+  .navbar-content {
+    padding: 0 30px; /* Increased from 20px */
+  }
+  
+  .nav-links {
+    gap: 25px; /* Increased from 20px */
+  }
+  
+  .nav-links a {
+    font-size: 18px;
+    padding: 6px 10px; /* Added padding for tablet */
+  }
+  
+  .timeline-card {
+    max-width: 100%;
+  }
+  
+  .header {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 280px; /* Reduced for mobile */
+    margin-bottom: 20px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    top: 140px; /* Adjusted for smaller banner */
+  }
+  
+  .navbar {
+    padding: 20px 0; /* Increased from 15px */
+  }
+  
+  .navbar-bg {
+    height: 80px; /* Increased from 70px */
+  }
+  
+  .navbar-content {
+    height: 80px; /* Increased from 70px */
+    padding: 0 25px; /* Increased from 20px */
+  }
+  
+  .logo {
+    width: 90px;
+    height: 90px;
+    top: -5px; /* Adjusted */
+  }
+  
+  .back-button {
+    left: 100px; /* Adjusted for increased padding */
+    font-size: 14px;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+  
+  .user-section {
+    right: 25px; /* Adjusted for increased padding */
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .logout-btn {
+    font-size: 12px;
+    padding: 6px 14px; /* Increased padding */
+  }
+  
+  .location-category {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .location-text,
+  .category-badge {
+    font-size: 18px;
+  }
+  
+  .description {
+    font-size: 20px;
+  }
+  
+  .feedback-btn {
+    font-size: 18px;
+    padding: 14px 28px;
+  }
+  
+  .timeline-title {
+    font-size: 24px;
+  }
+  
+  .progress-amounts {
+    font-size: 20px;
+  }
+  
+  .status-btn {
+    font-size: 20px;
+    padding: 16px 24px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 250px;
+    font-size: 18px;
+    height: 50px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .footer-logo-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .footer-brand {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .page-title {
+    font-size: 24px;
+    padding: 0 20px;
+  }
+  
+  .main-content {
+    padding: 24px 16px;
+  }
+  
+  .description {
+    font-size: 18px;
+  }
+  
+  .timeline-content {
+    gap: 12px;
+  }
+  
+  .timeline-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .progress-amounts {
+    font-size: 18px;
+  }
+  
+  .status-btn {
+    font-size: 18px;
+    width: 100%;
+  }
+  
+  .timeline-card {
+    padding: 16px;
+  }
+  
+  .header {
+    margin-bottom: 16px;
+  }
+  
+  .navbar-content {
+    padding: 0 20px;
+  }
+}

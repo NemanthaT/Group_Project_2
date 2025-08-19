@@ -40,7 +40,7 @@ const HomeScreen = () => {
     const programs = [
     {
         id: 1,
-        title: 'Food Distribution',
+        title: 'Child Care Renovation',
         target: '$50,000',
         raised: '$5,000',
         progress: '40%',
@@ -48,7 +48,7 @@ const HomeScreen = () => {
     },
     {
         id: 2,
-        title: 'School Supplies',
+        title: 'Elderly Care Support',
         target: '$10,000',
         raised: '$5,000',
         progress: '70%',
@@ -104,8 +104,20 @@ const HomeScreen = () => {
         <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
-        {programs.map((item) => (
-            <View key={item.id} style={homeStyles.programCard}>
+         {programs.map((item) => (
+        <TouchableOpacity 
+          key={item.id} 
+          style={homeStyles.programCard}
+          onPress={() => navigation.navigate('requestview_ind', {
+            programId: item.id,
+            programTitle: item.title,
+            programTarget: item.target,
+            programRaised: item.raised,
+            programProgress: item.progress,
+            programImage: item.image
+          })}
+          activeOpacity={0.8}
+    >
             
             {/* Image */}
             <Image
@@ -121,7 +133,7 @@ const HomeScreen = () => {
             <View style={homeStyles.progressBarContainer}>
                 <View style={[homeStyles.progressBarFill, { width: item.progress }]} />
             </View>
-            </View>
+          </TouchableOpacity>
         ))}
 </ScrollView>
 
