@@ -269,16 +269,24 @@ async function getNonMonetaryDonationCategories() {
   }
 }
 
-// Get a single donation by ID
+//getDonationById function:
 async function getDonationById(id) {
   try {
     const result = await pool.query(
-      `SELECT dr.*, dc.category_name AS category FROM donation_requests dr LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id WHERE dr.request_id = $1`,
+      `SELECT 
+        dr.*, 
+        dc.category_name AS category,
+        (SELECT COUNT(DISTINCT donor_id) FROM donations WHERE request_id = dr.request_id) AS donor_count
+       FROM donation_requests dr 
+       LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+       WHERE dr.request_id = $1`,
       [id]
     );
+    
     if (result.rows.length === 0) {
       return { success: false, message: "Donation not found" };
     }
+    
     return { success: true, donation: result.rows[0] };
   } catch (err) {
     console.error("Database error during getDonationById():", err);
@@ -370,13 +378,20 @@ async function getRecentDonations() {
 }
 
 // Add donation amount to a donation
-async function addDonationAmount(id, amount) {
+async function addDonationAmount(id, amount, donorId) {
   try {
     // Get current received amount
     const result = await pool.query(
       'SELECT quantity_received FROM donation_requests WHERE request_id = $1',
       [id]
     );
+    // Update the donation
+    console.log('Adding donation amount:', { id, donorId, amount });
+    await pool.query(
+      'INSERT INTO donations (request_id, donor_id, amount) VALUES ($1, $2, $3)',
+      [id, donorId, amount]
+    );
+
     if (result.rows.length === 0) {
       return { success: false, message: 'Donation not found' };
     }
@@ -393,6 +408,95 @@ async function addDonationAmount(id, amount) {
   }
 }
 
+// Get active donations with pagination
+async function getActiveDonations(page = 1, limit = 6) {
+  try {
+    const offset = (page - 1) * limit;
+    
+    // Get total count for pagination
+    const countResult = await pool.query(`
+      SELECT COUNT(*) as total
+      FROM donation_requests dr
+      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+      WHERE dr.status = 'active'
+    `);
+    
+    const total = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(total / limit);
+    
+    // Get donations with pagination
+    const result = await pool.query(`
+      SELECT dr.*, dc.category_name AS category
+      FROM donation_requests dr
+      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+      WHERE dr.status = 'active'
+      ORDER BY dr.created_at DESC NULLS LAST, dr.request_id DESC
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+    
+    return { 
+      success: true, 
+      donations: result.rows,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
+  } catch (err) {
+    console.error("Database error during getActiveDonations():", err);
+    return { success: false, message: "Database error" };
+  }
+}
+
+// Get aggregated stats for hero section and dashboard
+async function getDonationStats() {
+  try {
+    // Total raised across all donations
+    const totalRes = await pool.query(
+      'SELECT COALESCE(SUM(amount), 0) AS total_raised FROM donations'
+    );
+
+    // Raised this month
+    const monthRes = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) AS raised_this_month
+       FROM donations
+       WHERE date_trunc('month', donation_date) = date_trunc('month', current_date)`
+    );
+
+    // Number of unique donors
+    const donorsRes = await pool.query(
+      'SELECT COUNT(DISTINCT donor_id) AS active_donors FROM donors'
+    );
+
+    // Active campaigns (donation requests with status = 'active')
+    const campaignsRes = await pool.query(
+      "SELECT COUNT(*) AS active_campaigns FROM donation_requests WHERE status = 'active'"
+    );
+
+    // Lives impacted: use number of distinct donees that have received > 0 (proxy)
+    const livesRes = await pool.query(
+      'SELECT COUNT(DISTINCT donee_id) AS lives_impacted FROM donation_requests WHERE COALESCE(quantity_received,0) > 0'
+    );
+
+    const stats = {
+      totalRaised: Number(totalRes.rows[0].total_raised) || 0,
+      raisedThisMonth: Number(monthRes.rows[0].raised_this_month) || 0,
+      activeDonors: Number(donorsRes.rows[0].active_donors) || 0,
+      activeCampaigns: Number(campaignsRes.rows[0].active_campaigns) || 0,
+      livesImpacted: Number(livesRes.rows[0].lives_impacted) || 0,
+    };
+
+    return { success: true, stats };
+  } catch (err) {
+    console.error('Database error during getDonationStats():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export {
   createMonetoryDonation,
   createNonMonetoryDonation,
@@ -404,4 +508,6 @@ export {
   deleteDonationById,
   getRecentDonations,
   addDonationAmount,
+  getActiveDonations,
+  getDonationStats
 };

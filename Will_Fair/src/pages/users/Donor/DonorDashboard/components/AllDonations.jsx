@@ -1,44 +1,72 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Calendar, ArrowRight } from 'lucide-react';
-import './RecentDonationRequests.css';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./AllDonations.css";
 
-const RecentDonationRequests = () => {
+const AllDonations = ({ user }) => {
+  const navigate = useNavigate();
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    hasNext: false,
+    hasPrev: false,
+  });
+
+  const fetchDonations = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `http://localhost:5000/donations/active?page=${page}&limit=6`
+      );
+      if (response.data.success) {
+        setDonations(response.data.donations);
+        setPagination(response.data.pagination);
+      } else {
+        setError("Failed to fetch donations");
+      }
+    } catch (err) {
+      setError("Failed to fetch donations");
+      console.error("Error fetching donations:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRecentDonations = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/donations/recent');
-        setDonations(response.data.donations);
-      } catch {
-        setError('Failed to fetch recent donations');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRecentDonations();
+    fetchDonations(1);
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchDonations(newPage);
+    }
+  };
+
+  if (loading) return <div className="loading">Loading donations...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
-    <section className="section">
-      <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">Recent Donation Requests</h2>
-          <button className="btn btn-outline" onClick={() => navigate('/users/donor/all-donations')}>
-            View All Requests
-            <ArrowRight className="icon" />
-          </button>
+    <div className="all-donations-container">
+      <div className="all-donations-header">
+        <h1>All Active Donations</h1>
+        <p>
+          Help make a difference by supporting these active donation campaigns
+        </p>
+      </div>
+
+      {donations.length === 0 ? (
+        <div className="no-donations">
+          <p>No active donations found at the moment.</p>
         </div>
-        
-        <div className="donation-grid">
+      ) : (
+        <>
+                  <div className="donation-grid">
           {donations.map(donation => (
             <div key={donation.request_id} className="donation-card card">
               <div className="donation-image">
@@ -83,9 +111,39 @@ const RecentDonationRequests = () => {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+
+          {pagination.totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="pagination-btn prev"
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={!pagination.hasPrev}
+              >
+                Previous
+              </button>
+
+              <div className="pagination-info">
+                <span>
+                  Page {pagination.currentPage} of {pagination.totalPages}
+                </span>
+                <span className="total-items">
+                  ({pagination.totalItems} total donations)
+                </span>
+              </div>
+
+              <button
+                className="pagination-btn next"
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={!pagination.hasNext}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 };
 
-export default RecentDonationRequests;
+export default AllDonations;

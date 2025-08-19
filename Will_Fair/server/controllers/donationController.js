@@ -4,10 +4,9 @@ import {
   getDonationsByDoneeId,
   getMonetaryDonationCategories,
   getNonMonetaryDonationCategories,
-  getDonationById,
-  updateDonationById,
   deleteDonationById,
-  getRecentDonations
+  getRecentDonations,
+  getDonationById
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -231,5 +230,76 @@ export const getRecentDonationsController = async (req, res) => {
     }
   } catch {
     res.status(500).json({ success: false, error: 'Server error while fetching recent donations' });
+  }
+};
+
+// Controller for getting active donations with pagination
+export const getActiveDonationsController = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    
+    const result = await import('../models/donationModel.js').then(m => m.getActiveDonations(page, limit));
+    if (result.success) {
+      res.status(200).json({ 
+        success: true, 
+        donations: result.donations,
+        pagination: result.pagination
+      });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error("Error in getActiveDonationsController:", err);
+    res.status(500).json({ success: false, error: 'Server error while fetching active donations' });
+  }
+};
+
+// New controller to provide donation stats for HeroSection
+export const getDonationStatsController = async (req, res) => {
+  try {
+    const result = await import('../models/donationModel.js').then(m => m.getDonationStats());
+    if (result.success) {
+      res.status(200).json({ success: true, stats: result.stats });
+    } else {
+      res.status(400).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error('Error in getDonationStatsController:', err);
+    res.status(500).json({ success: false, error: 'Server error while fetching stats' });
+  }
+};
+
+export const getDonationByIdController = async (req, res) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      error: "Donation ID is required"
+    });
+  }
+
+  try {
+    const result = await getDonationById(id);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        donation: result.donation,
+        recentDonations: result.recentDonations || [] 
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: result.message
+      });
+    }
+  } catch (err) {
+    console.error("Error in getDonationByIdController:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching donation details"
+    });
   }
 };

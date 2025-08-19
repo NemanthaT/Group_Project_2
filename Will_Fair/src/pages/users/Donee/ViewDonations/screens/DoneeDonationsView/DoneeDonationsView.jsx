@@ -22,7 +22,7 @@ function DoneeDonationsView({ user }) {
   // Monetary categories
   const monetaryCategories = [
     'Education Support',
-    'HealthCare and Medical Aid',
+    'Healthcare and Medical Aid',
     'Basic Needs and Essentials',
     'Disaster and Crisis Relief',
     'Children and Orphan Care'
