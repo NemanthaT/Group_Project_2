@@ -53,7 +53,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Attempting donee login...');
       
       // FIXED: Use donee_login endpoint and send contactno
-      const response = await fetch('http://192.168.182.72:5000/api/donee_login', {
+      const response = await fetch('http:// 192.168.197.72:5000/api/donee_login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,6 +141,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
               <View style={styles.divider} />
 
               {/* Phone Input - CHANGED from Email */}
+            {errors.contactno && <Text style={styles.errorText}>{errors.contactno}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="call-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -157,9 +158,9 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
                   keyboardType="phone-pad"
                 />
               </View>
-              {errors.contactno && <Text style={styles.errorText}>{errors.contactno}</Text>}
 
               {/* Password Input */}
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
@@ -184,7 +185,6 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
                   />
                 </TouchableOpacity>
               </View>
-              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
               {/* Login button */}
               <View style={styles.buttonsContainer}>

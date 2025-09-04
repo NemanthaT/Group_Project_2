@@ -369,6 +369,208 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
+
+// Individual Volunteer Registration Endpoint (Uses Phone)
+app.post('/api/volunteer_ind_reg', upload.single('proofDocument'), async (req, res) => {
+  try {
+    console.log('=== Individual Volunteer Registration ===');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
+    
+    const { fullName, email, password, category } = req.body;
+    if (!fullName || !category || !email || !password) {
+      console.log('Missing required fields');
+      return res.status(400).json({ 
+        message: 'All fields are required',
+        received: { 
+          fullName: !!fullName, 
+          category: !!category,
+          email: !!email, 
+          password: !!password 
+        }
+      });
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      console.log('Invalid email address:', email);
+      return res.status(400).json({ 
+        message: 'Please enter a valid email address' 
+      });
+    }
+
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    console.log('Parsed names:', { firstName, lastName });
+
+    const existingUser = await pool.query(
+      'SELECT phone FROM volunteers WHERE phone = $1',
+      [contactno]
+    );
+
+    if (existingUser.rows.length > 0) {
+      console.log('Email already exists:', email);
+      return res.status(400).json({ 
+        message: 'Email already registered' 
+      });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Password hashed successfully');
+    
+    const documentPath = req.file ? req.file.path : null;
+    console.log('Document path:', documentPath);
+    
+    const result = await pool.query(
+      'INSERT INTO volunteers (password_hash, first_name, last_name, email, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING volunteer_id',
+      [hashedPassword, firstName, lastName, email, category, 'individual', documentPath]
+    );
+    
+    console.log('Database insert successful:', result.rows[0]);
+    
+    res.status(201).json({ 
+      message: 'Individual volunteer created successfully', 
+      volunteerId: result.rows[0].volunteer_id,
+      documentUploaded: !!req.file
+    });
+    
+  } catch (error) {
+    console.error('Individual volunteer registration error:', error);
+    res.status(500).json({ 
+      message: 'Server error',
+      error: error.message 
+    });
+  }
+});
+
+// Representative Volunteer Registration Endpoint (Uses Email - FIXED)
+app.post('/api/volunteer_rep_reg', upload.single('proofDocument'), async (req, res) => {
+  try {
+    console.log('=== Individual Volunteer Registration ===');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
+    
+    const { fullName, email, password, category } = req.body;
+
+    if (!fullName || !category || !email || !password) {
+      console.log('Missing required fields');
+      return res.status(400).json({ 
+        message: 'All fields are required',
+        received: { 
+          fullName: !!fullName, 
+          category: !!category,
+          email: !!email, 
+          password: !!password 
+        }
+      });
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      console.log('Invalid email address:', email);
+      return res.status(400).json({ 
+        message: 'Please enter a valid email address' 
+      });
+    }
+
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    console.log('Parsed names:', { firstName, lastName });
+
+    const existingUser = await pool.query(
+      'SELECT phone FROM volunteers WHERE phone = $1',
+      [contactno]
+    );
+
+    if (existingUser.rows.length > 0) {
+      console.log('Email already exists:', email);
+      return res.status(400).json({ 
+        message: 'Email already registered' 
+      });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Password hashed successfully');
+    
+    const documentPath = req.file ? req.file.path : null;
+    console.log('Document path:', documentPath);
+    
+    const result = await pool.query(
+      'INSERT INTO volunteers (password_hash, first_name, last_name, email, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING donee_id',
+      [hashedPassword, firstName, lastName, email, category, 'representative', documentPath]
+    );
+    
+    console.log('Database insert successful:', result.rows[0]);
+    
+    res.status(201).json({ 
+      message: 'Representative volunteer created successfully', 
+      volunteerId: result.rows[0].volunteer_id,
+      documentUploaded: !!req.file
+    });
+    
+  } catch (error) {
+    console.error('Representative volunteer registration error:', error);
+    res.status(500).json({ 
+      message: 'Server error',
+      error: error.message 
+    });
+  }
+});
+
+
+// Volunteer Login endpoint (Email-based)
+app.post('/api/volunteer_login', async (req, res) => {
+  try {
+    console.log('Volunteer login request received:', req.body);
+
+    const { email, password } = req.body;
+    
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ 
+        message: 'Email and password are required'
+      });
+    }
+
+    // Check if user exists in database
+    const userResult = await pool.query(
+      'SELECT volunteer_id, email, password_hash, first_name, last_name FROM volunteers WHERE email = $1',
+      [email.toLowerCase()]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Compare password with hashed password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Login successful
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        id: user.volunteer_id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+    });
+
+  } catch (error) {
+    console.error('Volunteer login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Replace the entire server startup section (from line 400 onwards) with this:
 
 // =================== ERROR HANDLING ===================
@@ -402,6 +604,9 @@ app.listen(PORT, () => {
   console.log(`  🏢 POST http://localhost:${PORT}/api/donee_rep_reg`);
   console.log(`  🔐 POST http://localhost:${PORT}/api/donee_login`);
   console.log(`  🔑 POST http://localhost:${PORT}/api/login`);
+  console.log(`  👤 POST http://localhost:${PORT}/api/volunteer_ind_reg`);
+  console.log(`  🏢 POST http://localhost:${PORT}/api/volunteer_rep_reg`);
+  console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
   

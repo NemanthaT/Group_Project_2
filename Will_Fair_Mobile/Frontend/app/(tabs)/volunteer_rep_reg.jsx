@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../assets/styles/donorreg.styles';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
 import BackButton from '../components/backbutton'
 
-const Donor = ({ visible, onClose, onLoginPress }) => {
+
+const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,13 +19,25 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
   const [secureConfirm, setSecureConfirm] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const [proofDocument, setProofDocument] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Validation functions
+   // Add category state
+    const [category, setCategory] = useState('');
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  
+    // Category options
+    const categoryOptions = [
+      'child care',
+      'elder care',
+      'education',
+      'healthcare',
+    ];
+
+// Validation functions
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return /^\S+@\S+\.\S+$/.test(email);
   };
 
   const validatePassword = (password) => {
@@ -38,6 +52,12 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
       newErrors.fullName = 'Full name is required';
     } else if (fullName.trim().length < 2) {
       newErrors.fullName = 'Full name must be at least 2 characters';
+    }
+
+    
+    // Category validation
+    if (!category) {
+      newErrors.category = 'Please select a category';
     }
 
     // Email validation
@@ -61,6 +81,11 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+       // Proof Document validation (REQUIRED)
+    if (!proofDocument) {
+      newErrors.proofDocument = 'Proof document is required';
+    }
+
     // Terms agreement validation
     if (!agreed) {
       newErrors.agreed = 'You must agree to terms and conditions';
@@ -70,56 +95,105 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-// Submit to database
-const handleSubmit = async () => {
-  if (!validateForm()) {
-    Alert.alert('Validation Error', 'Please fix the errors before submitting');
-    return;
-  }
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/pdf', 'image/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setProofDocument(result.assets[0]);
 
-  setLoading(true);
-  try {
-    const response = await fetch('http:// 192.168.197.72:5000/api/donor_reg', {
+        if (errors.proofDocument) {
+        setErrors(prev => ({ ...prev, proofDocument: null }));
+      }
+      }
+    } catch (error) {
+      console.log('Document pick error:', error);
+      Alert.alert('Error', 'Failed to pick document');
+    }
+  };
+
+  // Submit to database
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      Alert.alert('Validation Error', 'Please fix the errors before submitting');
+      return;
+    }
+
+    setLoading(true);
+    try {
+    const formData = new FormData();
+    formData.append('fullName', fullName.trim());
+    formData.append('category', category); // ADD THIS LINE - This was missing!
+    formData.append('email', email.trim());
+    formData.append('password', password);
+      
+// Append document if selected (optional for individual)
+    if (proofDocument) {
+      formData.append('proofDocument', {
+        uri: proofDocument.uri,
+        type: proofDocument.mimeType || 'application/octet-stream',
+        name: proofDocument.name || 'document'
+      });
+    }
+
+    console.log('Submitting form data...');
+    console.log('Category being sent:', category); // ADD THIS DEBUG LOG
+
+    const response = await fetch('http:// 192.168.197.72:5000/api/donee_rep_reg', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fullName: fullName.trim(),
-        email: email.trim().toLowerCase(),
-        password: password
-      }),
+      // REMOVED: Don't set Content-Type for FormData
+      body: formData,
     });
 
-    const data = await response.json();
+    console.log('Response status:', response.status);
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      console.log('Non-JSON response:', textResponse);
+      Alert.alert('Server Error', 'Server returned an unexpected response');
+      return;
+    }
 
-    if (response.ok) {
-      Alert.alert('Success', 'Account created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Clear form
-            setFullName('');
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-            setAgreed(false);
-            setErrors({});
-            // Navigate to login or close modal
-            navigation.navigate('login');
-          }
+    const data = await response.json();
+    console.log('Response data:', data);
+
+  if (response.ok) {
+    Alert.alert('Success', 'Representative donee account created successfully!', [
+      {
+        text: 'OK',
+        onPress: () => {
+          // Clear form
+          setFullName('');
+          setCategory('');
+          setShowCategoryDropdown(false);
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setProofDocument(''); 
+          setAgreed(false);
+          setErrors({});
+          // Navigate to login
+          navigation.navigate('donee_login');
         }
-      ]);
+      }
+    ]);
     } else {
       Alert.alert('Error', data.message || 'Registration failed');
     }
   } catch (error) {
     console.error('Registration error:', error);
-    Alert.alert('Error', 'Network error. Please try again.');
+    Alert.alert('Error', 'Network error. Please check your connection and backend server.');
   } finally {
     setLoading(false);
   }
 };
+
 
   return (
     <Modal
@@ -138,6 +212,7 @@ const handleSubmit = async () => {
           <View style={styles.container}>
             <View style={styles.card}>
               <BackButton />
+
               {/* Logo */}
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>
@@ -157,6 +232,18 @@ const handleSubmit = async () => {
 
               {/* Divider */}
               <View style={styles.divider} />
+              
+              {/* Support Tabs */}
+              <View style={styles.toggleContainer}>
+                <TouchableOpacity style={styles.toggleButton}
+                onPress={() => navigation.navigate("volunteer_ind_reg")}>
+                  <Text style={styles.toggleText}>Individual</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.toggleButton, styles.activeToggleButton]}
+                onPress={() => navigation.navigate("volunteer_rep_reg")}>
+                  <Text style={styles.activeToggleText}>Representative</Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Full Name Input */}
               {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
@@ -176,10 +263,69 @@ const handleSubmit = async () => {
                 />
               </View>
 
+              
+              {/* Category Dropdown */}
+              {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="list-outline" size={20} color="#999" style={styles.icon} />
+                <TouchableOpacity
+                  style={[styles.input, errors.category && { borderColor: 'red' }]}
+                  onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                >
+                  <Text style={[styles.input, { color: category ? '#000' : '#999' }]}>
+                    {category || 'Select Category'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}>
+                  <Ionicons
+                    name={showCategoryDropdown ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="#999"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
+
+             {/* Category Dropdown Options */}
+          {showCategoryDropdown && (
+            <View style={styles.dropdownContainer}>
+              <ScrollView 
+                style={{ maxHeight: 200 }}
+                showsVerticalScrollIndicator={true}
+                nestedScrollEnabled={true}
+              >
+                {categoryOptions.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dropdownOption,
+                      category === option && styles.selectedOption
+                    ]}
+                    onPress={() => {
+                      setCategory(option);
+                      setShowCategoryDropdown(false);
+                      if (errors.category) {
+                        setErrors(prev => ({ ...prev, category: null }));
+                      }
+                    }}
+                  >
+                    <Text style={[
+                      styles.dropdownOptionText,
+                      category === option && styles.selectedOptionText
+                    ]}>
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+
               {/* Email Input */}
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
               <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={20} color="#999" style={styles.icon} />
+                <Ionicons name="call-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
                   placeholder="Email"
                   style={[styles.input, errors.email && { borderColor: 'red' }]}
@@ -192,7 +338,6 @@ const handleSubmit = async () => {
                     }
                   }}
                   keyboardType="email-address"
-                  autoCapitalize="none"
                 />
               </View>
 
@@ -213,7 +358,6 @@ const handleSubmit = async () => {
                     }
                   }}
                 />
-                
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
                   <Ionicons
                     name={secure ? 'eye-off-outline' : 'eye-outline'}
@@ -251,6 +395,25 @@ const handleSubmit = async () => {
                 </TouchableOpacity>
               </View>
 
+             {/* Document Upload (REQUIRED) */}
+              {errors.proofDocument && <Text style={styles.errorText}>{errors.proofDocument}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="document-outline" size={20} color="#999" style={styles.icon} />
+                <TouchableOpacity 
+                  onPress={pickDocument} 
+                  style={[styles.input, errors.proofDocument && { borderColor: 'red' }]}
+                >
+                  <Text
+                    style={[
+                      styles.documentText,
+                      { color: proofDocument ? '#000' : '#999' },
+                    ]}
+                  >
+                    {proofDocument ? proofDocument.name : 'Upload Proof Document *'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
               {/* Terms & Conditions Checkbox */}
               {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
               <View style={styles.checkboxContainer}>
@@ -270,11 +433,11 @@ const handleSubmit = async () => {
                 </Text>
               </View>
 
-              {/* Sign Up Button */}
+              {/* Sign Up Button (CHANGED) */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.loginButton, loading && { opacity: 0.6 }]}
-                  onPress={handleSubmit}
+                  onPress={handleSubmit} // Changed from navigation.navigate('login')
                   activeOpacity={0.8}
                   disabled={loading}
                 >
@@ -292,7 +455,7 @@ const handleSubmit = async () => {
               {/* Login Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('login')}
+                onPress={() => navigation.navigate('volunteer_login')} 
               >
                 <Text style={styles.loginText}>
                   Already have an account?
@@ -307,4 +470,4 @@ const handleSubmit = async () => {
   );
 };
 
-export default Donor;
+export default VolunteerOrg;
