@@ -138,7 +138,7 @@ async function createNonMonetoryDonation(donationData) {
       [
         donationData.doneeId,
         categoryId,
-        donationData.targetAmount,
+        donationData.itemQuantity,
         donationData.requestName,
         donationData.description,
         donationData.dropoffDate,

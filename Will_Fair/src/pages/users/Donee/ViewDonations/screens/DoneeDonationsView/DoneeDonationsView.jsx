@@ -73,7 +73,7 @@ function DoneeDonationsView({ user }) {
     // Type filter
     if (typeFilter !== 'all') {
       typeMatch = (typeFilter === 'monetary' && card.type === 'Monetary') ||
-                  (typeFilter === 'non-monetary' && card.type === 'NonMonetary');
+                  (typeFilter === 'non-monetary' && card.type === 'Non Monetary');
     }
     
     // Status filter
