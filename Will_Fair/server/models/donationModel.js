@@ -44,39 +44,43 @@ async function createMonetoryDonation(donationData) {
     // Handle file storage if files exist (match donee model logic)
     let imagePath = null;
     let documentPath = null;
+    const donationDir = path.join("uploads", "donations", donationId.toString());
+    if (!fs.existsSync(donationDir)) {
+      fs.mkdirSync(donationDir, { recursive: true });
+    }
+
+    // Image: can be a temp filepath string or a multer file object
     if (donationData.imagePath) {
-      const donationDir = path.join(
-        "uploads",
-        "donations",
-        donationId.toString()
-      );
-      if (!fs.existsSync(donationDir)) {
-        fs.mkdirSync(donationDir, { recursive: true });
-      }
       if (typeof donationData.imagePath === 'string') {
         const ext = path.extname(donationData.imagePath);
         const newImagePath = path.join(donationDir, `image${ext}`);
-        fs.renameSync(donationData.imagePath, newImagePath);
-        imagePath = newImagePath;
+        try { fs.renameSync(donationData.imagePath, newImagePath); imagePath = newImagePath; } catch (e) { console.error('Failed moving image file:', e); }
+      } else if (donationData.imagePath.path && donationData.imagePath.originalname) {
+        const ext = path.extname(donationData.imagePath.originalname);
+        const newImagePath = path.join(donationDir, `image${ext}`);
+        try { fs.renameSync(donationData.imagePath.path, newImagePath); imagePath = newImagePath; } catch (e) { console.error('Failed moving image file:', e); }
       }
     }
+
+    // Documents: donationData.documentPaths may be an array of multer file objects
     const proofDoc = donationData.documentPaths;
-    const file = proofDoc[0];
-    if (file && file.path && file.originalname) {
-      const donationDir = path.join(
-        "uploads",
-        "donations",
-        donationId.toString()
-      );
-      if (!fs.existsSync(donationDir)) {
-        fs.mkdirSync(donationDir, { recursive: true });
+    if (Array.isArray(proofDoc) && proofDoc.length > 0) {
+      const file = proofDoc[0];
+      if (file && file.path && file.originalname) {
+        const fileExt = path.extname(file.originalname);
+        const fileName = `proof${fileExt}`;
+        documentPath = path.join(donationDir, fileName);
+        try { fs.renameSync(file.path, documentPath); console.log("Proof Doc path after: ", documentPath); } catch (e) { console.error('Failed moving document file:', e); }
       }
-      const fileExt = path.extname(file.originalname);
+    } else if (proofDoc && proofDoc.path) {
+      // single file object
+      const file = proofDoc;
+      const fileExt = path.extname(file.originalname || '');
       const fileName = `proof${fileExt}`;
       documentPath = path.join(donationDir, fileName);
-      fs.renameSync(file.path, documentPath);
-      console.log("Proof Doc path after: ", documentPath);
+      try { fs.renameSync(file.path, documentPath); console.log("Proof Doc path after: ", documentPath); } catch (e) { console.error('Failed moving document file:', e); }
     }
+
     // If no image uploaded, use category's default image_path
     if (!imagePath) {
       const categoryImageResult = await pool.query(
@@ -121,71 +125,68 @@ async function createNonMonetoryDonation(donationData) {
     const categoryId = categoryResult.rows[0].category_id;
     const result = await pool.query(
       `INSERT INTO donation_requests (
-        donee_id, 
+        donee_id,
         category_id, 
-        request_name, 
-        description, 
         quantity_needed, 
-        dropoff_date, 
-        image_path, 
-        document_paths, 
-        status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        title,
+        description, 
+        due_date,  
+        status,
+        type
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING request_id`,
       [
         donationData.doneeId,
         categoryId,
+        donationData.targetAmount,
         donationData.requestName,
         donationData.description,
-        donationData.targetAmount,
         donationData.dropoffDate,
-        null, // image_path
-        null, // document_paths
         donationData.status,
+        "Non Monetary",
       ]
     );
     const donationId = result.rows[0].request_id;
     // Handle file storage if files exist
     let imagePath = null;
     let documentPath = null;
+    const donationDir = path.join("uploads", "donations", donationId.toString());
+    if (!fs.existsSync(donationDir)) {
+      fs.mkdirSync(donationDir, { recursive: true });
+    }
+
+    // Image: can be a temp filepath string or a multer file object
     if (donationData.imagePath) {
-      const donationDir = path.join(
-        "uploads",
-        "donations",
-        donationId.toString()
-      );
-      if (!fs.existsSync(donationDir)) {
-        fs.mkdirSync(donationDir, { recursive: true });
-      }
-      const ext = path.extname(donationData.imagePath);
-      const newImagePath = path.join(donationDir, `image${ext}`);
-      fs.renameSync(donationData.imagePath, newImagePath);
-      imagePath = newImagePath;
-    }
-    if (donationData.documentPaths) {
-      const donationDir = path.join(
-        "uploads",
-        "donations",
-        donationId.toString()
-      );
-      if (!fs.existsSync(donationDir)) {
-        fs.mkdirSync(donationDir, { recursive: true });
-      }
-      let docPath = null;
-      if (Array.isArray(donationData.documentPaths)) {
-        docPath = donationData.documentPaths[0];
-      } else if (typeof donationData.documentPaths === "string") {
-        docPath = donationData.documentPaths;
-      } else if (donationData.documentPaths.path) {
-        docPath = donationData.documentPaths.path;
-      }
-      if (docPath && typeof docPath === "string") {
-        const ext = path.extname(docPath);
-        const newDocPath = path.join(donationDir, `document${ext}`);
-        fs.renameSync(docPath, newDocPath);
-        documentPath = newDocPath;
+      if (typeof donationData.imagePath === 'string') {
+        const ext = path.extname(donationData.imagePath);
+        const newImagePath = path.join(donationDir, `image${ext}`);
+        try { fs.renameSync(donationData.imagePath, newImagePath); imagePath = newImagePath; } catch (e) { console.error('Failed moving image file:', e); }
+      } else if (donationData.imagePath.path && donationData.imagePath.originalname) {
+        const ext = path.extname(donationData.imagePath.originalname);
+        const newImagePath = path.join(donationDir, `image${ext}`);
+        try { fs.renameSync(donationData.imagePath.path, newImagePath); imagePath = newImagePath; } catch (e) { console.error('Failed moving image file:', e); }
       }
     }
+
+    // Documents: donationData.documentPaths may be an array of multer file objects
+    const proofDoc = donationData.documentPaths;
+    if (Array.isArray(proofDoc) && proofDoc.length > 0) {
+      const file = proofDoc[0];
+      if (file && file.path && file.originalname) {
+        const fileExt = path.extname(file.originalname);
+        const fileName = `proof${fileExt}`;
+        documentPath = path.join(donationDir, fileName);
+        try { fs.renameSync(file.path, documentPath); console.log("Proof Doc path after: ", documentPath); } catch (e) { console.error('Failed moving document file:', e); }
+      }
+    } else if (proofDoc && proofDoc.path) {
+      // single file object
+      const file = proofDoc;
+      const fileExt = path.extname(file.originalname || '');
+      const fileName = `proof${fileExt}`;
+      documentPath = path.join(donationDir, fileName);
+      try { fs.renameSync(file.path, documentPath); console.log("Proof Doc path after: ", documentPath); } catch (e) { console.error('Failed moving document file:', e); }
+    }
+
     // If no image uploaded, use category's default image_path
     if (!imagePath) {
       const categoryImageResult = await pool.query(

@@ -15,6 +15,8 @@ export default function MonetaryForm({ user }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [documentFiles, setDocumentFiles] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Non-monetary form fields
   const [itemName, setItemName] = useState("");
@@ -66,6 +68,13 @@ export default function MonetaryForm({ user }) {
   //subitting the form
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Require at least one proof document to be uploaded
+    if (documentFiles.length === 0) {
+      toast.error('Please upload a proof document (PDF).');
+      return;
+    }
+
     let formData = new FormData();
     formData.append("doneeId", user.id);
     formData.append("category", selectedCategory);
@@ -98,6 +107,11 @@ export default function MonetaryForm({ user }) {
       );
     }
 
+    // Append image file (single) if provided
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
     documentFiles.forEach((file) => formData.append("documents", file));
     console.log("Form Data:", formData);
 
@@ -122,6 +136,27 @@ export default function MonetaryForm({ user }) {
     // Filter for PDFs only
     const pdfFiles = files.filter((file) => file.type === "application/pdf");
     setDocumentFiles([...documentFiles, ...pdfFiles]);
+  };
+
+  // Image upload handler (single image)
+  const handleImageUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    // Basic image type validation
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload a valid image file for the request image.');
+      return;
+    }
+    setImageFile(file);
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    setImagePreview(url);
+  };
+
+  const removeImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    setImageFile(null);
   };
 
   const removeDocument = (index) => {
@@ -406,7 +441,30 @@ export default function MonetaryForm({ user }) {
               <h2 className="title">Request Image (optional)</h2>
 
               <div className="image-upload-card">
-                <button className="choose-file-button">Choose file</button>
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="imageUpload" className="choose-file-button">
+                  {imageFile ? 'Change image' : 'Choose file'}
+                </label>
+                <div style={{ marginTop: 12 }}>
+                  {imagePreview ? (
+                    <div className="image-preview">
+                      <img src={imagePreview} alt="preview" style={{ maxWidth: 300, borderRadius: 8 }} />
+                      <div>
+                        <button type="button" className="remove-document-button" onClick={removeImage}>
+                          Remove Image
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span style={{ color: 'rgba(0,0,0,0.6)' }}>No image selected</span>
+                  )}
+                </div>
               </div>
             </section>
 
