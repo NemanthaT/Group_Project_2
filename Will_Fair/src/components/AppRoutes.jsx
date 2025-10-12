@@ -1,13 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "../pages/landingPage/LandingPage";
-import FeaturedContent from "../pages/landingPage/FeaturedContent";
-import Reg from "../pages/signIn/Reg";
-import Marketplace from "../pages/MarketPlace/MarketPlace";
-import Users from "../pages/users/users";
-//import AuthManager from "../pages/AuthManager/AuthManager";
-import SellerDashboard from "../pages/SellerDashboard/SellerDashboard";
-import BuyerDashboard from "../pages/BuyerDashboard/BuyerDashboard";
-import AuthManagerDonationDetail from "../pages/users/AuthManager/AuthManagerDonationDetail";
+import LandingPage from "@/pages/landingPage/LandingPage";
+import FeaturedContent from "@/pages/landingPage/FeaturedContent";
+import Reg from "@/pages/signIn/Reg";
+import Marketplace from "@/pages/MarketPlace/MarketPlace";
+import Users from "@/pages/users/users";
+//import AuthManager from "@/pages/AuthManager/AuthManager";
+import SellerDashboard from "@/pages/SellerDashboard/SellerDashboard";
+import BuyerDashboard from "@/pages/BuyerDashboard/BuyerDashboard";
+import AuthManagerDonationDetail from "@/pages/users/AuthManager/AuthManagerDonationDetail";
 
 const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem('userData'));

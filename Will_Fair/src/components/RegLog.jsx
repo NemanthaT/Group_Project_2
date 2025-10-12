@@ -1,4 +1,5 @@
 import "./RegLog.css";
+import LogoImg from '@/assets/images/logo.png';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -81,7 +82,7 @@ export function LoginD() {
       <div className="login-container">
         <div className="flogo">
           <img
-            src="src/assets/images/logo.png"
+            src={LogoImg}
             alt="Logo"
             className="flogo-icon"
           />
@@ -386,7 +387,7 @@ export function LoginF() {
       <div className="login-container">
         <div className="flogo">
           <img
-            src="src/assets/images/logo.png"
+            src={LogoImg}
             alt="Logo"
             className="flogo-icon"
           />

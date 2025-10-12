@@ -1,4 +1,8 @@
 import "./LandingPage.css";
+import HomeBg from '@/assets/images/homeBg.jpeg';
+import CrowdImg from '@/assets/images/crowd.png';
+import HandsImg from '@/assets/images/hands.png';
+import LogoImg from '@/assets/images/logo.png';
 import { useNavigate } from "react-router-dom";
 import {MapPin, Phone, Mail} from "lucide-react";
 import { useState } from 'react';
@@ -56,7 +60,7 @@ function LandingPage() {
         <div className="bg-container">
           <img
             className="bg"
-            src="http://localhost:5173/src/assets/images/homeBg.jpeg"
+            src={HomeBg}
             alt="Hero Background"
           />
         </div>
@@ -207,7 +211,7 @@ function LandingPage() {
               >
                 <img
                   className="bg"
-                  src="src/assets/images/crowd.png"
+                  src={CrowdImg}
                   alt="hands image"
                 />
               </div>
@@ -261,7 +265,7 @@ function LandingPage() {
             <div className="cta-image">
               <img
                 className="bg"
-                src="src/assets/images/hands.png"
+                src={HandsImg}
                 alt="hands image"
               />
             </div>
@@ -354,7 +358,7 @@ function LandingPage() {
             </div>
             <div className="about-image">
               <img
-                src="src/assets/images/logo.png"
+                src={LogoImg}
                 alt="Logo"
                 className="ab-image"
               />
