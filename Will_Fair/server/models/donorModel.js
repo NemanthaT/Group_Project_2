@@ -40,7 +40,10 @@ async function getTotalDonors() {
 
 // Get all donors with summary info
 async function getAllDonors() {
-  const res = await pool.query('SELECT donor_id, name, email, phone, status FROM donors');
+  const res = await pool.query('SELECT donor_id, first_name, last_name, email, phone FROM donors');
+  res.rows.forEach(row => {
+    row.name = row.first_name + ' ' + row.last_name;
+  });
   return res.rows;
 }
 

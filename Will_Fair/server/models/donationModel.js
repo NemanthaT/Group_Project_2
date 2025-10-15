@@ -382,14 +382,26 @@ async function getRecentDonations() {
 // Get recent donations for admin dashboard
 async function getRecentDonationsAdmin(limit = 5) {
   const res = await pool.query(`
-    SELECT d.id, donor.name AS donorName, donee.name AS doneeName, d.amount, d.donation_date AS date, d.status, d.type
+    SELECT d.donation_id, d.amount, d.donation_date, d.description, d.payment_reference,
+           donor.first_name AS donor_first, donor.last_name AS donor_last,
+           dr.donee_id, donee.first_name AS donee_first, donee.last_name AS donee_last
     FROM donations d
-    LEFT JOIN donors donor ON d.donor_id = donor.id
-    LEFT JOIN donees donee ON d.donee_id = donee.id
+    LEFT JOIN donors donor ON d.donor_id = donor.donor_id
+    LEFT JOIN donation_requests dr ON d.request_id = dr.request_id
+    LEFT JOIN donees donee ON dr.donee_id = donee.donee_id
     ORDER BY d.donation_date DESC
     LIMIT $1
   `, [limit]);
-  return res.rows;
+
+  return res.rows.map(r => ({
+    donationId: r.donation_id,
+    donorName: `${r.donor_first || ''} ${r.donor_last || ''}`.trim(),
+    doneeName: `${r.donee_first || ''} ${r.donee_last || ''}`.trim(),
+    amount: r.amount,
+    date: r.donation_date,
+    description: r.description,
+    paymentReference: r.payment_reference
+  }));
 }
 // my edits end
 
