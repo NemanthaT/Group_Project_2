@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import "./HeroSection.css";
 import axios from 'axios';
+import FeaturedBg from '@/assets/images/featuredBg.png';
 
 const HeroSection = ({ user }) => {
   const [stats, setStats] = useState({
@@ -36,7 +37,7 @@ const HeroSection = ({ user }) => {
       <div className="bg-container">
         <img
           className="bg"
-          src="http://localhost:5173/src/assets/images/featuredBg.png"
+          src={FeaturedBg}
           alt="Hero Background"
         />
       </div>

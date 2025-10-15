@@ -1,4 +1,5 @@
 import "./Header.css";
+import LogoImg from '@//assets/images/logo.png';
 import { UserCircle } from 'lucide-react';
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -55,7 +56,7 @@ function Header({ user }) {
       <nav className="container">
         <div className="logo-container">
           <img
-            src="http://localhost:5173/src/assets/images/logo.png"
+            src={LogoImg}
             alt="Logo"
             className="logo-img"
           />

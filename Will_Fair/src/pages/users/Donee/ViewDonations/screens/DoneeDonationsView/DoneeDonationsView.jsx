@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import axios from "axios";
-import HealthcareImg from 'http://localhost:5173/src/assets/images/Healthcare.jpg';
-import EducationSupportImg from 'http://localhost:5173/src/assets/images/EducationSupport.jpg';
-import DisasterReliefImg from 'http://localhost:5173/src/assetsimages/DisasterRelief.jpg';
-import UsedToysImg from 'http://localhost:5173/src/assetsimages/UsedToys.jpg';
-import BasicNeedsImg from 'http://localhost:5173/src/assetsimages/BasicNeeds.jpg';
-import ChildrenCareImg from 'http://localhost:5173/src/assetsimages/childrenCare.jpg';
+import HealthcareImg from '@/assets/images/Healthcare.jpg';
+import EducationSupportImg from '@/assets/images/EducationSupport.jpg';
+import DisasterReliefImg from '@/assets/images/DisasterRelief.jpg';
+import UsedToysImg from '@/assets/images/UsedToys.jpg';
+import BasicNeedsImg from '@/assets/images/BasicNeeds.jpg';
+import ChildrenCareImg from '@/assets/images/childrenCare.jpg';
+import HandsImg from '@/assets/images/hands.png';
 
 function DoneeDonationsView({ user }) {
   const navigate = useNavigate();
