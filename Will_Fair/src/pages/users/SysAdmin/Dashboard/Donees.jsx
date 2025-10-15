@@ -1,4 +1,5 @@
-
+import styles from "../Styles";
+import { Edit, Trash2, UserPlus, Check, X, AlertCircle } from "lucide-react";
 
 const Donees = ({ donees, search, setSearch, filter, setFilter, onView, onEdit, onDelete }) => {
   const filtered = donees.filter(d => {

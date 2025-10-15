@@ -1,4 +1,6 @@
-
+import styles from "../Styles";
+import { Edit, Trash2, UserPlus, Check, X } from "lucide-react";
+import { FileText, Eye } from "lucide-react";
 
 const DocumentViewer = ({ show, onClose, docs }) => {
   if (!show) return null;

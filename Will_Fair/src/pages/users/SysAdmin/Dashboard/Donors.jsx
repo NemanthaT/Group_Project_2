@@ -1,4 +1,5 @@
-
+import styles from "../Styles";
+import { Edit, Trash2 } from "lucide-react";
 
 const Donors = ({ donors, search, setSearch, onEdit, onDelete }) => {
   const filtered = donors.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));

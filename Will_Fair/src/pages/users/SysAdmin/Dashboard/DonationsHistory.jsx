@@ -1,3 +1,5 @@
+import styles from "../Styles";
+import { Edit, Trash2, UserPlus, Check, X } from "lucide-react";
 
 
 const DonationsHistory = ({ donations, filter, setFilter, onView }) => {

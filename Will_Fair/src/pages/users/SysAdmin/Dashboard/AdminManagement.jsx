@@ -1,4 +1,5 @@
-
+import styles from "../Styles";
+import { Edit, Trash2, UserPlus, Check, X } from "lucide-react";
 
 const AdminManagement = ({ admins, onAdd, onEdit, onDelete }) => (
   <div>

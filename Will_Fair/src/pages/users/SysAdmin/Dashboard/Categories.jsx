@@ -1,3 +1,5 @@
+import styles from "../Styles";
+import { Edit, Trash2, UserPlus, Check, X } from "lucide-react";
 
 
 const Categories = ({ categories, name, setName, desc, setDesc, onAdd, onToggle, onDelete }) => (

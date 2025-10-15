@@ -1,4 +1,5 @@
-
+import styles from "../Styles";
+import { X } from 'lucide-react';
 
 const Modal = ({ show, onClose, type, item }) => {
   if (!show) return null;
