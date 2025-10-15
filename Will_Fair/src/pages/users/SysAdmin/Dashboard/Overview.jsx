@@ -2,17 +2,9 @@ import StatCard from "./StatCard";
 import styles from "../Styles";
 import { Users, DollarSign, AlertCircle } from 'lucide-react';
 
-const Overview = ({ stats, donations }) => {
-  var authToken = JSON.parse(localStorage.getItem('authToken'));
-  if (authToken == null) {
-    authToken = "No token";
-  }
-  return (
-    <div>
-      <div>
-        <h1 style={styles.pageTitle}>Auth Token: {authToken}</h1>
-      </div>
-      <div style={styles.statsGrid}>
+const Overview = ({ stats, donations }) => (
+  <div>
+    <div style={styles.statsGrid}>
       <StatCard icon={Users} title="Total Donors" value={stats.totalDonors} color="#4f46e5" />
       <StatCard icon={Users} title="Total Donees" value={stats.totalDonees} color="#10b981" />
       <StatCard icon={DollarSign} title="Total Donations" value={`$${stats.totalDonations.toLocaleString()}`} color="#f59e0b" />
@@ -49,6 +41,5 @@ const Overview = ({ stats, donations }) => {
     </div>
   </div>
 );
-}
 
 export default Overview;
