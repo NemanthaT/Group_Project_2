@@ -3,6 +3,33 @@ import pool from "../db.js";
 import fs from 'fs';
 import path from 'path';
 
+//my edits
+// Get total number of donees
+async function getTotalDonees() {
+  const res = await pool.query('SELECT COUNT(*) AS total FROM donees');
+  return Number(res.rows[0].total);
+}
+
+// Get all donees with summary info
+async function getAllDonees() {
+  const res = await pool.query('SELECT donee_id, name, email, phone, status, verified FROM donees');
+  return res.rows;
+}
+
+// Get number of donees pending verification
+async function getPendingVerifications() {
+  const res = await pool.query('SELECT COUNT(*) AS pending FROM donees WHERE verified = false');
+  return Number(res.rows[0].pending);
+}
+
+// Get donee stats for admin dashboard
+async function getDoneeStats() {
+  const totalDonees = await getTotalDonees();
+  const pendingVerifications = await getPendingVerifications();
+  return { totalDonees, pendingVerifications };
+}
+//my edits end
+
 async function registerDonee(fullName, phoneNo, password, type, proofDocument = null) {
   try {
     // First check if phone number already exists
@@ -79,4 +106,4 @@ function getProofDocumentPath(doneeId) {
   });
 }
 
-export { registerDonee, getProofDocumentPath };
+export { registerDonee, getProofDocumentPath, getTotalDonees, getAllDonees, getPendingVerifications, getDoneeStats };

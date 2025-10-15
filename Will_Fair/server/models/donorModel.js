@@ -31,5 +31,32 @@ async function registerDonor(fullName, email, password) {
   }
 }
 
+// my edits
+// Get total number of donors
+async function getTotalDonors() {
+  const res = await pool.query('SELECT COUNT(*) AS total FROM donors');
+  return Number(res.rows[0].total);
+}
 
-export { registerDonor };
+// Get all donors with summary info
+async function getAllDonors() {
+  const res = await pool.query('SELECT donor_id, name, email, phone, status FROM donors');
+  return res.rows;
+}
+
+// Get total donation amount (all time)
+async function getTotalDonations() {
+  const res = await pool.query('SELECT COALESCE(SUM(amount),0) AS total FROM donations');
+  return Number(res.rows[0].total);
+}
+
+// Get donor stats for admin dashboard
+async function getDonorStats() {
+  const totalDonors = await getTotalDonors();
+  const totalDonations = await getTotalDonations();
+  return { totalDonors, totalDonations };
+}
+
+export { registerDonor, getTotalDonors, getAllDonors, getTotalDonations, getDonorStats };
+
+// my edits end

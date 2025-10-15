@@ -378,6 +378,21 @@ async function getRecentDonations() {
   }
 }
 
+//my edits
+// Get recent donations for admin dashboard
+async function getRecentDonationsAdmin(limit = 5) {
+  const res = await pool.query(`
+    SELECT d.id, donor.name AS donorName, donee.name AS doneeName, d.amount, d.donation_date AS date, d.status, d.type
+    FROM donations d
+    LEFT JOIN donors donor ON d.donor_id = donor.id
+    LEFT JOIN donees donee ON d.donee_id = donee.id
+    ORDER BY d.donation_date DESC
+    LIMIT $1
+  `, [limit]);
+  return res.rows;
+}
+// my edits end
+
 // Add donation amount to a donation
 async function addDonationAmount(id, amount, donorId) {
   try {
@@ -508,6 +523,9 @@ export {
   updateDonationById,
   deleteDonationById,
   getRecentDonations,
+  // my edits
+  getRecentDonationsAdmin,
+  // my edits end
   addDonationAmount,
   getActiveDonations,
   getDonationStats
