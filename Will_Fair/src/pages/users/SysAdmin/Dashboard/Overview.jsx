@@ -1,4 +1,5 @@
-
+import StatCard from "./StatCard";
+import { Users, DollarSign, AlertCircle } from 'lucide-react';
 
 const Overview = ({ stats, donations }) => (
   <div>
