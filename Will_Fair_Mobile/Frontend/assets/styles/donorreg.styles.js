@@ -257,5 +257,57 @@ documentText: {
   fontSize: 14,
   color: '#999',
 },
+errorText: {
+  color: 'red',
+  fontSize: 12,
+  marginLeft: 10,
+  alignSelf: 'flex-start',
+},
 
+// Add these new styles to the existing styles object:
+dropdownText: {
+  flex: 1,
+  fontSize: 16,
+  color: '#000',
+  paddingVertical: 12,
+},
+
+dropdownContainer: {
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 8,
+  marginBottom: 15,
+  maxHeight: 200,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 5,
+},
+
+dropdownOption: {
+  paddingHorizontal: 15,
+  paddingVertical: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#fff',
+
+},
+
+selectedOption: {
+  backgroundColor: '#7B61FF',
+},
+
+dropdownOptionText: {
+  fontSize: 16,
+  color: '#222',
+},
+
+selectedOptionText: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
 });

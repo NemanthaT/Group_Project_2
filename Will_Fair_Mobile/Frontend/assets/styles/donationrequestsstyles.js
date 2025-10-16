@@ -7,14 +7,16 @@ export const donationRequestsStyles = StyleSheet.create({
   },
 
   // Header Section
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
+  // header: {
+  //   paddingTop: 60,
+  //   paddingBottom: 20,
+  //   paddingHorizontal: 16,
+  //   alignItems: "center",
+  //   borderBottomLeftRadius: 24,
+  //   borderBottomRightRadius: 24,
+  // },
+  header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
 
     sectionTitle: {
     fontSize: 14,
@@ -105,6 +107,19 @@ export const donationRequestsStyles = StyleSheet.create({
   },
   amountText: {
     fontSize: 13,
+  },
+  amountRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: 12,
+  marginBottom: 8,
+ },
+  amountLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 2,
+    paddingBottom :5 ,
   },
   progressBarBackground: {
     height: 6,
@@ -255,4 +270,220 @@ export const donationRequestsStyles = StyleSheet.create({
     backgroundColor: '#7B61FF',
     borderRadius: 2,
   },
+
+  icon: {
+    marginRight: 8,
+  },
+
+  contactRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 10,
+  fontWeight: 'bold',
+},
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  infoRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: 12,
+},
+
+locationRow: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+locationText: {
+  marginLeft: 4,
+  fontSize: 14,
+  color: "#333",
+},
+
+categoryChip: {
+  backgroundColor: "#EDE9FE",
+  paddingHorizontal: 10,
+  paddingVertical: 4,
+  borderRadius: 12,
+},
+
+categoryText: {
+  color: "#7B61FF",
+  fontWeight: "600",
+  fontSize: 13,
+},
+
+description: {
+  marginVertical: 12,
+  color: "#444",
+  fontSize: 14,
+  lineHeight: 20,
+},
+
+statusBadgeNew: {
+  backgroundColor: "#9333EA",
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+  borderRadius: 12,
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+statusTextNew: {
+  color: "#fff",
+  fontSize: 14,
+  fontWeight: "500",
+},
+editButtonNew: {
+    backgroundColor: "#6366F1",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+  editTextNew: {
+    color: "#fff",
+    marginLeft: 6,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  removeButton: {
+    backgroundColor: "#DC2626",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  removeText: {
+    color: "#fff",
+    marginLeft: 6,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  link :{
+  color: "#7B61FF", 
+  textDecorationLine: "underline",
+},
+// Add these to your donorreg.styles.js file:
+
+// Add these new styles to the existing styles object:
+dropdownText: {
+  flex: 1,
+  fontSize: 16,
+  color: '#000',
+  paddingVertical: 12,
+},
+
+dropdownContainer: {
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 8,
+  marginBottom: 15,
+  maxHeight: 200,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 5,
+},
+
+dropdownOption: {
+  paddingHorizontal: 15,
+  paddingVertical: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#a75050ff',
+},
+
+selectedOption: {
+  backgroundColor: '#7B61FF',
+},
+
+dropdownOptionText: {
+  fontSize: 16,
+  color: '#222',
+},
+
+selectedOptionText: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
+activeFilterButton: {
+  backgroundColor: '#7B61FF',
+  borderColor: '#7B61FF',
+},
+filterButtonText: {
+  fontSize: 14,
+  color: '#666',
+  marginRight: 4,
+},
+activeFilterButtonText: {
+  color: '#fff',
+},
+clearFiltersButton: {
+  backgroundColor: '#FF4444',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  borderRadius: 15,
+},
+clearFiltersText: {
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: '600',
+},
+dropdownOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+typeBadge: {
+  position: 'absolute',
+  top: 8,
+  right: 8,
+  paddingHorizontal: 8,
+  paddingVertical: 4,
+  borderRadius: 12,
+},
+typeText: {
+  color: '#fff',
+  fontSize: 10,
+  fontWeight: '600',
+},
+resultsContainer: {
+  paddingHorizontal: 20,
+  paddingVertical: 10,
+},
+resultsText: {
+  fontSize: 14,
+  color: '#666',
+  textAlign: 'center',
+},
+noResultsContainer: {
+  alignItems: 'center',
+  paddingVertical: 60,
+  paddingHorizontal: 40,
+},
+noResultsText: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#666',
+  marginTop: 16,
+},
+noResultsSubtext: {
+  fontSize: 14,
+  color: '#999',
+  marginTop: 8,
+  textAlign: 'center',
+},
 });

@@ -5,6 +5,28 @@ export const volunteerProgramStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
   },
+  header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
+
+    sectionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginVertical: 10,
+    color: "#333",
+  },
+
+  headerTitle: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  headerSubtitle: {
+    color: "#EEDCFF",
+    fontSize: 13,
+    textAlign: "center",
+    marginTop: 4,
+  },
+
   hero: {
     paddingTop: 60,
     paddingBottom: 30,

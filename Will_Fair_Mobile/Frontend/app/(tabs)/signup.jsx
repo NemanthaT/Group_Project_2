@@ -84,7 +84,17 @@ const Signup = ({ visible, onClose, onDonorPress, onDoneePress }) => {
                 onPress={() => navigation.navigate('login')} // Must match your route name
               >
                 <Text style={styles.loginText}>
-                  Already have an account?
+                  Already have a Donor account?
+                  <Text style={styles.loginLink}> Login</Text>
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.loginContainer}
+                onPress={() => navigation.navigate('donee_login')} // Must match your route name
+              >
+                <Text style={styles.loginText}>
+                  Already have a Donee account?
                   <Text style={styles.loginLink}> Login</Text>
                 </Text>
               </TouchableOpacity>

@@ -5,25 +5,35 @@ export const programStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+  header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
+
+    sectionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginVertical: 10,
+    color: "#333",
   },
+
+  headerTitle: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  headerSubtitle: {
+    color: "#6005b5ff",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 20,
+    fontWeight: "700",
+    
+  },
+
   headerLogo: {
     width: 60,
     height: 60,
     borderRadius: 30,
     marginBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   mainImage: {
     width: '90%',
@@ -60,30 +70,17 @@ export const programStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  progressRow: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   progressBarBackground: {
-    flex: 1,
     height: 6,
-    backgroundColor: '#ddd',
-    borderRadius: 3,
+    backgroundColor: "#eee",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginBottom: 10,
+    marginTop: 15,
   },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#7B61FF',
-    borderRadius: 3,
-  },
-  progressKnob: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#ccc',
-    marginLeft: 6,
-    alignItems: 'center',
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#9333EA",
   },
   amountRow: {
     flexDirection: 'row',
@@ -93,9 +90,10 @@ export const programStyles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
+    fontSize: 15,
+    marginBottom: 7,
+    fontWeight:'bold',
+    color : '#604662ff',
   },
   value: {
     fontWeight: 'bold',

@@ -4,7 +4,19 @@ export const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
+  },
+   header: { alignItems: "center", padding: 20, borderRadius: 10 },
+
+  headerTitle: {
+    color: "#000",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  headerSubtitle: {
+    color: "#EEDCFF",
+    fontSize: 13,
+    textAlign: "center",
+    marginTop: 4,
   },
   hero: {
     padding: 24,

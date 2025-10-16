@@ -1,0 +1,230 @@
+.donation-page-background {
+  min-height: 100vh;
+  background-color: #f8fafc; /* Light gray background */
+  padding: 0;
+}
+
+.make-donation-container {
+  max-width: 600px; /* Increased width */
+  margin: 5% auto; /* Reduced top/bottom margin */
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: #0d429b 1px solid;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(13,66,155,0.08);
+  padding: 2rem 2rem 1.5rem 2rem; /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.make-donation-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0d429b;
+  margin-bottom: 1.5rem;
+}
+.make-donation-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.make-donation-label {
+  font-weight: 600;
+  color: #374151;
+}
+.make-donation-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+.make-donation-input:focus {
+  border-color: #0d429b;
+  outline: none;
+}
+.make-donation-btn {
+  background: #0d429b;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.make-donation-btn:hover {
+  background: #0a3580;
+}
+.make-donation-success {
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+.make-donation-error {
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+/* Donation Image */
+.donation-image-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.donation-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Category Tag */
+.category-container {
+  margin-bottom: 1rem;
+}
+
+.category-tag {
+  background-color: #dbeafe;
+  color: #0d429b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+/* Description */
+.description-container {
+  margin-bottom: 1.5rem;
+}
+
+.donation-description {
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.make-donation-container .progress-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-header span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0d429b, #10b981);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Donation Details Summary */
+.donation-details-summary {
+  width: 100%;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.donation-details-summary div {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.donation-details-summary div:last-child {
+  margin-bottom: 0;
+}
+
+.donation-details-summary strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* Quick Amounts */
+.quick-amounts {
+  width: 100%;
+}
+
+.quick-amounts-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.quick-amounts-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.quick-amount-btn {
+  flex: 1;
+  background: #f9fafb;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-amount-btn:hover {
+  background: #0d429b;
+  color: white;
+  border-color: #0d429b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .make-donation-container {
+    margin: 5% auto;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+  }
+  
+  .donation-image {
+    height: 150px;
+  }
+  
+  .quick-amounts-buttons {
+    flex-direction: column;
+  }
+  
+  .quick-amount-btn {
+    flex: none;
+  }
+}
