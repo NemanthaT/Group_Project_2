@@ -93,13 +93,20 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
           </div>
 
           <div className="form-row">
-            <label>Event Date</label>
-            <div className="date-row">
-              <label className="toggle-inline">
-                <input type="checkbox" checked={form.isRange} onChange={(e) => setForm({...form, isRange: e.target.checked})} />
-                {' '}Use start & end dates
-              </label>
+            <div className="form-row-label">
+              <label>Event Date</label>
+              <div className="date-toggle" aria-hidden="false">
+                <label className="toggle-inline small-toggle">
+                  <input type="checkbox" checked={form.isRange} onChange={(e) => setForm({...form, isRange: e.target.checked})} />
+                  <span className="toggle-text">" "</span>
+                </label>
+                <div className="tooltip" aria-label="Toggle when the event spans more than one day">
+                  <span className="tooltip-icon">i</span>
+                  <span className="tooltip-text">Toggle when the event spans more than 1 day</span>
+                </div>
+              </div>
             </div>
+
             {!form.isRange ? (
               <input type="date" value={form.date} onChange={(e) => setForm({...form, date: e.target.value})} required />
             ) : (

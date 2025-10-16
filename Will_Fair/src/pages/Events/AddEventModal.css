@@ -61,6 +61,82 @@
   margin-bottom: 8px;
 }
 
+/* label row with toggle (keeps toggle visually next to label) */
+.form-row-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* keep label and toggle together on the left */
+  gap: 8px; /* small gap so toggle sits right next to label */
+}
+
+.date-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* keep the toggle visible while scrolling the form */
+  position: sticky;
+  top: 0; /* will stick to top of scrollable .modal-form area */
+  background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.95));
+  padding-left: 4px;
+  border-radius: 6px;
+}
+
+.small-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.small-toggle .toggle-text {
+  font-size: 12px;
+  color: #334155;
+  margin-left: 6px;
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-size: 12px;
+  border: 1px solid #c7d2fe;
+  cursor: default;
+}
+
+.tooltip-text {
+  position: absolute;
+  white-space: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 8px);
+  background: #0f172a;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-in-out, transform 120ms ease-in-out;
+  transform-origin: bottom center;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(-4px);
+}
+
 /* Inputs and selects share the same visual style */
 .modal-form input[type="text"],
 .modal-form input[type="date"],
