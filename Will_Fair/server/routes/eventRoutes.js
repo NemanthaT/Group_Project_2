@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../middleware/upload.js";
-import { getEvents, createEvent } from "../controllers/EventController.js";
+import { getEventsController, createEvent } from "../controllers/EventController.js";
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router.post('/createEvent', upload.fields([{
 }]), createEvent);
 
 //public Routes
-router.get('/', getEvents);
+router.get('/', getEventsController);
 
 export default router;
