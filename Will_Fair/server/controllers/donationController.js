@@ -31,8 +31,8 @@ export const createMonDonation = async (req, res) => {
       requestName,
       description,
       urgentDate,
-      imagePath: image?.path,
-      documentPaths: documents,
+      imagePath: image, // pass multer file object so model can move file
+      documentPaths: documents, // pass array of multer file objects
       status: 'pending'
     });
 
@@ -78,8 +78,8 @@ export const createNonMonDonation = async (req, res) => {
       itemName,
       itemQuantity,
       dropoffDate,
-      imagePath: image?.path,
-      documentPaths: documents?.map(doc => doc.path),
+      imagePath: image, // multer file object
+      documentPaths: documents, // array of multer file objects (or undefined)
       status: 'pending'
     });
 

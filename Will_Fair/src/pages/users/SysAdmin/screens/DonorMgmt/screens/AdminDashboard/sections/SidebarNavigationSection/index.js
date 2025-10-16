@@ -1,1 +1,0 @@
-export { SidebarNavigationSection } from "./SidebarNavigationSection";

@@ -1,4 +1,5 @@
 import "./FeaturedContent.css";
+import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useState } from 'react';
 
 function FeaturedContent() {
@@ -125,7 +126,7 @@ function FeaturedContent() {
         <div className="bg-container">
           <img
             className="bg"
-            src="src/assets/images/featuredBg.png"
+            src={FeaturedBg}
             alt="Hero Background"
           />
         </div>
