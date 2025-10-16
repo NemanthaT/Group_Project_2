@@ -1,6 +1,7 @@
 import "./EventsMain.css";
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useState } from 'react';
+import AddEventModal from './AddEventModal';
 
 function FeaturedContent() {
 
@@ -11,6 +12,9 @@ function FeaturedContent() {
     location: '',
     skills: ''
   });
+
+  // Add Event modal state
+  const [showAddModal, setShowAddModal] = useState(false);
 
    const [opportunities, setOpportunities] = useState([
     {
@@ -219,15 +223,38 @@ function FeaturedContent() {
             <div className="filter-dropdown">
               <button
                 className="btn btn-primary"
-                onClick={() => alert('Add Event clicked')}
+                onClick={() => setShowAddModal(true)}
                 type="button"
               >
-                 + Add Event
+                + Add Event
               </button>
             </div>
           </div>
         </div>
       </section>
+      <AddEventModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onCreate={(formData) => {
+          const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
+          const date = formData.isRange ? formData.startDate : formData.date;
+          const newOpp = {
+            id,
+            title: formData.name || 'Untitled Event',
+            description: formData.description,
+            type: 'other',
+            commitment: 'flexible',
+            location: formData.location || 'TBD',
+            skills: 'none',
+            volunteersNeeded: Number(formData.volunteersNeeded) || 0,
+            volunteersSigned: 0,
+            image: '',
+            date: date || ''
+          };
+          setOpportunities([newOpp, ...opportunities]);
+          setShowAddModal(false);
+        }}
+      />
 
       <section className="programs">
         <div className="programs-container">
