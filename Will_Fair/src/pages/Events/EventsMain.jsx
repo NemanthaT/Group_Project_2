@@ -1,4 +1,4 @@
-import "./FeaturedContent.css";
+import "./EventsMain.css";
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useState } from 'react';
 
