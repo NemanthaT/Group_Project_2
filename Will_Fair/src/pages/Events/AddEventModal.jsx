@@ -48,8 +48,29 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     skills: ''
   });
 
+  // reset form when modal opens
   useEffect(() => {
     if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '' });
+  }, [isOpen]);
+
+  // prevent background scrolling while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+
+    // compute scrollbar width and add padding to avoid layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
