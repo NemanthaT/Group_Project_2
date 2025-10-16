@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Platform,
   Image,
+  Platform,
   Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,10 +14,9 @@ import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from 'expo-router';
-import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
+import { donationRequestsStyles, donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 
 const NonMonetary = () => {
   const navigation = useNavigation();
@@ -26,29 +25,57 @@ const NonMonetary = () => {
   const [imageFile, setImageFile] = useState(null);
   const [docFile, setDocFile] = useState(null);
 
-  const [categoryOpen, setCategoryOpen] = useState(false);
+  // Category Dropdown (dynamic from database)
+  const [openCategory, setOpenCategory] = useState(false);
   const [category, setCategory] = useState(null);
-  const [categories, setCategories] = useState([
-    { label: "Dry rations", value: "dry rations" },
-    { label: "Medical Supplies(First Aid Kits,Mobility aids)", value: "medical supplies" },
-    { label: "Education Materials(Books,Notebooks,Stationery,Digital Devices)", value: "education materials" },
-    { label: "Shelter & Household Essentials(Blankets,Bedsheets,Sleeping Mats)", value: "shelter & household essentials" },
-    { label: "Used Toys", value: "used toys" },
-  ]);
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
-  const [provinceOpen, setProvinceOpen] = useState(false);
-  const [province, setProvince] = useState(null);
-  const [provinces, setProvinces] = useState([
-    { label: "Central", value: "central" },
-    { label: "Eastern", value: "eastern" },
-    { label: "Northern", value: "northern" },
-    { label: "Southern", value: "southern" },
-    { label: "Western", value: "western" },
-    { label: "North Western", value: " north western" },
-    { label: "Sabaragamuwa", value: "sabaragamuwa" },
-    { label: "Uva", value: "uva" },
-    { label: "North Central", value: "north central" },
-  ]);
+    // ✅ Fetch categories dynamically from API (supports emulator and multiple response shapes)
+    useEffect(() => {
+      const fetchCategories = async () => {
+        setLoadingCategories(true);
+        try {
+          // Use local backend. On Android emulator replace localhost with 10.0.2.2
+          const base = Platform.OS === "android" ? "http://192.168.122.72:5000" : "http://localhost:5000";
+          const url = `${base}/api/donations/nonMonetaryCategories`;
+  
+          const res = await fetch(url, { headers: { Accept: "application/json" } });
+  
+          // Try to parse JSON safely
+          const json = await res.json();
+  
+          // Server may return { success: true, categories: [...] } or raw array
+          const payload = Array.isArray(json) ? json : json.categories || json.data || [];
+  
+          // payload could be array of strings (category_name) or objects { id, name }
+          const formatted = payload.map((item) => {
+            if (typeof item === "string") return { label: item, value: item };
+            // support fields with different names
+            const id = item.category_id ?? item.id ?? item.value ?? item.categoryId;
+            const name = item.category_name ?? item.name ?? item.label ?? item.categoryName;
+            return { label: name || String(id || ""), value: id ?? name };
+          });
+  
+          setCategories(formatted);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          Alert.alert("Error", "Failed to load categories from server.");
+        } finally {
+          setLoadingCategories(false);
+        }
+      };
+  
+      fetchCategories();
+    }, []);
+  const handleDocumentPick = async () => {
+    const result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
+    if (!result.canceled) {
+      const file = result.assets[0];
+      setDocFile(file);
+      console.log("Selected Document:", file.uri);
+    }
+  };
 
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -57,62 +84,39 @@ const NonMonetary = () => {
     });
     if (!result.canceled) {
       setImageFile(result.assets[0]);
-    }
-  };
-
-  const handleDocumentPick = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "application/pdf",
-    });
-    if (!result.canceled) {
-      setDocFile(result.assets[0]);
+      console.log("Selected Image:", result.assets[0].uri);
     }
   };
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShowDatePicker(false);
+    setShowDatePicker(Platform.OS === "ios");
     setDate(currentDate);
   };
 
   const handleSubmit = () => {
-      // You can add form validation here if needed
-      // For now, just show success message
-      Alert.alert(
-        "Success! 🎉",
-        "Your donation request has been submitted successfully. We will review it and get back to you soon.",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              // Optional: Navigate back to previous screen or clear form
-              navigation.navigate("homescreen");
-              // Or navigate to a specific screen:
-              // navigation.navigate('mydonationreq');
-            }
-          }
-        ]
-      );
-    };
+    Alert.alert(
+      "Success! 🎉",
+      "Your donation request has been submitted successfully. We will review it and get back to you soon.",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("homescreen"),
+        },
+      ]
+    );
+  };
+
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      nestedScrollEnabled={true}
-    >
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
         <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            style={{
-              position: 'absolute',
-              top: 10,
-              left: 10,
-              zIndex: 5,
-            }}
-          >
-            <Ionicons name="menu-outline" size={30} color="#fff" />
-          </TouchableOpacity>
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          style={{ position: "absolute", top: 10, left: 10, zIndex: 5 }}
+        >
+          <Ionicons name="menu-outline" size={30} color="#fff" />
+        </TouchableOpacity>
         <View style={styles.logoContainer}>
           <View style={styles.logoBackground}>
             <Image
@@ -127,113 +131,91 @@ const NonMonetary = () => {
           Connect with generous donors who want to help your cause
         </Text>
       </LinearGradient>
-
-      {/* Support Tabs */}
+      {/* Tabs */}
       <View style={styles.tabContainer}>
-        <TouchableOpacity style={styles.tabButton}
-        onPress={() => navigation.navigate("monetory")}>
+        <TouchableOpacity
+          style={styles.tabButton}
+          onPress={() => navigation.navigate("monetory")}
+        >
           <Text style={styles.tabText}>Monetary Support</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.tabButton, styles.activeTab]}
-        onPress={() => navigation.navigate("nonmonetory")}>
+        <TouchableOpacity
+          style={[styles.tabButton, styles.activeTab]}
+          onPress={() => navigation.navigate("nonmonetory")}
+        >
           <Text style={styles.tabText}>Non Monetary Support</Text>
         </TouchableOpacity>
       </View>
-
       {/* Form */}
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Category</Text>
+        {/* ✅ Dynamic Category Dropdown */}
+        <Text style={donationRequestsStyles.sectionTitle}>Category</Text>
         <DropDownPicker
-          open={categoryOpen}
+          open={openCategory}
           value={category}
           items={categories}
-          setOpen={setCategoryOpen}
+          setOpen={setOpenCategory}
           setValue={setCategory}
           setItems={setCategories}
-          placeholder="Select a category"
-          listMode="SCROLLVIEW" // ✅ Prevents nested FlatList warning
-          style={{ marginBottom: categoryOpen ? 150 : 20 }}
+          placeholder={loadingCategories ? "Loading categories..." : "Select Category"}
+          disabled={loadingCategories}
+          listMode="SCROLLVIEW"
+          style={{
+            marginBottom: openCategory ? 150 : 20,
+            borderColor: "#ccc",
+            borderRadius: 8,
+          }}
         />
-
-        <Text style={styles.sectionTitle}>Reason for Request</Text>
-        <TextInput style={styles.inputField} placeholder="Enter reason for request" />
-
-
+        <Text style={donationRequestsStyles.sectionTitle}>Reason for Request</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Enter request name"
+          placeholderTextColor="#999"
+        />
         <Text style={styles.sectionTitle}>Detailed Description</Text>
         <TextInput
-        style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
+          style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
           multiline
-          placeholder="Explain your situation, who will benefit,and how the donations will be used."
+          placeholder="Explain your situation, who will benefit, and how the donations will be used."
         />
-
-        
-        <Text style={styles.sectionTitle}>Item Name</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Item Name</Text>
         <TextInput style={styles.inputField} placeholder="Enter item name" />
-
-        <Text style={styles.sectionTitle}>Item Quantity</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Item Quantity</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Enter quantity needed"
           keyboardType="numeric"
         />
-
-        <Text style={styles.sectionTitle}>Dropoff Date</Text>
-        <TouchableOpacity
-          style={styles.inputField}
-          onPress={() => setShowDatePicker(true)}
-        >
+        <Text style={donationRequestsStyles.sectionTitle}>Dropoff Date</Text>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputField}>
           <Text>{date.toLocaleDateString()}</Text>
         </TouchableOpacity>
         {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onChangeDate}
-          />
+          <DateTimePicker value={date} mode="date" display="default" onChange={onChangeDate} />
         )}
-
-
-        {/* <Text style={styles.sectionTitle}>Province</Text>
-        <DropDownPicker
-          open={provinceOpen}
-          value={province}
-          items={provinces}
-          setOpen={setProvinceOpen}
-          setValue={setProvince}
-          setItems={setProvinces}
-          placeholder="Select province"
-          listMode="SCROLLVIEW" // ✅ Prevents nesting error
-          style={{ marginBottom: provinceOpen ? 150 : 20 }}
-        /> */}
-
-        <Text style={styles.sectionTitle}>Request Image(Optioal)</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Request Image (Optional)</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
-          <Text style={{ textAlign: "center" }}>Choose Image</Text>
+          <Text style={{ textAlign: "center" }}>Choose File</Text>
         </TouchableOpacity>
         {imageFile && (
-          <Text style={styles.fileText}>
+          <Text style={{ marginTop: 6, marginBottom: 10, color: "green", fontSize: 12 }}>
             Selected: {imageFile.fileName || "Image selected"}
           </Text>
         )}
-
-        <Text style={styles.sectionTitle}>Proof Documents</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>Proof Documents</Text>
         <TouchableOpacity style={styles.uploadBox} onPress={handleDocumentPick}>
-          <Text style={{ textAlign: "center" }}>Choose PDF Document</Text>
+          <Text style={{ textAlign: "center" }}>Choose File</Text>
         </TouchableOpacity>
         {docFile && (
-          <Text style={styles.fileText}>Selected: {docFile.name}</Text>
+          <Text style={{ marginTop: 6, marginBottom: 10, color: "green", fontSize: 12 }}>
+            Selected: {docFile.name}
+          </Text>
         )}
-
-        <Text style={styles.sectionTitle}>
-          Upload PDF documents as proof for your request (medical reports, school
-          documents, etc). PDF only, max 5MB.
+        <Text style={donationRequestsStyles.sectionTitle}>
+          Upload PDF document/s as proof for your request (medical reports, school documents, etc).
         </Text>
-
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton}
-        onPress={handleSubmit}
-        >
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitText}>Create Request</Text>
         </TouchableOpacity>
       </View>
