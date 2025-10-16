@@ -6,6 +6,7 @@ import authRoutes from  "./routes/authRoutes.js";
 import doneeRoutes from "./routes/doneeRoute.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import authManagerRoutes from "./routes/authManagerRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
@@ -22,6 +23,7 @@ app.use("/donees", doneeRoutes);
 app.use("/auth", authRoutes);
 app.use("/donations", donationRoutes);
 app.use("/authManager", authManagerRoutes);
+app.use("/admin", adminRoutes);
 
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);

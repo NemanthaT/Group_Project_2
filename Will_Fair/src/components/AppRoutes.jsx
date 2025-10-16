@@ -8,6 +8,7 @@ import Users from "@/pages/users/users";
 import SellerDashboard from "@/pages/SellerDashboard/SellerDashboard";
 import BuyerDashboard from "@/pages/BuyerDashboard/BuyerDashboard";
 import AuthManagerDonationDetail from "@/pages/users/AuthManager/AuthManagerDonationDetail";
+import SysAdmin from "@/pages/users/SysAdmin/SysAdmin";
 
 const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Route path="/buyerDashboard/*" element={<BuyerDashboard />} />
       <Route path="/users/*" element={<Users />} />
       <Route path="/authmanager/donations/:id" element={<AuthManagerDonationDetail />} />
+      <Route path="/sysadmin/*" element={<SysAdmin />} />
     </Routes>
   );
 };
