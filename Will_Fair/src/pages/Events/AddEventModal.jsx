@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AddEventModal.css';
 
 // Option lists
@@ -33,7 +33,7 @@ const SKILLS_OPTIONS = [
   { value: 'none', label: 'No Experience' }
 ];
 
-export default function AddEventModal({ isOpen, onClose, onCreate }) {
+export default function AddEventModal({ isOpen, onClose }) {
   const [form, setForm] = useState({
     name: '',
     isRange: false,
@@ -51,15 +51,135 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     contactNumber: ''
   });
 
+  // field errors to show inline tooltips instead of alerts
+  const [errors, setErrors] = useState({});
+
+  // refs for form fields so we can focus / scroll the first invalid one
+  const fieldRefs = useRef({});
+
   // image and document uploads (required)
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [documentFiles, setDocumentFiles] = useState([]);
 
+  // Handlers moved out of JSX
+  const handleImageUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+    setImageFile(file);
+    const url = URL.createObjectURL(file);
+    setImagePreview(url);
+    // clear image-related error
+    setErrors(prev => ({ ...prev, image: null }));
+  };
+
+
+
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    const pdfFiles = files.filter(f => f.type === 'application/pdf');
+    if (pdfFiles.length === 0) {
+      alert('Please select PDF document(s) only.');
+      return;
+    }
+    setDocumentFiles(prev => [...prev, ...pdfFiles]);
+    // clear document-related error
+    setErrors(prev => ({ ...prev, documents: null }));
+  };
+
+  const removeDocument = (index) => {
+    setDocumentFiles(prev => { const copy = [...prev]; copy.splice(index,1); return copy; });
+  };
+
   // reset form when modal opens
   useEffect(() => {
     if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '', type: '', commitment: '', skills: '', contactName: '', contactEmail: '', contactNumber: '' });
   }, [isOpen]);
+
+  // helper to update a field and clear its error
+  const updateField = (key, value) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+    setErrors(prev => ({ ...prev, [key]: null }));
+  };
+
+  const renderError = (key) => {
+    if (!errors || !errors[key]) return null;
+    return <div className="field-error">{errors[key]}</div>;
+  };
+
+  // Submit handler with validations similar to Forms.jsx
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // clear previous errors
+    const newErrors = {};
+
+    // simple required checks for all form fields
+    const requiredTextFields = [
+      'name', 'location', 'type', 'commitment', 'skills', 'description', 'contactName', 'contactEmail', 'contactNumber'
+    ];
+
+    for (const key of requiredTextFields) {
+      if (!form[key] || String(form[key]).trim() === '') {
+        newErrors[key] = 'This field is required';
+      }
+    }
+
+    if (!form.isRange) {
+      if (!form.date) { newErrors.date = 'Please select the event date.'; }
+    } else {
+      if (!form.startDate) { newErrors.startDate = 'Please select start date.'; }
+      if (!form.endDate) { newErrors.endDate = 'Please select end date.'; }
+    }
+
+    if (!imageFile) { newErrors.image = 'Event image is required.'; }
+
+    if (!documentFiles || documentFiles.length === 0) { newErrors.documents = 'Please upload at least one proof document (PDF).'; }
+
+    // ensure all documents are PDFs
+    const nonPdf = documentFiles.find(f => f.type !== 'application/pdf');
+    if (nonPdf) { newErrors.documents = 'All proof documents must be PDF files.'; }
+
+    // if there are any errors, set them and bail out
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // focus + scroll to first invalid field after render
+      const firstKey = Object.keys(newErrors)[0];
+      setTimeout(() => {
+        const el = fieldRefs.current[firstKey];
+        if (el) {
+          try {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } catch (err) { void err; /* ignore scroll errors on older browsers */ }
+          if (typeof el.focus === 'function') el.focus();
+        }
+      }, 50);
+      return;
+    }
+
+    // all validations passed — perform submission inside try/catch
+    try {
+      // TODO: add URL for backend and perform the request here (e.g. fetch/axios)
+      // Example: await axios.post('<BACKEND_URL>', formData)
+
+      // simulate success for now
+      alert('Event created successfully!');
+
+      // reset form and files
+      setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '', type: '', commitment: '', skills: '', contactName: '', contactEmail: '', contactNumber: '' });
+      setImageFile(null);
+      if (imagePreview) { URL.revokeObjectURL(imagePreview); }
+      setImagePreview(null);
+      setDocumentFiles([]);
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to submit event. Please try again.');
+    }
+  };
 
   // prevent background scrolling while modal is open
   useEffect(() => {
@@ -91,24 +211,11 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <form className="modal-form" onSubmit={(e) => {
-          e.preventDefault();
-          // validate required image and at least one document
-          if (!imageFile) {
-            alert('Please attach an image for the event (required).');
-            return;
-          }
-          if (!documentFiles || documentFiles.length === 0) {
-            alert('Please upload at least one proof document (PDF).');
-            return;
-          }
-
-          // attach files info to form object passed to onCreate
-          onCreate({ ...form, imageFile, documents: documentFiles });
-        }}>
+  <form className="modal-form" noValidate onSubmit={(e) => handleSubmit(e)}>
           <div className="form-row">
             <label>Event Name</label>
-            <input type="text" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} required />
+            <input ref={el => fieldRefs.current.name = el} type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} required />
+            {renderError('name')}
           </div>
 
           <div className="form-row">
@@ -126,60 +233,69 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
               </div>
             </div>
 
-            {!form.isRange ? (
-              <input type="date" value={form.date} onChange={(e) => setForm({...form, date: e.target.value})} required />
+                {!form.isRange ? (
+              <>
+                <input ref={el => fieldRefs.current.date = el} type="date" value={form.date} onChange={(e) => updateField('date', e.target.value)} required />
+                {renderError('date')}
+              </>
             ) : (
               <div className="range-row">
-                <input type="date" value={form.startDate} onChange={(e) => setForm({...form, startDate: e.target.value})} required />
+                <input ref={el => fieldRefs.current.startDate = el} type="date" value={form.startDate} onChange={(e) => updateField('startDate', e.target.value)} required />
+                {renderError('startDate')}
                 <span className="range-sep">to</span>
-                <input type="date" value={form.endDate} onChange={(e) => setForm({...form, endDate: e.target.value})} required />
+                <input ref={el => fieldRefs.current.endDate = el} type="date" value={form.endDate} onChange={(e) => updateField('endDate', e.target.value)} required />
+                {renderError('endDate')}
               </div>
             )}
           </div>
 
           <div className="form-row">
             <label>Location</label>
-            <select value={form.location} onChange={(e) => setForm({...form, location: e.target.value})}>
+            <select ref={el => fieldRefs.current.location = el} value={form.location} onChange={(e) => updateField('location', e.target.value)}>
               <option value="">Location</option>
               {LOCATION_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+            {renderError('location')}
           </div>
 
           <div className="form-row">
             <label>Volunteer Type</label>
-            <select value={form.type} onChange={(e) => setForm({...form, type: e.target.value})}>
+            <select ref={el => fieldRefs.current.type = el} value={form.type} onChange={(e) => updateField('type', e.target.value)}>
               <option value="">Volunteer Type</option>
               {TYPE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+            {renderError('type')}
           </div>
 
           <div className="form-row">
             <label>Time Commitment</label>
-            <select value={form.commitment} onChange={(e) => setForm({...form, commitment: e.target.value})}>
+            <select ref={el => fieldRefs.current.commitment = el} value={form.commitment} onChange={(e) => updateField('commitment', e.target.value)}>
               <option value="">Time Commitment</option>
               {COMMITMENT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+            {renderError('commitment')}
           </div>
 
           <div className="form-row">
             <label>Skills</label>
-            <select value={form.skills} onChange={(e) => setForm({...form, skills: e.target.value})}>
+            <select ref={el => fieldRefs.current.skills = el} value={form.skills} onChange={(e) => updateField('skills', e.target.value)}>
               <option value="">Skills Needed</option>
               {SKILLS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+            {renderError('skills')}
           </div>
 
           <div className="form-row">
             <label>Number of Volunteers</label>
-            <input type="number" min="1" value={form.volunteersNeeded} onChange={(e) => setForm({...form, volunteersNeeded: e.target.value})} />
+            <input ref={el => fieldRefs.current.volunteersNeeded = el} type="number" min="1" value={form.volunteersNeeded} onChange={(e) => updateField('volunteersNeeded', e.target.value)} />
           </div>
 
           {/* Image upload (required) */}
@@ -190,17 +306,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
                 type="file"
                 id="eventImageUpload"
                 accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files && e.target.files[0];
-                  if (!file) return;
-                  if (!file.type.startsWith('image/')) {
-                    alert('Please select a valid image file.');
-                    return;
-                  }
-                  setImageFile(file);
-                  const url = URL.createObjectURL(file);
-                  setImagePreview(url);
-                }}
+                onChange={handleImageUpload}
                 style={{ display: 'none' }}
               />
               <label htmlFor="eventImageUpload" className="choose-file-button">
@@ -210,15 +316,12 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
                 {imagePreview ? (
                   <div className="image-preview">
                     <img src={imagePreview} alt="preview" style={{ maxWidth: 300, borderRadius: 8 }} />
-                    <div>
-                      <button type="button" className="remove-document-button" onClick={() => { URL.revokeObjectURL(imagePreview); setImagePreview(null); setImageFile(null); }}>
-                        Remove Image
-                      </button>
-                    </div>
+                    <div />
                   </div>
                 ) : (
                   <span style={{ color: 'rgba(0,0,0,0.6)' }}>No image selected</span>
                 )}
+                {renderError('image')}
               </div>
             </div>
           </div>
@@ -231,15 +334,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
                 type="file"
                 id="eventDocumentUpload"
                 accept=".pdf"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  const pdfFiles = files.filter(f => f.type === 'application/pdf');
-                  if (pdfFiles.length === 0) {
-                    alert('Please select PDF document(s) only.');
-                    return;
-                  }
-                  setDocumentFiles(prev => [...prev, ...pdfFiles]);
-                }}
+                onChange={handleDocumentUpload}
                 multiple
                 style={{ display: 'none' }}
               />
@@ -253,35 +348,40 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
                     {documentFiles.map((file, index) => (
                       <div key={index} className="document-item">
                         <span>{file.name}</span>
-                        <button type="button" onClick={() => setDocumentFiles(prev => { const copy = [...prev]; copy.splice(index,1); return copy; })} className="remove-document-button">Remove</button>
+                        <button type="button" onClick={() => removeDocument(index)} className="remove-document-button">Remove</button>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <span>No documents selected</span>
                 )}
+                {renderError('documents')}
               </div>
             </div>
           </div>
 
           <div className="form-row">
             <label>Event Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} rows={4}></textarea>
+            <textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} rows={4}></textarea>
+            {renderError('description')}
           </div>
 
           <div className="form-row">
             <label>Contact Name</label>
-            <input type="text" value={form.contactName} onChange={(e) => setForm({...form, contactName: e.target.value})} />
+            <input type="text" value={form.contactName} onChange={(e) => updateField('contactName', e.target.value)} />
+            {renderError('contactName')}
           </div>
 
           <div className="form-row">
             <label>Contact Gmail</label>
-            <input type="email" placeholder="example@gmail.com" value={form.contactEmail} onChange={(e) => setForm({...form, contactEmail: e.target.value})} />
+            <input type="email" placeholder="example@gmail.com" value={form.contactEmail} onChange={(e) => updateField('contactEmail', e.target.value)} />
+            {renderError('contactEmail')}
           </div>
 
           <div className="form-row">
             <label>Contact Number</label>
-            <input type="tel" placeholder="e.g. +94 77 123 4567" value={form.contactNumber} onChange={(e) => setForm({...form, contactNumber: e.target.value})} />
+            <input type="tel" placeholder="e.g. +94 77 123 4567" value={form.contactNumber} onChange={(e) => updateField('contactNumber', e.target.value)} />
+            {renderError('contactNumber')}
           </div>
 
           <div className="form-actions">

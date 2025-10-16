@@ -130,6 +130,18 @@
   transform-origin: bottom center;
 }
 
+/* inline field error tooltip / hint */
+.field-error {
+  margin-top: 6px;
+  display: inline-block;
+  background: #fff7f7;
+  color: #b91c1c; /* red-700 */
+  border: 1px solid #fecaca; /* red-200 */
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
 .tooltip:hover .tooltip-text,
 .tooltip:focus-within .tooltip-text {
   opacity: 1;
