@@ -79,7 +79,7 @@ const handleSubmit = async () => {
 
   setLoading(true);
   try {
-    const response = await fetch('http://192.168.197.72:5000/api/donor_reg', {
+    const response = await fetch('http://192.168.122.72:5000/api/donor_reg', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

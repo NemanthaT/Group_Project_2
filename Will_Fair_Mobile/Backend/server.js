@@ -109,6 +109,42 @@ app.post('/api/donor_reg', async (req, res) => {
   }
 });
 
+// =================== Donation categories endpoints ===================
+// Monetary-only categories (string array)
+const handleMonetaryCategories = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT category_name FROM donation_categories WHERE is_monetary = true ORDER BY category_name`
+    );
+    const categories = result.rows.map((r) => r.category_name);
+    return res.json({ success: true, categories });
+  } catch (err) {
+    console.error('Failed to load monetary categories', err);
+    return res.status(500).json({ success: false, error: 'Server error' });
+  }
+};
+
+// All categories (id + name) — useful if frontend wants to submit id instead of name
+const handleAllCategories = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT category_id, category_name FROM donation_categories ORDER BY category_name`
+    );
+    const categories = result.rows.map((r) => ({ id: r.category_id, name: r.category_name }));
+    return res.json({ success: true, categories });
+  } catch (err) {
+    console.error('Failed to load categories', err);
+    return res.status(500).json({ success: false, error: 'Server error' });
+  }
+};
+
+// Register both API and non-API paths for compatibility
+app.get('/donations/monetaryCategories', handleMonetaryCategories);
+app.get('/api/donations/monetaryCategories', handleMonetaryCategories);
+app.get('/donations/categories', handleAllCategories);
+app.get('/api/donations/categories', handleAllCategories);
+
+
 // Individual Donee Registration Endpoint (Uses Phone)
 app.post('/api/donee_ind_reg', upload.single('proofDocument'), async (req, res) => {
   try {

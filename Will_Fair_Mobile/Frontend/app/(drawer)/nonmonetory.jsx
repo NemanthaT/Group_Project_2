@@ -156,16 +156,24 @@ const NonMonetary = () => {
         />
 
         <Text style={styles.sectionTitle}>Reason for Request</Text>
-        <TextInput style={styles.inputField} placeholder="Enter request name" />
+        <TextInput style={styles.inputField} placeholder="Enter reason for request" />
 
 
+        <Text style={styles.sectionTitle}>Detailed Description</Text>
+        <TextInput
+        style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
+          multiline
+          placeholder="Explain your situation, who will benefit,and how the donations will be used."
+        />
+
+        
         <Text style={styles.sectionTitle}>Item Name</Text>
         <TextInput style={styles.inputField} placeholder="Enter item name" />
 
         <Text style={styles.sectionTitle}>Item Quantity</Text>
         <TextInput
           style={styles.inputField}
-          placeholder="Enter quantity"
+          placeholder="Enter quantity needed"
           keyboardType="numeric"
         />
 
