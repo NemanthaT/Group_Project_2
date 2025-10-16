@@ -1,4 +1,4 @@
-
+import styles from "../Styles";
 
 const StatCard = ({ icon: Icon, label, value, gradientClass }) => (
   <div style={styles.statCard}>

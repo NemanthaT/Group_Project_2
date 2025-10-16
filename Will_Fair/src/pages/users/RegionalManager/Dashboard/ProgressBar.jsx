@@ -1,4 +1,4 @@
-
+import styles from "../Styles";
 
 const ProgressBar = ({ current, target, type }) => {
   const progress = Math.min((current / target) * 100, 100);

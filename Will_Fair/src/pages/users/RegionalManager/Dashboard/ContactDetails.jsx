@@ -1,4 +1,4 @@
-
+import styles from "../Styles";
 
 const ContactDetails = ({ label, name, contact }) => (
   <div style={styles.detailSection}>

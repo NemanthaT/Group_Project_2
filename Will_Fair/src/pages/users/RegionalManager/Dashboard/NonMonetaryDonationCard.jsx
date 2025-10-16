@@ -1,4 +1,7 @@
 import { Package, DollarSign, CheckCircle, Clock, TrendingUp, Filter } from 'lucide-react';
+import styles from "../Styles";
+import ContactDetails from './ContactDetails';
+import ProgressBar from './ProgressBar';
 
 const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor, isTargetReached }) => (
   <div style={styles.donationCard}>

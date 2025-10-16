@@ -1,4 +1,5 @@
 import { Package, DollarSign, CheckCircle, Clock, TrendingUp, Filter } from 'lucide-react';
+import styles from "../Styles";
 
 const FilterButton = ({ active, label, onClick }) => (
   <button

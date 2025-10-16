@@ -6,8 +6,7 @@ import FilterButton from './Dashboard/FilterButton';
 import MonetaryDonationCard from './Dashboard/MonetaryDonationCard';
 import NonMonetaryDonationCard from './Dashboard/NonMonetaryDonationCard';
 import EmptyState from './Dashboard/EmptyState';
-import ContactDetails from './Dashboard/ContactDetails';
-import ProgressBar from './Dashboard/ProgressBar';
+import styles from "./Styles";
 
 
 const WelfareDashboard = () => {

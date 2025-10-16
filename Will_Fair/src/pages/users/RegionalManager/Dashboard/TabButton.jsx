@@ -1,4 +1,5 @@
-
+import { Package } from 'lucide-react';
+import styles from "../Styles";
 
 const TabButton = ({ active, icon: Icon, label, onClick }) => (
   <button
