@@ -27,8 +27,8 @@ body {
   align-items: center;
   justify-content: center;
   padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 30px;
+  font-weight: 400;
   font-size: 14px;
   height: 40px;
   text-decoration: none;
@@ -39,31 +39,30 @@ body {
 }
 
 .donor-dashboard .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0d429b;
   color: white;
+  padding-top: 25px;
+  padding-bottom: 25px;
 }
 
 .donor-dashboard .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  background: #0a3580;
 }
 
 .donor-dashboard .btn-secondary {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  border: 2px solid #0d429b;
+  background: rgba(13, 66, 155, 0.05);
+  color: #0d429b;
+  padding-top: 25px;
+  padding-bottom: 25px;
 }
 
 .donor-dashboard .btn-secondary:hover {
-  background: #667eea;
-  color: white;
+    background: rgba(13, 66, 155, 0.1);
+    border-color: #8b5cf6;
+    color: #8b5cf6;
 }
 
-.donor-dashboard .btn-outline {
-  background: transparent;
-  color: #667eea;
-  border: 2px solid #667eea;
-}
 
 .donor-dashboard .btn-outline:hover {
   background: #667eea;

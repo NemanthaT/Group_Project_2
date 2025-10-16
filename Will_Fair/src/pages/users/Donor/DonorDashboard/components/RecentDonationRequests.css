@@ -113,6 +113,11 @@
   text-align: center;
 }
 
+.donation-actions .btn.btn-secondary{
+
+  background: rgba(13, 66, 155, 0.1);
+}
+
 @media (max-width: 768px) {
   .section-header {
     flex-direction: column;
