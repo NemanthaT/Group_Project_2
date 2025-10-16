@@ -74,7 +74,7 @@ function Header({ user }) {
             <a href="/featured">Volunteer</a>
           </li>
           <li>
-            <a href="/#contact">Contact Us</a>
+            <a href="/regManager">Contact Us</a>
           </li>
           <li>
             <a href="/#about">About</a>
