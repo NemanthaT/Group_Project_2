@@ -53,7 +53,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Attempting donee login...');
       
       // FIXED: Use donee_login endpoint and send contactno
-      const response = await fetch('http:// 192.168.197.72:5000/api/donee_login', {
+      const response = await fetch('http://192.168.197.72:5000/api/donee_login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

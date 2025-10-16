@@ -143,7 +143,7 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
     console.log('Submitting form data...');
     console.log('Category being sent:', category); // ADD THIS DEBUG LOG
 
-    const response = await fetch('http:// 192.168.197.72:5000/api/donee_rep_reg', {
+    const response = await fetch('http://192.168.197.72:5000/api/volunteer_rep_reg', {
       method: 'POST',
       // REMOVED: Don't set Content-Type for FormData
       body: formData,
