@@ -61,6 +61,22 @@
   min-width: 180px;
 }
 
+.filter-button-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: nowrap; /* keep children on one line */
+  white-space: nowrap;
+  overflow-x: auto; /* allow horizontal scroll on small screens */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* make dropdowns inside the button row slightly smaller so they fit */
+.filter-button-row .filter-dropdown {
+  min-width: 140px;
+}
+
 .filter-select {
   width: 100%;
   padding: 0.75rem 1.25rem;

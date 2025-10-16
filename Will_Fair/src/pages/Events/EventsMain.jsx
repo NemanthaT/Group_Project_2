@@ -199,19 +199,32 @@ function FeaturedContent() {
             </select>
           </div>
 
-          <div className="filter-dropdown">
-            <select 
-              className="filter-select"
-              value={filters.skills}
-              onChange={(e) => handleFilterChange(e, 'skills')}
-            >
-              <option value="">Skills Needed</option>
-              <option value="teaching">Teaching</option>
-              <option value="caregiving">Caregiving</option>
-              <option value="manual">Manual Labor</option>
-              <option value="technical">Technical</option>
-              <option value="none">No Experience Needed</option>
-            </select>
+          <div className="filter-button-row">
+            <div className="filter-dropdown">
+              <select 
+                className="filter-select"
+                value={filters.skills}
+                onChange={(e) => handleFilterChange(e, 'skills')}
+              >
+                <option value="">Skills Needed</option>
+                <option value="teaching">Teaching</option>
+                <option value="caregiving">Caregiving</option>
+                <option value="manual">Manual Labor</option>
+                <option value="technical">Technical</option>
+                <option value="none">No Experience Needed</option>
+              </select>
+            </div>
+
+            {/* Add Event button placed beside the skills filter */}
+            <div className="filter-dropdown">
+              <button
+                className="btn btn-primary"
+                onClick={() => alert('Add Event clicked')}
+                type="button"
+              >
+                 + Add Event
+              </button>
+            </div>
           </div>
         </div>
       </section>
