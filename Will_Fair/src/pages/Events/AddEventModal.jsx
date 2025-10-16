@@ -1,6 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import './AddEventModal.css';
 
+// Option lists
+const TYPE_OPTIONS = [
+  { value: 'environment', label: 'Environment' },
+  { value: 'teaching', label: 'Teaching' },
+  { value: 'caregiving', label: 'Caregiving' },
+  { value: 'construction', label: 'Construction' },
+  { value: 'admin', label: 'Administration' }
+];
+
+const COMMITMENT_OPTIONS = [
+  { value: 'one-time', label: 'One-time' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'flexible', label: 'Flexible' }
+];
+
+const LOCATION_OPTIONS = [
+  { value: 'Colombo', label: 'Colombo' },
+  { value: 'Galle', label: 'Galle' },
+  { value: 'Kandy', label: 'Kandy' },
+  { value: 'Matara', label: 'Matara' },
+  { value: 'Yala', label: 'Yala' }
+];
+
+const SKILLS_OPTIONS = [
+  { value: 'teaching', label: 'Teaching' },
+  { value: 'caregiving', label: 'Care-Giving' },
+  { value: 'manual', label: 'Manual Labour' },
+  { value: 'technical', label: 'Technical' },
+  { value: 'none', label: 'No Experience' }
+];
+
 export default function AddEventModal({ isOpen, onClose, onCreate }) {
   const [form, setForm] = useState({
     name: '',
@@ -10,7 +42,10 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     endDate: '',
     description: '',
     volunteersNeeded: 5,
-    location: ''
+    location: '',
+    type: '',
+    commitment: '',
+    skills: ''
   });
 
   useEffect(() => {
@@ -57,7 +92,42 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
 
           <div className="form-row">
             <label>Location</label>
-            <input type="text" value={form.location} onChange={(e) => setForm({...form, location: e.target.value})} />
+            <select value={form.location} onChange={(e) => setForm({...form, location: e.target.value})}>
+              <option value="">Location</option>
+              {LOCATION_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label>Volunteer Type</label>
+            <select value={form.type} onChange={(e) => setForm({...form, type: e.target.value})}>
+              <option value="">Volunteer Type</option>
+              {TYPE_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label>Time Commitment</label>
+            <select value={form.commitment} onChange={(e) => setForm({...form, commitment: e.target.value})}>
+              <option value="">Time Commitment</option>
+              {COMMITMENT_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label>Skills</label>
+            <select value={form.skills} onChange={(e) => setForm({...form, skills: e.target.value})}>
+              <option value="">Skills Needed</option>
+              {SKILLS_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-row">
