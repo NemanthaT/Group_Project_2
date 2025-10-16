@@ -177,11 +177,19 @@
 }
 
 .remove-document-button {
-  background: transparent;
+  background: #dc2626; /* red-600 */
+  color: #fff;
   border: 1px solid rgba(0,0,0,0.08);
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.remove-document-button:hover {
+  background: #b91c1c; /* darker red on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
 .image-preview img {
@@ -193,6 +201,8 @@
 .modal-form input[type="text"],
 .modal-form input[type="date"],
 .modal-form input[type="number"],
+.modal-form input[type="email"],
+.modal-form input[type="tel"],
 .modal-form textarea,
 .modal-form select {
   padding: 10px 12px;

@@ -45,7 +45,10 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     location: '',
     type: '',
     commitment: '',
-    skills: ''
+    skills: '',
+    contactName: '',
+    contactEmail: '',
+    contactNumber: ''
   });
 
   // image and document uploads (required)
@@ -55,7 +58,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
 
   // reset form when modal opens
   useEffect(() => {
-    if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '' });
+    if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '', type: '', commitment: '', skills: '', contactName: '', contactEmail: '', contactNumber: '' });
   }, [isOpen]);
 
   // prevent background scrolling while modal is open
@@ -264,6 +267,21 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
           <div className="form-row">
             <label>Event Description</label>
             <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} rows={4}></textarea>
+          </div>
+
+          <div className="form-row">
+            <label>Contact Name</label>
+            <input type="text" value={form.contactName} onChange={(e) => setForm({...form, contactName: e.target.value})} />
+          </div>
+
+          <div className="form-row">
+            <label>Contact Gmail</label>
+            <input type="email" placeholder="example@gmail.com" value={form.contactEmail} onChange={(e) => setForm({...form, contactEmail: e.target.value})} />
+          </div>
+
+          <div className="form-row">
+            <label>Contact Number</label>
+            <input type="tel" placeholder="e.g. +94 77 123 4567" value={form.contactNumber} onChange={(e) => setForm({...form, contactNumber: e.target.value})} />
           </div>
 
           <div className="form-actions">
