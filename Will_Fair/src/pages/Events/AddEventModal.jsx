@@ -48,6 +48,11 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     skills: ''
   });
 
+  // image and document uploads (required)
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [documentFiles, setDocumentFiles] = useState([]);
+
   // reset form when modal opens
   useEffect(() => {
     if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '' });
@@ -85,7 +90,18 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
 
         <form className="modal-form" onSubmit={(e) => {
           e.preventDefault();
-          onCreate(form);
+          // validate required image and at least one document
+          if (!imageFile) {
+            alert('Please attach an image for the event (required).');
+            return;
+          }
+          if (!documentFiles || documentFiles.length === 0) {
+            alert('Please upload at least one proof document (PDF).');
+            return;
+          }
+
+          // attach files info to form object passed to onCreate
+          onCreate({ ...form, imageFile, documents: documentFiles });
         }}>
           <div className="form-row">
             <label>Event Name</label>
@@ -161,6 +177,88 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
           <div className="form-row">
             <label>Number of Volunteers</label>
             <input type="number" min="1" value={form.volunteersNeeded} onChange={(e) => setForm({...form, volunteersNeeded: e.target.value})} />
+          </div>
+
+          {/* Image upload (required) */}
+          <div className="form-row">
+            <label>Event Image (required)</label>
+            <div className="image-upload-card">
+              <input
+                type="file"
+                id="eventImageUpload"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files && e.target.files[0];
+                  if (!file) return;
+                  if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    return;
+                  }
+                  setImageFile(file);
+                  const url = URL.createObjectURL(file);
+                  setImagePreview(url);
+                }}
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="eventImageUpload" className="choose-file-button">
+                {imageFile ? 'Change image' : 'Choose image'}
+              </label>
+              <div style={{ marginTop: 12 }}>
+                {imagePreview ? (
+                  <div className="image-preview">
+                    <img src={imagePreview} alt="preview" style={{ maxWidth: 300, borderRadius: 8 }} />
+                    <div>
+                      <button type="button" className="remove-document-button" onClick={() => { URL.revokeObjectURL(imagePreview); setImagePreview(null); setImageFile(null); }}>
+                        Remove Image
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <span style={{ color: 'rgba(0,0,0,0.6)' }}>No image selected</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Document uploads (required, PDF) */}
+          <div className="form-row">
+            <label>Proof Documents (PDF) (required)</label>
+            <div className="file-upload-card">
+              <input
+                type="file"
+                id="eventDocumentUpload"
+                accept=".pdf"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  const pdfFiles = files.filter(f => f.type === 'application/pdf');
+                  if (pdfFiles.length === 0) {
+                    alert('Please select PDF document(s) only.');
+                    return;
+                  }
+                  setDocumentFiles(prev => [...prev, ...pdfFiles]);
+                }}
+                multiple
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="eventDocumentUpload" className="choose-files-button">
+                Choose files
+              </label>
+
+              <div className="file-display" style={{ marginTop: 12 }}>
+                {documentFiles.length > 0 ? (
+                  <div className="document-list">
+                    {documentFiles.map((file, index) => (
+                      <div key={index} className="document-item">
+                        <span>{file.name}</span>
+                        <button type="button" onClick={() => setDocumentFiles(prev => { const copy = [...prev]; copy.splice(index,1); return copy; })} className="remove-document-button">Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span>No documents selected</span>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="form-row">

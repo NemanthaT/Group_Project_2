@@ -137,6 +137,58 @@
   transform: translateX(-50%) translateY(-4px);
 }
 
+/* File/Image upload styles */
+.choose-file-button,
+.choose-files-button {
+  display: inline-block;
+  background: #0f172a;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-upload-card,
+.image-upload-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-display {
+  margin-top: 8px;
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fbfbfb;
+  border: 1px solid #e6eef8;
+}
+
+.remove-document-button {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.image-preview img {
+  max-width: 280px;
+  border-radius: 8px;
+}
+
 /* Inputs and selects share the same visual style */
 .modal-form input[type="text"],
 .modal-form input[type="date"],
