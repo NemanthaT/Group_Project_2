@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "@/pages/landingPage/LandingPage";
 import Events from "@/pages/Events/EventsMain";
+import EventDetails from "@/pages/Events/EventDetails";
 import Reg from "@/pages/signIn/Reg";
 import Marketplace from "@/pages/MarketPlace/MarketPlace";
 import Users from "@/pages/users/users";
@@ -16,6 +17,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/Events" element={<Events user={user} />} />
+      <Route path="/Events/:id" element={<EventDetails />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
       <Route path="/marketplace/*" element={<Marketplace />} />
