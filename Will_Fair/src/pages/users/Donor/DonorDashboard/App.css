@@ -49,7 +49,7 @@ body {
   background: #0a3580;
 }
 
-.donor-dashboard .btn-secondary {
+.donor-dashboard .btn-secondary1 {
   border: 2px solid #0d429b;
   background: rgba(13, 66, 155, 0.05);
   color: #0d429b;
@@ -57,7 +57,7 @@ body {
   padding-bottom: 25px;
 }
 
-.donor-dashboard .btn-secondary:hover {
+.donor-dashboard .btn-secondary1:hover {
     background: rgba(13, 66, 155, 0.1);
     border-color: #8b5cf6;
     color: #8b5cf6;

@@ -4,7 +4,7 @@ const styles = {
   headerContent: { textAlign: 'center' },
   dashboardTitle: { fontSize: '32px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' },
   dashboardSubtitle: { fontSize: '16px', color: '#6b7280' },
-  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '24px' },
+  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '24px', marginTop: '12%' },
   statCard: { background: 'white', borderRadius: '12px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)' },
   statIcon: { width: '56px', height: '56px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' },
   monetaryIcon: { background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' },

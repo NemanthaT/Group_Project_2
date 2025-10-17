@@ -77,7 +77,7 @@ const RecentDonationRequests = () => {
                 
                 <div className="donation-actions">
                   <button className="btn btn-primary" onClick={() => navigate(`/users/donor/donations/${donation.request_id}/donate`)}>Donate Now</button>
-                  <button className="btn btn-secondary" onClick={() => navigate(`/users/donor/donations/${donation.request_id}/view`)}>View Details</button>
+                  <button className="btn btn-secondary1" onClick={() => navigate(`/users/donor/donations/${donation.request_id}/view`)}>View Details</button>
                 </div>
               </div>
             </div>
