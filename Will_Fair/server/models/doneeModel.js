@@ -12,13 +12,16 @@ async function getTotalDonees() {
 
 // Get all donees with summary info
 async function getAllDonees() {
-  const res = await pool.query('SELECT donee_id, name, email, phone, status, verified FROM donees');
+  const res = await pool.query('SELECT donee_id, first_name, last_name, email, phone, verification_status FROM donees');
+  res.rows.forEach(row => {
+    row.name = row.first_name + ' ' + row.last_name;
+  });
   return res.rows;
 }
 
 // Get number of donees pending verification
 async function getPendingVerifications() {
-  const res = await pool.query('SELECT COUNT(*) AS pending FROM donees WHERE verified = false');
+  const res = await pool.query('SELECT COUNT(*) AS pending FROM donees WHERE verification_status = $1', ['pending']);
   return Number(res.rows[0].pending);
 }
 
