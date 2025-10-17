@@ -41,15 +41,21 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
 
       <ProgressBar current={donation.quantity} target={donation.targetQuantity} type="nonMonetary" />
 
-      {donation.quantity >= donation.targetQuantity && donation.status === 'active' && (
-        <button style={styles.completeBtn} onClick={() => onComplete(donation.id, 'nonMonetary')}>
-          <CheckCircle size={18} />
-          Mark as Completed
-        </button>
+      {donation.status === 'active' && (
+        <>
+          <button style={styles.completeBtn} onClick={() => onComplete(donation.id, 'nonMonetary')}>
+            <CheckCircle size={18} />
+            Mark as Completed
+          </button>
+          <button style={styles.sentBtnDonation} onClick={() => onSent(donation.id, 'nonMonetary')}>
+            <TrendingUp size={18} />
+            Mark as Sent to Donee
+          </button>
+        </>
       )}
-      
+
       {donation.status === 'completed' && (
-        <button style={styles.sentBtn} onClick={() => onSent(donation.id, 'nonMonetary')}>
+        <button style={styles.sentBtnDonation} onClick={() => onSent(donation.id, 'nonMonetary')}>
           <TrendingUp size={18} />
           Mark as Sent to Donee
         </button>
