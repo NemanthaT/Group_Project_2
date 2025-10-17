@@ -36,7 +36,7 @@ const SKILLS_OPTIONS = [
   { value: 'none', label: 'No Experience' }
 ];
 
-export default function AddEventModal({ isOpen, onClose }) {
+export default function AddEventModal({ isOpen, onClose, onSuccess }) {
   const [form, setForm] = useState({
     name: '',
     isRange: false,
@@ -236,7 +236,7 @@ export default function AddEventModal({ isOpen, onClose }) {
     console.log('Form Data:', formData);
 
     try {
-      await axios.post('http://localhost:5000/events', formData, {
+      await axios.post('http://localhost:5000/events/createEvent', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       toast.success('Event created successfully!');
@@ -265,6 +265,11 @@ export default function AddEventModal({ isOpen, onClose }) {
       setImagePreview(null);
       setDocumentFiles([]);
       setErrors({});
+      
+      // Refresh the events list
+      if (onSuccess) {
+        onSuccess();
+      }
       
       onClose();
     } catch (error) {

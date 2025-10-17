@@ -21,25 +21,25 @@ function FeaturedContent() {
   const [eventsError, setEventsError] = useState(null);
 
   // fetch events on mount (use axios pattern)
+  const fetchEvents = async () => {
+    setLoadingEvents(true);
+    setEventsError(null);
+    try {
+      const res = await axios.get('http://localhost:5000/events');
+      const data = res.data;
+      if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
+
+      // Backend now returns frontend-ready event objects. Use them directly.
+      setOpportunities(data.events || []);
+    } catch (err) {
+      console.error('Error fetching events', err);
+      setEventsError(err.message || 'Error loading events');
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchEvents = async () => {
-      setLoadingEvents(true);
-      setEventsError(null);
-      try {
-        const res = await axios.get('http://localhost:5000/events');
-        const data = res.data;
-        if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
-
-        // Backend now returns frontend-ready event objects. Use them directly.
-        setOpportunities(data.events || []);
-      } catch (err) {
-        console.error('Error fetching events', err);
-        setEventsError(err.message || 'Error loading events');
-      } finally {
-        setLoadingEvents(false);
-      }
-    };
-
     fetchEvents();
   }, []);
 
@@ -193,25 +193,7 @@ function FeaturedContent() {
       <AddEventModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onCreate={(formData) => {
-          const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
-          const date = formData.isRange ? formData.startDate : formData.date;
-          const newOpp = {
-            id,
-            title: formData.name || 'Untitled Event',
-            description: formData.description,
-            type: formData.type || 'other',
-            commitment: formData.commitment || 'flexible',
-            location: formData.location || 'TBD',
-            skills: formData.skills || 'none',
-            volunteersNeeded: Number(formData.volunteersNeeded) || 0,
-            volunteersSigned: 0,
-            image: '',
-            date: date || ''
-          };
-          setOpportunities([newOpp, ...opportunities]);
-          setShowAddModal(false);
-        }}
+        onSuccess={fetchEvents}
       />
 
       <section className="programs">
