@@ -35,10 +35,10 @@ const WelfareDashboard = () => {
       .then(data => {
         if (data && data.success && data.stats) {
           setStats({
-            totalMonetary: data.stats.totalMonetary || 0,
-            activeRequests: data.stats.activeRequests || 0,
-            completedNotSent: data.stats.completedNotSent || 0,
-            sentDonations: data.stats.sentDonations || 0,
+            totalMonetary: data.stats.totalRaised || 0,
+            activeRequests: data.stats.activeCampaigns || 0,
+            completedNotSent: data.stats.completeCampaigns || 0,
+            sentDonations: data.stats.sentCampaigns || 0,
             totalEvents: data.stats.totalEvents || 0,
             totalVolunteers: data.stats.totalVolunteers || 0
           });
@@ -58,7 +58,7 @@ const WelfareDashboard = () => {
       });
 
     // Fetch monetary donations
-    fetch('http://localhost:5000/donations?type=monetary')
+    fetch('http://localhost:5000/donations/donationsReg/?type=monetary')
       .then(res => res.json())
       
       .then(data => {
@@ -74,7 +74,7 @@ const WelfareDashboard = () => {
       });
 
     // Fetch non-monetary donations
-    fetch('http://localhost:5000/donations?type=nonMonetary')
+    fetch('http://localhost:5000/donations/donationsReg?type=nonMonetary')
       .then(res => res.json())
       .then(data => {
         console.log('Non-monetary donations data:', data);
@@ -89,7 +89,7 @@ const WelfareDashboard = () => {
       });
 
     // Fetch events (if backend endpoint exists)
-    fetch('http://localhost:5000/events')
+    /*fetch('http://localhost:5000/events')
       .then(res => res.json())
       .then(data => {
         setEvents(data);
@@ -97,7 +97,7 @@ const WelfareDashboard = () => {
       .catch(err => {
         // If no backend for events, ignore error
         // console.error('Failed to fetch events:', err);
-      });
+      });*/
   }, []);
 
   const markAsCompleted = (id, type) => {
@@ -275,7 +275,7 @@ const WelfareDashboard = () => {
                 {activeTab === 'monetary' 
                   ? filteredDonations.map(donation => (
                       <MonetaryDonationCard 
-                        key={donation.id}
+                        key={donation.request_id}
                         donation={donation}
                         onComplete={markAsCompleted}
                         onSent={markAsSent}
@@ -285,7 +285,7 @@ const WelfareDashboard = () => {
                     ))
                   : filteredDonations.map(donation => (
                       <NonMonetaryDonationCard 
-                        key={donation.id}
+                        key={donation.request_id}
                         donation={donation}
                         onComplete={markAsCompleted}
                         onSent={markAsSent}

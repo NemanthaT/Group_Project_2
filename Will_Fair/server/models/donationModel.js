@@ -493,6 +493,16 @@ async function getDonationStats() {
       "SELECT COUNT(*) AS active_campaigns FROM donation_requests WHERE status = 'active'"
     );
 
+    // Complete campaigns
+    const campaignsCom = await pool.query(
+      "SELECT COUNT(*) AS complete_campaigns FROM donation_requests WHERE status = 'completed'"
+    );
+
+    // Sent campaigns
+    const campaignsSent = await pool.query(
+      "SELECT COUNT(*) AS sent_campaigns FROM donation_requests WHERE status = 'sent'"
+    );
+
     // Lives impacted: use number of distinct donees that have received > 0 (proxy)
     const livesRes = await pool.query(
       'SELECT COUNT(DISTINCT donee_id) AS lives_impacted FROM donation_requests WHERE COALESCE(quantity_received,0) > 0'
@@ -503,6 +513,8 @@ async function getDonationStats() {
       raisedThisMonth: Number(monthRes.rows[0].raised_this_month) || 0,
       activeDonors: Number(donorsRes.rows[0].active_donors) || 0,
       activeCampaigns: Number(campaignsRes.rows[0].active_campaigns) || 0,
+      completeCampaigns: Number(campaignsCom.rows[0].complete_campaigns) || 0,
+      sentCampaigns: Number(campaignsSent.rows[0].sent_campaigns) || 0,
       livesImpacted: Number(livesRes.rows[0].lives_impacted) || 0,
     };
 
@@ -513,21 +525,27 @@ async function getDonationStats() {
   }
 }
 
-async function getDonationsByType(type) {
+async function getDonationsForReg(type) {
   try {
-    const dbType = type === 'monetary' ? 'true' : 'false';
+    const dbType = type=== 'monetary' ? 'Monetary' : 'Non Monetary';
+    console.log('Type: ',dbType);
     const query = `
-      SELECT dr.*, dc.category_name AS category
+      SELECT dr.*, d.first_name, d.last_name
       FROM donation_requests dr
-      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+      LEFT JOIN donees d ON dr.donee_id = d.donee_id
       WHERE dr.status = 'active' AND dr.type = $1
-      ORDER BY dr.created_at DESC NULLS LAST, dr.request_id DESC
     `;
     const result = await pool.query(query, [dbType]);
+    console.log('Fetched donations for registration:', result.rows);
+    for (const row of result.rows) {
+      if (row.first_name && row.last_name) {
+        row.doneeName = `${row.first_name} ${row.last_name}`;
+      }
+    }
     return { success: true, donations: result.rows };
   } catch (err) {
-    console.error('Database error during getDonationsByType():', err);
-    return { success: false, message: 'Database error' };
+    console.error('Database error during getDonationsForReg():', err);
+    return { success: false, message: `Database error ${err.message}` };
   }
 }
 
@@ -547,5 +565,5 @@ export {
   addDonationAmount,
   getActiveDonations,
   getDonationStats,
-  getDonationsByType
+  getDonationsForReg
 };

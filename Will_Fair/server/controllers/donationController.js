@@ -6,7 +6,8 @@ import {
   getNonMonetaryDonationCategories,
   deleteDonationById,
   getRecentDonations,
-  getDonationById
+  getDonationById,
+  getDonationsForReg
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -304,7 +305,7 @@ export const getDonationByIdController = async (req, res) => {
   }
 };
 
-export const getDonationsByType = async (req, res) => {
+export const getDonationsForRegController = async (req, res) => {
   const { type } = req.query;
 
   if (!type || (type !== 'monetary' && type !== 'nonMonetary')) {
@@ -315,8 +316,7 @@ export const getDonationsByType = async (req, res) => {
   }
 
   try {
-    const { getDonationsByType } = await import('../models/donationModel.js');
-    const result = await getDonationsByType(type);
+    const result = await getDonationsForReg(type);
 
     if (result.success) {
       res.status(200).json({ success: true, donations: result.donations });
