@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useRouter } from 'expo-router';
 import AddEventModal from './AddEventModal';
 import axios from 'axios';
 
@@ -8,6 +9,7 @@ import axios from 'axios';
 const API_BASE_URL = 'http://10.237.31.71:5000/api';
 
 export default function EventsScreen() {
+  const router = useRouter();
   const [opportunities, setOpportunities] = useState([]);
   const [filters, setFilters] = useState({ sort: '', type: '', commitment: '', location: '', skills: '' });
   const [showAddModal, setShowAddModal] = useState(false);
@@ -151,8 +153,23 @@ export default function EventsScreen() {
           </View>
 
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={[styles.actionBtn, styles.outlineBtn]}><Text>Details</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtn, styles.primaryBtn]}><Text style={{ color: '#fff' }}>Volunteer</Text></TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionBtn, styles.outlineBtn]}
+              onPress={() => router.push(`/events/${item.id}`)}
+            >
+              <Text>Details</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionBtn, styles.primaryBtn]}
+              onPress={() => {
+                router.push({
+                  pathname: '/events/volunteer-signup',
+                  params: { id: item.id, eventName: item.title }
+                });
+              }}
+            >
+              <Text style={{ color: '#fff' }}>Volunteer</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )} />
