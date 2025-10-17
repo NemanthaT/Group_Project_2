@@ -15,6 +15,7 @@ const WelfareDashboard = () => {
   const [currentPage, setCurrentPage] = useState('overview');
   const [activeTab, setActiveTab] = useState('monetary');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [donations, setDonations] = useState({ monetary: [], nonMonetary: [] });
   const [events, setEvents] = useState([]);
@@ -170,18 +171,27 @@ const WelfareDashboard = () => {
 
   const getFilteredDonations = () => {
     const currentDonations = donations[activeTab];
-    
     const filters = {
       active: d => d.status === 'active',
       completed: d => d.status === 'completed',
       sent: d => d.status === 'sent',
       all: () => true
     };
-
-    return currentDonations.filter(filters[filterStatus]);
+    // Filter by status and then by donee name (case-insensitive)
+    return currentDonations
+      .filter(filters[filterStatus])
+      .filter(donation =>
+        !searchTerm || (donation.doneeName && donation.doneeName.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
   };
 
+  // Pagination state for donation cards
+  const [donationPage, setDonationPage] = useState(1);
+  const itemsPerPage = 6;
+
   const filteredDonations = getFilteredDonations();
+  const totalPages = Math.ceil(filteredDonations.length / itemsPerPage);
+  const paginatedDonations = filteredDonations.slice((donationPage - 1) * itemsPerPage, donationPage * itemsPerPage);
 
   return (
     <div style={styles.dashboard}>
@@ -189,9 +199,10 @@ const WelfareDashboard = () => {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #f3f4f6;
           min-height: 100vh;
         }
+          {/*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/}
       `}</style>
       
       {/*<header style={styles.dashboardHeader}>
@@ -281,15 +292,37 @@ const WelfareDashboard = () => {
           </div>
 
           <div style={styles.filtersContainer}>
-            <div style={styles.filterHeader}>
-              <Filter size={18} />
-              <span style={styles.filterTitle}>Filter by Status:</span>
+            <div>
+              <div style={styles.filterHeader}>
+                <Filter size={18} />
+                <span style={styles.filterTitle}>Filter by Status:</span>
+              </div>
+              <div style={styles.filterButtons}>
+                <FilterButton active={filterStatus === 'all'} label="All Donations" onClick={() => setFilterStatus('all')} />
+                <FilterButton active={filterStatus === 'active'} label="Active" onClick={() => setFilterStatus('active')} />
+                <FilterButton active={filterStatus === 'completed'} label="Completed (Not Sent)" onClick={() => setFilterStatus('completed')} />
+                <FilterButton active={filterStatus === 'sent'} label="Sent to Donee" onClick={() => setFilterStatus('sent')} />
+              </div>
             </div>
-            <div style={styles.filterButtons}>
-              <FilterButton active={filterStatus === 'all'} label="All Donations" onClick={() => setFilterStatus('all')} />
-              <FilterButton active={filterStatus === 'active'} label="Active" onClick={() => setFilterStatus('active')} />
-              <FilterButton active={filterStatus === 'completed'} label="Completed (Not Sent)" onClick={() => setFilterStatus('completed')} />
-              <FilterButton active={filterStatus === 'sent'} label="Sent to Donee" onClick={() => setFilterStatus('sent')} />
+            {/* Search bar for donee name */}
+            <div>
+              <div style={{ marginTop: 16, display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="Search by Donee Name..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  style={{
+                    padding: '8px 12px',
+                    marginTop: '24px',
+                    borderRadius: 6,
+                    border: '1px solid #ccc',
+                    fontSize: 16,
+                    width: 240,
+                    marginRight: 8
+                  }}
+                />
+              </div>
             </div>
           </div>
 
@@ -297,30 +330,53 @@ const WelfareDashboard = () => {
             {filteredDonations.length === 0 ? (
               <EmptyState message="No donations found for this filter" />
             ) : (
-              <div style={styles.donationsList}>
-                {activeTab === 'monetary' 
-                  ? filteredDonations.map(donation => (
-                      <MonetaryDonationCard 
-                        key={donation.request_id}
-                        donation={donation}
-                        onComplete={markAsCompleted}
-                        onSent={markAsSent}
-                        getStatusColor={getStatusColor}
-                        isTargetReached={isTargetReached}
-                      />
-                    ))
-                  : filteredDonations.map(donation => (
-                      <NonMonetaryDonationCard 
-                        key={donation.request_id}
-                        donation={donation}
-                        onComplete={markAsCompleted}
-                        onSent={markAsSent}
-                        getStatusColor={getStatusColor}
-                        isTargetReached={isTargetReached}
-                      />
-                    ))
-                }
-              </div>
+              <>
+                <div style={styles.donationsList}>
+                  {activeTab === 'monetary'
+                    ? paginatedDonations.map(donation => (
+                        <MonetaryDonationCard
+                          key={donation.request_id}
+                          donation={donation}
+                          onComplete={markAsCompleted}
+                          onSent={markAsSent}
+                          getStatusColor={getStatusColor}
+                          isTargetReached={isTargetReached}
+                        />
+                      ))
+                    : paginatedDonations.map(donation => (
+                        <NonMonetaryDonationCard
+                          key={donation.request_id}
+                          donation={donation}
+                          onComplete={markAsCompleted}
+                          onSent={markAsSent}
+                          getStatusColor={getStatusColor}
+                          isTargetReached={isTargetReached}
+                        />
+                      ))
+                  }
+                </div>
+                {/* Pagination Controls */}
+                <div className="pagination">
+                  <button
+                    className="pagination-btn"
+                    onClick={() => setDonationPage(donationPage - 1)}
+                    disabled={donationPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <div className="pagination-info">
+                    <span>Page {donationPage} of {totalPages}</span>
+                    <span className="total-items">Total: {filteredDonations.length} donations</span>
+                  </div>
+                  <button
+                    className="pagination-btn"
+                    onClick={() => setDonationPage(donationPage + 1)}
+                    disabled={donationPage === totalPages || totalPages === 0}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </>

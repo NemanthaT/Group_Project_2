@@ -29,7 +29,7 @@ const styles = {
   tabs: { display: 'flex', gap: '8px' },
   tab: { flex: 1, padding: '16px 24px', border: 'none', background: 'transparent', borderRadius: '8px', fontSize: '16px', fontWeight: '600', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   activeTab: { background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white' },
-  filtersContainer: { background: 'white', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)' },
+  filtersContainer: { display: 'flex', justifyContent: 'space-between', background: 'white', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)' },
   filterHeader: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#374151' },
   filterTitle: { fontSize: '16px', fontWeight: '600' },
   filterButtons: { display: 'flex', flexWrap: 'wrap', gap: '12px' },
