@@ -3,10 +3,15 @@ import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import AddEventModal from './AddEventModal';
+import VolunteerEventModal from './VolunteerEventModal';
 
 function EventDetails({ opportunities = [] }) {
 
   const [showAddModal, setShowAddModal] = useState(false);
+
+  //Volunteer Modal State
+  const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const { id } = useParams();
   const location = useLocation();
@@ -33,6 +38,7 @@ function EventDetails({ opportunities = [] }) {
 
   return (
     <>
+
       <div className="event-details">
 
 
@@ -71,12 +77,31 @@ function EventDetails({ opportunities = [] }) {
 
             <div className="event-actions">
               <button className="btn btn-outline" onClick={() => navigate('/Events')}>Back to Events</button>
-              <button className="btn btn-primary">Volunteer</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setSelectedEvent(opp);        // store which event was clicked
+                  setShowVolunteerModal(true);  // open modal
+                }}
+              >
+                Volunteer
+              </button>
+
 
             </div>
           </div>
         </div>
       </div>
+      <VolunteerEventModal
+        isOpen={showVolunteerModal}
+        onClose={() => setShowVolunteerModal(false)}
+        onSubmit={(data) => {
+          console.log("Volunteer registered:", data);
+          console.log("For event:", selectedEvent);
+          // You can add your POST request to backend here
+        }}
+        event={selectedEvent}
+      />
     </>
   );
 }
