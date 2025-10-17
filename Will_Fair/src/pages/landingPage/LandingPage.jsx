@@ -146,7 +146,7 @@ function LandingPage() {
       </section>
 
       
-      <section className="marketplace-cta">
+      {/*<section className="marketplace-cta">
         <div className="container">
           <div className="marketplace-cta-content">
             <div className="marketplace-cta-text">
@@ -178,7 +178,7 @@ function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
 
       <section className="testimonials">
