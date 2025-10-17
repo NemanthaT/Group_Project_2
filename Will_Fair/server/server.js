@@ -7,9 +7,10 @@ import doneeRoutes from "./routes/doneeRoute.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import authManagerRoutes from "./routes/authManagerRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-
+import eventRoutes from "./routes/eventRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use("/auth", authRoutes);
 app.use("/donations", donationRoutes);
 app.use("/authManager", authManagerRoutes);
 app.use("/admin", adminRoutes);
-
+app.use("/events", eventRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
 
