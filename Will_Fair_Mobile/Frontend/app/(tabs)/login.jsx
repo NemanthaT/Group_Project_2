@@ -55,7 +55,7 @@ const handleLogin = async () => {
   try {
     console.log('Attempting login...');
     
-    const response = await fetch('http://192.168.122.72:5000/api/login', {
+    const response = await fetch('http://10.237.31.71:5000/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
