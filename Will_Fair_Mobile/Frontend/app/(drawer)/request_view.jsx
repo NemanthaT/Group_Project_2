@@ -17,11 +17,7 @@ import { router } from 'expo-router';
 const RequestView = () => {  
   const navigation = useNavigation();
   
-  // Filter states
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
-  const [selectedType, setSelectedType] = useState('All');
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('All');
+  // Removed filter states
 
   // Backend data state
   const [allRequests, setAllRequests] = useState([]);
@@ -45,7 +41,10 @@ const RequestView = () => {
         const response = await fetch(`${API_BASE}${endpoint}`);
         const data = await response.json();
         if (data.success && Array.isArray(data.donations)) {
-          const mapped = data.donations.map((item) => ({
+          // Sort by latest due date descending
+          const sorted = [...data.donations].sort((a, b) => new Date(b.due_date) - new Date(a.due_date));
+          // Show all requests
+          const mapped = sorted.map((item) => ({
             id: item.request_id,
             title: item.title,
             image_path: item.image_path,
@@ -54,7 +53,7 @@ const RequestView = () => {
             due_date: item.due_date,
             status: getStatus(item),
             type: getType(item),
-            category: item.category || 'General',
+            category: '',
           }));
           setAllRequests(mapped);
         } else {
@@ -72,35 +71,15 @@ const RequestView = () => {
   }, [showAll]);
 
   function getStatus(item) {
-    if (!item.due_date) return 'Active';
-    const due = new Date(item.due_date);
-    const now = new Date();
-    const diff = (due - now) / (1000 * 60 * 60 * 24);
-    if (diff < 2) return 'Urgent';
     if (item.quantity_received >= item.quantity_needed) return 'Completed';
     return 'Active';
   }
   function getType(item) {
-    // You can adjust this logic if you have monetary requests
-    return 'Non-Monetary';
+    return item.type || 'Non-Monetary';
   }
 
-  // Filter requests based on selected type and status
-  const getFilteredRequests = () => {
-    return allRequests.filter(request => {
-      const typeMatch = selectedType === 'All' || request.type === selectedType;
-      const statusMatch = selectedStatus === 'All' || request.status === selectedStatus;
-      return typeMatch && statusMatch;
-    });
-  };
-
-  const filteredRequests = getFilteredRequests();
-
-  // Type filter options
-  const typeOptions = ['All', 'Monetary', 'Non-Monetary'];
-  
-  // Status filter options
-  const statusOptions = ['All', 'Active', 'In Review', 'Urgent', 'Completed'];
+  // Show all requests directly
+  const filteredRequests = allRequests;
 
   const renderCard = (item) => {
     const progress = item.target > 0 ? (item.raised / item.target) * 100 : 0;
@@ -115,155 +94,124 @@ const RequestView = () => {
       }
     }
     return (
-      <View key={item.id} style={styles.card}>
-        <View style={styles.cardImageWrapper}>
-          <Image source={imageSource} style={styles.cardImage} />
-          <View
-            style={[
-              styles.statusBadge,
-              {
-                backgroundColor:
-                  item.status === "Urgent" ? "#FF4444" :
-                  item.status === "Active" ? "#4CAF50" :
-                  item.status === "Completed" ? "#2196F3" : "#9333EA",
-              },
-            ]}
-          >
-            <Text style={styles.statusText}>{item.status}</Text>
-          </View>
-          <View style={[styles.typeBadge, {
-            backgroundColor: isMoney ? '#FFB800' : '#00BCD4'
-          }]}> 
-            <Text style={styles.typeText}>{item.type}</Text>
+      <View key={item.id} style={{
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 24,
+        marginHorizontal: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
+        width: 320,
+        alignSelf: 'center',
+      }}>
+        <View style={{ position: 'relative', marginBottom: 12 }}>
+          <Image source={imageSource} style={{
+            width: '100%',
+            height: 160,
+            borderRadius: 12,
+            resizeMode: 'cover',
+          }} />
+          {/* Type badge (top right) */}
+          <View style={{
+            position: 'absolute',
+            right: 12,
+            top: 12,
+            backgroundColor: isMoney ? '#FFB800' : '#00BCD4',
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            zIndex: 2,
+          }}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>{item.type}</Text>
           </View>
         </View>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.categoryText}>{item.category}</Text>
-        <View style={{ marginBottom: 8 }}>
-          <Text style={styles.amountText}>
-            {isMoney ? 
-              `Raised: Rs. ${item.raised?.toLocaleString?.() ?? item.raised}.00` :
-              `Collected: ${item.raised} items`
-            }
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4 }}>{item.title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          {/* Category removed */}
+          <View style={{
+            backgroundColor:
+              item.status === "Active" ? "#4CAF50" :
+              item.status === "Completed" ? "#2196F3" : "#9333EA",
+            borderRadius: 6,
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            marginLeft: 'auto',
+          }}>
+            <Text style={{ color: '#fff', fontSize: 12 }}>{item.status}</Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <Text style={{ fontSize: 14, color: '#333', marginRight: 16 }}>
+            {isMoney
+              ? `Target: Rs. ${Number(item.target).toLocaleString('en-US')}.00`
+              : `Target: ${item.target} items`}
           </Text>
-          <Text style={styles.amountText}>
-            {isMoney ? 
-              `Target: Rs. ${item.target?.toLocaleString?.() ?? item.target}.00` :
-              `Target: ${item.target} items`
-            }
+          <Text style={{ fontSize: 14, color: '#333' }}>
+            {isMoney
+              ? `Received: Rs. ${Number(item.raised).toLocaleString('en-US')}.00`
+              : `Received: ${item.raised} items`}
           </Text>
         </View>
-        <View style={styles.progressBarBackground}>
-          <View style={[styles.progressBarFill, { 
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <Ionicons name="calendar-outline" size={18} color="#FF4444" style={{ marginRight: 4 }} />
+          <Text style={{ color: '#FF4444', fontSize: 14, fontWeight: 'bold' }}>
+            Deadline: {item.due_date ? new Date(item.due_date).toLocaleDateString() : 'N/A'}
+          </Text>
+        </View>
+        <View style={{ height: 8, backgroundColor: '#eee', borderRadius: 4, marginBottom: 8, overflow: 'hidden' }}>
+          <View style={{
+            height: 8,
             width: `${progress}%`,
-            backgroundColor: isMoney ? '#7B61FF' : '#00BCD4'
-          }]} />
+            backgroundColor: isMoney ? '#7B61FF' : '#00BCD4',
+            borderRadius: 4,
+          }} />
         </View>
-        <View style={styles.actionRow}>
-          <TouchableOpacity 
-            style={[styles.editButton, {
-              backgroundColor: isMoney ? '#7B61FF' : '#00BCD4'
-            }]}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#7B61FF',
+              borderRadius: 8,
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              flex: 1,
+              marginRight: 8,
+            }}
             onPress={() => {
               if (isMoney) {
-                router.push('/(drawer)/donation_payment');
+                // TODO: Navigate to donation payment
               } else {
-                router.push('/(drawer)/donationform');
+                // TODO: Navigate to donation form
               }
             }}
           >
-            <Text style={styles.editText}>
-              {isMoney ? 'Donate Money' : 'Donate Items'}
+            <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
+              Donate Now
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.viewButton}
-            onPress={() => router.push('requestview_ind')}
+          <TouchableOpacity
+            style={{
+              borderColor: '#7B61FF',
+              borderWidth: 2,
+              borderRadius: 8,
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              flex: 1,
+              marginLeft: 8,
+            }}
+            onPress={() => router.push({ pathname: '/(drawer)/requestview_ind', params: { requestId: item.id } })}
           >
-            <Text style={styles.viewText}>View Details</Text>
+            <Text style={{ color: '#7B61FF', fontWeight: 'bold', textAlign: 'center' }}>
+              View Details
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
-
-  const TypeDropdown = () => (
-    <Modal
-      transparent={true}
-      visible={showTypeDropdown}
-      onRequestClose={() => setShowTypeDropdown(false)}
-    >
-      <TouchableOpacity 
-        style={styles.dropdownOverlay}
-        onPress={() => setShowTypeDropdown(false)}
-      >
-        <View style={styles.dropdownContainer}>
-          {typeOptions.map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={[
-                styles.dropdownOption,
-                selectedType === option && styles.selectedOption
-              ]}
-              onPress={() => {
-                setSelectedType(option);
-                setShowTypeDropdown(false);
-              }}
-            >
-              <Text style={[
-                styles.dropdownOptionText,
-                selectedType === option && styles.selectedOptionText
-              ]}>
-                {option}
-              </Text>
-              {selectedType === option && (
-                <Ionicons name="checkmark" size={16} color="#7B61FF" />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </TouchableOpacity>
-    </Modal>
-  );
-
-  const StatusDropdown = () => (
-    <Modal
-      transparent={true}
-      visible={showStatusDropdown}
-      onRequestClose={() => setShowStatusDropdown(false)}
-    >
-      <TouchableOpacity 
-        style={styles.dropdownOverlay}
-        onPress={() => setShowStatusDropdown(false)}
-      >
-        <View style={styles.dropdownContainer}>
-          {statusOptions.map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={[
-                styles.dropdownOption,
-                selectedStatus === option && styles.selectedOption
-              ]}
-              onPress={() => {
-                setSelectedStatus(option);
-                setShowStatusDropdown(false);
-              }}
-            >
-              <Text style={[
-                styles.dropdownOptionText,
-                selectedStatus === option && styles.selectedOptionText
-              ]}>
-                {option}
-              </Text>
-              {selectedStatus === option && (
-                <Ionicons name="checkmark" size={16} color="#7B61FF" />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </TouchableOpacity>
-    </Modal>
-  );
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -296,39 +244,7 @@ const RequestView = () => {
           Connect with generous donors who want to help your cause
         </Text>
       </LinearGradient>
-      <View style={styles.filterRow}>
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity 
-            style={[styles.filterButton, selectedType !== 'All' && styles.activeFilterButton]}
-            onPress={() => setShowTypeDropdown(true)}
-          >
-            <Text style={[styles.filterButtonText, selectedType !== 'All' && styles.activeFilterButtonText]}>
-              Type: {selectedType}
-            </Text>
-            <Ionicons name="chevron-down" size={14} color={selectedType !== 'All' ? '#fff' : '#666'} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.filterButton, selectedStatus !== 'All' && styles.activeFilterButton]}
-            onPress={() => setShowStatusDropdown(true)}
-          >
-            <Text style={[styles.filterButtonText, selectedStatus !== 'All' && styles.activeFilterButtonText]}>
-              Status: {selectedStatus}
-            </Text>
-            <Ionicons name="chevron-down" size={14} color={selectedStatus !== 'All' ? '#fff' : '#666'} />
-          </TouchableOpacity>
-        </View>
-        {(selectedType !== 'All' || selectedStatus !== 'All') && (
-          <TouchableOpacity 
-            style={styles.clearFiltersButton}
-            onPress={() => {
-              setSelectedType('All');
-              setSelectedStatus('All');
-            }}
-          >
-            <Text style={styles.clearFiltersText}>Clear All</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      {/* Removed filter row UI */}
       <View style={styles.resultsContainer}>
         {loading ? (
           <Text style={styles.resultsText}>Loading requests...</Text>
@@ -357,7 +273,7 @@ const RequestView = () => {
         </View>
       ) : error ? (
         <View style={styles.noResultsContainer}>
-          <Ionicons name="alert-circle-outline" size={48} color="#FF4444" />
+          <Ionicons name="alert-circle-outline" size={48} color="#821010ff" />
           <Text style={styles.noResultsText}>Error loading requests</Text>
           <Text style={styles.noResultsSubtext}>{error}</Text>
         </View>
@@ -370,8 +286,7 @@ const RequestView = () => {
           <Text style={styles.noResultsSubtext}>Try adjusting your filters</Text>
         </View>
       )}
-      <TypeDropdown />
-      <StatusDropdown />
+  {/* Removed TypeDropdown and StatusDropdown */}
     </ScrollView>
   );
 };

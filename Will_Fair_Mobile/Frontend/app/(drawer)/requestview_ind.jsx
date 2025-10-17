@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,25 +9,44 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
-import { useNavigation, DrawerActions } from '@react-navigation/native';
-
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const MyDonationReq = () => {
-  const navigation = useNavigation(); 
-  const request = {
-    id: 1,
-    title: "Renovations at Early Bird Child Care",
-    location: "Colombo",
-    category: "Education",
-    image: require("../../assets/images/child.jpg"),
-    raised: 7000,
-    target: 60000,
-    status: "Active",
-    description:
-    "Our school library desperately needs updated books and learning materials to serve over 300 students effectively. Many of our current books are outdated or damaged beyond repair. We aim to create a vibrant learning hub filled with age-appropriate literature, educational resources, and reference materials that will inspire a love for reading and support academic excellence. Your donation will help us build a comprehensive library that nurtures curious minds and supports educational success.",
-  };
+  const { requestId } = useLocalSearchParams();
+  const router = useRouter();
+  const [request, setRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const progress = (request.raised / request.target) * 100;
+  useEffect(() => {
+    const fetchRequest = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`http://localhost:5000/api/donations/${requestId}`);
+        const data = await response.json();
+        if (data.success && data.request) {
+          setRequest(data.request);
+        } else {
+          setError('Request not found');
+        }
+      } catch (_err) {
+        setError('Failed to load request');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (requestId) fetchRequest();
+  }, [requestId]);
+
+  if (loading) {
+    return <View style={styles.noResultsContainer}><Text>Loading...</Text></View>;
+  }
+  if (error || !request) {
+    return <View style={styles.noResultsContainer}><Text>{error || 'Request not found'}</Text></View>;
+  }
+
+  const progress = (request.quantity_received / request.quantity_needed) * 100;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -59,58 +78,49 @@ const MyDonationReq = () => {
 
       {/* Image Card */}
       <View style={styles.card}>
-        <Image source={request.image} style={styles.cardImage} />
+        <Image source={{ uri: request.image_path }} style={styles.cardImage} />
 
-        {/* Location & Category */}
-       <View style={styles.infoRow}>
-        {/* Location on the left */}
-        <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={18} color="#7B61FF" />
-            <Text style={styles.sectionTitle}>{request.location}</Text>
-        </View>
-
-        {/* Category button on the right */}
+        {/* Category */}
         <View style={styles.categoryChip}>
             <Text style={styles.categoryText}>{request.category}</Text>
         </View>
-        </View>
-
 
         {/* Progress Bar */}
         <View style={styles.progressBarBackground}>
           <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
         </View>
-        
 
         <View style={styles.amountRow}>
-        {/* Left: Raised and Target */}
-        <View>
-           <Text style={styles.headerTitle}>
-            Book Funding
+          <View>
+            <Text style={styles.amountLabel}>
+              Raised: Rs. {Number(request.quantity_received).toLocaleString('en-US')}.00
             </Text>
             <Text style={styles.amountLabel}>
-            Raised: {request.raised.toLocaleString()}.00
+              Target: Rs. {Number(request.quantity_needed).toLocaleString('en-US')}.00
             </Text>
-            <Text style={styles.amountLabel}>
-            Target: {request.target.toLocaleString()}.00
-            </Text>
-        </View>
-
-        {/* Right: Status badge */}
-        <View style={styles.statusBadgeNew}>
+          </View>
+          <View style={styles.statusBadgeNew}>
             <Text style={styles.statusTextNew}>{request.status}</Text>
+          </View>
         </View>
-        </View>
-
 
         {/* Description */}
         <Text style={styles.description}>{request.description}</Text>
 
+        {/* Deadline & Organizer */}
+        <View style={{ marginTop: 12 }}>
+          <Text style={styles.amountLabel}>
+            Deadline: {request.due_date ? new Date(request.due_date).toLocaleDateString() : 'N/A'}
+          </Text>
+          <Text style={styles.amountLabel}>
+            Organizer: {request.organizer || 'Anonymous'}
+          </Text>
+        </View>
+
         {/* Action Buttons */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.statusBadgeNew}>
-            <Text style={styles.statusTextNew}
-             onPress={() => navigation.navigate('donation_payment')}>Donate</Text>
+          <TouchableOpacity style={styles.statusBadgeNew} onPress={() => navigation.navigate('donation_payment')}>
+            <Text style={styles.statusTextNew}>Donate</Text>
           </TouchableOpacity>
         </View>
       </View>
