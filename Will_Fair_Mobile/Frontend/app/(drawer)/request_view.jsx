@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,81 +23,67 @@ const RequestView = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('All');
 
-  // All requests data
-  const allRequests = [
-    // Monetary Requests
-    {
-      id: 1,
-      title: "Medical Treatment for Cancer Patient",
-      image: require("../../assets/images/child.jpg"),
-      raised: 15000,
-      target: 50000,
-      status: "Active",
-      type: "Monetary",
-      category: "Healthcare"
-    },
-    {
-      id: 2,
-      title: "School Fee Support for Underprivileged Children",
-      image: require("../../assets/images/cloth1.jpg"),
-      raised: 8000,
-      target: 25000,
-      status: "Active",
-      type: "Monetary",
-      category: "Education"
-    },
-    {
-      id: 3,
-      title: "Emergency Flood Relief Fund",
-      image: require("../../assets/images/program3.png"),
-      raised: 30000,
-      target: 100000,
-      status: "Urgent",
-      type: "Monetary",
-      category: "Disaster Relief"
-    },
-    // Non-Monetary Requests
-    {
-      id: 4,
-      title: "Books and Educational Materials Needed",
-      image: require("../../assets/images/books.jpg"),
-      raised: 150, // Number of books collected
-      target: 500,
-      status: "Active",
-      type: "Non-Monetary",
-      category: "Education"
-    },
-    {
-      id: 5,
-      title: "Clothing Donation for Homeless Shelter",
-      image: require("../../assets/images/cloths.jpeg"),
-      raised: 80, // Number of clothing items
-      target: 200,
-      status: "Active",
-      type: "Non-Monetary",
-      category: "Basic Needs"
-    },
-    {
-      id: 6,
-      title: "Food Items for Community Kitchen",
-      image: require("../../assets/images/food.jpg"),
-      raised: 45, // Number of food packets
-      target: 100,
-      status: "Active",
-      type: "Non-Monetary",
-      category: "Basic Needs"
-    },
-    {
-      id: 7,
-      title: "Medical Equipment for Rural Clinic",
-      image: require("../../assets/images/medical-equipment.png"),
-      raised: 3, // Number of equipment donated
-      target: 10,
-      status: "In Review",
-      type: "Non-Monetary",
-      category: "Healthcare"
-    },
-  ];
+  // Backend data state
+  const [allRequests, setAllRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+
+  // Platform-aware API base URL
+  const API_BASE = Platform.select({
+    android: 'http://192.168.122.72:5000',
+    ios: 'http://localhost:5000',
+    default: 'http://localhost:5000',
+  });
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const endpoint = showAll ? '/api/donations/all' : '/api/donations/recent';
+        const response = await fetch(`${API_BASE}${endpoint}`);
+        const data = await response.json();
+        if (data.success && Array.isArray(data.donations)) {
+          const mapped = data.donations.map((item) => ({
+            id: item.request_id,
+            title: item.title,
+            image_path: item.image_path,
+            raised: item.quantity_received,
+            target: item.quantity_needed,
+            due_date: item.due_date,
+            status: getStatus(item),
+            type: getType(item),
+            category: item.category || 'General',
+          }));
+          setAllRequests(mapped);
+        } else {
+          setAllRequests([]);
+        }
+      } catch (_err) {
+        setError('Failed to load requests');
+        setAllRequests([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+    // eslint-disable-next-line
+  }, [showAll]);
+
+  function getStatus(item) {
+    if (!item.due_date) return 'Active';
+    const due = new Date(item.due_date);
+    const now = new Date();
+    const diff = (due - now) / (1000 * 60 * 60 * 24);
+    if (diff < 2) return 'Urgent';
+    if (item.quantity_received >= item.quantity_needed) return 'Completed';
+    return 'Active';
+  }
+  function getType(item) {
+    // You can adjust this logic if you have monetary requests
+    return 'Non-Monetary';
+  }
 
   // Filter requests based on selected type and status
   const getFilteredRequests = () => {
@@ -116,14 +103,21 @@ const RequestView = () => {
   const statusOptions = ['All', 'Active', 'In Review', 'Urgent', 'Completed'];
 
   const renderCard = (item) => {
-    const progress = (item.raised / item.target) * 100;
+    const progress = item.target > 0 ? (item.raised / item.target) * 100 : 0;
     const isMoney = item.type === 'Monetary';
-
+    let imageSource = require('../../assets/images/child.jpg');
+    if (item.image_path) {
+      if (item.image_path.startsWith('http')) {
+        imageSource = { uri: item.image_path };
+      } else {
+        imageSource = { uri: `../../assets/images/child.jpg` };
+        console.log('Image URL:', imageSource.uri);
+      }
+    }
     return (
       <View key={item.id} style={styles.card}>
-        {/* Image with Status Badge */}
         <View style={styles.cardImageWrapper}>
-          <Image source={item.image} style={styles.cardImage} />
+          <Image source={imageSource} style={styles.cardImage} />
           <View
             style={[
               styles.statusBadge,
@@ -137,45 +131,34 @@ const RequestView = () => {
           >
             <Text style={styles.statusText}>{item.status}</Text>
           </View>
-          {/* Type Badge */}
           <View style={[styles.typeBadge, {
             backgroundColor: isMoney ? '#FFB800' : '#00BCD4'
-          }]}>
+          }]}> 
             <Text style={styles.typeText}>{item.type}</Text>
           </View>
         </View>
-
-        {/* Title */}
         <Text style={styles.cardTitle}>{item.title}</Text>
-
-        {/* Category */}
         <Text style={styles.categoryText}>{item.category}</Text>
-
-        {/* Raised and Target */}
         <View style={{ marginBottom: 8 }}>
           <Text style={styles.amountText}>
             {isMoney ? 
-              `Raised: Rs. ${item.raised.toLocaleString()}.00` :
+              `Raised: Rs. ${item.raised?.toLocaleString?.() ?? item.raised}.00` :
               `Collected: ${item.raised} items`
             }
           </Text>
           <Text style={styles.amountText}>
             {isMoney ? 
-              `Target: Rs. ${item.target.toLocaleString()}.00` :
+              `Target: Rs. ${item.target?.toLocaleString?.() ?? item.target}.00` :
               `Target: ${item.target} items`
             }
           </Text>
         </View>
-
-        {/* Progress Bar */}
         <View style={styles.progressBarBackground}>
           <View style={[styles.progressBarFill, { 
             width: `${progress}%`,
             backgroundColor: isMoney ? '#7B61FF' : '#00BCD4'
           }]} />
         </View>
-
-        {/* Action Buttons */}
         <View style={styles.actionRow}>
           <TouchableOpacity 
             style={[styles.editButton, {
@@ -183,10 +166,8 @@ const RequestView = () => {
             }]}
             onPress={() => {
               if (isMoney) {
-                // Navigate to donation payment for monetary donations
                 router.push('/(drawer)/donation_payment');
               } else {
-                // Navigate to donation form for non-monetary donations
                 router.push('/(drawer)/donationform');
               }
             }}
@@ -286,7 +267,6 @@ const RequestView = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
       <LinearGradient
         colors={["#7B61FF", "#9333EA"]}
         style={styles.header}
@@ -302,7 +282,6 @@ const RequestView = () => {
         >
           <Ionicons name="menu-outline" size={30} color="#fff" />
         </TouchableOpacity>
-        
         <View style={styles.logoContainer}>
           <View style={styles.logoBackground}>
             <Image
@@ -312,14 +291,11 @@ const RequestView = () => {
             />
           </View>
         </View>
-
         <Text style={styles.headerTitle}>Make a Donation</Text>
         <Text style={styles.headerSubtitle}>
           Connect with generous donors who want to help your cause
         </Text>
       </LinearGradient>
-
-      {/* Filter Buttons */}
       <View style={styles.filterRow}>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity 
@@ -331,7 +307,6 @@ const RequestView = () => {
             </Text>
             <Ionicons name="chevron-down" size={14} color={selectedType !== 'All' ? '#fff' : '#666'} />
           </TouchableOpacity>
-          
           <TouchableOpacity 
             style={[styles.filterButton, selectedStatus !== 'All' && styles.activeFilterButton]}
             onPress={() => setShowStatusDropdown(true)}
@@ -342,8 +317,6 @@ const RequestView = () => {
             <Ionicons name="chevron-down" size={14} color={selectedStatus !== 'All' ? '#fff' : '#666'} />
           </TouchableOpacity>
         </View>
-
-        {/* Clear Filters */}
         {(selectedType !== 'All' || selectedStatus !== 'All') && (
           <TouchableOpacity 
             style={styles.clearFiltersButton}
@@ -356,16 +329,39 @@ const RequestView = () => {
           </TouchableOpacity>
         )}
       </View>
-
-      {/* Results Count */}
       <View style={styles.resultsContainer}>
-        <Text style={styles.resultsText}>
-          Showing {filteredRequests.length} of {allRequests.length} requests
-        </Text>
+        {loading ? (
+          <Text style={styles.resultsText}>Loading requests...</Text>
+        ) : error ? (
+          <Text style={[styles.resultsText, { color: 'red' }]}>{error}</Text>
+        ) : (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.resultsText}>
+              Showing {filteredRequests.length} of {allRequests.length} requests
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowAll((prev) => !prev)}
+              style={{ marginLeft: 12 }}
+            >
+              <Text style={{ color: '#7B61FF', textDecorationLine: 'underline', fontWeight: 'bold' }}>
+                {showAll ? 'Show Recent' : 'View All'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-
-      {/* Request Cards */}
-      {filteredRequests.length > 0 ? (
+      {loading ? (
+        <View style={styles.noResultsContainer}>
+          <Ionicons name="time-outline" size={48} color="#ccc" />
+          <Text style={styles.noResultsText}>Loading...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.noResultsContainer}>
+          <Ionicons name="alert-circle-outline" size={48} color="#FF4444" />
+          <Text style={styles.noResultsText}>Error loading requests</Text>
+          <Text style={styles.noResultsSubtext}>{error}</Text>
+        </View>
+      ) : filteredRequests.length > 0 ? (
         filteredRequests.map((item) => renderCard(item))
       ) : (
         <View style={styles.noResultsContainer}>
@@ -374,8 +370,6 @@ const RequestView = () => {
           <Text style={styles.noResultsSubtext}>Try adjusting your filters</Text>
         </View>
       )}
-
-      {/* Dropdowns */}
       <TypeDropdown />
       <StatusDropdown />
     </ScrollView>

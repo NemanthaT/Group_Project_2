@@ -70,12 +70,12 @@ const donorRoutes = require('./routes/donorRoutes');
 const doneeRoutes = require('./routes/doneeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
+const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', volunteerRoutes);
-
-// ...category endpoints moved to MVC routes...
+app.use('/api', donationRoutes); // <-- add this line
 
 
 // ...donee endpoints moved to MVC routes...
@@ -171,4 +171,4 @@ app.listen(PORT, () => {
   console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
-  
+

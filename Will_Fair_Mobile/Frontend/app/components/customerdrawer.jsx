@@ -9,9 +9,28 @@ import {
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CustomDrawer(props) {
   const router = useRouter();
+  const [username, setUsername] = React.useState('');
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          const user = JSON.parse(userData);
+          setUsername(user.firstName || user.username || 'User');
+        } else {
+          setUsername('User');
+        }
+      } catch {
+        setUsername('User');
+      }
+    };
+    fetchUsername();
+  }, []);
 
   const navigateTo = (route) => {
     router.push(route);
@@ -25,8 +44,7 @@ export default function CustomDrawer(props) {
             source={require('../../assets/images/profile.jpg')} // 🔁 Use your image path here
             style={styles.profileImage}
           />
-          <Text style={styles.username}>Ms. Leena</Text>
-          <Text style={styles.label}>Donee</Text>
+          <Text style={styles.username}>{username}</Text>
       </View>
 
       <View style={styles.menuItems}>
