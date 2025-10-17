@@ -2,21 +2,19 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../assets/styles/donorreg.styles';
+import { styles } from '../../assets/styles/loginstyles';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import BackButton from '../components/backbutton'
 
-const Donor = ({ visible, onClose, onLoginPress }) => {
+
+const Login = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secure, setSecure] = useState(true);
-  const [fullName, setFullName] = useState('');
-  const [secureConfirm, setSecureConfirm] = useState(true);
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -26,19 +24,8 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
-
   const validateForm = () => {
     const newErrors = {};
-
-    // Full Name validation
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (fullName.trim().length < 2) {
-      newErrors.fullName = 'Full name must be at least 2 characters';
-    }
 
     // Email validation
     if (!email.trim()) {
@@ -50,28 +37,15 @@ const Donor = ({ visible, onClose, onLoginPress }) => {
     // Password validation
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Confirm Password validation
-    if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    // Terms agreement validation
-    if (!agreed) {
-      newErrors.agreed = 'You must agree to terms and conditions';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-// Submit to database
-const handleSubmit = async () => {
+  // Handle login
+ // Handle login
+const handleLogin = async () => {
   if (!validateForm()) {
     Alert.alert('Validation Error', 'Please fix the errors before submitting');
     return;
@@ -79,43 +53,54 @@ const handleSubmit = async () => {
 
   setLoading(true);
   try {
-    const response = await fetch('http://192.168.122.72:5000/api/donor_reg', {
+    console.log('Attempting login...');
+    
+    const response = await fetch('http://192.168.122.72:5000/api/volunteer_login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fullName: fullName.trim(),
         email: email.trim().toLowerCase(),
         password: password
       }),
     });
 
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+
+    // Check if response is actually JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      console.log('Non-JSON response:', textResponse);
+      Alert.alert('Server Error', 'Server returned an unexpected response');
+      return;
+    }
+
     const data = await response.json();
+    console.log('Login response:', data);
 
     if (response.ok) {
-      Alert.alert('Success', 'Account created successfully!', [
+      Alert.alert('Success', `Welcome back, ${data.user.firstName}!`, [
         {
           text: 'OK',
           onPress: () => {
             // Clear form
-            setFullName('');
             setEmail('');
             setPassword('');
-            setConfirmPassword('');
-            setAgreed(false);
             setErrors({});
-            // Navigate to login or close modal
-            navigation.navigate('login');
+            // Navigate to home screen
+            router.push('/(drawer)/homescreen');
           }
         }
       ]);
     } else {
-      Alert.alert('Error', data.message || 'Registration failed');
+      Alert.alert('Login Failed', data.message || 'Invalid credentials');
     }
   } catch (error) {
-    console.error('Registration error:', error);
-    Alert.alert('Error', 'Network error. Please try again.');
+    console.error('Login error:', error);
+    Alert.alert('Error', 'Network error. Please check your connection and backend server.');
   } finally {
     setLoading(false);
   }
@@ -128,6 +113,7 @@ const handleSubmit = async () => {
       animationType="slide"
       onRequestClose={onClose}
     >
+      
       <StatusBar barStyle="light-content" backgroundColor="rgba(0,0,0,0.5)" />
 
       <View style={styles.overlay}>
@@ -136,8 +122,9 @@ const handleSubmit = async () => {
           style={styles.background}
         >
           <View style={styles.container}>
+            
             <View style={styles.card}>
-              <BackButton />
+            <BackButton />
               {/* Logo */}
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>
@@ -150,31 +137,13 @@ const handleSubmit = async () => {
               </View>
 
               {/* Title */}
-              <Text style={styles.title}>Join With Us</Text>
+              <Text style={styles.title}>Welcome Back</Text>
 
               {/* Subtitle */}
               <Text style={styles.subtitle}>Connecting Hearts, Changing Lives</Text>
 
               {/* Divider */}
               <View style={styles.divider} />
-
-              {/* Full Name Input */}
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
-              <View style={styles.inputWrapper}>
-                <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
-                <TextInput
-                  placeholder="Full Name"
-                  style={[styles.input, errors.fullName && { borderColor: 'red' }]}
-                  placeholderTextColor="#999"
-                  value={fullName}
-                  onChangeText={(text) => {
-                    setFullName(text);
-                    if (errors.fullName) {
-                      setErrors(prev => ({ ...prev, fullName: null }));
-                    }
-                  }}
-                />
-              </View>
 
               {/* Email Input */}
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -213,7 +182,6 @@ const handleSubmit = async () => {
                     }
                   }}
                 />
-                
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
                   <Ionicons
                     name={secure ? 'eye-off-outline' : 'eye-outline'}
@@ -224,57 +192,11 @@ const handleSubmit = async () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Confirm Password Input */}
-              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
-                <TextInput
-                  placeholder="Confirm Password"
-                  style={[styles.input, errors.confirmPassword && { borderColor: 'red' }]}
-                  placeholderTextColor="#999"
-                  secureTextEntry={secureConfirm}
-                  value={confirmPassword}
-                  onChangeText={(text) => {
-                    setConfirmPassword(text);
-                    if (errors.confirmPassword) {
-                      setErrors(prev => ({ ...prev, confirmPassword: null }));
-                    }
-                  }}
-                />
-                <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)}>
-                  <Ionicons
-                    name={secureConfirm ? 'eye-off-outline' : 'eye-outline'}
-                    size={20}
-                    color="#999"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* Terms & Conditions Checkbox */}
-              {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
-              <View style={styles.checkboxContainer}>
-                <TouchableOpacity
-                  style={[styles.checkbox, errors.agreed && { borderColor: 'red' }]}
-                  onPress={() => {
-                    setAgreed(!agreed);
-                    if (errors.agreed) {
-                      setErrors(prev => ({ ...prev, agreed: null }));
-                    }
-                  }}
-                >
-                  {agreed && <Ionicons name="checkmark" size={14} color="#7B61FF" />}
-                </TouchableOpacity>
-                <Text style={styles.termsText}>
-                  I agree to <Text style={styles.link}>Terms and Conditions</Text> of Welfair Community
-                </Text>
-              </View>
-
-              {/* Sign Up Button */}
+              {/* Login button */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.loginButton, loading && { opacity: 0.6 }]}
-                  onPress={handleSubmit}
+                  onPress={handleLogin}
                   activeOpacity={0.8}
                   disabled={loading}
                 >
@@ -283,20 +205,25 @@ const handleSubmit = async () => {
                     style={styles.buttonGradient}
                   >
                     <Text style={styles.buttonText}>
-                      {loading ? 'Creating Account...' : 'Sign Up'}
+                      {loading ? 'Logging in...' : 'Login'}
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
-
-              {/* Login Link */}
+                
+              {/* Signup Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('login')}
+                onPress={() => navigation.navigate('volunteer_ind_reg')} 
               >
                 <Text style={styles.loginText}>
-                  Already have an account?
-                  <Text style={styles.loginLink}> Login</Text>
+                  Don&#39;t have an account?{' '}
+                  <Text
+                    style={styles.loginLink}
+                    onPress={() => navigation.navigate('volunteerind__reg')}
+                  >
+                    Sign Up
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </View>
@@ -307,4 +234,4 @@ const handleSubmit = async () => {
   );
 };
 
-export default Donor;
+export default Login;

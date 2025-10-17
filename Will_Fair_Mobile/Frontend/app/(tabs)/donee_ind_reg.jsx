@@ -140,7 +140,7 @@ const DoneeOrg = ({ visible, onClose, onLoginPress }) => {
 
       console.log('Submitting form data...');
 
-      const response = await fetch('http://192.168.182.72:5000/api/donee_ind_reg', {
+      const response = await fetch('http://192.168.122.72:5000/api/donee_ind_reg', {
         method: 'POST',
         body: formData,
       });
