@@ -17,7 +17,7 @@ const Donors = ({ donors, search, setSearch, onEdit, onDelete }) => {
               <th style={styles.th}>Email</th>
               <th style={styles.th}>Phone</th>
               <th style={styles.th}>Total Donations</th>
-              <th style={styles.th}>Status</th>
+              {/*<th style={styles.th}>Status</th>*/}
               <th style={styles.th}>Actions</th>
             </tr>
           </thead>
@@ -28,9 +28,9 @@ const Donors = ({ donors, search, setSearch, onEdit, onDelete }) => {
                 <td style={styles.td}>{d.email}</td>
                 <td style={styles.td}>{d.phone}</td>
                 <td style={styles.td}>${d.totalDonations}</td>
-                <td style={styles.td}>
+                {/*<td style={styles.td}>
                   <span style={{...styles.badge, ...(d.status === 'Active' ? styles.badgeActive : styles.badgeInactive)}}>{d.status}</span>
-                </td>
+                </td>*/}
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>
                     <button style={styles.btnIcon} onClick={() => onEdit(d)}><Edit size={16} /></button>
