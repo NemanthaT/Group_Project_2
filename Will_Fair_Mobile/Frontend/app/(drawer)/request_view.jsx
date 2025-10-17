@@ -180,7 +180,13 @@ const RequestView = () => {
               flex: 1,
               marginRight: 8,
             }}
-            onPress={() => router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: item.id } })}
+            onPress={() => {
+              if ((item.type || '').toLowerCase() === 'monetary') {
+                router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: item.id } });
+              } else {
+                router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: item.id } });
+              }
+            }}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
               Donate Now

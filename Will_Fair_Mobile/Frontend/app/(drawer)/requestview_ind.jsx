@@ -196,7 +196,13 @@ const MyDonationReq = () => {
               shadowRadius: 8,
               elevation: 3,
             }}
-            onPress={() => router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: request.request_id } })}
+            onPress={() => {
+              if ((request.type || '').toLowerCase() === 'monetary') {
+                router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: request.request_id } });
+              } else {
+                router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: request.request_id } });
+              }
+            }}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
               Donate Now
