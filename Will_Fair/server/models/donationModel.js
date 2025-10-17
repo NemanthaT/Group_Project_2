@@ -473,7 +473,7 @@ async function getDonationStats() {
   try {
     // Total raised across all donations
     const totalRes = await pool.query(
-      'SELECT COALESCE(SUM(amount), 0) AS total_raised FROM donations'
+      `SELECT COALESCE(SUM(quantity_received), 0) AS total_raised FROM donation_requests WHERE type = 'Monetary'`
     );
 
     // Raised this month
@@ -528,15 +528,13 @@ async function getDonationStats() {
 async function getDonationsForReg(type) {
   try {
     const dbType = type=== 'monetary' ? 'Monetary' : 'Non Monetary';
-    console.log('Type: ',dbType);
     const query = `
       SELECT dr.*, d.first_name, d.last_name
       FROM donation_requests dr
       LEFT JOIN donees d ON dr.donee_id = d.donee_id
-      WHERE dr.status = 'active' AND dr.type = $1
+      WHERE dr.status != 'pending' AND dr.type = $1
     `;
     const result = await pool.query(query, [dbType]);
-    console.log('Fetched donations for registration:', result.rows);
     for (const row of result.rows) {
       if (row.first_name && row.last_name) {
         row.doneeName = `${row.first_name} ${row.last_name}`;
@@ -546,6 +544,40 @@ async function getDonationsForReg(type) {
   } catch (err) {
     console.error('Database error during getDonationsForReg():', err);
     return { success: false, message: `Database error ${err.message}` };
+  }
+}
+
+// Mark donation as completed
+async function markDonationCompleted(id) {
+  try {
+    const result = await pool.query(
+      "UPDATE donation_requests SET status = 'completed' WHERE request_id = $1 RETURNING request_id, status",
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    return result.rows[0];
+  } catch (err) {
+    console.error('Database error during markDonationCompleted():', err);
+    return null;
+  }
+}
+
+// Mark donation as sent
+async function markDonationSent(id) {
+  try {
+    const result = await pool.query(
+      "UPDATE donation_requests SET status = 'sent' WHERE request_id = $1 RETURNING request_id, status",
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    return result.rows[0];
+  } catch (err) {
+    console.error('Database error during markDonationSent():', err);
+    return null;
   }
 }
 
@@ -566,4 +598,6 @@ export {
   getActiveDonations,
   getDonationStats,
   getDonationsForReg
+  ,markDonationCompleted
+  ,markDonationSent
 };

@@ -7,7 +7,9 @@ import {
   deleteDonationById,
   getRecentDonations,
   getDonationById,
-  getDonationsForReg
+  getDonationsForReg,
+  markDonationCompleted,
+  markDonationSent
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -328,3 +330,29 @@ export const getDonationsForRegController = async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error while fetching donations' });
   }
 };
+
+// Controller for marking donation as completed
+export async function markCompleted(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const result = await markDonationCompleted(id);
+    if (!result) return res.status(404).json({ success: false, error: 'Donation not found' });
+    res.json({ success: true, request_id: result.request_id, status: result.status });
+  } catch (err) {
+    console.error('Error marking donation completed:', err && err.stack ? err.stack : err);
+    res.status(500).json({ success: false, error: 'Failed to mark donation completed' });
+  }
+}
+
+// Controller for marking donation as sent
+export async function markSent(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const result = await markDonationSent(id);
+    if (!result) return res.status(404).json({ success: false, error: 'Donation not found' });
+    res.json({ success: true, request_id: result.request_id, status: result.status });
+  } catch (err) {
+    console.error('Error marking donation sent:', err && err.stack ? err.stack : err);
+    res.status(500).json({ success: false, error: 'Failed to mark donation sent' });
+  }
+}

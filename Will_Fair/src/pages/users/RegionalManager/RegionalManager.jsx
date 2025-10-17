@@ -100,22 +100,48 @@ const WelfareDashboard = () => {
       });*/
   }, []);
 
-  const markAsCompleted = (id, type) => {
-    setDonations(prev => ({
-      ...prev,
-      [type]: prev[type].map(donation =>
-        donation.id === id ? { ...donation, status: 'completed' } : donation
-      )
-    }));
+  const markAsCompleted = async (id, type) => {
+    try {
+      const res = await fetch(`http://localhost:5000/donations/${id}/completed`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDonations(prev => ({
+          ...prev,
+          [type]: prev[type].map(donation =>
+            donation.request_id === id ? { ...donation, status: 'completed' } : donation
+          )
+        }));
+      } else {
+        alert('Failed to mark as completed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Error marking as completed: ' + err.message);
+    }
   };
 
-  const markAsSent = (id, type) => {
-    setDonations(prev => ({
-      ...prev,
-      [type]: prev[type].map(donation =>
-        donation.id === id ? { ...donation, status: 'sent' } : donation
-      )
-    }));
+  const markAsSent = async (id, type) => {
+    try {
+      const res = await fetch(`http://localhost:5000/donations/${id}/sent`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDonations(prev => ({
+          ...prev,
+          [type]: prev[type].map(donation =>
+            donation.request_id === id ? { ...donation, status: 'sent' } : donation
+          )
+        }));
+      } else {
+        alert('Failed to mark as sent: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Error marking as sent: ' + err.message);
+    }
   };
 
   const handleViewEvent = (eventId) => {
