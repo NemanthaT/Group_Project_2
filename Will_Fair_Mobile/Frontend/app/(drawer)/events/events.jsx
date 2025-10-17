@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AddEventModal from './AddEventModal';
+import axios from 'axios';
 
-const initialOpportunities = [
-  { id: 1, title: 'Beach Cleanup in Mount Lavinia', description: 'Help clean up Mount Lavinia beach to protect marine life', type: 'environment', commitment: 'one-time', location: 'Colombo', skills: 'none', volunteersNeeded: 50, volunteersSigned: 32, image: '', date: '2023-08-15' },
-  { id: 2, title: 'English Teaching in Rural Schools', description: 'Teach English to children in rural areas of Galle District', type: 'teaching', commitment: 'weekly', location: 'Galle', skills: 'teaching', volunteersNeeded: 20, volunteersSigned: 15, image: '', date: '2023-08-01' },
-  { id: 3, title: 'Elderly Care Assistance', description: 'Provide companionship and basic care for elderly in Colombo homes', type: 'caregiving', commitment: 'flexible', location: 'Colombo', skills: 'caregiving', volunteersNeeded: 30, volunteersSigned: 18, image: '', date: '2023-08-10' }
-];
+// API Configuration - Update this to your mobile backend URL
+const API_BASE_URL = 'http://10.237.31.71:5000/api';
 
 export default function EventsScreen() {
-  const [opportunities, setOpportunities] = useState(initialOpportunities);
+  const [opportunities, setOpportunities] = useState([]);
   const [filters, setFilters] = useState({ sort: '', type: '', commitment: '', location: '', skills: '' });
   const [showAddModal, setShowAddModal] = useState(false);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoadingEvents(true);
+      setEventsError(null);
+      try {
+        console.log('Fetching events from:', `${API_BASE_URL}/events`);
+        const res = await axios.get(`${API_BASE_URL}/events`);
+        console.log('Response received:', res.data);
+        const data = res.data;
+        if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
+        setOpportunities(data.events || []);
+      } catch (err) {
+        console.error('Error fetching events:', err);
+        let errorMessage = 'Error loading events';
+        if (err.response) {
+          // Server responded with error status
+          errorMessage = `Server Error: ${err.response.status} - ${err.response.data?.error || err.message}`;
+        } else if (err.request) {
+          // Request made but no response (network error)
+          errorMessage = 'Network Error: Cannot connect to server. Please ensure backend is running on port 5000.';
+        } else {
+          errorMessage = err.message || 'Error loading events';
+        }
+        setEventsError(errorMessage);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const handleFilterChange = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
 
@@ -27,10 +58,25 @@ export default function EventsScreen() {
 
   const sorted = [...filtered].sort((a,b) => {
     if (filters.sort === 'recent') return new Date(b.date) - new Date(a.date);
-    if (filters.sort === 'popular') return (b.volunteersSigned / b.volunteersNeeded) - (a.volunteersSigned / a.volunteersNeeded);
+    if (filters.sort === 'popular') return (b.volunteersSigned / Math.max(1, b.volunteersNeeded)) - (a.volunteersSigned / Math.max(1, a.volunteersNeeded));
     if (filters.sort === 'urgent') return (a.volunteersNeeded - a.volunteersSigned) - (b.volunteersNeeded - b.volunteersSigned);
     return 0;
   });
+
+  if (loadingEvents) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading events...</Text>
+      </SafeAreaView>
+    );
+  }
+  if (eventsError) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'red' }}>{eventsError}</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -113,6 +159,7 @@ export default function EventsScreen() {
 
       <AddEventModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onCreate={(formData) => {
         const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
+        const date = formData.isRange ? formData.startDate : formData.date;
         const newOpp = {
           id,
           title: formData.name || 'Untitled Event',
@@ -124,7 +171,7 @@ export default function EventsScreen() {
           volunteersNeeded: Number(formData.volunteersNeeded) || 0,
           volunteersSigned: 0,
           image: '',
-          date: formData.date || formData.startDate || ''
+          date: date || ''
         };
         setOpportunities(prev => [newOpp, ...prev]);
       }} />
