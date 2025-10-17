@@ -1,6 +1,7 @@
 import "./EventsMain.css";
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useState, useEffect, use } from 'react';
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import AddEventModal from './AddEventModal';
 
@@ -19,86 +20,33 @@ function FeaturedContent() {
   // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const [opportunities, setOpportunities] = useState([
-    {
-      id: 1,
-      title: "Beach Cleanup in Mount Lavinia",
-      description: "Help clean up Mount Lavinia beach to protect marine life",
-      type: "environment",
-      commitment: "one-time",
-      location: "Colombo",
-      skills: "none",
-      volunteersNeeded: 50,
-      volunteersSigned: 32,
-      image: "https://images.unsplash.com/photo-1604871000636-3a3462c4d0e3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-08-15"
-    },
-    {
-      id: 2,
-      title: "English Teaching in Rural Schools",
-      description: "Teach English to children in rural areas of Galle District",
-      type: "teaching",
-      commitment: "weekly",
-      location: "Galle",
-      skills: "teaching",
-      volunteersNeeded: 20,
-      volunteersSigned: 15,
-      image: "https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-08-01"
-    },
-    {
-      id: 3,
-      title: "Elderly Care Assistance",
-      description: "Provide companionship and basic care for elderly in Colombo homes",
-      type: "caregiving",
-      commitment: "flexible",
-      location: "Colombo",
-      skills: "caregiving",
-      volunteersNeeded: 30,
-      volunteersSigned: 18,
-      image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-08-10"
-    },
-    {
-      id: 4,
-      title: "Tsunami Rebuilding Project",
-      description: "Help rebuild homes in areas affected by past tsunami damage",
-      type: "construction",
-      commitment: "monthly",
-      location: "Matara",
-      skills: "manual",
-      volunteersNeeded: 40,
-      volunteersSigned: 25,
-      image: "https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-09-01"
-    },
-    {
-      id: 5,
-      title: "Disability Center Support",
-      description: "Assist at centers for people with disabilities in Kandy",
-      type: "caregiving",
-      commitment: "weekly",
-      location: "Kandy",
-      skills: "none",
-      volunteersNeeded: 15,
-      volunteersSigned: 10,
-      image: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-08-20"
-    },
-    {
-      id: 6,
-      title: "Wildlife Conservation",
-      description: "Help with wildlife conservation efforts in Yala National Park",
-      type: "environment",
-      commitment: "flexible",
-      location: "Yala",
-      skills: "none",
-      volunteersNeeded: 25,
-      volunteersSigned: 12,
-      image: "https://images.unsplash.com/photo-1550358864-518f202c02ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      date: "2023-09-05"
-    }
-  ]);
+  const [opportunities, setOpportunities] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState(null);
+
+  // fetch events on mount (use axios pattern)
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoadingEvents(true);
+      setEventsError(null);
+      try {
+        const res = await axios.get('http://localhost:5000/events');
+        const data = res.data;
+        if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
+
+        // Backend now returns frontend-ready event objects. Use them directly.
+        setOpportunities(data.events || []);
+      } catch (err) {
+        console.error('Error fetching events', err);
+        setEventsError(err.message || 'Error loading events');
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+  
 //Save scroll position on mount
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
@@ -129,12 +77,24 @@ function FeaturedContent() {
     if (filters.sort === 'recent') {
       return new Date(b.date) - new Date(a.date);
     } else if (filters.sort === 'popular') {
-      return (b.volunteersSigned / b.volunteersNeeded) - (a.volunteersSigned / a.volunteersNeeded);
+      return (b.volunteersSigned / Math.max(1, b.volunteersNeeded)) - (a.volunteersSigned / Math.max(1, a.volunteersNeeded));
     } else if (filters.sort === 'urgent') {
       return (a.volunteersNeeded - a.volunteersSigned) - (b.volunteersNeeded - b.volunteersSigned);
     }
     return 0;
   });
+
+  if (loadingEvents) return (
+    <div className="events-loading-container">
+      <div className="events-loading-spinner"></div>
+      <p className="events-loading-text">Loading events...</p>
+    </div>
+  );
+  if (eventsError) return (
+    <div className="events-error-container">
+      <p className="events-error-text">{eventsError}</p>
+    </div>
+  );
 
   return (
     <>

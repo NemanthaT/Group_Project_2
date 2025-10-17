@@ -130,6 +130,18 @@
   transform-origin: bottom center;
 }
 
+/* inline field error tooltip / hint */
+.field-error {
+  margin-top: 6px;
+  display: inline-block;
+  background: #fff7f7;
+  color: #b91c1c; /* red-700 */
+  border: 1px solid #fecaca; /* red-200 */
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
 .tooltip:hover .tooltip-text,
 .tooltip:focus-within .tooltip-text {
   opacity: 1;
@@ -137,10 +149,72 @@
   transform: translateX(-50%) translateY(-4px);
 }
 
+/* File/Image upload styles */
+.choose-file-button,
+.choose-files-button {
+  display: inline-block;
+  background: #0f172a;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-upload-card,
+.image-upload-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-display {
+  margin-top: 8px;
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fbfbfb;
+  border: 1px solid #e6eef8;
+}
+
+.remove-document-button {
+  background: #dc2626; /* red-600 */
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.remove-document-button:hover {
+  background: #b91c1c; /* darker red on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.image-preview img {
+  max-width: 280px;
+  border-radius: 8px;
+}
+
 /* Inputs and selects share the same visual style */
 .modal-form input[type="text"],
 .modal-form input[type="date"],
 .modal-form input[type="number"],
+.modal-form input[type="email"],
+.modal-form input[type="tel"],
 .modal-form textarea,
 .modal-form select {
   padding: 10px 12px;
