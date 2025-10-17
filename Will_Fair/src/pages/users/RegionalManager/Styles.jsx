@@ -38,7 +38,7 @@ const styles = {
   donationsContainer: { background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', minHeight: '300px' },
   emptyState: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', gap: '16px' },
   emptyText: { fontSize: '18px', color: '#6b7280', fontWeight: '500' },
-  donationsList: { display: 'grid', gap: '20px' },
+  donationsList: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' },
   donationCard: { border: '2px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' },
   cardHeader: { background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)', padding: '20px 24px', borderBottom: '2px solid #e5e7eb' },
   cardTitleSection: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
