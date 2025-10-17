@@ -180,13 +180,7 @@ const RequestView = () => {
               flex: 1,
               marginRight: 8,
             }}
-            onPress={() => {
-              if (isMoney) {
-                // TODO: Navigate to donation payment
-              } else {
-                // TODO: Navigate to donation form
-              }
-            }}
+            onPress={() => router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: item.id } })}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
               Donate Now

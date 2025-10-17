@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getRecentDonationsMobile, getAllDonationsMobile } = require('../controllers/donationController');
+const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile } = require('../controllers/donationController');
 
 
 // GET /api/donations/recent
@@ -10,3 +10,5 @@ router.get('/donations/recent', getRecentDonationsMobile);
 router.get('/donations/all', getAllDonationsMobile);
 
 module.exports = router;
+// GET /api/donations/:id
+router.get('/donations/:id', getDonationByIdMobile);
