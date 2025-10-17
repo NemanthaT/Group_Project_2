@@ -45,8 +45,8 @@ export default function CustomDrawer(props) {
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/volunteerprograms')} style={styles.menuButton}>
           <Text style={styles.menuText}>Programs</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/marketplace')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Marketplace</Text>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/events/events')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Events</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>
         <Text style={styles.menuText}>About</Text>
