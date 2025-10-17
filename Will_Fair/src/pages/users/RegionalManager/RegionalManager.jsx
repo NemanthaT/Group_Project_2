@@ -1,17 +1,21 @@
 import { useState } from 'react';
-import { Package, DollarSign, CheckCircle, Clock, TrendingUp, Filter } from 'lucide-react';
+import { Package, DollarSign, CheckCircle, Clock, TrendingUp, Filter, Users, Calendar, Send, Eye, MapPin } from 'lucide-react';
 import StatCard from './Dashboard/StatCard';
 import TabButton from './Dashboard/TabButton';
 import FilterButton from './Dashboard/FilterButton';
 import MonetaryDonationCard from './Dashboard/MonetaryDonationCard';
 import NonMonetaryDonationCard from './Dashboard/NonMonetaryDonationCard';
 import EmptyState from './Dashboard/EmptyState';
+import VolunteerEventCard from './Dashboard/VolunteerEventCard';
+import NavButton from './Dashboard/NavButton';
 import styles from "./Styles";
 
 
 const WelfareDashboard = () => {
+  const [currentPage, setCurrentPage] = useState('overview');
   const [activeTab, setActiveTab] = useState('monetary');
   const [filterStatus, setFilterStatus] = useState('all');
+  
   const [donations, setDonations] = useState({
     monetary: [
       {
@@ -119,6 +123,42 @@ const WelfareDashboard = () => {
     ]
   });
 
+  const [events, setEvents] = useState([
+    {
+      id: 1,
+      name: 'Community Beach Cleanup',
+      date: '2025-10-25',
+      time: '8:00 AM - 12:00 PM',
+      location: 'Negombo Beach',
+      volunteers: 45,
+      organizer: 'Environmental Care Foundation',
+      organizerContact: '+94 11 234 5678',
+      description: 'Join us for a morning of beach cleanup to preserve our coastal environment. All equipment will be provided.'
+    },
+    {
+      id: 2,
+      name: 'Food Distribution Drive',
+      date: '2025-10-28',
+      time: '9:00 AM - 3:00 PM',
+      location: 'Community Center, Colombo',
+      volunteers: 32,
+      organizer: 'Hunger Relief Network',
+      organizerContact: '+94 77 345 6789',
+      description: 'Help distribute food packages to families in need. Transportation and meals provided for volunteers.'
+    },
+    {
+      id: 3,
+      name: 'Children\'s Education Workshop',
+      date: '2025-11-02',
+      time: '2:00 PM - 5:00 PM',
+      location: 'Rural School, Kurunegala',
+      volunteers: 18,
+      organizer: 'Education For All',
+      organizerContact: '+94 37 456 7890',
+      description: 'Conduct educational activities and tutoring sessions for underprivileged children. Teaching materials provided.'
+    }
+  ]);
+
   const markAsCompleted = (id, type) => {
     setDonations(prev => ({
       ...prev,
@@ -135,6 +175,15 @@ const WelfareDashboard = () => {
         donation.id === id ? { ...donation, status: 'sent' } : donation
       )
     }));
+  };
+
+  const handleViewEvent = (eventId) => {
+    alert(`Viewing details for event ID: ${eventId}`);
+  };
+
+  const handleSendParticipants = (eventId) => {
+    const event = events.find(e => e.id === eventId);
+    alert(`Sending ${event.volunteers} participants' details to ${event.organizer}`);
   };
 
   const getStatusColor = (status) => {
@@ -156,8 +205,8 @@ const WelfareDashboard = () => {
     const currentDonations = donations[activeTab];
     
     const filters = {
-      active: d => d.status === 'active' && !isTargetReached(d),
-      completed: d => d.status === 'completed' || (d.status === 'active' && isTargetReached(d)),
+      active: d => d.status === 'active',
+      completed: d => d.status === 'completed',
       sent: d => d.status === 'sent',
       all: () => true
     };
@@ -171,14 +220,18 @@ const WelfareDashboard = () => {
     const activeMonetary = monetary.filter(d => d.status === 'active' && d.amount < d.targetAmount).length;
     const activeNonMonetary = nonMonetary.filter(d => d.status === 'active' && d.quantity < d.targetQuantity).length;
     
-    const completedMonetary = monetary.filter(d => d.status === 'completed' || (d.status === 'active' && d.amount >= d.targetAmount)).length;
-    const completedNonMonetary = nonMonetary.filter(d => d.status === 'completed' || (d.status === 'active' && d.quantity >= d.targetQuantity)).length;
+    const completedMonetary = monetary.filter(d => d.status === 'completed').length;
+    const completedNonMonetary = nonMonetary.filter(d => d.status === 'completed').length;
+    
+    const totalVolunteers = events.reduce((sum, e) => sum + e.volunteers, 0);
     
     return {
       totalMonetary: monetary.reduce((sum, d) => sum + d.amount, 0),
       activeRequests: activeMonetary + activeNonMonetary,
       completedNotSent: completedMonetary + completedNonMonetary,
-      sentDonations: monetary.filter(d => d.status === 'sent').length + nonMonetary.filter(d => d.status === 'sent').length
+      sentDonations: monetary.filter(d => d.status === 'sent').length + nonMonetary.filter(d => d.status === 'sent').length,
+      totalEvents: events.length,
+      totalVolunteers: totalVolunteers
     };
   };
 
@@ -199,9 +252,15 @@ const WelfareDashboard = () => {
       <header style={styles.dashboardHeader}>
         <div style={styles.headerContent}>
           <h1 style={styles.dashboardTitle}>Regional Manager Dashboard</h1>
-          <p style={styles.dashboardSubtitle}>Welfare Platform - Donation Tracking</p>
+          <p style={styles.dashboardSubtitle}>Welfare Platform Management</p>
         </div>
       </header>
+
+      <div style={styles.navContainer}>
+        <NavButton active={currentPage === 'overview'} label="Overview" onClick={() => setCurrentPage('overview')} />
+        <NavButton active={currentPage === 'donations'} label="Donations" onClick={() => setCurrentPage('donations')} />
+        <NavButton active={currentPage === 'volunteer'} label="Volunteer" onClick={() => setCurrentPage('volunteer')} />
+      </div>
 
       <div style={styles.statsGrid}>
         <StatCard 
@@ -224,72 +283,122 @@ const WelfareDashboard = () => {
         />
         <StatCard 
           icon={TrendingUp} 
-          label="Sent to Donee" 
-          value={stats.sentDonations}
+          label={currentPage === 'volunteer' ? 'Total Volunteers' : 'Sent to Donee'}
+          value={currentPage === 'volunteer' ? stats.totalVolunteers : stats.sentDonations}
           gradientClass={styles.sentIcon}
         />
       </div>
 
-      <div style={styles.tabsContainer}>
-        <div style={styles.tabs}>
-          <TabButton 
-            active={activeTab === 'monetary'} 
-            icon={DollarSign} 
-            label="Monetary Donations"
-            onClick={() => setActiveTab('monetary')}
-          />
-          <TabButton 
-            active={activeTab === 'nonMonetary'} 
-            icon={Package} 
-            label="Non-Monetary Donations"
-            onClick={() => setActiveTab('nonMonetary')}
-          />
-        </div>
-      </div>
-
-      <div style={styles.filtersContainer}>
-        <div style={styles.filterHeader}>
-          <Filter size={18} />
-          <span style={styles.filterTitle}>Filter by Status:</span>
-        </div>
-        <div style={styles.filterButtons}>
-          <FilterButton active={filterStatus === 'all'} label="All Donations" onClick={() => setFilterStatus('all')} />
-          <FilterButton active={filterStatus === 'active'} label="Active (Target Not Reached)" onClick={() => setFilterStatus('active')} />
-          <FilterButton active={filterStatus === 'completed'} label="Completed (Not Sent)" onClick={() => setFilterStatus('completed')} />
-          <FilterButton active={filterStatus === 'sent'} label="Sent to Donee" onClick={() => setFilterStatus('sent')} />
-        </div>
-      </div>
-
-      <div style={styles.donationsContainer}>
-        {filteredDonations.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div style={styles.donationsList}>
-            {activeTab === 'monetary' 
-              ? filteredDonations.map(donation => (
-                  <MonetaryDonationCard 
-                    key={donation.id}
-                    donation={donation}
-                    onComplete={markAsCompleted}
-                    onSent={markAsSent}
-                    getStatusColor={getStatusColor}
-                    isTargetReached={isTargetReached}
-                  />
-                ))
-              : filteredDonations.map(donation => (
-                  <NonMonetaryDonationCard 
-                    key={donation.id}
-                    donation={donation}
-                    onComplete={markAsCompleted}
-                    onSent={markAsSent}
-                    getStatusColor={getStatusColor}
-                    isTargetReached={isTargetReached}
-                  />
-                ))
-            }
+      {currentPage === 'overview' && (
+        <div style={styles.overviewContainer}>
+          <div style={styles.overviewCard}>
+            <h2 style={styles.overviewTitle}>Welcome to Your Dashboard</h2>
+            <p style={styles.overviewText}>
+              Manage all donations and volunteer events from this central hub. Use the navigation above to access different sections.
+            </p>
+            <div style={styles.overviewStats}>
+              <div style={styles.overviewStatItem}>
+                <DollarSign size={32} style={{ color: '#8b5cf6' }} />
+                <div>
+                  <p style={styles.overviewStatValue}>{donations.monetary.length + donations.nonMonetary.length}</p>
+                  <p style={styles.overviewStatLabel}>Total Donations</p>
+                </div>
+              </div>
+              <div style={styles.overviewStatItem}>
+                <Users size={32} style={{ color: '#10b981' }} />
+                <div>
+                  <p style={styles.overviewStatValue}>{stats.totalEvents}</p>
+                  <p style={styles.overviewStatLabel}>Volunteer Events</p>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {currentPage === 'donations' && (
+        <>
+          <div style={styles.tabsContainer}>
+            <div style={styles.tabs}>
+              <TabButton 
+                active={activeTab === 'monetary'} 
+                icon={DollarSign} 
+                label="Monetary Donations"
+                onClick={() => setActiveTab('monetary')}
+              />
+              <TabButton 
+                active={activeTab === 'nonMonetary'} 
+                icon={Package} 
+                label="Non-Monetary Donations"
+                onClick={() => setActiveTab('nonMonetary')}
+              />
+            </div>
+          </div>
+
+          <div style={styles.filtersContainer}>
+            <div style={styles.filterHeader}>
+              <Filter size={18} />
+              <span style={styles.filterTitle}>Filter by Status:</span>
+            </div>
+            <div style={styles.filterButtons}>
+              <FilterButton active={filterStatus === 'all'} label="All Donations" onClick={() => setFilterStatus('all')} />
+              <FilterButton active={filterStatus === 'active'} label="Active" onClick={() => setFilterStatus('active')} />
+              <FilterButton active={filterStatus === 'completed'} label="Completed (Not Sent)" onClick={() => setFilterStatus('completed')} />
+              <FilterButton active={filterStatus === 'sent'} label="Sent to Donee" onClick={() => setFilterStatus('sent')} />
+            </div>
+          </div>
+
+          <div style={styles.donationsContainer}>
+            {filteredDonations.length === 0 ? (
+              <EmptyState message="No donations found for this filter" />
+            ) : (
+              <div style={styles.donationsList}>
+                {activeTab === 'monetary' 
+                  ? filteredDonations.map(donation => (
+                      <MonetaryDonationCard 
+                        key={donation.id}
+                        donation={donation}
+                        onComplete={markAsCompleted}
+                        onSent={markAsSent}
+                        getStatusColor={getStatusColor}
+                        isTargetReached={isTargetReached}
+                      />
+                    ))
+                  : filteredDonations.map(donation => (
+                      <NonMonetaryDonationCard 
+                        key={donation.id}
+                        donation={donation}
+                        onComplete={markAsCompleted}
+                        onSent={markAsSent}
+                        getStatusColor={getStatusColor}
+                        isTargetReached={isTargetReached}
+                      />
+                    ))
+                }
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {currentPage === 'volunteer' && (
+        <div style={styles.donationsContainer}>
+          {events.length === 0 ? (
+            <EmptyState message="No volunteer events available" />
+          ) : (
+            <div style={styles.donationsList}>
+              {events.map(event => (
+                <VolunteerEventCard 
+                  key={event.id}
+                  event={event}
+                  onView={handleViewEvent}
+                  onSend={handleSendParticipants}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
