@@ -513,6 +513,24 @@ async function getDonationStats() {
   }
 }
 
+async function getDonationsByType(type) {
+  try {
+    const dbType = type === 'monetary' ? 'true' : 'false';
+    const query = `
+      SELECT dr.*, dc.category_name AS category
+      FROM donation_requests dr
+      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+      WHERE dr.status = 'active' AND dr.type = $1
+      ORDER BY dr.created_at DESC NULLS LAST, dr.request_id DESC
+    `;
+    const result = await pool.query(query, [dbType]);
+    return { success: true, donations: result.rows };
+  } catch (err) {
+    console.error('Database error during getDonationsByType():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
 export {
   createMonetoryDonation,
   createNonMonetoryDonation,
@@ -528,5 +546,6 @@ export {
   // my edits end
   addDonationAmount,
   getActiveDonations,
-  getDonationStats
+  getDonationStats,
+  getDonationsByType
 };

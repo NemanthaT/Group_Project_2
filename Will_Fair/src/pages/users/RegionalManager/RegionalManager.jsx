@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Package, DollarSign, CheckCircle, Clock, TrendingUp, Filter, Users, Calendar, Send, Eye, MapPin } from 'lucide-react';
 import StatCard from './Dashboard/StatCard';
 import TabButton from './Dashboard/TabButton';
@@ -16,148 +16,89 @@ const WelfareDashboard = () => {
   const [activeTab, setActiveTab] = useState('monetary');
   const [filterStatus, setFilterStatus] = useState('all');
   
-  const [donations, setDonations] = useState({
-    monetary: [
-      {
-        id: 1,
-        donorName: 'John Smith',
-        donorContact: '+94 77 123 4567',
-        doneeName: 'Green Valley School',
-        doneeContact: '+94 11 234 5678',
-        amount: 50000,
-        targetAmount: 100000,
-        status: 'active',
-        date: '2025-10-10',
-        category: 'Education'
-      },
-      {
-        id: 2,
-        donorName: 'Sarah Johnson',
-        donorContact: '+94 76 987 6543',
-        doneeName: 'Hope Children\'s Home',
-        doneeContact: '+94 11 345 6789',
-        amount: 150000,
-        targetAmount: 150000,
-        status: 'completed',
-        date: '2025-10-08',
-        category: 'Child Welfare'
-      },
-      {
-        id: 3,
-        donorName: 'Michael Brown',
-        donorContact: '+94 75 555 1234',
-        doneeName: 'Community Health Center',
-        doneeContact: '+94 11 456 7890',
-        amount: 75000,
-        targetAmount: 200000,
-        status: 'active',
-        date: '2025-10-12',
-        category: 'Healthcare'
-      },
-      {
-        id: 7,
-        donorName: 'David Wilson',
-        donorContact: '+94 77 888 9999',
-        doneeName: 'Sunrise Orphanage',
-        doneeContact: '+94 11 999 0000',
-        amount: 300000,
-        targetAmount: 300000,
-        status: 'sent',
-        date: '2025-10-05',
-        category: 'Child Welfare'
-      }
-    ],
-    nonMonetary: [
-      {
-        id: 4,
-        donorName: 'Tech Corp Ltd',
-        donorContact: '+94 11 111 2222',
-        doneeName: 'Rural Education Center',
-        doneeContact: '+94 31 222 3333',
-        items: 'Laptops',
-        quantity: 10,
-        targetQuantity: 20,
-        status: 'active',
-        date: '2025-10-11',
-        category: 'Technology'
-      },
-      {
-        id: 5,
-        donorName: 'Food Bank Co',
-        donorContact: '+94 77 333 4444',
-        doneeName: 'Elderly Care Home',
-        doneeContact: '+94 21 444 5555',
-        items: 'Food Packages',
-        quantity: 100,
-        targetQuantity: 100,
-        status: 'sent',
-        date: '2025-10-09',
-        category: 'Food Aid'
-      },
-      {
-        id: 6,
-        donorName: 'Book Lovers Society',
-        donorContact: '+94 76 666 7777',
-        doneeName: 'Mountain View Library',
-        doneeContact: '+94 41 777 8888',
-        items: 'Books',
-        quantity: 250,
-        targetQuantity: 500,
-        status: 'active',
-        date: '2025-10-13',
-        category: 'Education'
-      },
-      {
-        id: 8,
-        donorName: 'Medical Supplies Inc',
-        donorContact: '+94 11 234 5678',
-        doneeName: 'District Hospital',
-        doneeContact: '+94 25 345 6789',
-        items: 'Medical Equipment',
-        quantity: 15,
-        targetQuantity: 15,
-        status: 'completed',
-        date: '2025-10-07',
-        category: 'Healthcare'
-      }
-    ]
+  const [donations, setDonations] = useState({ monetary: [], nonMonetary: [] });
+  const [events, setEvents] = useState([]);
+  const [stats, setStats] = useState({
+    totalMonetary: 0,
+    activeRequests: 0,
+    completedNotSent: 0,
+    sentDonations: 0,
+    totalEvents: 0,
+    totalVolunteers: 0
   });
 
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      name: 'Community Beach Cleanup',
-      date: '2025-10-25',
-      time: '8:00 AM - 12:00 PM',
-      location: 'Negombo Beach',
-      volunteers: 45,
-      organizer: 'Environmental Care Foundation',
-      organizerContact: '+94 11 234 5678',
-      description: 'Join us for a morning of beach cleanup to preserve our coastal environment. All equipment will be provided.'
-    },
-    {
-      id: 2,
-      name: 'Food Distribution Drive',
-      date: '2025-10-28',
-      time: '9:00 AM - 3:00 PM',
-      location: 'Community Center, Colombo',
-      volunteers: 32,
-      organizer: 'Hunger Relief Network',
-      organizerContact: '+94 77 345 6789',
-      description: 'Help distribute food packages to families in need. Transportation and meals provided for volunteers.'
-    },
-    {
-      id: 3,
-      name: 'Children\'s Education Workshop',
-      date: '2025-11-02',
-      time: '2:00 PM - 5:00 PM',
-      location: 'Rural School, Kurunegala',
-      volunteers: 18,
-      organizer: 'Education For All',
-      organizerContact: '+94 37 456 7890',
-      description: 'Conduct educational activities and tutoring sessions for underprivileged children. Teaching materials provided.'
-    }
-  ]);
+  // Fetch data from backend on mount
+  useEffect(() => {
+    // Fetch stats
+    fetch('http://localhost:5000/donations/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && data.stats) {
+          setStats({
+            totalMonetary: data.stats.totalMonetary || 0,
+            activeRequests: data.stats.activeRequests || 0,
+            completedNotSent: data.stats.completedNotSent || 0,
+            sentDonations: data.stats.sentDonations || 0,
+            totalEvents: data.stats.totalEvents || 0,
+            totalVolunteers: data.stats.totalVolunteers || 0
+          });
+        } else {
+          setStats({
+            totalMonetary: 0,
+            activeRequests: 0,
+            completedNotSent: 0,
+            sentDonations: 0,
+            totalEvents: 0,
+            totalVolunteers: 0
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch stats:', err);
+      });
+
+    // Fetch monetary donations
+    fetch('http://localhost:5000/donations?type=monetary')
+      .then(res => res.json())
+      
+      .then(data => {
+        console.log('Monetary donations data:', data);
+        if (data && data.success && Array.isArray(data.donations)) {
+          setDonations(prev => ({ ...prev, monetary: data.donations }));
+        } else {
+          setDonations(prev => ({ ...prev, monetary: [] }));
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch monetary donations:', err);
+      });
+
+    // Fetch non-monetary donations
+    fetch('http://localhost:5000/donations?type=nonMonetary')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Non-monetary donations data:', data);
+        if (data && data.success && Array.isArray(data.donations)) {
+          setDonations(prev => ({ ...prev, nonMonetary: data.donations }));
+        } else {
+          setDonations(prev => ({ ...prev, nonMonetary: [] }));
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch non-monetary donations:', err);
+      });
+
+    // Fetch events (if backend endpoint exists)
+    fetch('http://localhost:5000/events')
+      .then(res => res.json())
+      .then(data => {
+        setEvents(data);
+      })
+      .catch(err => {
+        // If no backend for events, ignore error
+        // console.error('Failed to fetch events:', err);
+      });
+  }, []);
 
   const markAsCompleted = (id, type) => {
     setDonations(prev => ({
@@ -214,28 +155,6 @@ const WelfareDashboard = () => {
     return currentDonations.filter(filters[filterStatus]);
   };
 
-  const getTotalStats = () => {
-    const { monetary, nonMonetary } = donations;
-    
-    const activeMonetary = monetary.filter(d => d.status === 'active' && d.amount < d.targetAmount).length;
-    const activeNonMonetary = nonMonetary.filter(d => d.status === 'active' && d.quantity < d.targetQuantity).length;
-    
-    const completedMonetary = monetary.filter(d => d.status === 'completed').length;
-    const completedNonMonetary = nonMonetary.filter(d => d.status === 'completed').length;
-    
-    const totalVolunteers = events.reduce((sum, e) => sum + e.volunteers, 0);
-    
-    return {
-      totalMonetary: monetary.reduce((sum, d) => sum + d.amount, 0),
-      activeRequests: activeMonetary + activeNonMonetary,
-      completedNotSent: completedMonetary + completedNonMonetary,
-      sentDonations: monetary.filter(d => d.status === 'sent').length + nonMonetary.filter(d => d.status === 'sent').length,
-      totalEvents: events.length,
-      totalVolunteers: totalVolunteers
-    };
-  };
-
-  const stats = getTotalStats();
   const filteredDonations = getFilteredDonations();
 
   return (
@@ -249,12 +168,12 @@ const WelfareDashboard = () => {
         }
       `}</style>
       
-      <header style={styles.dashboardHeader}>
+      {/*<header style={styles.dashboardHeader}>
         <div style={styles.headerContent}>
           <h1 style={styles.dashboardTitle}>Regional Manager Dashboard</h1>
           <p style={styles.dashboardSubtitle}>Welfare Platform Management</p>
         </div>
-      </header>
+      </header>*/}
 
       <div style={styles.navContainer}>
         <NavButton active={currentPage === 'overview'} label="Overview" onClick={() => setCurrentPage('overview')} />
@@ -266,7 +185,7 @@ const WelfareDashboard = () => {
         <StatCard 
           icon={DollarSign} 
           label="Total Monetary Donations" 
-          value={`LKR ${stats.totalMonetary.toLocaleString()}`}
+          value={`LKR ${typeof stats.totalMonetary === 'number' ? stats.totalMonetary.toLocaleString() : 0}`}
           gradientClass={styles.monetaryIcon}
         />
         <StatCard 

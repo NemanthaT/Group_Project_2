@@ -11,7 +11,8 @@ import {
   getRecentDonationsController,
   getActiveDonationsController,
   getDonationStatsController,
-  getDonationByIdController
+  getDonationByIdController,
+  getDonationsByType
 } from "../controllers/donationController.js";
 
 const router = express.Router();
@@ -41,6 +42,8 @@ router.get('/recent', getRecentDonationsController);
 router.get('/active', getActiveDonationsController);
 router.get('/stats', getDonationStatsController);
 router.get('/donations/:id', getDonationByIdController);
+
+router.get('/donations', getDonationsByType);
 
 // Get a single donation by ID
 router.get('/:id', async (req, res) => {

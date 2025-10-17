@@ -303,3 +303,28 @@ export const getDonationByIdController = async (req, res) => {
     });
   }
 };
+
+export const getDonationsByType = async (req, res) => {
+  const { type } = req.query;
+
+  if (!type || (type !== 'monetary' && type !== 'nonMonetary')) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid or missing donation type',
+    });
+  }
+
+  try {
+    const { getDonationsByType } = await import('../models/donationModel.js');
+    const result = await getDonationsByType(type);
+
+    if (result.success) {
+      res.status(200).json({ success: true, donations: result.donations });
+    } else {
+      res.status(404).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error('Error in getDonationsByType:', err);
+    res.status(500).json({ success: false, error: 'Server error while fetching donations' });
+  }
+};
