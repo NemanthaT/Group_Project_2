@@ -1,5 +1,46 @@
+.event-title-banner {
+  width: 100vw; /* span full viewport width */
+  background: linear-gradient(135deg, #9233ea83 0%, #0d419b80 100%);
+  color: white;
+  padding: 1.5rem 0; /* compact height */
+  text-align: center;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw; /* pull to screen edges */
+  margin-right: -50vw;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: none;
+}
+
+.event-title-banner .container {
+  max-width: 1200px; /* keeps text nicely centered */
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.event-title-content h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .event-title-banner {
+    padding: 1.2rem 0;
+    margin-top: 70px;
+  }
+
+  .event-title-content h1 {
+    font-size: 1.8rem;
+  }
+}
+
 .event-details {
   padding: 24px;
+  padding-top: 90px;
   max-width: 1000px;
   margin: 0 auto;
   color: #222;
@@ -31,6 +72,9 @@
 .event-info {
   flex: 1;
   min-width: 260px;
+  display: flex;          /* add this */
+  flex-direction: column; /* vertical stacking */
+  gap: 8px;               /* optional spacing between children */
 }
 
 .event-description {
@@ -40,16 +84,18 @@
 
 .progress-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0;
+  flex-direction: column; /* stack bar and text vertically */
+  align-items: flex-start; /* left-align text under bar */
+  gap: 0.3rem; /* small space between bar and text */
+  margin: 1rem 0;
+  width: 100%;
 }
 
 .progress-bar {
-  width: 220px;
-  height: 12px;
-  background: #eee;
-  border-radius: 6px;
+  background: #e0e0e0;
+  width: 85%;
+  height: 20px;
+  border-radius: 10px;
   overflow: hidden;
 }
 
@@ -63,6 +109,9 @@
 .progress-text {
   font-size: 0.9rem;
   color: #555;
+  width: 85%;           /* match progress bar width */
+  text-align: left;     /* ensure text aligns with bar */
+  margin-top: 0.2rem;
 }
 
 .event-actions {
