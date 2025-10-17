@@ -71,10 +71,15 @@ function FeaturedContent() {
   });
 
   if (loadingEvents) return (
-    <div className="events-loading">Loading events...</div>
+    <div className="events-loading-container">
+      <div className="events-loading-spinner"></div>
+      <p className="events-loading-text">Loading events...</p>
+    </div>
   );
   if (eventsError) return (
-    <div className="events-error">{eventsError}</div>
+    <div className="events-error-container">
+      <p className="events-error-text">{eventsError}</p>
+    </div>
   );
 
   return (
