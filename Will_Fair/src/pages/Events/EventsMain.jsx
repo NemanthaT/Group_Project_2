@@ -1,10 +1,14 @@
 import "./EventsMain.css";
 import FeaturedBg from '@/assets/images/featuredBg.png';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import AddEventModal from './AddEventModal';
 
 function FeaturedContent() {
+
+  const navigate = useNavigate();
+
   const [filters, setFilters] = useState({
     sort: '',
     type: '',
@@ -42,6 +46,16 @@ function FeaturedContent() {
 
     fetchEvents();
   }, []);
+  
+//Save scroll position on mount
+  useEffect(() => {
+    const scrollY = sessionStorage.getItem('eventsScroll');
+    if(scrollY){
+      window.scrollTo(0, parseInt(scrollY));
+      sessionStorage.removeItem('eventsScroll'); //Clear saved position(optional)
+    }
+
+  },[]);
 
   const handleFilterChange = (e, filterName) => {
     setFilters({
@@ -71,10 +85,15 @@ function FeaturedContent() {
   });
 
   if (loadingEvents) return (
-    <div className="events-loading">Loading events...</div>
+    <div className="events-loading-container">
+      <div className="events-loading-spinner"></div>
+      <p className="events-loading-text">Loading events...</p>
+    </div>
   );
   if (eventsError) return (
-    <div className="events-error">{eventsError}</div>
+    <div className="events-error-container">
+      <p className="events-error-text">{eventsError}</p>
+    </div>
   );
 
   return (
@@ -100,7 +119,7 @@ function FeaturedContent() {
       <section className="filters">
         <div className="filter-container">
           <div className="filter-dropdown">
-            <select 
+            <select
               className="filter-select"
               value={filters.sort}
               onChange={(e) => handleFilterChange(e, 'sort')}
@@ -113,7 +132,7 @@ function FeaturedContent() {
           </div>
 
           <div className="filter-dropdown">
-            <select 
+            <select
               className="filter-select"
               value={filters.type}
               onChange={(e) => handleFilterChange(e, 'type')}
@@ -128,7 +147,7 @@ function FeaturedContent() {
           </div>
 
           <div className="filter-dropdown">
-            <select 
+            <select
               className="filter-select"
               value={filters.commitment}
               onChange={(e) => handleFilterChange(e, 'commitment')}
@@ -142,7 +161,7 @@ function FeaturedContent() {
           </div>
 
           <div className="filter-dropdown">
-            <select 
+            <select
               className="filter-select"
               value={filters.location}
               onChange={(e) => handleFilterChange(e, 'location')}
@@ -158,7 +177,7 @@ function FeaturedContent() {
 
           <div className="filter-button-row">
             <div className="filter-dropdown">
-              <select 
+              <select
                 className="filter-select"
                 value={filters.skills}
                 onChange={(e) => handleFilterChange(e, 'skills')}
@@ -214,8 +233,8 @@ function FeaturedContent() {
           <div className="programs-grid">
             {sortedOpportunities.map(opp => (
               <div className="program-card" key={opp.id}>
-                <div 
-                  className="card-image" 
+                <div
+                  className="card-image"
                   style={{ backgroundImage: `url(${opp.image})` }}
                 >
                   <span className="card-badge">Active</span>
@@ -223,18 +242,18 @@ function FeaturedContent() {
                 <div className="card-content">
                   <h3 className="card-title">{opp.title}</h3>
                   <p className="card-description">{opp.description}</p>
-                  
+
                   {/* Volunteer progress bar */}
                   <div className="progress-bar">
-                    <div 
-                      className="progress-fill" 
-                      style={{ 
+                    <div
+                      className="progress-fill"
+                      style={{
                         width: `${(opp.volunteersSigned / opp.volunteersNeeded) * 100}%`,
                         background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
                       }}
                     ></div>
                   </div>
-                  
+
                   <div className="funding-info">
                     <div>
                       <div className="funding-label">Volunteers Signed:</div>
@@ -245,9 +264,15 @@ function FeaturedContent() {
                       <div className="funding-amount">{opp.volunteersNeeded}</div>
                     </div>
                   </div>
-                  
+
                   <div className="card-actions">
-                    <button className="btn btn-outline">
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => {
+                        sessionStorage.setItem('eventsScroll', window.scrollY); //Save Scroll Position
+                        navigate(`/Events/${opp.id}`, { state: { opp } });
+                      }}
+                    >
                       Details
                     </button>
                     <button className="btn btn-primary">
