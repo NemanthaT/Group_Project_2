@@ -39,6 +39,9 @@
 }
 
 .event-details {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 24px;
   padding-top: 90px;
   max-width: 1000px;
@@ -54,9 +57,11 @@
 }
 
 .event-body {
+  flex: 1;
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
+  margin-bottom: auto;  /* pushes content up, footer down */
 }
 
 .event-image {
