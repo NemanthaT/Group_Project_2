@@ -28,8 +28,8 @@ export const authenticateUser = async (email, password) => {
         const user = result.rows[0];
         
         // Compare hashed password
-        //const passwordMatch = await bcrypt.compare(password, user.password_hash);
-        const passwordMatch = password === user.password_hash; // Use plain password for now
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+        //const passwordMatch = password === user.password_hash; // Use plain password for now
         
         if (passwordMatch) {
           return { 
@@ -67,7 +67,8 @@ export const authenticateDonee = async (phone, password) => {
       if (result.rows.length > 0) {
         const user = result.rows[0];
 
-        const passwordMatch = password === user.password_hash;
+        //const passwordMatch = password === user.password_hash;
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
         
         if (passwordMatch) {
           return { 
