@@ -1,6 +1,6 @@
 import "./EventsMain.css";
 import FeaturedBg from '@/assets/images/featuredBg.png';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import AddEventModal from './AddEventModal';

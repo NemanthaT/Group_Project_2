@@ -239,7 +239,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
       await axios.post('http://localhost:5000/events/createEvent', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      toast.success('Event created successfully!');
+      toast.success('Event submitted for approval!');
       
       // Reset form and files
       setForm({

@@ -35,6 +35,7 @@ async function getEvents() {
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
+        WHERE e.is_approved = true
         ORDER BY e.start_date DESC NULLS LAST, e.date DESC NULLS LAST
         `;
 
@@ -86,8 +87,9 @@ async function addEvent(eventData) {
                 type,
                 commitment,
                 skills,
-                image_path
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                image_path,
+                is_approved
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING event_id
         `;
         
@@ -104,7 +106,8 @@ async function addEvent(eventData) {
             eventData.type,
             eventData.commitment,
             eventData.skills,
-            eventData.imagePath || null
+            eventData.imagePath || null,
+            false
         ]);
         
         const eventId = result.rows[0].event_id;
