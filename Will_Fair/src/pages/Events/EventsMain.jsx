@@ -7,50 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddEventModal from './AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
-
-const FILTER_OPTIONS = {
-  sort: [
-    { value: '', label: 'Sort by' },
-    { value: 'recent', label: 'Most Recent' },
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'urgent', label: 'Most Urgent' }
-  ],
-  
-  type: [
-    { value: '', label: 'Volunteer Type' },
-    { value: 'environment', label: 'Environment' },
-    { value: 'teaching', label: 'Teaching' },
-    { value: 'caregiving', label: 'Caregiving' },
-    { value: 'construction', label: 'Construction' },
-    { value: 'admin', label: 'Administrative' }
-  ],
-  
-  commitment: [
-    { value: '', label: 'Time Commitment' },
-    { value: 'one-time', label: 'One-time' },
-    { value: 'weekly', label: 'Weekly' },
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'flexible', label: 'Flexible' }
-  ],
-  
-  location: [
-    { value: '', label: 'Location' },
-    { value: 'Colombo', label: 'Colombo' },
-    { value: 'Galle', label: 'Galle' },
-    { value: 'Kandy', label: 'Kandy' },
-    { value: 'Matara', label: 'Matara' },
-    { value: 'Yala', label: 'Yala' }
-  ],
-  
-  skills: [
-    { value: '', label: 'Skills Needed' },
-    { value: 'teaching', label: 'Teaching' },
-    { value: 'caregiving', label: 'Caregiving' },
-    { value: 'manual', label: 'Manual Labor' },
-    { value: 'technical', label: 'Technical' },
-    { value: 'none', label: 'No Experience Needed' }
-  ]
-};
+import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
 function FeaturedContent() {
 
@@ -199,7 +156,7 @@ function FeaturedContent() {
               value={filters.sort}
               onChange={(e) => handleFilterChange(e, 'sort')}
             >
-              {FILTER_OPTIONS.sort.map(option => (
+              {EVENT_OPTIONS.sort.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -207,14 +164,13 @@ function FeaturedContent() {
             </select>
           </div>
 
-          {/* Type Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.type}
               onChange={(e) => handleFilterChange(e, 'type')}
             >
-              {FILTER_OPTIONS.type.map(option => (
+              {withPlaceholder(EVENT_OPTIONS.type, 'Volunteer Type').map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -222,14 +178,13 @@ function FeaturedContent() {
             </select>
           </div>
 
-          {/* Commitment Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.commitment}
               onChange={(e) => handleFilterChange(e, 'commitment')}
             >
-              {FILTER_OPTIONS.commitment.map(option => (
+              {withPlaceholder(EVENT_OPTIONS.commitment, 'Time Commitment').map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -237,14 +192,13 @@ function FeaturedContent() {
             </select>
           </div>
 
-          {/* Location Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.location}
               onChange={(e) => handleFilterChange(e, 'location')}
             >
-              {FILTER_OPTIONS.location.map(option => (
+              {withPlaceholder(EVENT_OPTIONS.location, 'Location').map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -252,7 +206,6 @@ function FeaturedContent() {
             </select>
           </div>
 
-          {/* Skills Filter with Add Event Button */}
           <div className="filter-button-row">
             <div className="filter-dropdown">
               <select
@@ -260,7 +213,7 @@ function FeaturedContent() {
                 value={filters.skills}
                 onChange={(e) => handleFilterChange(e, 'skills')}
               >
-                {FILTER_OPTIONS.skills.map(option => (
+                {withPlaceholder(EVENT_OPTIONS.skills, 'Skills Needed').map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -268,7 +221,6 @@ function FeaturedContent() {
               </select>
             </div>
 
-            {/* Add Event button placed beside the skills filter */}
             <div className="filter-dropdown">
               <button
                 className="btn btn-primary"
@@ -281,7 +233,7 @@ function FeaturedContent() {
           </div>
         </div>
       </section>
-      
+
       <AddEventModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}

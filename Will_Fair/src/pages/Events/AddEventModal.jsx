@@ -2,38 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AddEventModal.css';
-
-// Option lists
-const TYPE_OPTIONS = [
-  { value: 'environment', label: 'Environment' },
-  { value: 'teaching', label: 'Teaching' },
-  { value: 'caregiving', label: 'Caregiving' },
-  { value: 'construction', label: 'Construction' },
-  { value: 'admin', label: 'Administration' }
-];
-
-const COMMITMENT_OPTIONS = [
-  { value: 'one-time', label: 'One-time' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'flexible', label: 'Flexible' }
-];
-
-const LOCATION_OPTIONS = [
-  { value: 'Colombo', label: 'Colombo' },
-  { value: 'Galle', label: 'Galle' },
-  { value: 'Kandy', label: 'Kandy' },
-  { value: 'Matara', label: 'Matara' },
-  { value: 'Yala', label: 'Yala' }
-];
-
-const SKILLS_OPTIONS = [
-  { value: 'teaching', label: 'Teaching' },
-  { value: 'caregiving', label: 'Care-Giving' },
-  { value: 'manual', label: 'Manual Labour' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'none', label: 'No Experience' }
-];
+import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
 export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -337,7 +306,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
               </div>
             </div>
 
-                {!form.isRange ? (
+            {!form.isRange ? (
               <>
                 <input ref={el => fieldRefs.current.date = el} type="date" value={form.date} onChange={(e) => updateField('date', e.target.value)} required />
                 {renderError('date')}
@@ -356,8 +325,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
           <div className="form-row">
             <label>Location</label>
             <select ref={el => fieldRefs.current.location = el} value={form.location} onChange={(e) => updateField('location', e.target.value)}>
-              <option value="">Location</option>
-              {LOCATION_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.location, 'Location').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -367,8 +335,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
           <div className="form-row">
             <label>Volunteer Type</label>
             <select ref={el => fieldRefs.current.type = el} value={form.type} onChange={(e) => updateField('type', e.target.value)}>
-              <option value="">Volunteer Type</option>
-              {TYPE_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.type, 'Volunteer Type').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -378,8 +345,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
           <div className="form-row">
             <label>Time Commitment</label>
             <select ref={el => fieldRefs.current.commitment = el} value={form.commitment} onChange={(e) => updateField('commitment', e.target.value)}>
-              <option value="">Time Commitment</option>
-              {COMMITMENT_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.commitment, 'Time Commitment').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -389,8 +355,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
           <div className="form-row">
             <label>Skills</label>
             <select ref={el => fieldRefs.current.skills = el} value={form.skills} onChange={(e) => updateField('skills', e.target.value)}>
-              <option value="">Skills Needed</option>
-              {SKILLS_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.skills, 'Skills Needed').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
