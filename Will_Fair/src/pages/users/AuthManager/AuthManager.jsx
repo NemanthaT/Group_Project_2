@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DashboardPage from "./DashboardPage";
 import ProductReviewPage from "./ProductReviewPage";
 import PendingDonationRequests from "./PendingDonationRequests";
+import PendingEventsApproval from "./PendingEventsApproval";
 import "./AuthManagerDashboard.css";
 
 const AuthManager = () => {
@@ -20,6 +21,7 @@ const AuthManager = () => {
     { id: "dashboard", label: "Dashboard" },
     { id: "requests", label: "Requests" },
     { id: "products", label: "Product Reviews" },
+    { id: "events", label: "Pending Events" },
   ];
 
   const handleNavClick = (itemId) => {
@@ -67,6 +69,7 @@ const AuthManager = () => {
           {activeTab === 'dashboard' && <DashboardPage user={user}/>}
           {activeTab === 'products' && <ProductReviewPage user={user}/>}
           {activeTab === 'requests' && <PendingDonationRequests />}
+          {activeTab === 'events' && <PendingEventsApproval />}
         </div>
       </div>
     </div>
