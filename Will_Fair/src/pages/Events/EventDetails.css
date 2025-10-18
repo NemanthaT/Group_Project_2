@@ -114,19 +114,34 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  background: var(--primary-color);
   width: 0%;
   transition: width 300ms ease;
 }
 
-.progress-text {
+.funding-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.funding-info > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.funding-label {
   font-size: 0.85rem;
   color: #555;
-  font-weight: 500;
-  align-self: flex-end;
-  white-space: nowrap;
-  padding: 2px 0;
-  margin-top: 10px;  /* increased from 2px to 6px */
+  margin-bottom: 4px;
+}
+
+.funding-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
 .event-actions {
@@ -135,8 +150,15 @@
   gap: 12px;
 }
 
-/* simple not-found view */
-.event-details.not-found {
-  text-align: center;
-  padding: 48px;
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.error {
+  color: var(--error-color);
 }
