@@ -65,11 +65,9 @@ function EventDetails({ opportunities = [] }) {
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${percent}%` }} />
               </div>
-
-              {/* FIX LATER */}
-              {/* <div className="progress-text">
-                {opp.volunteersSigned} / {opp.volunteersNeeded} registered
-              </div> */}
+              <div className="progress-text">
+                {opp.volunteersSigned} / {opp.volunteersNeeded} volunteers registered
+              </div>
             </div>
 
             <h3>Description</h3>
