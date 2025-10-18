@@ -3,6 +3,8 @@ import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AddEventModal from './AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 
@@ -100,6 +102,30 @@ function FeaturedContent() {
       <p className="events-error-text">{eventsError}</p>
     </div>
   );
+
+  const handleEventSubmit = async (formData) => {
+    try {
+      await axios.post('http://localhost:5000/events/createEvent', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      
+      toast.success('Event submitted for approval!');
+      
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Refresh the events list
+      await fetchEvents();
+      
+      // Close the modal
+      setShowAddModal(false);
+      
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to submit event. Please try again.');
+      return { success: false, error };
+    }
+  };
 
   return (
     <>
@@ -212,7 +238,7 @@ function FeaturedContent() {
       <AddEventModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSuccess={fetchEvents}
+        onSubmit={handleEventSubmit}
       />
 
       <VolunteerEventModal
@@ -291,6 +317,20 @@ function FeaturedContent() {
           </div>
         </div>
       </section>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }

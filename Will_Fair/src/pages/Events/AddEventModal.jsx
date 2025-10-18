@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AddEventModal.css';
 
@@ -36,7 +35,7 @@ const SKILLS_OPTIONS = [
   { value: 'none', label: 'No Experience' }
 ];
 
-export default function AddEventModal({ isOpen, onClose, onSuccess }) {
+export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const [form, setForm] = useState({
     name: '',
     isRange: false,
@@ -79,8 +78,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
     // clear image-related error
     setErrors(prev => ({ ...prev, image: null }));
   };
-
-
 
   const handleDocumentUpload = (e) => {
     const files = Array.from(e.target.files || []);
@@ -257,12 +254,10 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
 
     console.log('Form Data:', formData);
 
-    try {
-      await axios.post('http://localhost:5000/events/createEvent', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success('Event submitted for approval!');
-      
+    const result = await onSubmit(formData);
+
+    // Only reset form if submission was successful
+    if (result.success) {
       // Reset form and files
       setForm({
         name: '',
@@ -287,16 +282,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
       setImagePreview(null);
       setDocumentFiles([]);
       setErrors({});
-      
-      // Refresh the events list
-      if (onSuccess) {
-        onSuccess();
-      }
-      
-      onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to submit event. Please try again.');
     }
   };
 
@@ -324,7 +309,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <ToastContainer />
       <div className="modal-card">
         <div className="modal-header">
           <h2>Add Event</h2>
