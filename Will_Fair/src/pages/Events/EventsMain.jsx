@@ -21,6 +21,10 @@ function FeaturedContent() {
     skills: ''
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 9; // 3x3 grid
+
   // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -70,6 +74,7 @@ function FeaturedContent() {
       ...filters,
       [filterName]: e.target.value
     });
+    setCurrentPage(1); // Reset to page 1 when filter changes
   };
 
   const filteredOpportunities = opportunities.filter(opp => {
@@ -92,6 +97,32 @@ function FeaturedContent() {
     return 0;
   });
 
+  // Calculate pagination
+  const indexOfLastEvent = currentPage * eventsPerPage;
+  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
+  const currentEvents = sortedOpportunities.slice(indexOfFirstEvent, indexOfLastEvent);
+  const totalPages = Math.ceil(sortedOpportunities.length / eventsPerPage);
+
+  // Pagination handlers
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   if (loadingEvents) return (
     <div className="events-loading-container">
       <div className="events-loading-spinner"></div>
@@ -112,7 +143,7 @@ function FeaturedContent() {
       
       toast.success('Event submitted for approval!');
       
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Refresh the events list
       await fetchEvents();
@@ -254,8 +285,15 @@ function FeaturedContent() {
 
       <section className="programs">
         <div className="programs-container">
+          {/* Pagination info */}
+          {sortedOpportunities.length > 0 && (
+            <div className="pagination-info">
+              Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
+            </div>
+          )}
+
           <div className="programs-grid">
-            {sortedOpportunities.map(opp => (
+            {currentEvents.map(opp => (
               <div className="program-card" key={opp.id}>
                 <div
                   className="card-image"
@@ -314,6 +352,56 @@ function FeaturedContent() {
               </div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="pagination-container">
+              <button 
+                className="pagination-btn" 
+                onClick={handlePrevious}
+                disabled={currentPage === 1}
+              >
+                « Previous
+              </button>
+
+              <div className="pagination-numbers">
+                {[...Array(totalPages)].map((_, index) => {
+                  const pageNumber = index + 1;
+                  
+                  // Show first page, last page, current page, and adjacent pages
+                  if (
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={pageNumber}
+                        className={`pagination-number ${currentPage === pageNumber ? 'active' : ''}`}
+                        onClick={() => handlePageChange(pageNumber)}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  } else if (
+                    pageNumber === currentPage - 2 ||
+                    pageNumber === currentPage + 2
+                  ) {
+                    return <span key={pageNumber} className="pagination-ellipsis">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button 
+                className="pagination-btn" 
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                Next »
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
