@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import AddEventModal from './AddEventModal';
+import VolunteerEventModal from './VolunteerEventModal';
 
 function FeaturedContent() {
 
@@ -19,6 +20,10 @@ function FeaturedContent() {
 
   // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
+
+  //Volunteer Modal State
+  const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const [opportunities, setOpportunities] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
@@ -46,16 +51,16 @@ function FeaturedContent() {
   useEffect(() => {
     fetchEvents();
   }, []);
-  
-//Save scroll position on mount
+
+  //Save scroll position on mount
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
-    if(scrollY){
+    if (scrollY) {
       window.scrollTo(0, parseInt(scrollY));
       sessionStorage.removeItem('eventsScroll'); //Clear saved position(optional)
     }
 
-  },[]);
+  }, []);
 
   const handleFilterChange = (e, filterName) => {
     setFilters({
@@ -210,6 +215,18 @@ function FeaturedContent() {
         onSuccess={fetchEvents}
       />
 
+      <VolunteerEventModal
+        isOpen={showVolunteerModal}
+        onClose={() => setShowVolunteerModal(false)}
+        onSubmit={(data) => {
+          console.log("Volunteer registered:", data);
+          console.log("For event:", selectedEvent);
+          // You can add your POST request to backend here
+        }}
+        event={selectedEvent}
+      />
+
+
       <section className="programs">
         <div className="programs-container">
           <div className="programs-grid">
@@ -257,9 +274,16 @@ function FeaturedContent() {
                     >
                       Details
                     </button>
-                    <button className="btn btn-primary">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        setSelectedEvent(opp);        // store which event was clicked
+                        setShowVolunteerModal(true);  // open modal
+                      }}
+                    >
                       Volunteer
                     </button>
+
                   </div>
                 </div>
               </div>
