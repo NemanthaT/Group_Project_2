@@ -1,8 +1,45 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "../Styles";
 import { Edit, Trash2 } from "lucide-react";
 
-const Donors = ({ donors, search, setSearch, onEdit, onDelete }) => {
-  const filtered = donors.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
+const Donors = ({ onEdit, onDelete }) => {
+  const [donors, setDonors] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDonors = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await axios.get("http://localhost:5000/admin/donors");
+        if (res.data.success) {
+          setDonors(res.data.donors.map(d => ({
+            id: d.id,
+            name: d.name,
+            email: d.email,
+            phone: d.phone,
+            totalDonations: d.totalDonations
+          })));
+        } else {
+          setError(res.data.error || "Failed to fetch donors");
+        }
+      } catch (err) {
+        setError("Server error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDonors();
+  }, []);
+
+  const filtered = donors.filter(d => d.name?.toLowerCase().includes(search.toLowerCase()));
+
+  if (loading) return <div>Loading donors...</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
+
   return (
     <div>
       <div style={styles.sectionHeader}>

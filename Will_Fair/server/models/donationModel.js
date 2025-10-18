@@ -488,6 +488,10 @@ async function getDonationStats() {
       `SELECT COALESCE(SUM(quantity_received), 0) AS total_raised FROM donation_requests WHERE type = 'Monetary'`
     );
 
+    const sentMonetaryAmount = await pool.query(
+      `SELECT COALESCE(SUM(quantity_received), 0) AS sent_amount FROM donation_requests WHERE status = 'sent' AND type = 'Monetary'`
+    );
+
     // Raised this month
     const monthRes = await pool.query(
       `SELECT COALESCE(SUM(amount), 0) AS raised_this_month
@@ -528,6 +532,7 @@ async function getDonationStats() {
       completeCampaigns: Number(campaignsCom.rows[0].complete_campaigns) || 0,
       sentCampaigns: Number(campaignsSent.rows[0].sent_campaigns) || 0,
       livesImpacted: Number(livesRes.rows[0].lives_impacted) || 0,
+      sentMonetaryAmount: Number(sentMonetaryAmount.rows[0].sent_amount) || 0
     };
 
     return { success: true, stats };

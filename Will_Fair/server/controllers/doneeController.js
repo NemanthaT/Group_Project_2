@@ -1,6 +1,5 @@
 // doneeController.js
-import { registerDonee } from "../models/doneeModel.js";
-import bcrypt from "bcryptjs";
+import { registerDonee, getAllDonees } from "../models/doneeModel.js";
 
 export const signUpDonee = async (req, res) => {
   const { type, name, phone, password } = req.body;
@@ -43,5 +42,15 @@ export const signUpDonee = async (req, res) => {
       success: false,
       error: "Server error during registration" 
     });
+  }
+};
+
+// Get all donees for admin dashboard
+export const getDoneesAdmin = async (req, res) => {
+  try {
+    const donees = await getAllDonees();
+    res.json({ success: true, donees });
+  } catch {
+    res.status(500).json({ success: false, error: "Server error fetching donees" });
   }
 };
