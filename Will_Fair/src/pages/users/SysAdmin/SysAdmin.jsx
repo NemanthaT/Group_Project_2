@@ -19,8 +19,6 @@ const AdminDashboard = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDocViewer, setShowDocViewer] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState({ docs: [], title: '' });
-  const [doneeSearch, setDoneeSearch] = useState('');
-  const [verifiedFilter, setVerifiedFilter] = useState('all');
   const [donationTypeFilter, setDonationTypeFilter] = useState('all');
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryDesc, setNewCategoryDesc] = useState('');
@@ -40,12 +38,6 @@ const AdminDashboard = () => {
   const [admins, setAdmins] = useState([
     { id: 1, name: 'Admin User', email: 'admin@welfare.com', role: 'Super Admin', status: 'Active' },
     { id: 2, name: 'Jane Moderator', email: 'jane@welfare.com', role: 'Moderator', status: 'Active' }
-  ]);
-
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Medical Emergency', description: 'Medical bills, surgeries', status: 'Active' },
-    { id: 2, name: 'Education', description: 'School fees, books', status: 'Active' },
-    { id: 3, name: 'Housing', description: 'Rent, repairs', status: 'Active' }
   ]);
 
   const [stats, setStats] = useState({
@@ -76,21 +68,6 @@ const AdminDashboard = () => {
     if (!window.confirm('Delete this item?')) return;
     if (type === 'donee') setDonees(donees.filter(d => d.id !== id));
     if (type === 'admin') setAdmins(admins.filter(a => a.id !== id));
-    if (type === 'category') setCategories(categories.filter(c => c.id !== id));
-  };
-
-  const handleAddCategory = () => {
-    if (!newCategoryName.trim()) {
-      alert('Enter category name');
-      return;
-    }
-    setCategories([...categories, { id: Date.now(), name: newCategoryName, description: newCategoryDesc, status: 'Active' }]);
-    setNewCategoryName('');
-    setNewCategoryDesc('');
-  };
-
-  const toggleCategoryStatus = (id) => {
-    setCategories(categories.map(c => c.id === id ? {...c, status: c.status === 'Active' ? 'Inactive' : 'Active'} : c));
   };
 
   const viewDocuments = (docs, title) => {
@@ -125,9 +102,9 @@ const AdminDashboard = () => {
       <main style={styles.content}>
         {activeTab === 'overview' && <Overview stats={stats} donations={recentDonations} />}
         {activeTab === 'donors' && <Donors />}
-        {activeTab === 'donees' && <Donees donees={donees} search={doneeSearch} setSearch={setDoneeSearch} filter={verifiedFilter} setFilter={setVerifiedFilter} onView={viewDocuments} onEdit={(item) => openModal('edit', item)} onDelete={(id) => handleDelete('donee', id)} />}
+        {activeTab === 'donees' && <Donees onEdit={(item) => openModal('edit', item)} onDelete={(id) => handleDelete('donee', id)} />}
         {activeTab === 'donations' && <DonationsHistory donations={donations} filter={donationTypeFilter} setFilter={setDonationTypeFilter} onView={viewDocuments} />}
-        {activeTab === 'categories' && <Categories categories={categories} name={newCategoryName} setName={setNewCategoryName} desc={newCategoryDesc} setDesc={setNewCategoryDesc} onAdd={handleAddCategory} onToggle={toggleCategoryStatus} onDelete={(id) => handleDelete('category', id)} />}
+        {activeTab === 'categories' && <Categories name={newCategoryName} setName={setNewCategoryName} desc={newCategoryDesc} setDesc={setNewCategoryDesc} onAdd={() => {}} onToggle={() => {}} onDelete={(id) => handleDelete('category', id)} />}
         {activeTab === 'admins' && <AdminManagement admins={admins} onAdd={() => openModal('add')} onEdit={(item) => openModal('edit', item)} onDelete={(id) => handleDelete('admin', id)} />}
       </main>
 
