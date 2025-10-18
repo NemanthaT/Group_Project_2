@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { homeStyles } from "../../assets/styles/homestyles"; 
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'react-native';
@@ -67,10 +66,10 @@ const HomeScreen = () => {
 
   return (
     
-      <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[homeStyles.container, { backgroundColor: '#f5f5f5' }]} showsVerticalScrollIndicator={false}>
 
         {/* Hero Section */}
-        <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
+        <View style={[homeStyles.hero, { backgroundColor: '#5d40efff' }]}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -83,22 +82,23 @@ const HomeScreen = () => {
             <Ionicons name="menu-outline" size={30} color="#fff" />
           </TouchableOpacity>
           
-          <Text style={homeStyles.heroTitle}>
+          <Text style={[homeStyles.heroTitle, { marginTop: 50 }]}>
             Empowering Generosity, One Gift at a Time
           </Text>
-          <Text style={homeStyles.heroSubtitle}>
+
+          <Text style={[homeStyles.heroSubtitle, { marginTop: 10 }]}>
             Whether it’s food, education, healthcare, or emergency relief — your
             contribution matters.
           </Text>
-          <View style={homeStyles.heroButtons}>
-            <TouchableOpacity style={homeStyles.ctaButton}>
-              <Text style={homeStyles.ctaText}>Get Started</Text>
+          <View style={[homeStyles.heroButtons, { marginTop: 10 }]}>
+            <TouchableOpacity style={[homeStyles.ctaButton, { backgroundColor: '#5d40efff', borderColor: '#fff', borderWidth: 2 }]}>
+              <Text style={[homeStyles.ctaText, { color: '#fff' }]}>Get Started</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={homeStyles.donateButton}>
-              <Text style={homeStyles.buttonText}>Donate Now</Text>
+            <TouchableOpacity style={[homeStyles.donateButton, { backgroundColor: '#fff' }]}>
+              <Text style={[homeStyles.buttonText, { color: '#5d40efff' }]}>Donate Now</Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Featured Programs */}
         <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
@@ -137,23 +137,8 @@ const HomeScreen = () => {
         ))}
 </ScrollView>
 
-        {/* Impact Section */}
-        <View style={homeStyles.impactContainer}>
-          <Text style={homeStyles.sectionTitle}>Our Impact</Text>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="school-outline" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>12,000+</Text>
-            <Text style={homeStyles.impactLabel}>Children educated</Text>
-          </View>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="add-circle" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>10,000+</Text>
-            <Text style={homeStyles.impactLabel}>Medical Treatment</Text>
-          </View>
-        </View>
-
         {/* Testimonial Section */}
-        <View style={homeStyles.testimonialContainer}>
+        <View style={[homeStyles.testimonialContainer, { backgroundColor: '#ffffff' }]}>
           <Text style={homeStyles.sectionTitle}>What they say about us</Text>
           <Text style={homeStyles.testimonialText}>
             “Welfair made giving back so simple and transparent. I know exactly
@@ -172,14 +157,14 @@ const HomeScreen = () => {
             style={[homeStyles.inputField, { height: 80 }]}
             multiline
           />
-          <TouchableOpacity style={homeStyles.donateButton}>
-            <Text style={homeStyles.buttonText}>Submit</Text>
+          <TouchableOpacity style={[homeStyles.donateButton, { backgroundColor: '#7B61FF' }]}>
+            <Text style={[homeStyles.buttonText, { color: '#fff' }]}>Submit</Text>
           </TouchableOpacity>
         </View>
 
      {/* Contact Us */}
       {/* <View ref={contactRef} onLayout={(event) => setContactY(event.nativeEvent.layout.y)} style={homeStyles.testimonialContainer}> */}
-      <View style={homeStyles.testimonialContainer}>
+      <View style={[homeStyles.testimonialContainer, { backgroundColor: '#ffffff' }]}>
         <Text style={homeStyles.sectionTitle}>Contact Us</Text>
         <Text style={homeStyles.impactLabel}>Feel free to reach out to us:</Text>
 
@@ -203,7 +188,7 @@ const HomeScreen = () => {
 
         {/* About Section */}
         {/* <View ref={aboutRef} onLayout={(event) => setAboutY(event.nativeEvent.layout.y)} style={homeStyles.aboutContainer}> */}
-        <View style={homeStyles.aboutContainer}>
+        <View style={[homeStyles.aboutContainer, { backgroundColor: '#ffffff', marginBottom: 100 }]}>
           <Text style={homeStyles.sectionTitle}>About</Text>
                 <Image
                   source={require('../../assets/images/about.png')}

@@ -33,7 +33,7 @@ const MyDonationReq = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+      <LinearGradient colors={["#5d40efff", "#5d40efff"]} style={styles.header}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -92,12 +92,7 @@ const MyDonationReq = () => {
             <Text style={styles.amountLabel}>
             Target: {request.target.toLocaleString()}.00
             </Text>
-        </View>
-
-        {/* Right: Status badge */}
-        <View style={styles.statusBadgeNew}>
-            <Text style={styles.statusTextNew}>{request.status}</Text>
-        </View>
+        </View>        
         </View>
 
 

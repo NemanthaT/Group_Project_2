@@ -110,7 +110,7 @@ const MyDonationReq = () => {
           <View style={{
             height: 8,
             width: `${progress}%`,
-            backgroundColor: isMoney ? '#7B61FF' : '#00BCD4',
+            backgroundColor: '#7B61FF',
             borderRadius: 4,
           }} />
         </View>
@@ -154,7 +154,7 @@ const MyDonationReq = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: "#7B61FF" }]}>
+      <View style={[styles.header, { backgroundColor: "#5d40efff" }]}>
         <TouchableOpacity
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           style={{
