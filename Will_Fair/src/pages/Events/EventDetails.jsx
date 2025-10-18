@@ -17,6 +17,13 @@ function EventDetails({ opportunities = [] }) {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
 
+  // Helper to ensure image URL is absolute
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return FeaturedBg;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`;
+  };
+
 
 
   useEffect(() => {
@@ -77,7 +84,7 @@ function EventDetails({ opportunities = [] }) {
         <div
           className="event-image"
           style={{ 
-            backgroundImage: `url(${event.image || FeaturedBg})`,
+            backgroundImage: `url(${getImageUrl(event.image)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
