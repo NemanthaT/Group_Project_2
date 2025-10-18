@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import axios from "axios"; // Uncomment when backend is ready
+import axios from "axios"; 
 import EventDetailsCard from "./components/EventDetailsCard";
 import "./AuthManagerDashboard.css";
 
@@ -120,15 +120,10 @@ const PendingEventsApproval = () => {
   useEffect(() => {
     const fetchPendingEvents = async () => {
       try {
-        // Uncomment when backend is ready
-        // const res = await axios.get("http://localhost:5000/authManager/pending-events");
-        // setEvents(res.data.events);
+        const res = await axios.get("http://localhost:5000/authManager/pending-events");
+        setEvents(res.data.events);
+        setLoading(false);
         
-        // Using dummy data for now
-        setTimeout(() => {
-          setEvents(DUMMY_EVENTS);
-          setLoading(false);
-        }, 500); // Simulate API delay
       } catch {
         setError("Failed to fetch pending events");
         setLoading(false);
@@ -138,11 +133,11 @@ const PendingEventsApproval = () => {
   }, []);
 
   useEffect(() => {
-    // Calculate stats from events
+
     setStats({
       pending: events.filter((e) => !e.is_approved).length,
-      approved: 0, // This would need to be fetched separately if tracking approved events
-      declined: 0, // This would need to be fetched separately if tracking declined events
+      approved: 0, 
+      declined: 0, 
       total: events.length,
     });
   }, [events]);
