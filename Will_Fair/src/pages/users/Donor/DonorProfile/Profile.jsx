@@ -8,29 +8,8 @@ export default function DonorProfile({user}) {
     phone: '',
     totalDonations: 0
   });
-
-  // Fetch donor profile from backend on mount
-  useEffect(() => {
-    // Replace with actual donorId logic (e.g., from auth context, params, etc.)
-    const donorId = user.id;
-    console.log("ID ", donorId);
-    fetch(`http://localhost:5000/donors/profile?donorId=${donorId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.success && data.donor) {
-          setDonor({
-            name: data.donor.name || '',
-            email: data.donor.email || '',
-            phone: data.donor.phone || '',
-            totalDonations: data.donor.totalDonations || 0
-          });
-          console.log(data);
-        }
-      })
-      .catch(err => {
-        console.error('Failed to fetch donor profile:', err);
-      });
-  }, []);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(''); 
 
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [phoneInput, setPhoneInput] = useState(donor.phone);
@@ -49,6 +28,55 @@ export default function DonorProfile({user}) {
   });
 
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  // Fetch donor profile from backend when user is available
+  useEffect(() => {
+    const fetchDonorProfile = async () => {
+      if (!user || !user.id) {
+        console.log("User not available yet:", user);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const donorId = user.id;
+        console.log("Fetching profile for ID:", donorId);
+        
+        const response = await fetch(`http://localhost:5000/donors/profile?donorId=${donorId}`);
+        const data = await response.json();
+        
+        console.log("Full API Response:", data);
+        
+        if (data && data.success && data.donor) {
+          console.log("Raw donor data:", data.donor);
+          
+          // FIX: Handle the actual backend response structure
+          const donorFromBackend = data.donor;
+          setDonor({
+            name: `${donorFromBackend.first_name || ''} ${donorFromBackend.last_name || ''}`.trim(),
+            email: donorFromBackend.email || '',
+            phone: donorFromBackend.phone || '',
+            totalDonations: donorFromBackend.totalDonations || 0
+          });
+        } else {
+          setError(data.error || 'Failed to fetch donor profile');
+        }
+      } catch (err) {
+        console.error('Failed to fetch donor profile:', err);
+        setError('Network error while fetching profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonorProfile();
+  }, [user]);
+
+  // Update phone input when donor data changes
+  useEffect(() => {
+    setPhoneInput(donor.phone);
+  }, [donor.phone]);
 
   const handlePhoneSave = () => {
     if (phoneInput.trim()) {
@@ -90,6 +118,50 @@ export default function DonorProfile({user}) {
     setShowPasswords({ ...showPasswords, [field]: !showPasswords[field] });
   };
 
+  // Loading State
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.maxWidth}>
+          <div style={styles.card}>
+            <div style={{...styles.header, textAlign: 'center', padding: '48px'}}>
+              <div style={styles.avatarCircle}>
+                <User style={styles.avatarIcon} />
+              </div>
+              <h1 style={styles.userName}>Loading...</h1>
+              <p style={styles.userSubtitle}>Please wait while we load your profile</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.maxWidth}>
+          <div style={styles.card}>
+            <div style={{...styles.header, textAlign: 'center', padding: '48px'}}>
+              <div style={styles.avatarCircle}>
+                <User style={styles.avatarIcon} />
+              </div>
+              <h1 style={styles.userName}>Error</h1>
+              <p style={styles.userSubtitle}>{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                style={styles.primaryButton}
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.container}>
       <style>{`
@@ -112,7 +184,7 @@ export default function DonorProfile({user}) {
                 <User style={styles.avatarIcon} />
               </div>
               <div>
-                <h1 style={styles.userName}>{donor.name}</h1>
+                <h1 style={styles.userName}>{donor.name || 'Donor'}</h1>
                 <p style={styles.userSubtitle}>Donor Profile</p>
               </div>
             </div>
@@ -153,7 +225,7 @@ export default function DonorProfile({user}) {
                 <User style={styles.labelIcon} />
                 Full Name
               </label>
-              <p style={styles.value}>{donor.name}</p>
+              <p style={styles.value}>{donor.name || 'Not available'}</p>
             </div>
 
             {/* Email Section */}
@@ -162,7 +234,7 @@ export default function DonorProfile({user}) {
                 <Mail style={styles.labelIcon} />
                 Email Address
               </label>
-              <p style={styles.value}>{donor.email}</p>
+              <p style={styles.value}>{donor.email || 'Not available'}</p>
             </div>
 
             {/* Phone Section */}
@@ -333,6 +405,7 @@ export default function DonorProfile({user}) {
   );
 }
 
+// Keep your existing styles object exactly as it was
 const styles = {
   container: {
     minHeight: '100vh',
