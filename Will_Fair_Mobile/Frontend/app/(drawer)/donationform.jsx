@@ -76,7 +76,7 @@ const DonationForm = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
-            <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+            <View style={[styles.header, { backgroundColor: "#7B61FF" }]}>
                <TouchableOpacity
                           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
                           style={{
@@ -101,7 +101,7 @@ const DonationForm = () => {
               <Text style={styles.headerSubtitle}>
                 Connect with generous donors who want to help your cause
               </Text>
-            </LinearGradient>
+            </View>
 
       {/* Instruction Box */}
       <View style={styles.instructionBox}>

@@ -53,7 +53,7 @@ export const donationRequestsStyles = StyleSheet.create({
     marginRight: 10,
   },
   newRequestButton: {
-    backgroundColor: "#9333EA",
+    backgroundColor: "#7B61FF",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -130,32 +130,34 @@ export const donationRequestsStyles = StyleSheet.create({
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: "#9333EA",
+    backgroundColor: "#7B61FF",
   },
   actionRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
   editButton: {
-    borderColor: "#9333EA",
+    borderColor: "#7B61FF",
     borderWidth: 1,
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingHorizontal: 50,
+    paddingVertical: 10,
+    borderRadius: 8,
+    margin: 20,
   },
   editText: {
-    color: "#9333EA",
-    fontWeight: "600",
+    color: "#7B61FF",
+    fontWeight: "500",
   },
   viewButton: {
-    backgroundColor: "#9333EA",
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    borderRadius: 20,
+    backgroundColor: "#7B61FF",
+    paddingHorizontal: 50,
+    paddingVertical: 10,
+    borderRadius: 8,
+    margin: 20,
   },
   viewText: {
     color: "#fff",
-    fontWeight: "600",
+    fontWeight: "500",
   },
   logoBackground: {
     width: 50,
@@ -221,7 +223,7 @@ export const donationRequestsStyles = StyleSheet.create({
     borderColor: "#ccc",
   },
   submitButton: {
-    backgroundColor: "#9333EA",
+    backgroundColor: "#7B61FF",
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -325,7 +327,7 @@ description: {
 },
 
 statusBadgeNew: {
-  backgroundColor: "#9333EA",
+  backgroundColor: "#7B61FF",
   paddingHorizontal: 12,
   paddingVertical: 10,
   borderRadius: 12,
@@ -338,21 +340,6 @@ statusTextNew: {
   fontSize: 14,
   fontWeight: "500",
 },
-editButtonNew: {
-    backgroundColor: "#6366F1",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 6,
-  },
-  editTextNew: {
-    color: "#fff",
-    marginLeft: 6,
-    fontSize: 13,
-    fontWeight: "500",
-  },
   removeButton: {
     backgroundColor: "#DC2626",
     flexDirection: "row",
