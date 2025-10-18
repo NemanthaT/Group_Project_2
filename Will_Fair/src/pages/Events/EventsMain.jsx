@@ -8,6 +8,50 @@ import 'react-toastify/dist/ReactToastify.css';
 import AddEventModal from './AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 
+const FILTER_OPTIONS = {
+  sort: [
+    { value: '', label: 'Sort by' },
+    { value: 'recent', label: 'Most Recent' },
+    { value: 'popular', label: 'Most Popular' },
+    { value: 'urgent', label: 'Most Urgent' }
+  ],
+  
+  type: [
+    { value: '', label: 'Volunteer Type' },
+    { value: 'environment', label: 'Environment' },
+    { value: 'teaching', label: 'Teaching' },
+    { value: 'caregiving', label: 'Caregiving' },
+    { value: 'construction', label: 'Construction' },
+    { value: 'admin', label: 'Administrative' }
+  ],
+  
+  commitment: [
+    { value: '', label: 'Time Commitment' },
+    { value: 'one-time', label: 'One-time' },
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' },
+    { value: 'flexible', label: 'Flexible' }
+  ],
+  
+  location: [
+    { value: '', label: 'Location' },
+    { value: 'Colombo', label: 'Colombo' },
+    { value: 'Galle', label: 'Galle' },
+    { value: 'Kandy', label: 'Kandy' },
+    { value: 'Matara', label: 'Matara' },
+    { value: 'Yala', label: 'Yala' }
+  ],
+  
+  skills: [
+    { value: '', label: 'Skills Needed' },
+    { value: 'teaching', label: 'Teaching' },
+    { value: 'caregiving', label: 'Caregiving' },
+    { value: 'manual', label: 'Manual Labor' },
+    { value: 'technical', label: 'Technical' },
+    { value: 'none', label: 'No Experience Needed' }
+  ]
+};
+
 function FeaturedContent() {
 
   const navigate = useNavigate();
@@ -155,57 +199,60 @@ function FeaturedContent() {
               value={filters.sort}
               onChange={(e) => handleFilterChange(e, 'sort')}
             >
-              <option value="">Sort by</option>
-              <option value="recent">Most Recent</option>
-              <option value="popular">Most Popular</option>
-              <option value="urgent">Most Urgent</option>
+              {FILTER_OPTIONS.sort.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Type Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.type}
               onChange={(e) => handleFilterChange(e, 'type')}
             >
-              <option value="">Volunteer Type</option>
-              <option value="environment">Environment</option>
-              <option value="teaching">Teaching</option>
-              <option value="caregiving">Caregiving</option>
-              <option value="construction">Construction</option>
-              <option value="admin">Administrative</option>
+              {FILTER_OPTIONS.type.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Commitment Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.commitment}
               onChange={(e) => handleFilterChange(e, 'commitment')}
             >
-              <option value="">Time Commitment</option>
-              <option value="one-time">One-time</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="flexible">Flexible</option>
+              {FILTER_OPTIONS.commitment.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Location Filter */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
               value={filters.location}
               onChange={(e) => handleFilterChange(e, 'location')}
             >
-              <option value="">Location</option>
-              <option value="Colombo">Colombo</option>
-              <option value="Galle">Galle</option>
-              <option value="Kandy">Kandy</option>
-              <option value="Matara">Matara</option>
-              <option value="Yala">Yala</option>
+              {FILTER_OPTIONS.location.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Skills Filter with Add Event Button */}
           <div className="filter-button-row">
             <div className="filter-dropdown">
               <select
@@ -213,12 +260,11 @@ function FeaturedContent() {
                 value={filters.skills}
                 onChange={(e) => handleFilterChange(e, 'skills')}
               >
-                <option value="">Skills Needed</option>
-                <option value="teaching">Teaching</option>
-                <option value="caregiving">Caregiving</option>
-                <option value="manual">Manual Labor</option>
-                <option value="technical">Technical</option>
-                <option value="none">No Experience Needed</option>
+                {FILTER_OPTIONS.skills.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -235,6 +281,7 @@ function FeaturedContent() {
           </div>
         </div>
       </section>
+      
       <AddEventModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
