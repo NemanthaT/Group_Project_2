@@ -1,15 +1,46 @@
 import express from "express";
-//import upload from "../middleware/upload.js";
-import { getEventsController } from "../controllers/eventController.js";
+import multer from "multer";
+import { getEventsController, createEvent } from "../controllers/eventController.js";
 
 const router = express.Router();
 
-//Controlling file uploading and image uploading for event creation
-/* router.post('/createEvent', upload.fields([{
-  name: 'image', maxCount: 1
-}, {
-  name: 'documents', maxCount: 5
-}]), createEvent); */
+// Create a separate multer configuration for events
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/temp/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const eventUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    // Check mimetype for proper validation
+    const allowedMimeTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg', 
+      'image/png'
+    ];
+    
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Invalid file type. Only PDF and image files allowed. Got: ${file.mimetype}`), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024  // 10MB for events
+  }
+});
+
+// POST create event with custom upload middleware
+router.post('/createEvent', eventUpload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'documents', maxCount: 5 }
+]), createEvent);
 
 //public Routes
 router.get('/', getEventsController);
