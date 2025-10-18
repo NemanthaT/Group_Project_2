@@ -9,33 +9,24 @@ import {
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '../contexts/UserContext';
 
 export default function CustomDrawer(props) {
   const router = useRouter();
-  const [username, setUsername] = React.useState('');
-
-  React.useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const userData = await AsyncStorage.getItem('user');
-        if (userData) {
-          const user = JSON.parse(userData);
-          setUsername(user.firstName || user.username || 'User');
-        } else {
-          setUsername('User');
-        }
-      } catch {
-        setUsername('User');
-      }
-    };
-    fetchUsername();
-  }, []);
+  const { user, logout } = useUser();
 
   const navigateTo = (route) => {
     router.push(route);
     props.navigation.closeDrawer();
   };
+
+  const handleLogout = async () => {
+    await logout();
+    navigateTo('/(tabs)/firstpage');
+  };
+
+  // Get display name from user object
+  const username = user?.name || user?.firstName || user?.username || 'User';
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
@@ -45,6 +36,7 @@ export default function CustomDrawer(props) {
             style={styles.profileImage}
           />
           <Text style={styles.username}>{username}</Text>
+          {user?.email && <Text style={styles.userEmail}>{user.email}</Text>}
       </View>
 
       <View style={styles.menuItems}>
@@ -69,7 +61,7 @@ export default function CustomDrawer(props) {
 
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={() => navigateTo('/(tabs)/firstpage')}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </DrawerContentScrollView>
@@ -100,6 +92,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     marginTop: 10,
+  },
+  userEmail: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 5,
+    opacity: 0.9,
   },
   menuItems: {
     marginTop: 10,

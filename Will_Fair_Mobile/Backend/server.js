@@ -14,6 +14,15 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Create uploads directory if it doesn't exist
 const uploadsDir = 'uploads';
 if (!fs.existsSync(uploadsDir)) {
@@ -72,13 +81,14 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
+
+console.log('📦 Registering routes...');
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', volunteerRoutes);
 app.use('/api', eventRoutes);
-
-// ...category endpoints moved to MVC routes...
+console.log('✅ Event routes registered at /api');
 app.use('/api', donationRoutes); // <-- add this line
 
 
@@ -175,6 +185,7 @@ app.listen(PORT, () => {
   console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
   console.log(`  📅 GET  http://localhost:${PORT}/api/events`);
   console.log(`  📋 GET  http://localhost:${PORT}/api/events/:id`);
+  console.log(`  ➕ POST http://localhost:${PORT}/api/events`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
 

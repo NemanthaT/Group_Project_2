@@ -176,23 +176,40 @@ export default function EventsScreen() {
         </View>
       )} />
 
-      <AddEventModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onCreate={(formData) => {
-        const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
-        const date = formData.isRange ? formData.startDate : formData.date;
-        const newOpp = {
-          id,
-          title: formData.name || 'Untitled Event',
-          description: formData.description,
-          type: formData.type || 'other',
-          commitment: formData.commitment || 'flexible',
-          location: formData.location || 'TBD',
-          skills: formData.skills || 'none',
-          volunteersNeeded: Number(formData.volunteersNeeded) || 0,
-          volunteersSigned: 0,
-          image: '',
-          date: date || ''
-        };
-        setOpportunities(prev => [newOpp, ...prev]);
+      <AddEventModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onCreate={async (formData) => {
+        try {
+          console.log('Submitting event to backend...');
+          
+          const response = await axios.post(`${API_BASE_URL}/events`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log('Event created successfully:', response.data);
+
+          if (response.data.success) {
+            alert('Event created successfully!');
+            // Refresh the events list
+            const res = await axios.get(`${API_BASE_URL}/events`);
+            if (res.data.success) {
+              setOpportunities(res.data.events || []);
+            }
+          } else {
+            alert('Failed to create event: ' + (response.data.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error creating event:', error);
+          let errorMessage = 'Failed to create event';
+          if (error.response) {
+            errorMessage = error.response.data?.error || error.message;
+          } else if (error.request) {
+            errorMessage = 'Network error: Cannot connect to server';
+          } else {
+            errorMessage = error.message;
+          }
+          alert('Error: ' + errorMessage);
+        }
       }} />
     </SafeAreaView>
   );

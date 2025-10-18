@@ -20,7 +20,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     contactEmail: '',
     contactNumber: '',
     image: null,
-    proofDocument: null
+    documents: [] // Changed from single document to array
   });
 
   const [errors, setErrors] = useState({});
@@ -57,15 +57,49 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'image/*'],
-        copyToCacheDirectory: true
+        copyToCacheDirectory: true,
+        multiple: true // Allow multiple document selection
       });
 
-      if (result.type === 'success') {
-        updateField('proofDocument', result);
+      console.log('Document picker result:', result);
+
+      // Handle both single and multiple document selection
+      if (!result.canceled) {
+        // result.assets contains the selected files for expo-document-picker v11+
+        if (result.assets && result.assets.length > 0) {
+          const newDocs = result.assets.map(asset => ({
+            uri: asset.uri,
+            name: asset.name,
+            mimeType: asset.mimeType || 'application/octet-stream',
+            size: asset.size
+          }));
+          
+          // Add to existing documents (max 5 total)
+          const currentDocs = form.documents || [];
+          const updatedDocs = [...currentDocs, ...newDocs].slice(0, 5);
+          updateField('documents', updatedDocs);
+        }
+      } else if (result.type === 'success') {
+        // Fallback for older versions of expo-document-picker
+        const newDoc = {
+          uri: result.uri,
+          name: result.name,
+          mimeType: result.mimeType || 'application/octet-stream',
+          size: result.size
+        };
+        const currentDocs = form.documents || [];
+        const updatedDocs = [...currentDocs, newDoc].slice(0, 5);
+        updateField('documents', updatedDocs);
       }
     } catch (error) {
+      console.error('Document picker error:', error);
       Alert.alert('Error', 'Failed to pick document');
     }
+  };
+
+  const removeDocument = (index) => {
+    const updatedDocs = form.documents.filter((_, i) => i !== index);
+    updateField('documents', updatedDocs);
   };
 
   const validate = () => {
@@ -79,6 +113,8 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
       if (!form.startDate) newErrors.startDate = 'Select start date';
       if (!form.endDate) newErrors.endDate = 'Select end date';
     }
+    if (!form.image) newErrors.image = 'Event image is required';
+    if (!form.documents || form.documents.length === 0) newErrors.documents = 'At least one proof document is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -88,15 +124,22 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
       Alert.alert('Validation', 'Please fix the errors in the form');
       return;
     }
-
-    const date = form.isRange ? (form.startDate + ' to ' + form.endEnd) : form.date;
     
     // Create form data for multipart/form-data submission
     const formData = new FormData();
     formData.append('name', form.name);
-    formData.append('date', date);
+    formData.append('isRange', form.isRange ? 'true' : 'false');
+    
+    // Add date fields based on isRange
+    if (form.isRange) {
+      formData.append('startDate', form.startDate);
+      formData.append('endDate', form.endDate);
+    } else {
+      formData.append('date', form.date);
+    }
+    
     formData.append('description', form.description);
-    formData.append('volunteersNeeded', String(Number(form.volunteersNeeded) || 0));
+    formData.append('volunteersNeeded', String(Number(form.volunteersNeeded) || 1));
     formData.append('location', form.location);
     formData.append('type', form.type);
     formData.append('commitment', form.commitment);
@@ -110,7 +153,8 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
       const imageUri = form.image.uri;
       const imageName = imageUri.split('/').pop();
       const match = /\.(\w+)$/.exec(imageName);
-      const imageType = match ? `image/${match[1]}` : 'image';
+      const imageType = match ? `image/${match[1]}` : 'image/jpeg';
+      
       formData.append('image', {
         uri: imageUri,
         name: imageName,
@@ -118,14 +162,23 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
       });
     }
 
-    // Append document if selected
-    if (form.proofDocument) {
-      formData.append('proofDoc', {
-        uri: form.proofDocument.uri,
-        name: form.proofDocument.name,
-        type: form.proofDocument.mimeType
+    // Append all documents
+    if (form.documents && form.documents.length > 0) {
+      form.documents.forEach((doc, index) => {
+        formData.append('documents', {
+          uri: doc.uri,
+          name: doc.name,
+          type: doc.mimeType
+        });
       });
     }
+
+    console.log('Submitting form data:', {
+      name: form.name,
+      isRange: form.isRange,
+      documentsCount: form.documents?.length || 0,
+      hasImage: !!form.image
+    });
 
     onCreate && onCreate(formData);
     
@@ -146,7 +199,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
       contactEmail: '',
       contactNumber: '',
       image: null,
-      proofDocument: null
+      documents: []
     });
     onClose && onClose();
   };
@@ -230,6 +283,7 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
             <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
               <Text style={styles.uploadText}>Choose Image</Text>
             </TouchableOpacity>
+            {errors.image && <Text style={styles.err}>{errors.image}</Text>}
             {form.image && (
               <View style={styles.previewContainer}>
                 <Image source={{ uri: form.image.uri }} style={styles.imagePreview} />
@@ -242,19 +296,28 @@ export default function AddEventModal({ isOpen, onClose, onCreate }) {
               </View>
             )}
 
-            <Text style={styles.label}>Supporting Document</Text>
+            <Text style={styles.label}>Supporting Documents (Max 5)</Text>
             <TouchableOpacity style={styles.uploadBtn} onPress={pickDocument}>
-              <Text style={styles.uploadText}>Choose Document</Text>
+              <Text style={styles.uploadText}>Choose Documents</Text>
             </TouchableOpacity>
-            {form.proofDocument && (
-              <View style={styles.docPreview}>
-                <Text numberOfLines={1} style={styles.docName}>{form.proofDocument.name}</Text>
-                <TouchableOpacity 
-                  style={styles.removeBtn} 
-                  onPress={() => updateField('proofDocument', null)}
-                >
-                  <Text style={styles.removeText}>✕</Text>
-                </TouchableOpacity>
+            {errors.documents && <Text style={styles.err}>{errors.documents}</Text>}
+            
+            {form.documents && form.documents.length > 0 && (
+              <View style={styles.documentsContainer}>
+                {form.documents.map((doc, index) => (
+                  <View key={index} style={styles.docPreview}>
+                    <Text numberOfLines={1} style={styles.docName}>
+                      {index + 1}. {doc.name}
+                    </Text>
+                    <TouchableOpacity 
+                      style={styles.removeBtn} 
+                      onPress={() => removeDocument(index)}
+                    >
+                      <Text style={styles.removeText}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+                <Text style={styles.docCount}>{form.documents.length}/5 documents selected</Text>
               </View>
             )}
 
@@ -401,5 +464,15 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginTop: 10,
+  },
+  documentsContainer: {
+    marginTop: 8,
+    gap: 8
+  },
+  docCount: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'right'
   }
 });
