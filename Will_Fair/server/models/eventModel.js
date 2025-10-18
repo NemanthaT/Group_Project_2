@@ -51,6 +51,41 @@ async function getEvents() {
     }
 }
 
+async function getEventById(eventId) {
+    try{
+        const sql = `
+      SELECT
+        e.event_id,
+        e.name,
+        e.description,
+        e.type,
+        e.commitment,
+        e.location,
+        e.skills,
+        e.is_range,
+        e.date,
+        e.start_date,
+        e.end_date,
+        e.volunteers_needed,
+        e.volunteers_signed,
+        e.image_path,
+        json_build_object(
+          'organiser_id', o.organiser_id,
+          'name', o.name,
+          'email', o.email,
+          'phone', o.phone
+        ) AS organiser
+      FROM events e
+      LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
+      WHERE e.event_id = $1 AND e.is_approved = true
+    `;
+    const result = await pool.query(sql, [eventId]);
+    if (result.rows.length === 0) return { success: false, message: "Event not found" };
+    return { success: true, event: result.rows[0] };
+    } catch (err) {
+    console.error("Error in getEventById:", err);
+    return { success: false, message: "Database query error" };
+
 async function getPendingEvents() {
     try {
         const sql = `
@@ -240,6 +275,7 @@ async function addEvent(eventData) {
     }
 }
 
+
 // Add documents for an event
 async function addDocuments(eventId, documents) {
     try {
@@ -299,4 +335,5 @@ async function approveEvent(eventId) {
     }
 }
 
-export { getEvents, getPendingEvents, getPendingDeletionEvents, addOrganiser, addEvent, addDocuments, updateEventImage, approveEvent };
+export { getEvents, getEventById, getPendingEvents, getPendingDeletionEvents, addOrganiser, addEvent, addDocuments, updateEventImage, approveEvent };
+
