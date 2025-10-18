@@ -5,7 +5,8 @@ import {
   rejectDonationRequestController,
   getPendingDonationDetailController,
   getDonationStatsController,
-  getPendingEventsController
+  getPendingEventsController,
+  getPendingDeletionEventsController
 } from "../controllers/authManagerController.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/pending-donations/:id/accept", acceptDonationRequestController);
 router.post("/pending-donations/:id/reject", rejectDonationRequestController);
 router.get("/donation-stats", getDonationStatsController);
 router.get('/pending-events', getPendingEventsController);
+router.get('/pending-deletion-events', getPendingDeletionEventsController);
 
 export default router;

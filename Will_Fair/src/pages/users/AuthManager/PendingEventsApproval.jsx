@@ -110,6 +110,7 @@ const DUMMY_EVENTS = [
 ];
 
 const PendingEventsApproval = () => {
+  const [activeTab, setActiveTab] = useState('approval'); // 'approval' or 'deletion'
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -120,17 +121,23 @@ const PendingEventsApproval = () => {
   useEffect(() => {
     const fetchPendingEvents = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/authManager/pending-events");
+        setLoading(true);
+        const endpoint = activeTab === 'approval' 
+          ? "http://localhost:5000/authManager/pending-events"
+          : "http://localhost:5000/authManager/pending-deletion-events";
+        
+        const res = await axios.get(endpoint);
         setEvents(res.data.events);
         setLoading(false);
-        
-      } catch {
-        setError("Failed to fetch pending events");
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError(`Failed to fetch ${activeTab === 'approval' ? 'pending approval' : 'pending deletion'} events`);
         setLoading(false);
       }
     };
     fetchPendingEvents();
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
 
@@ -216,9 +223,25 @@ const PendingEventsApproval = () => {
       <div className="authmanager-dashboard-content">
         <div className="authmanager-welcome-section">
           <div className="authmanager-welcome-content">
-            <h2>Pending Event Approvals</h2>
-            <p>Review and manage volunteer event submissions</p>
+            <h2>Event Management</h2>
+            <p>Review and manage volunteer event submissions and deletion requests</p>
           </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="tab-navigation">
+          <button 
+            className={`tab-button ${activeTab === 'approval' ? 'active' : ''}`}
+            onClick={() => setActiveTab('approval')}
+          >
+            📋 Pending Approval
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'deletion' ? 'active' : ''}`}
+            onClick={() => setActiveTab('deletion')}
+          >
+            🗑️ Pending Deletion
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -242,7 +265,11 @@ const PendingEventsApproval = () => {
       {/* Events List */}
       <div className="pending-requests-list">
         {events.length === 0 ? (
-          <div>No pending events.</div>
+          <div className="no-events-message">
+            {activeTab === 'approval' 
+              ? 'No events pending approval.' 
+              : 'No events pending deletion.'}
+          </div>
         ) : (
           events.map((event) => (
             <div key={event.event_id} className="pending-request-card">

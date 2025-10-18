@@ -5,7 +5,7 @@ import {
   getPendingDonationDetail,
   getDonationStats
 } from "../models/authManagerModel.js";
-import { getPendingEvents } from "../models/eventModel.js";
+import { getPendingEvents, getPendingDeletionEvents } from "../models/eventModel.js";
 
 export const getPendingDonationsController = async (req, res) => {
   const result = await getPendingDonations();
@@ -59,6 +59,30 @@ export const getPendingEventsController = async (req, res) => {
     try {
         const result = await getPendingEvents();
         
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            events: result.events 
+        });
+    } catch (err) {
+        console.error('Error fetching pending events:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching pending events' 
+        });
+    }
+};
+
+export const getPendingDeletionEventsController = async (req, res) => {
+    try {
+        const result = await getPendingDeletionEvents();
+
         if (!result.success) {
             return res.status(400).json({ 
                 success: false, 
