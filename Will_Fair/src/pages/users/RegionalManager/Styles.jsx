@@ -1,5 +1,5 @@
 const styles = {
-  dashboard: { maxWidth: '1400px', margin: '0 auto', padding: '20px' },
+  dashboard: { width: '70%', maxWith: '90', margin: '0 auto', padding: '20px' },
   dashboardHeader: { background: 'white', borderRadius: '16px', padding: '32px', marginBottom: '24px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' },
   headerContent: { textAlign: 'center' },
   dashboardTitle: { fontSize: '32px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' },

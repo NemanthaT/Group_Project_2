@@ -10,6 +10,7 @@ import Modal from './Dashboard/Modal';
 import DocumentViewer from './Dashboard/DocumentViewer';
 
 import styles from "./Styles";
+import "./AdminStyles.css";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -104,7 +105,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div style={styles.dashboard}>
+    <div style={styles.dashboard} className='adminDashboard'>
       <header style={styles.header}>
         <h1 style={styles.headerTitle}>Welfare Platform Admin Dashboard</h1>
         <div style={styles.headerActions}>
