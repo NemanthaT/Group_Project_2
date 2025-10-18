@@ -194,8 +194,6 @@ const PendingEventsApproval = () => {
   const statsCards = [
     { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" },
     { value: stats.approved, label: "Approved", icon: "✅", color: "#10b981" },
-    { value: stats.declined, label: "Declined", icon: "❌", color: "#ef4444" },
-    { value: stats.total, label: "Total", icon: "�", color: "#3b82f6" },
   ];
 
   // Helper function to format date

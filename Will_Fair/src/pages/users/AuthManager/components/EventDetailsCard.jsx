@@ -45,21 +45,21 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove }) => {
           ✕
         </button>
 
-        {/* Event Image */}
-        {event.image_path && (
-          <div className="event-details-image-container">
-            <img 
-              src={`http://localhost:5000/${event.image_path}`} 
-              alt={event.name}
-              className="event-details-image"
-            />
-          </div>
-        )}
-
         {/* Modal Body */}
         <div className="event-details-body">
           {/* Event Title */}
           <h2 className="event-details-title">{event.name}</h2>
+
+          {/* Event Image */}
+          {event.image_path && (
+            <div className="event-details-image-container">
+              <img 
+                src={`http://localhost:5000/${event.image_path}`} 
+                alt={event.name}
+                className="event-details-image"
+              />
+            </div>
+          )}
 
           {/* Event Info Grid */}
           <div className="event-details-grid">
@@ -151,8 +151,8 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove }) => {
 
         {/* Modal Footer */}
         <div className="event-details-footer">
-          <button className="event-details-btn event-details-btn-back" onClick={onClose}>
-            Back
+          <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
+            Reject
           </button>
           <button className="event-details-btn event-details-btn-approve" onClick={handleApprove}>
             Approve Event
