@@ -85,6 +85,8 @@ async function getEventById(eventId) {
     } catch (err) {
     console.error("Error in getEventById:", err);
     return { success: false, message: "Database query error" };
+    }
+}
 
 async function getPendingEvents() {
     try {
