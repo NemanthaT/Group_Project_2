@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,21 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
+
+const API_BASE_URL = 'http://10.237.31.71:5000/api'; // Update this to match your backend URL
 
 export default function VolunteerSignUpScreen() {
   const router = useRouter();
-  const { id, eventName } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  const [eventDetails, setEventDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -23,14 +30,31 @@ export default function VolunteerSignUpScreen() {
     email: '',
     phone: '',
     address: '',
-    dob: new Date(),
-    eventId: id || '',
-    eventName: eventName || '',
-    availability: '',
-    volunteerRole: '',
-    emergencyContact: '',
-    emergencyPhone: '',
+    dob: new Date()
   });
+
+  // Fetch event details
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/events/${id}`);
+        if (response.data.success) {
+          setEventDetails(response.data.event);
+        } else {
+          setError('Failed to load event details');
+        }
+      } catch (err) {
+        setError('Error loading event details');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEventDetails();
+    }
+  }, [id]);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState({});
@@ -60,13 +84,6 @@ export default function VolunteerSignUpScreen() {
       newErrors.phone = 'Phone number must be 10 digits';
     }
     if (!formData.address.trim()) newErrors.address = 'Address/City is required';
-    if (!formData.availability) newErrors.availability = 'Availability is required';
-    if (!formData.emergencyContact.trim()) newErrors.emergencyContact = 'Emergency contact name is required';
-    if (!formData.emergencyPhone.trim()) {
-      newErrors.emergencyPhone = 'Emergency contact phone is required';
-    } else if (!/^\d{10}$/.test(formData.emergencyPhone.replace(/\s/g, ''))) {
-      newErrors.emergencyPhone = 'Emergency phone must be 10 digits';
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,38 +120,48 @@ export default function VolunteerSignUpScreen() {
     }
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#7B61FF" />
+        <Text style={styles.loadingText}>Loading event details...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !eventDetails) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error || 'Event not found'}</Text>
+        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>Go Back</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Header */}
+        
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Volunteer Sign Up</Text>
-          <Text style={styles.headerSubtitle}>
-            Join us in making a difference!
-          </Text>
+          <Text style={styles.headerTitle}>{eventDetails.title}</Text>
         </View>
 
         {/* Form */}
         <View style={styles.formContainer}>
-          {/* Event Information (Read-only) */}
+          {/* Event Details */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Event Information</Text>
-            
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Event ID</Text>
-              <View style={styles.readOnlyInput}>
-                <Text style={styles.readOnlyText}>{formData.eventId}</Text>
-              </View>
+            <View style={styles.eventDetailsCard}>
+              <Text style={styles.eventDetailLabel}>Date:</Text>
+              <Text style={styles.eventDetailText}>{eventDetails.date}</Text>
+              
+              <Text style={styles.eventDetailLabel}>Location:</Text>
+              <Text style={styles.eventDetailText}>{eventDetails.location}</Text>
+              
+              <Text style={styles.eventDetailLabel}>Description:</Text>
+              <Text style={styles.eventDetailText}>{eventDetails.description}</Text>
             </View>
-
-            {eventName && (
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Event Name</Text>
-                <View style={styles.readOnlyInput}>
-                  <Text style={styles.readOnlyText}>{eventName}</Text>
-                </View>
-              </View>
-            )}
           </View>
 
           {/* Personal Information */}
@@ -219,82 +246,6 @@ export default function VolunteerSignUpScreen() {
             </View>
           </View>
 
-          {/* Volunteer Details */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Volunteer Details</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Availability Duration <Text style={styles.required}>*</Text>
-              </Text>
-              <View style={[styles.pickerContainer, errors.availability && styles.inputError]}>
-                <Picker
-                  selectedValue={formData.availability}
-                  onValueChange={(value) => updateField('availability', value)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select availability..." value="" />
-                  <Picker.Item label="Morning (8:00 AM - 12:00 PM)" value="morning" />
-                  <Picker.Item label="Evening (1:00 PM - 5:00 PM)" value="evening" />
-                  <Picker.Item label="Full Day (8:00 AM - 8:00 PM)" value="fullday" />
-                </Picker>
-              </View>
-              {errors.availability && (
-                <Text style={styles.errorText}>{errors.availability}</Text>
-              )}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Volunteer Role (Optional)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., Team Leader, Helper, Coordinator"
-                value={formData.volunteerRole}
-                onChangeText={(value) => updateField('volunteerRole', value)}
-              />
-              <Text style={styles.helperText}>
-                Leave blank if not applicable
-              </Text>
-            </View>
-          </View>
-
-          {/* Emergency Contact */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Emergency Contact</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Emergency Contact Name <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.emergencyContact && styles.inputError]}
-                placeholder="Enter emergency contact name"
-                value={formData.emergencyContact}
-                onChangeText={(value) => updateField('emergencyContact', value)}
-              />
-              {errors.emergencyContact && (
-                <Text style={styles.errorText}>{errors.emergencyContact}</Text>
-              )}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Emergency Contact Phone <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.emergencyPhone && styles.inputError]}
-                placeholder="0771234567"
-                value={formData.emergencyPhone}
-                onChangeText={(value) => updateField('emergencyPhone', value)}
-                keyboardType="phone-pad"
-                maxLength={10}
-              />
-              {errors.emergencyPhone && (
-                <Text style={styles.errorText}>{errors.emergencyPhone}</Text>
-              )}
-            </View>
-          </View>
-
           {/* Action Buttons */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -326,19 +277,52 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
   scrollView: {
     flex: 1,
   },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+  },
+  eventDetailsCard: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  eventDetailLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#a9a9a9ff',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  eventDetailText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 8,
+    lineHeight: 24,
+  },
   header: {
-    backgroundColor: '#7B61FF',
-    padding: 24,
+    backgroundColor: '#5d44daff',
+    padding: 10,
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#fff',
+    color: '#ffffffff',
     marginBottom: 8,
+    marginTop: 50,
+    alignSelf: 'center',
   },
   headerSubtitle: {
     fontSize: 16,
