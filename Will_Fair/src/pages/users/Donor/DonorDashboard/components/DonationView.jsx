@@ -193,13 +193,13 @@ const DonationView = () => {
               </div>
             </div>
 
-            <div className="detail-item">
+            {/*<div className="detail-item">
               <span className="detail-icon">👤</span>
               <div className="detail-content">
                 <div className="detail-label">Organized by</div>
                 <div className="detail-value">{donation.organizer_name || 'Anonymous'}</div>
               </div>
-            </div>
+            </div>*/}
           </div>
 
 

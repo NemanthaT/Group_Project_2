@@ -485,7 +485,7 @@ async function getDonationStats() {
   try {
     // Total raised across all donations
     const totalRes = await pool.query(
-      'SELECT COALESCE(SUM(amount), 0) AS total_raised FROM donations'
+      `SELECT COALESCE(SUM(quantity_received), 0) AS total_raised FROM donation_requests WHERE type = 'Monetary'`
     );
 
     // Raised this month
@@ -505,6 +505,16 @@ async function getDonationStats() {
       "SELECT COUNT(*) AS active_campaigns FROM donation_requests WHERE status = 'active'"
     );
 
+    // Complete campaigns
+    const campaignsCom = await pool.query(
+      "SELECT COUNT(*) AS complete_campaigns FROM donation_requests WHERE status = 'completed'"
+    );
+
+    // Sent campaigns
+    const campaignsSent = await pool.query(
+      "SELECT COUNT(*) AS sent_campaigns FROM donation_requests WHERE status = 'sent'"
+    );
+
     // Lives impacted: use number of distinct donees that have received > 0 (proxy)
     const livesRes = await pool.query(
       'SELECT COUNT(DISTINCT donee_id) AS lives_impacted FROM donation_requests WHERE COALESCE(quantity_received,0) > 0'
@@ -515,6 +525,8 @@ async function getDonationStats() {
       raisedThisMonth: Number(monthRes.rows[0].raised_this_month) || 0,
       activeDonors: Number(donorsRes.rows[0].active_donors) || 0,
       activeCampaigns: Number(campaignsRes.rows[0].active_campaigns) || 0,
+      completeCampaigns: Number(campaignsCom.rows[0].complete_campaigns) || 0,
+      sentCampaigns: Number(campaignsSent.rows[0].sent_campaigns) || 0,
       livesImpacted: Number(livesRes.rows[0].lives_impacted) || 0,
     };
 
@@ -522,6 +534,62 @@ async function getDonationStats() {
   } catch (err) {
     console.error('Database error during getDonationStats():', err);
     return { success: false, message: 'Database error' };
+  }
+}
+
+async function getDonationsForReg(type) {
+  try {
+    const dbType = type=== 'monetary' ? 'Monetary' : 'Non Monetary';
+    const query = `
+      SELECT dr.*, d.first_name, d.last_name
+      FROM donation_requests dr
+      LEFT JOIN donees d ON dr.donee_id = d.donee_id
+      WHERE dr.status != 'pending' AND dr.type = $1
+    `;
+    const result = await pool.query(query, [dbType]);
+    for (const row of result.rows) {
+      if (row.first_name && row.last_name) {
+        row.doneeName = `${row.first_name} ${row.last_name}`;
+      }
+    }
+    return { success: true, donations: result.rows };
+  } catch (err) {
+    console.error('Database error during getDonationsForReg():', err);
+    return { success: false, message: `Database error ${err.message}` };
+  }
+}
+
+// Mark donation as completed
+async function markDonationCompleted(id) {
+  try {
+    const result = await pool.query(
+      "UPDATE donation_requests SET status = 'completed' WHERE request_id = $1 RETURNING request_id, status",
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    return result.rows[0];
+  } catch (err) {
+    console.error('Database error during markDonationCompleted():', err);
+    return null;
+  }
+}
+
+// Mark donation as sent
+async function markDonationSent(id) {
+  try {
+    const result = await pool.query(
+      "UPDATE donation_requests SET status = 'sent' WHERE request_id = $1 RETURNING request_id, status",
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    return result.rows[0];
+  } catch (err) {
+    console.error('Database error during markDonationSent():', err);
+    return null;
   }
 }
 
@@ -540,5 +608,8 @@ export {
   // my edits end
   addDonationAmount,
   getActiveDonations,
-  getDonationStats
+  getDonationStats,
+  getDonationsForReg
+  ,markDonationCompleted
+  ,markDonationSent
 };

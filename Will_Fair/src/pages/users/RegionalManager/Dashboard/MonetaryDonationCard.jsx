@@ -11,43 +11,49 @@ const MonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor, is
         <span 
           style={{
             ...styles.statusBadge,
-            backgroundColor: getStatusColor(donation.status === 'active' && isTargetReached(donation) ? 'completed' : donation.status)
+            backgroundColor: getStatusColor(donation.status)
           }}
         >
-          {donation.status === 'active' && isTargetReached(donation) ? 'COMPLETED' : donation.status.toUpperCase()}
+          {donation.status.toUpperCase()}
         </span>
       </div>
-      <p style={styles.cardDate}>{donation.date}</p>
+      <p style={styles.cardDate}>{donation.request_date}</p>
     </div>
 
     <div style={styles.cardBody}>
       <div style={styles.detailsGrid}>
-        <ContactDetails label="Donor" name={donation.donorName} contact={donation.donorContact} />
-        <ContactDetails label="Donee" name={donation.doneeName} contact={donation.doneeContact} />
+        {/*<ContactDetails label="Donor" name={donation.donorName} contact={donation.donorContact} />*/}
+        <ContactDetails label="Donee" name={donation.doneeName} contact={donation.phone} />
       </div>
 
       <div style={styles.amountSection}>
         <div style={styles.amountInfo}>
           <span style={styles.amountLabel}>Current:</span>
-          <span style={styles.amountValue}>LKR {donation.amount.toLocaleString()}</span>
+          <span style={styles.amountValue}>LKR {donation.quantity_received.toLocaleString()}</span>
         </div>
         <div style={styles.amountInfo}>
           <span style={styles.amountLabel}>Target:</span>
-          <span style={styles.amountValue}>LKR {donation.targetAmount.toLocaleString()}</span>
+          <span style={styles.amountValue}>LKR {donation.quantity_needed.toLocaleString()}</span>
         </div>
       </div>
 
-      <ProgressBar current={donation.amount} target={donation.targetAmount} type="monetary" />
+      <ProgressBar current={donation.quantity_received} target={donation.quantity_needed} type="monetary" />
 
-      {donation.amount >= donation.targetAmount && donation.status === 'active' && (
-        <button style={styles.completeBtn} onClick={() => onComplete(donation.id, 'monetary')}>
-          <CheckCircle size={18} />
-          Mark as Completed
-        </button>
+      {donation.status === 'active' && (
+        <>
+          <button style={styles.completeBtn} onClick={() => onComplete(donation.request_id, 'monetary')}>
+            <CheckCircle size={18} />
+            Mark as Completed
+          </button>
+          {/* <button style={styles.sentBtnDonation} onClick={() => onSent(donation.request_id, 'monetary')}>
+            <TrendingUp size={18} />
+            Mark as Sent to Donee
+          </button>*/}
+        </>
       )}
-      
+
       {donation.status === 'completed' && (
-        <button style={styles.sentBtn} onClick={() => onSent(donation.id, 'monetary')}>
+        <button style={styles.sentBtnDonation} onClick={() => onSent(donation.request_id, 'monetary')}>
           <TrendingUp size={18} />
           Mark as Sent to Donee
         </button>

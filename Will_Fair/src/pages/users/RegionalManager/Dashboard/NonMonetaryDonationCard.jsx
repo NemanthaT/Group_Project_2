@@ -22,8 +22,8 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
 
     <div style={styles.cardBody}>
       <div style={styles.detailsGrid}>
-        <ContactDetails label="Donor" name={donation.donorName} contact={donation.donorContact} />
-        <ContactDetails label="Donee" name={donation.doneeName} contact={donation.doneeContact} />
+        {/* <ContactDetails label="Donor" name={donation.donorName} contact={donation.donorContact} /> */}
+        <ContactDetails label="Donee" name={donation.doneeName} contact={donation.phone} />
       </div>
 
       <div style={styles.itemsSection}>
@@ -34,22 +34,28 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
         <div style={styles.quantityInfo}>
           <span style={styles.quantityLabel}>Quantity:</span>
           <span style={styles.quantityValue}>
-            {donation.quantity} / {donation.targetQuantity}
+            {donation.quantity_received} / {donation.quantity_needed}
           </span>
         </div>
       </div>
 
-      <ProgressBar current={donation.quantity} target={donation.targetQuantity} type="nonMonetary" />
+      <ProgressBar current={donation.quantity_received} target={donation.quantity_needed} type="nonMonetary" />
 
-      {donation.quantity >= donation.targetQuantity && donation.status === 'active' && (
-        <button style={styles.completeBtn} onClick={() => onComplete(donation.id, 'nonMonetary')}>
-          <CheckCircle size={18} />
-          Mark as Completed
-        </button>
+      {donation.status === 'active' && (
+        <>
+          <button style={styles.completeBtn} onClick={() => onComplete(donation.request_id, 'nonMonetary')}>
+            <CheckCircle size={18} />
+            Mark as Completed
+          </button>
+          <button style={styles.sentBtnDonation} onClick={() => onSent(donation.request_id, 'nonMonetary')}>
+            <TrendingUp size={18} />
+            Mark as Sent to Donee
+          </button>
+        </>
       )}
-      
+
       {donation.status === 'completed' && (
-        <button style={styles.sentBtn} onClick={() => onSent(donation.id, 'nonMonetary')}>
+        <button style={styles.sentBtnDonation} onClick={() => onSent(donation.request_id, 'nonMonetary')}>
           <TrendingUp size={18} />
           Mark as Sent to Donee
         </button>

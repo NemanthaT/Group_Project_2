@@ -12,7 +12,6 @@ function Dashboard({ user }) {
       <HeroSection user={user} />
       <RecentDonationRequests user={user} />
       <WaysToHelp user={user} />
-      <Marketplace user={user} />
       <ImpactSection user={user} />
     </div>
   );
