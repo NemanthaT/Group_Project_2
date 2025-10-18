@@ -72,7 +72,12 @@ const MyDonationReq = () => {
       </LinearGradient>
 
       <View style={styles.card}>
-        <Image source={{ uri: request.image_path }} style={styles.cardImage} />
+        {request.image_url && (
+          <Image 
+            source={{ uri: request.image_url }} 
+            style={styles.cardImage} 
+          />
+        )}
 
         {/* Category
         <View style={styles.categoryChip}>

@@ -17,12 +17,75 @@ exports.addDonationAmountMobile = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+// Helper function to find category image
+const findCategoryImage = (categoryName) => {
+  const fs = require('fs');
+  const path = require('path');
+  
+  if (!categoryName) return null;
+  
+  const imagesDir = path.join(__dirname, '..', 'uploads', 'images');
+  
+  try {
+    const files = fs.readdirSync(imagesDir);
+    
+    // First, try exact match after removing spaces
+    const normalizedCategory = categoryName.replace(/\s+/g, '').toLowerCase();
+    let matchedFile = files.find(file => {
+      const fileNameWithoutExt = path.parse(file).name.toLowerCase();
+      return fileNameWithoutExt === normalizedCategory;
+    });
+    
+    // If not found, try partial matching (for long category names)
+    if (!matchedFile) {
+      // Extract key words from category name
+      const categoryWords = categoryName.toLowerCase().split(/\s+/);
+      
+      matchedFile = files.find(file => {
+        const fileName = path.parse(file).name.toLowerCase();
+        // Check if filename contains main category words
+        return categoryWords.some(word => 
+          word.length > 3 && fileName.includes(word)
+        );
+      });
+    }
+    
+    return matchedFile;
+  } catch (err) {
+    console.error('Error reading images directory:', err);
+    return null;
+  }
+};
+
 const Donation = require('../models/donationModel');
 
 exports.getRecentDonationsMobile = async (req, res) => {
   try {
     const donations = await Donation.getRecentDonations(3); // limit 3 for mobile view
-    res.status(200).json({ success: true, donations });
+    
+    // Build absolute base for image URLs
+    const host = `${req.protocol}://${req.get('host')}`;
+    
+    // Map donations to include full image URLs based on category_name
+    const mappedDonations = donations.map(donation => {
+      const categoryName = donation.category_name || '';
+      const matchedFile = findCategoryImage(categoryName);
+      
+      const image_url = matchedFile
+        ? `${host}/uploads/images/${matchedFile}`
+        : '';
+      
+      console.log(`Category: "${categoryName}" -> Image: ${matchedFile || '(NOT FOUND)'}`);
+      
+      return {
+        ...donation,
+        image_url,
+        category: donation.category_name
+      };
+    });
+    
+    res.status(200).json({ success: true, donations: mappedDonations });
   } catch (err) {
     console.error('Error fetching recent donations:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch recent donations' });
@@ -33,7 +96,27 @@ exports.getRecentDonationsMobile = async (req, res) => {
 exports.getAllDonationsMobile = async (req, res) => {
   try {
     const donations = await Donation.getAllDonations();
-    res.status(200).json({ success: true, donations });
+    
+    // Build absolute base for image URLs
+    const host = `${req.protocol}://${req.get('host')}`;
+    
+    // Map donations to include full image URLs based on category_name
+    const mappedDonations = donations.map(donation => {
+      const categoryName = donation.category_name || '';
+      const matchedFile = findCategoryImage(categoryName);
+      
+      const image_url = matchedFile
+        ? `${host}/uploads/images/${matchedFile}`
+        : '';
+      
+      return {
+        ...donation,
+        image_url,
+        category: donation.category_name
+      };
+    });
+    
+    res.status(200).json({ success: true, donations: mappedDonations });
   } catch (err) {
     console.error('Error fetching all donations:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch all donations' });
@@ -50,7 +133,23 @@ exports.getDonationByIdMobile = async (req, res) => {
     }
     const request = await Donation.getDonationById(requestId);
     if (request) {
-      res.status(200).json({ success: true, request });
+      // Build absolute base for image URLs
+      const host = `${req.protocol}://${req.get('host')}`;
+      
+      const categoryName = request.category || '';
+      const matchedFile = findCategoryImage(categoryName);
+      
+      const image_url = matchedFile
+        ? `${host}/uploads/images/${matchedFile}`
+        : '';
+      
+      res.status(200).json({ 
+        success: true, 
+        request: {
+          ...request,
+          image_url
+        }
+      });
     } else {
       console.error(`Request not found for ID: ${requestId}`);
       res.status(404).json({ success: false, error: 'Request not found' });

@@ -34,13 +34,13 @@ const RequestView = () => {
           const mapped = sorted.map((item) => ({
             id: item.request_id,
             title: item.title,
-            image_path: item.image_path,
+            image_url: item.image_url, // Full URL from backend (based on category)
             raised: item.quantity_received,
             target: item.quantity_needed,
             due_date: item.due_date,
             status: getStatus(item),
             type: getType(item),
-            category: '',
+            category: item.category || item.category_name || '',
           }));
           setAllRequests(mapped);
         } else {
@@ -71,15 +71,13 @@ const RequestView = () => {
   const renderCard = (item) => {
     const progress = item.target > 0 ? (item.raised / item.target) * 100 : 0;
     const isMoney = item.type === 'Monetary';
-    let imageSource = require('../../assets/images/child.jpg');
-    if (item.image_path) {
-      if (item.image_path.startsWith('http')) {
-        imageSource = { uri: item.image_path };
-      } else {
-        imageSource = { uri: `../../assets/images/child.jpg` };
-        console.log('Image URL:', imageSource.uri);
-      }
+    
+    // Only use image_url from backend, no fallback
+    const imageSource = item.image_url ? { uri: item.image_url } : null;
+    if (item.image_url) {
+      console.log('Image URL:', item.image_url);
     }
+    
     const isCompleted = Number(item.raised) >= Number(item.target);
     const isPastDeadline = item.due_date && new Date(item.due_date) < new Date();
     const donateDisabled = isCompleted || isPastDeadline;
@@ -99,12 +97,14 @@ const RequestView = () => {
         alignSelf: 'center',
       }}>
         <View style={{ position: 'relative', marginBottom: 12 }}>
-          <Image source={imageSource} style={{
-            width: '100%',
-            height: 160,
-            borderRadius: 12,
-            resizeMode: 'cover',
-          }} />
+          {imageSource && (
+            <Image source={imageSource} style={{
+              width: '100%',
+              height: 160,
+              borderRadius: 12,
+              resizeMode: 'cover',
+            }} />
+          )}
           {/* Type badge (top right) */}
           <View style={{
             position: 'absolute',

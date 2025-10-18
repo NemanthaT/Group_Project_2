@@ -92,7 +92,6 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
         });
         
         console.log('Donee user data saved to AsyncStorage');
-        
         Alert.alert('Success', `Welcome back, ${data.donee.firstName}!`, [
           {
             text: 'OK',

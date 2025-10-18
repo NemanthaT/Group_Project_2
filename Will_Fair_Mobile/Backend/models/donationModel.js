@@ -32,10 +32,11 @@ const db = require('../config/db');
 
 exports.getRecentDonations = async (limit = 3) => {
   const result = await db.query(
-    `SELECT request_id, title, quantity_needed, quantity_received, due_date, image_path, type
-     FROM donation_requests
-     WHERE status = 'active'
-     ORDER BY due_date DESC
+    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name
+     FROM donation_requests dr
+     LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+     WHERE dr.status = 'active'
+     ORDER BY dr.due_date DESC
      LIMIT $1;`,
     [limit]
   );
@@ -45,10 +46,11 @@ exports.getRecentDonations = async (limit = 3) => {
 // Fetch all donation requests (for 'View All')
 exports.getAllDonations = async () => {
   const result = await db.query(
-    `SELECT request_id, title, quantity_needed, quantity_received, due_date, image_path, type
-     FROM donation_requests
-     WHERE status = 'active'
-     ORDER BY due_date ASC;`
+    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name
+     FROM donation_requests dr
+     LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+     WHERE dr.status = 'active'
+     ORDER BY dr.due_date ASC;`
   );
   return result.rows;
 };
