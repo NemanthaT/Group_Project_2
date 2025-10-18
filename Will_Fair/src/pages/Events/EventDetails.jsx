@@ -86,8 +86,7 @@ function EventDetails({ opportunities = [] }) {
               >
                 Volunteer
               </button>
-
-
+              
             </div>
           </div>
         </div>
