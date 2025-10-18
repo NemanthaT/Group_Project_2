@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DashboardPage from "./DashboardPage";
 import ProductReviewPage from "./ProductReviewPage";
 import PendingDonationRequests from "./PendingDonationRequests";
-import PendingEventsApproval from "./PendingEventsApproval";
+import PendingEventsManagement from "./PendingEventsManagement";
 import "./AuthManagerDashboard.css";
 
 const AuthManager = () => {
@@ -69,7 +69,7 @@ const AuthManager = () => {
           {activeTab === 'dashboard' && <DashboardPage user={user}/>}
           {activeTab === 'products' && <ProductReviewPage user={user}/>}
           {activeTab === 'requests' && <PendingDonationRequests />}
-          {activeTab === 'events' && <PendingEventsApproval />}
+          {activeTab === 'events' && <PendingEventsManagement />}
         </div>
       </div>
     </div>

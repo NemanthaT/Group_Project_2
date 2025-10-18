@@ -5,6 +5,7 @@ import {
   getPendingDonationDetail,
   getDonationStats
 } from "../models/authManagerModel.js";
+import { getPendingEvents, getPendingDeletionEvents, approveEvent } from "../models/eventModel.js";
 
 export const getPendingDonationsController = async (req, res) => {
   const result = await getPendingDonations();
@@ -52,4 +53,86 @@ export const getDonationStatsController = async (req, res) => {
   } catch {
     res.status(500).json({ error: "Failed to fetch donation stats" });
   }
+};
+
+export const getPendingEventsController = async (req, res) => {
+    try {
+        const result = await getPendingEvents();
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            events: result.events 
+        });
+    } catch (err) {
+        console.error('Error fetching pending events:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching pending events' 
+        });
+    }
+};
+
+export const getPendingDeletionEventsController = async (req, res) => {
+    try {
+        const result = await getPendingDeletionEvents();
+
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            events: result.events 
+        });
+    } catch (err) {
+        console.error('Error fetching pending events:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching pending events' 
+        });
+    }
+};
+
+export const approveEventController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Event ID is required" 
+            });
+        }
+        
+        const result = await approveEvent(id);
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Event approved successfully",
+            eventId: result.eventId
+        });
+    } catch (err) {
+        console.error('Error approving event:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while approving event' 
+        });
+    }
 };
