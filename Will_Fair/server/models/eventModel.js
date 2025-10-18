@@ -36,7 +36,10 @@ async function getEvents() {
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
-        WHERE e.is_approved = true AND e.request_deletion = false
+        WHERE e.is_approved = true 
+            AND e.request_deletion = false
+            AND e.volunteers_needed > e.volunteers_signed
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
         ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
         `;
 
