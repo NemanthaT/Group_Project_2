@@ -21,6 +21,7 @@ async function getEvents() {
             e.volunteers_needed,
             e.volunteers_signed,
             e.image_path,
+            e.request_deletion,
             json_build_object(
                 'organiser_id', o.organiser_id,
                 'name', o.name,
@@ -35,7 +36,7 @@ async function getEvents() {
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
-        WHERE e.is_approved = true
+        WHERE e.is_approved = true AND e.request_deletion = false
         ORDER BY e.start_date DESC NULLS LAST, e.date DESC NULLS LAST
         `;
 
@@ -112,8 +113,9 @@ async function addEvent(eventData) {
                 commitment,
                 skills,
                 image_path,
-                is_approved
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                is_approved,
+                request_deletion
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING event_id
         `;
         
@@ -131,6 +133,7 @@ async function addEvent(eventData) {
             eventData.commitment,
             eventData.skills,
             eventData.imagePath || null,
+            false,
             false
         ]);
         
