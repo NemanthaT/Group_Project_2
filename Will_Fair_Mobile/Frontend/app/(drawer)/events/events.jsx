@@ -88,12 +88,23 @@ export default function EventsScreen() {
       </View>
 
       <View style={styles.filters}>
-        <Picker selectedValue={filters.sort} style={styles.picker} onValueChange={v => handleFilterChange('sort', v)}>
-          <Picker.Item label="Sort by" value="" />
-          <Picker.Item label="Most Recent" value="recent" />
-          <Picker.Item label="Most Popular" value="popular" />
-          <Picker.Item label="Most Urgent" value="urgent" />
-        </Picker>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Picker selectedValue={filters.sort} style={[styles.picker, { flex: 1 }]} onValueChange={v => handleFilterChange('sort', v)}>
+            <Picker.Item label="Sort by" value="" />
+            <Picker.Item label="Most Recent" value="recent" />
+            <Picker.Item label="Most Popular" value="popular" />
+            <Picker.Item label="Most Urgent" value="urgent" />
+          </Picker>
+
+          <Picker selectedValue={filters.skills} style={[styles.picker, { flex: 1 }]} onValueChange={v => handleFilterChange('skills', v)}>
+            <Picker.Item label="Skills" value="" />
+            <Picker.Item label="Teaching" value="teaching" />
+            <Picker.Item label="Caregiving" value="caregiving" />
+            <Picker.Item label="Manual" value="manual" />
+            <Picker.Item label="None" value="none" />
+          </Picker>
+        </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Picker selectedValue={filters.type} style={[styles.picker, { flex: 1 }]} onValueChange={v => handleFilterChange('type', v)}>
@@ -120,19 +131,10 @@ export default function EventsScreen() {
             <Picker.Item label="Galle" value="Galle" />
             <Picker.Item label="Kandy" value="Kandy" />
           </Picker>
-
-          <Picker selectedValue={filters.skills} style={[styles.picker, { flex: 1 }]} onValueChange={v => handleFilterChange('skills', v)}>
-            <Picker.Item label="Skills" value="" />
-            <Picker.Item label="Teaching" value="teaching" />
-            <Picker.Item label="Caregiving" value="caregiving" />
-            <Picker.Item label="Manual" value="manual" />
-            <Picker.Item label="None" value="none" />
-          </Picker>
+          <TouchableOpacity style={[styles.addBtn, { flex: 1, marginLeft: 8 }]} onPress={() => setShowAddModal(true)}>
+            <Text style={{ color: '#fff' }}>+ Add Event</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
-          <Text style={{ color: '#fff' }}>+ Add Event</Text>
-        </TouchableOpacity>
       </View>
 
       <FlatList data={sorted} keyExtractor={i => String(i.id)} contentContainerStyle={{ padding: 12 }} renderItem={({ item }) => (
@@ -198,8 +200,8 @@ export default function EventsScreen() {
 
 const styles = StyleSheet.create({
   hero: { height: 140, padding: 16, justifyContent: 'center', backgroundColor: '#7B61FF' },
-  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  heroSubtitle: { color: '#EEDCFF', marginTop: 6 },
+  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700', alignSelf: 'center', marginTop: 50, marginBottom: 10 },
+  heroSubtitle: { color: '#EEDCFF', marginTop: 6, marginBottom: 20, alignSelf: 'center' },
   filters: { padding: 12, backgroundColor: '#fafafa' },
   picker: { height: 50, width: '100%', color: '#333', backgroundColor: '#fff' },
   addBtn: { backgroundColor: '#7B61FF', padding: 10, alignItems: 'center', borderRadius: 6, marginTop: 8 },
