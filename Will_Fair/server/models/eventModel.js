@@ -271,4 +271,27 @@ async function updateEventImage(eventId, imagePath) {
     }
 }
 
-export { getEvents, getPendingEvents, getPendingDeletionEvents, addOrganiser, addEvent, addDocuments, updateEventImage };
+// Approve an event (set is_approved to true)
+async function approveEvent(eventId) {
+    try {
+        const sql = `
+            UPDATE events 
+            SET is_approved = true, updated_at = NOW()
+            WHERE event_id = $1
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [eventId]);
+        
+        if (result.rows.length === 0) {
+            return { success: false, message: "Event not found" };
+        }
+        
+        return { success: true, eventId: result.rows[0].event_id };
+    } catch (err) {
+        console.error("Database error during approveEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+export { getEvents, getPendingEvents, getPendingDeletionEvents, addOrganiser, addEvent, addDocuments, updateEventImage, approveEvent };

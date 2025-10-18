@@ -1,113 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import EventDetailsCard from "./components/EventDetailsCard";
 import "./AuthManagerDashboard.css";
-
-// Dummy data for testing/rendering purposes
-const DUMMY_EVENTS = [
-  {
-    event_id: 1,
-    name: "Beach Cleanup Initiative",
-    type: "environment",
-    location: "Colombo",
-    is_range: false,
-    date: "2025-11-15",
-    start_date: null,
-    end_date: null,
-    volunteers_needed: 25,
-    volunteers_signed: 8,
-    description: "Join us for a morning beach cleanup to help preserve our coastal ecosystem.",
-    commitment: "one-time",
-    skills: "none",
-    is_approved: false,
-    organiser: {
-      organiser_id: 1,
-      name: "Samantha Fernando",
-      email: "samantha.fernando@gmail.com",
-      phone: "+94771234567"
-    },
-    documents: [
-      { document_id: 1, filename: "permit.pdf", path: "uploads/events/1/docs/document_1.pdf" }
-    ]
-  },
-  {
-    event_id: 2,
-    name: "Children's Education Program",
-    type: "teaching",
-    location: "Kandy",
-    is_range: true,
-    date: null,
-    start_date: "2025-11-20",
-    end_date: "2025-11-25",
-    volunteers_needed: 15,
-    volunteers_signed: 3,
-    description: "Week-long tutoring program for underprivileged children in rural areas.",
-    commitment: "weekly",
-    skills: "teaching",
-    is_approved: false,
-    organiser: {
-      organiser_id: 2,
-      name: "Rajesh Kumar",
-      email: "rajesh.kumar@gmail.com",
-      phone: "+94772345678"
-    },
-    documents: [
-      { document_id: 2, filename: "school_approval.pdf", path: "uploads/events/2/docs/document_1.pdf" },
-      { document_id: 3, filename: "curriculum.pdf", path: "uploads/events/2/docs/document_2.pdf" }
-    ]
-  },
-  {
-    event_id: 3,
-    name: "Community Garden Construction",
-    type: "construction",
-    location: "Galle",
-    is_range: true,
-    date: null,
-    start_date: "2025-12-01",
-    end_date: "2025-12-10",
-    volunteers_needed: 30,
-    volunteers_signed: 12,
-    description: "Help build a community garden to promote sustainable urban farming.",
-    commitment: "flexible",
-    skills: "manual",
-    is_approved: false,
-    organiser: {
-      organiser_id: 3,
-      name: "Nimal Perera",
-      email: "nimal.perera@gmail.com",
-      phone: "+94773456789"
-    },
-    documents: [
-      { document_id: 4, filename: "land_permit.pdf", path: "uploads/events/3/docs/document_1.pdf" },
-      { document_id: 5, filename: "safety_plan.pdf", path: "uploads/events/3/docs/document_2.pdf" }
-    ]
-  },
-  {
-    event_id: 4,
-    name: "Elder Care Assistance",
-    type: "caregiving",
-    location: "Matara",
-    is_range: false,
-    date: "2025-11-18",
-    start_date: null,
-    end_date: null,
-    volunteers_needed: 10,
-    volunteers_signed: 5,
-    description: "Provide companionship and assistance to elderly residents at local care homes.",
-    commitment: "monthly",
-    skills: "caregiving",
-    is_approved: false,
-    organiser: {
-      organiser_id: 4,
-      name: "Anura Wijesinghe",
-      email: "anura.w@gmail.com",
-      phone: "+94774567890"
-    },
-    documents: [
-      { document_id: 6, filename: "care_home_approval.pdf", path: "uploads/events/4/docs/document_1.pdf" }
-    ]
-  }
-];
 
 const PendingEventsManagement = () => {
   const [activeTab, setActiveTab] = useState('approval'); // 'approval' or 'deletion'
@@ -178,18 +74,24 @@ const PendingEventsManagement = () => {
 
   const handleApproveEvent = async (eventId) => {
     try {
-      // Uncomment when backend is ready
-      // await axios.post(`http://localhost:5000/authManager/approve-event/${eventId}`);
+      const response = await axios.post(
+        `http://localhost:5000/authManager/approve-event/${eventId}`
+      );
       
-      // For now, just remove from list (simulate approval)
-      setEvents(prev => prev.filter(e => e.event_id !== eventId));
-      handleCloseModal();
-      
-      console.log("Event approved:", eventId);
-      // You can add a success toast notification here
+      if (response.data.success) {
+        setEvents(prev => prev.filter(e => e.event_id !== eventId));
+        
+        handleCloseModal();
+        
+        console.log("✅ Event approved successfully:", eventId);
+        toast.success("Event approved successfully!");
+      }
     } catch (error) {
-      console.error("Failed to approve event:", error);
-      // You can add an error toast notification here
+      console.error("❌ Failed to approve event:", error);
+      
+      toast.error("Failed to approve event. Please try again.");
+      
+      handleCloseModal();
     }
   };
 
