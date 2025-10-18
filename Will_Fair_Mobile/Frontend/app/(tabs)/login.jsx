@@ -89,7 +89,8 @@ const handleLogin = async () => {
           donor_id: data.user.id,
           email: data.user.email,
           first_name: data.user.firstName,
-          last_name: data.user.lastName
+          last_name: data.user.lastName,
+          user_type: 'donor'
         }
       });
       
