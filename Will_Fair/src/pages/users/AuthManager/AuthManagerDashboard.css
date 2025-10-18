@@ -1609,3 +1609,8 @@ td {
   border: #1d4ed8;
   border-radius: 16px;
 }
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}

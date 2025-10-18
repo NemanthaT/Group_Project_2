@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import axios from "axios"; // Uncomment when backend is ready
+import EventDetailsCard from "./components/EventDetailsCard";
 import "./AuthManagerDashboard.css";
 
 // Dummy data for testing/rendering purposes
@@ -113,6 +114,8 @@ const PendingEventsApproval = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ pending: 0, approved: 0, declined: 0, total: 0 });
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPendingEvents = async () => {
@@ -144,9 +147,48 @@ const PendingEventsApproval = () => {
     });
   }, [events]);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isModalOpen]);
+
   const handleViewDetails = (eventId) => {
-    // Will open modal with event details later
-    console.log("View details for event:", eventId);
+    const event = events.find(e => e.event_id === eventId);
+    if (event) {
+      setSelectedEvent(event);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
+
+  const handleApproveEvent = async (eventId) => {
+    try {
+      // Uncomment when backend is ready
+      // await axios.post(`http://localhost:5000/authManager/approve-event/${eventId}`);
+      
+      // For now, just remove from list (simulate approval)
+      setEvents(prev => prev.filter(e => e.event_id !== eventId));
+      handleCloseModal();
+      
+      console.log("Event approved:", eventId);
+      // You can add a success toast notification here
+    } catch (error) {
+      console.error("Failed to approve event:", error);
+      // You can add an error toast notification here
+    }
   };
 
   const statsCards = [
@@ -177,15 +219,16 @@ const PendingEventsApproval = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="authmanager-dashboard-content">
-      <div className="authmanager-welcome-section">
-        <div className="authmanager-welcome-content">
-          <h2>Pending Event Approvals</h2>
-          <p>Review and manage volunteer event submissions</p>
+    <>
+      <div className="authmanager-dashboard-content">
+        <div className="authmanager-welcome-section">
+          <div className="authmanager-welcome-content">
+            <h2>Pending Event Approvals</h2>
+            <p>Review and manage volunteer event submissions</p>
+          </div>
         </div>
-      </div>
 
-      {/* Stats Cards */}
+        {/* Stats Cards */}
       <div className="authmanager-stats-grid" style={{ marginBottom: 24 }}>
         {statsCards.map((card, idx) => (
           <div className="authmanager-stat-card" key={idx}>
@@ -237,7 +280,16 @@ const PendingEventsApproval = () => {
           ))
         )}
       </div>
-    </div>
+      </div>
+
+      {/* Event Details Modal */}
+      <EventDetailsCard
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onApprove={handleApproveEvent}
+      />
+    </>
   );
 };
 
