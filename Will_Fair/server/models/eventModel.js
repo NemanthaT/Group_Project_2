@@ -28,8 +28,8 @@ async function getEvents() {
                 'phone', o.phone
             ) AS organiser,
             COALESCE(d.docs, '[]'::json) AS documents
-        FROM volunteer_events e
-        LEFT JOIN volunteer_organisers o ON o.organiser_id = e.organiser_id
+        FROM events e
+        LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
         LEFT JOIN (
             SELECT event_id, json_agg(json_build_object('document_id', document_id, 'filename', filename, 'path', path)) AS docs
             FROM event_documents
@@ -52,7 +52,7 @@ async function addOrganiser(organiserData) {
     try {
         // First, check if organiser with this email already exists
         const checkSql = `
-            SELECT organiser_id FROM volunteer_organisers 
+            SELECT organiser_id FROM event_organisers 
             WHERE email = $1
         `;
         
@@ -64,7 +64,7 @@ async function addOrganiser(organiserData) {
             
             // Update phone number to the latest one provided
             const updateSql = `
-                UPDATE volunteer_organisers 
+                UPDATE event_organisers 
                 SET phone = $1, updated_at = NOW()
                 WHERE organiser_id = $2
             `;
@@ -75,7 +75,7 @@ async function addOrganiser(organiserData) {
         
         // If not, create a new organiser
         const insertSql = `
-            INSERT INTO volunteer_organisers (name, email, phone)
+            INSERT INTO event_organisers (name, email, phone)
             VALUES ($1, $2, $3)
             RETURNING organiser_id
         `;
@@ -98,7 +98,7 @@ async function addOrganiser(organiserData) {
 async function addEvent(eventData) {
     try {
         const sql = `
-            INSERT INTO volunteer_events (
+            INSERT INTO events (
                 organiser_id,
                 name,
                 is_range,
@@ -169,7 +169,7 @@ async function addDocuments(eventId, documents) {
 // Update event image path after file has been moved
 async function updateEventImage(eventId, imagePath) {
     try {
-        const sql = `UPDATE volunteer_events SET image_path = $1 WHERE event_id = $2`;
+        const sql = `UPDATE events SET image_path = $1 WHERE event_id = $2`;
         await pool.query(sql, [imagePath, eventId]);
         return { success: true };
     } catch (err) {
