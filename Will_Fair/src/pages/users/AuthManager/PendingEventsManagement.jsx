@@ -194,8 +194,7 @@ const PendingEventsManagement = () => {
   };
 
   const statsCards = [
-    { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" },
-    { value: stats.approved, label: "Approved", icon: "✅", color: "#10b981" },
+    { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" }
   ];
 
   // Helper function to format date
@@ -247,7 +246,7 @@ const PendingEventsManagement = () => {
         {/* Stats Cards */}
       <div className="authmanager-stats-grid" style={{ marginBottom: 24 }}>
         {statsCards.map((card, idx) => (
-          <div className="authmanager-stat-card" key={idx}>
+          <div className="authmanager-stat-card-full" key={idx}>
             <div
               className="authmanager-stat-icon"
               style={{ backgroundColor: card.color + "15", color: card.color }}

@@ -1661,3 +1661,22 @@ body.modal-open {
   border-radius: 12px;
   border: 2px dashed #e5e7eb;
 }
+
+/* Full Width Stat Card */
+.authmanager-stat-card-full {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid #f1f5f9;
+  grid-column: 1 / -1;
+}
+
+.authmanager-stat-card-full:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
