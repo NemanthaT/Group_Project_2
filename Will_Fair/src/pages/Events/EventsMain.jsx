@@ -112,7 +112,7 @@ function FeaturedContent() {
           />
         </div>
         <div className="hero-content">
-          <h1>Featured Programs</h1>
+          <h1>Featured Events</h1>
           <p>
             Every act of giving fuels a story of hope. Explore programs where
             your kindness sparks lasting change — in communities, lives, and
