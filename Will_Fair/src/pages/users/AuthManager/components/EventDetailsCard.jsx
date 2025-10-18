@@ -1,7 +1,7 @@
 import React from "react";
 import "./EventDetailsCard.css";
 
-const EventDetailsCard = ({ event, isOpen, onClose, onApprove, activeTab }) => {
+const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeTab }) => {
   if (!isOpen || !event) return null;
 
   // Helper function to format date
@@ -31,6 +31,10 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, activeTab }) => {
 
   const handleApprove = () => {
     onApprove(event.event_id);
+  };
+
+  const handleDelete = () => {
+    onDelete(event.event_id);
   };
 
   return (
@@ -161,7 +165,7 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, activeTab }) => {
               </button>
             </>
           ) : (
-            <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
+            <button className="event-details-btn event-details-btn-reject" onClick={handleDelete}>
               Delete
             </button>
           )}

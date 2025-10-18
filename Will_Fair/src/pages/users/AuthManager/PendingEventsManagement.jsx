@@ -95,6 +95,29 @@ const PendingEventsManagement = () => {
     }
   };
 
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/authManager/delete-event/${eventId}`
+      );
+      
+      if (response.data.success) {
+        setEvents(prev => prev.filter(e => e.event_id !== eventId));
+        
+        handleCloseModal();
+        
+        toast.success("Event deleted successfully!");
+        console.log("✅ Event deleted successfully:", eventId);
+      }
+    } catch (error) {
+      console.error("❌ Failed to delete event:", error);
+      
+      toast.error("Failed to delete event. Please try again.");
+      
+      handleCloseModal();
+    }
+  };
+
   const statsCards = [
     { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" }
   ];
@@ -209,6 +232,7 @@ const PendingEventsManagement = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onApprove={handleApproveEvent}
+        onDelete={handleDeleteEvent}
         activeTab={activeTab}
       />
 

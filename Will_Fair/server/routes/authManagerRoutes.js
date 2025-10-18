@@ -7,7 +7,8 @@ import {
   getDonationStatsController,
   getPendingEventsController,
   getPendingDeletionEventsController,
-  approveEventController
+  approveEventController,
+  deleteEventController
 } from "../controllers/authManagerController.js";
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get("/donation-stats", getDonationStatsController);
 router.get('/pending-events', getPendingEventsController);
 router.get('/pending-deletion-events', getPendingDeletionEventsController);
 router.post('/approve-event/:id', approveEventController);
+router.delete('/delete-event/:id', deleteEventController);
 
 export default router;

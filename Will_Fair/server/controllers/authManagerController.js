@@ -5,7 +5,7 @@ import {
   getPendingDonationDetail,
   getDonationStats
 } from "../models/authManagerModel.js";
-import { getPendingEvents, getPendingDeletionEvents, approveEvent } from "../models/eventModel.js";
+import { getPendingEvents, getPendingDeletionEvents, approveEvent, deleteEvent } from "../models/eventModel.js";
 
 export const getPendingDonationsController = async (req, res) => {
   const result = await getPendingDonations();
@@ -133,6 +133,40 @@ export const approveEventController = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             error: 'Server error while approving event' 
+        });
+    }
+};
+
+export const deleteEventController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Event ID is required" 
+            });
+        }
+        
+        const result = await deleteEvent(id);
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Event deleted successfully",
+            eventId: result.eventId
+        });
+    } catch (err) {
+        console.error('Error deleting event:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while deleting event' 
         });
     }
 };
