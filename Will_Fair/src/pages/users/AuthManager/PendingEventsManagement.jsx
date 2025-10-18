@@ -209,6 +209,7 @@ const PendingEventsManagement = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onApprove={handleApproveEvent}
+        activeTab={activeTab}
       />
 
       {/* Toast Container */}

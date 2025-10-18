@@ -1,7 +1,7 @@
 import React from "react";
 import "./EventDetailsCard.css";
 
-const EventDetailsCard = ({ event, isOpen, onClose, onApprove }) => {
+const EventDetailsCard = ({ event, isOpen, onClose, onApprove, activeTab }) => {
   if (!isOpen || !event) return null;
 
   // Helper function to format date
@@ -151,12 +151,20 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove }) => {
 
         {/* Modal Footer */}
         <div className="event-details-footer">
-          <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
-            Reject
-          </button>
-          <button className="event-details-btn event-details-btn-approve" onClick={handleApprove}>
-            Approve Event
-          </button>
+          {activeTab === 'approval' ? (
+            <>
+              <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
+                Reject
+              </button>
+              <button className="event-details-btn event-details-btn-approve" onClick={handleApprove}>
+                Approve Event
+              </button>
+            </>
+          ) : (
+            <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </>
