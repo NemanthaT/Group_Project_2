@@ -38,11 +38,19 @@ async function getTotalDonors() {
   return Number(res.rows[0].total);
 }
 
-// Get all donors with summary info
+// Get all donors with summary info and totalDonations per donor
 async function getAllDonors() {
-  const res = await pool.query('SELECT donor_id, first_name, last_name, email, phone FROM donors');
+  const res = await pool.query(`
+    SELECT d.donor_id, d.first_name, d.last_name, d.email, d.phone,
+      COALESCE(SUM(n.amount),0) AS totalDonations
+    FROM donors d
+    LEFT JOIN donations n ON d.donor_id = n.donor_id
+    GROUP BY d.donor_id, d.first_name, d.last_name, d.email, d.phone
+    ORDER BY d.donor_id
+  `);
   res.rows.forEach(row => {
     row.name = row.first_name + ' ' + row.last_name;
+    row.totalDonations = Number(row.totaldonations || row.totalDonations || 0);
   });
   return res.rows;
 }

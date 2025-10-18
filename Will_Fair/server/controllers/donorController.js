@@ -1,5 +1,4 @@
-import { registerDonor } from "../models/donorModel.js";
-import bcrypt from "bcryptjs";
+import { registerDonor, getAllDonors } from "../models/donorModel.js";
 
 export const signUpDonor = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -34,5 +33,16 @@ export const signUpDonor = async (req, res) => {
       success: false,
       error: "Server error during registration" 
     });
+  }
+};
+
+// Get all donors for admin dashboard (with totalDonations)
+export const getDonorsAdmin = async (req, res) => {
+  try {
+    const donors = await getAllDonors();
+    res.json({ success: true, donors });
+  } catch (err) {
+    console.error("Error in getDonorsAdmin:", err);
+    res.status(500).json({ success: false, error: "Server error fetching donors" });
   }
 };
