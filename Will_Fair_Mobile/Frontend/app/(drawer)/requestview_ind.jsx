@@ -92,7 +92,7 @@ const MyDonationReq = () => {
         </Text>
         {/* Progress Bar - Modern Style */}
         <View style={{
-          backgroundColor: '#F3F4F6',
+          backgroundColor: '#A0AEC0',
           borderRadius: 12,
           height: 18,
           marginVertical: 16,
@@ -106,7 +106,7 @@ const MyDonationReq = () => {
             top: 0,
             height: 18,
             borderRadius: 12,
-            backgroundColor: '#7B61FF',
+            backgroundColor: '#ffffffff',
             width: '100%',
             opacity: isCompleted ? 1 : 0.85,
             transition: 'width 0.3s',

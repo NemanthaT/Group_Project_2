@@ -1,3 +1,33 @@
+
+// Add donation and update quantity_received (for Will_Fair_Mobile backend)
+exports.addDonationAmount = async (request_id, amount, donor_id) => {
+  try {
+    // Get current received amount
+    const result = await db.query(
+      'SELECT quantity_received FROM donation_requests WHERE request_id = $1',
+      [request_id]
+    );
+    if (result.rows.length === 0) {
+      return { success: false, message: 'Donation request not found' };
+    }
+    // Insert into donations table
+    await db.query(
+      'INSERT INTO donations (request_id, donor_id, amount) VALUES ($1, $2, $3)',
+      [request_id, donor_id, amount]
+    );
+    const current = Number(result.rows[0].quantity_received) || 0;
+    const newAmount = current + Number(amount);
+    // Update donation_requests table
+    await db.query(
+      'UPDATE donation_requests SET quantity_received = $1 WHERE request_id = $2',
+      [newAmount, request_id]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during addDonationAmount():', err);
+    return { success: false, message: 'Database error' };
+  }
+};
 const db = require('../config/db');
 
 exports.getRecentDonations = async (limit = 3) => {

@@ -26,7 +26,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroSubtitle: {
-    color: "black",
+    color: "white",
     fontSize: 14,
     textAlign: "center",
     marginBottom: 20,

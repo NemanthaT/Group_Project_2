@@ -70,11 +70,15 @@ const donorRoutes = require('./routes/donorRoutes');
 const doneeRoutes = require('./routes/doneeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', volunteerRoutes);
+app.use('/api', eventRoutes);
+
+// ...category endpoints moved to MVC routes...
 app.use('/api', donationRoutes); // <-- add this line
 
 
@@ -169,6 +173,8 @@ app.listen(PORT, () => {
   console.log(`  👤 POST http://localhost:${PORT}/api/volunteer_ind_reg`);
   console.log(`  🏢 POST http://localhost:${PORT}/api/volunteer_rep_reg`);
   console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
+  console.log(`  📅 GET  http://localhost:${PORT}/api/events`);
+  console.log(`  📋 GET  http://localhost:${PORT}/api/events/:id`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
 

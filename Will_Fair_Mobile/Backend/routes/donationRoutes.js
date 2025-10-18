@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile } = require('../controllers/donationController');
+const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile, addDonationAmountMobile } = require('../controllers/donationController');
+// POST /api/donations/add-amount
+router.post('/donations/add-amount', addDonationAmountMobile);
 
 
 // GET /api/donations/recent

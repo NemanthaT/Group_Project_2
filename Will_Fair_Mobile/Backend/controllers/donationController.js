@@ -1,3 +1,22 @@
+
+// Add donation and update quantity_received (for Will_Fair_Mobile)
+exports.addDonationAmountMobile = async (req, res) => {
+  try {
+    const { request_id, amount, donor_id } = req.body;
+    if (!request_id || !amount || !donor_id) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+    const result = await Donation.addDonationAmount(request_id, amount, donor_id);
+    if (result.success) {
+      res.status(201).json({ success: true });
+    } else {
+      res.status(400).json({ success: false, message: result.message });
+    }
+  } catch (err) {
+    console.error('Error in addDonationAmountMobile:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
 const Donation = require('../models/donationModel');
 
 exports.getRecentDonationsMobile = async (req, res) => {

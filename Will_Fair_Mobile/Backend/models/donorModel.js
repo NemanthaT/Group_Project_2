@@ -1,3 +1,9 @@
+
+// Get donor by email for login
+exports.getDonorByEmail = async (email) => {
+  const result = await pool.query('SELECT donor_id, email, password_hash, first_name, last_name FROM donors WHERE email = $1', [email.toLowerCase()]);
+  return result.rows[0];
+};
 // Donor Model
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');

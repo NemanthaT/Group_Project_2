@@ -60,19 +60,12 @@ export default function CustomDrawer(props) {
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
           <Text style={styles.menuText}>Donor - Requests View </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/volunteerprograms')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Programs</Text>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/events/events')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Events</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/marketplace')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Marketplace</Text>
+        <TouchableOpacity onPress={() => navigateTo('/(drawer)/profile')} style={styles.menuButton}>
+          <Text style={styles.menuText}>Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'about' } })} style={styles.menuButton}>
-        <Text style={styles.menuText}>About</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigateTo({ pathname: '/(drawer)/homescreen', params: { scrollTo: 'contact' } })} style={styles.menuButton}>
-        <Text style={styles.menuText}>Contact Us</Text>
-      </TouchableOpacity>
 
       </View>
 
@@ -86,8 +79,8 @@ export default function CustomDrawer(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#8a46ffff', // gradient-like color
-    paddingTop: 40,
+    backgroundColor: '#7B61FF', // gradient-like color
+    paddingTop: 100,
     paddingHorizontal: 15,
     width:'100%',
   },
@@ -96,8 +89,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   profileImage: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     borderRadius: 35,
     marginBottom: 10,
     borderWidth: 2,
@@ -116,29 +109,29 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   menuButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 8,
+    backgroundColor: '#fbfaffff',
+    paddingVertical: 15,
     paddingHorizontal: 10,
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 2,
+    marginBottom: 5,
   },
   menuText: {
-    color: '#9333EA',
-    fontSize: 14,
+    color: '#000000ff',
+    fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
   },
  logoutButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#fbfaffff',
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 20,
     alignSelf: 'center',
     width: '60%',
     marginBottom: 30,
-    marginTop: 10,
+    marginTop: 50,
   },
   logoutText: {
-    color: '#FF5252',
+    color: '#000000ff',
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
