@@ -98,6 +98,19 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
     setDocumentFiles(prev => { const copy = [...prev]; copy.splice(index,1); return copy; });
   };
 
+  // Helper function to sanitize phone number (remove spaces)
+  const sanitizePhoneNumber = (phone) => {
+    return phone.replace(/\s+/g, '');
+  };
+
+  // Helper function to validate Sri Lankan phone number format
+  const validatePhoneNumber = (phone) => {
+    const sanitized = sanitizePhoneNumber(phone);
+    // Must start with +94 followed by exactly 9 digits
+    const phoneRegex = /^\+94\d{9}$/;
+    return phoneRegex.test(sanitized);
+  };
+
   // reset form when modal opens
   useEffect(() => {
     if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '', type: '', commitment: '', skills: '', contactName: '', contactEmail: '', contactNumber: '' });
@@ -163,6 +176,12 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
       return;
     }
 
+    // Validate phone number format
+    if (!validatePhoneNumber(form.contactNumber)) {
+      toast.error('Contact number must be in format +94xxxxxxxxx (e.g., +94771234567)');
+      return;
+    }
+
     // Validate date fields
     if (!form.isRange) {
       if (!form.date || form.date === '') {
@@ -203,6 +222,9 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
       return;
     }
 
+    // Sanitize phone number before submission (remove spaces)
+    const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
+
     // Build FormData
     let formData = new FormData();
     formData.append('name', form.name);
@@ -215,7 +237,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
     formData.append('skills', form.skills);
     formData.append('contactName', form.contactName);
     formData.append('contactEmail', form.contactEmail);
-    formData.append('contactNumber', form.contactNumber);
+    formData.append('contactNumber', sanitizedPhone);
 
     // Add date fields
     if (form.isRange) {
