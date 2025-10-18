@@ -1,6 +1,10 @@
-//import fs from "fs";
-//import path from "path";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
 import pool from "../db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //Get all events with organiser info and attached documents
 async function getEvents() {
@@ -351,6 +355,15 @@ async function deleteEvent(eventId) {
         
         if (result.rows.length === 0) {
             return { success: false, message: "Event not found" };
+        }
+
+        const eventFolder = path.join(__dirname, '..', 'uploads', 'events', eventId.toString());
+        
+        if (fs.existsSync(eventFolder)) {
+            fs.rmSync(eventFolder, { recursive: true, force: true });
+            console.log(`✅ Deleted event folder: ${eventFolder}`);
+        } else {
+            console.log(`⚠️ Event folder not found: ${eventFolder}`);
         }
         
         return { success: true, eventId: result.rows[0].event_id };
