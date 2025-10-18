@@ -47,23 +47,38 @@ async function getEvents() {
     }
 }
 
-// Add a new organiser to the database
+// Add a new organiser to the database (or return existing one by email)
 async function addOrganiser(organiserData) {
     try {
-        const sql = `
+        // First, check if organiser with this email already exists
+        const checkSql = `
+            SELECT organiser_id FROM volunteer_organisers 
+            WHERE email = $1
+        `;
+        
+        const existingOrganiser = await pool.query(checkSql, [organiserData.email]);
+        
+        // If organiser exists, return their ID
+        if (existingOrganiser.rows.length > 0) {
+            const organiserId = existingOrganiser.rows[0].organiser_id;
+            return { success: true, organiserId, existing: true };
+        }
+        
+        // If not, create a new organiser
+        const insertSql = `
             INSERT INTO volunteer_organisers (name, email, phone)
             VALUES ($1, $2, $3)
             RETURNING organiser_id
         `;
         
-        const result = await pool.query(sql, [
+        const result = await pool.query(insertSql, [
             organiserData.name,
             organiserData.email,
             organiserData.phone
         ]);
         
         const organiserId = result.rows[0].organiser_id;
-        return { success: true, organiserId };
+        return { success: true, organiserId, existing: false };
     } catch (err) {
         console.error("Database error during addOrganiser():", err);
         return { success: false, message: "Database error" };
