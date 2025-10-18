@@ -94,8 +94,19 @@
 }
 
 .event-description {
-  margin-top: 8px;
   line-height: 1.5;
+  margin-top: 4px;             /* Closer to progress bar */
+  color: #333;                 /* Dark text for readability */
+}
+
+.event-description .label {
+  font-weight: 700;             /* Bold label "Description:" */
+  color: #222;                  /* Slightly darker than content */
+}
+
+.event-description .content {
+  font-weight: 400;             /* Normal weight for actual description */
+  color: #555;                  /* Lighter than label but readable */
 }
 
 .progress-row {
@@ -112,7 +123,7 @@
   height: 10px;
   border-radius: 5px;
   overflow: hidden;
-  margin-bottom: 12px;  /* increased from 8px to 12px */
+  margin-bottom: 6px;  /* increased from 8px to 12px */
 }
 
 .progress-fill {
@@ -164,4 +175,37 @@
 
 .error {
   color: var(--error-color);
+}
+
+.event-date {
+  font-weight: 700;            /* Bold for emphasis */
+  font-size: 1.3rem;           /* Slightly bigger for visibility */
+  color: var(--primary-color); /* Use your primary theme color */
+  margin-bottom: 8px;          /* Tight spacing before progress bar */
+}
+
+/* Organizer styling */
+.event-organizer {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: #555;                  /* Keep content slightly lighter */
+}
+
+.event-organizer .label {
+  font-weight: 700;             /* Bold "Event Organizer:" label */
+  color: #222;
+}
+
+.event-organizer .content {
+  font-weight: 400;             /* Normal weight for name/email */
+  color: #555;
+}
+.label {
+  font-weight: 700;       /* Bold label */
+  color: #222;            /* Slightly darker for emphasis */
+}
+
+.content {
+  font-weight: 400;       /* Normal / light weight for content */
+  color: #555;            /* Lighter than label */
 }

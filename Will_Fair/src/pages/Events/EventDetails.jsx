@@ -49,8 +49,13 @@ function EventDetails({ opportunities = [] }) {
           volunteersNeeded: eventData.volunteers_needed,
           volunteersSigned: eventData.volunteers_signed,
           organizer: eventData.organiser?.name,
+          organizerEmail: eventData.organiser?.email,  // <-- NEW
+          date: eventData.date,                         // <-- NEW
+          startDate: eventData.start_date,              // <-- NEW
+          endDate: eventData.end_date,                  // <-- NEW
           image: eventData.image_path
         };
+
 
         setEvent(mappedEvent);
 
@@ -83,7 +88,7 @@ function EventDetails({ opportunities = [] }) {
       <div className="event-body">
         <div
           className="event-image"
-          style={{ 
+          style={{
             backgroundImage: `url(${getImageUrl(event.image)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
@@ -91,12 +96,17 @@ function EventDetails({ opportunities = [] }) {
         ></div>
 
         <div className="event-info">
-          <div className="event-header">
+          {/* <div className="event-header">
             <h2>{event.organizer}</h2>
-          </div>
+          </div> */}
 
-          <div className="event-description">
-            <p>{event.description}</p>
+
+          <div className="event-date">
+            Date: {event.startDate && event.endDate
+              ? `${new Date(event.startDate).toLocaleDateString()} – ${new Date(event.endDate).toLocaleDateString()}`
+              : event.date
+                ? new Date(event.date).toLocaleDateString()
+                : 'TBA'}
           </div>
 
           <div className="progress-row">
@@ -120,19 +130,33 @@ function EventDetails({ opportunities = [] }) {
             </div>
           </div>
 
+          {/* Description */}
+          <div className="event-description">
+            <span className="label">Description: </span>
+            <span className="content">{event.description}</span>
+          </div>
+
+
+          {/* Organizer */}
+          <div className="event-organizer">
+            <span className="label">Event Organizer: </span>
+            <span className="content">{event.organizer} – {event.organizerEmail}</span>
+          </div>
+
           <div className="event-actions">
+            <button
+              className="btn btn-outline"
+              onClick={() => navigate('/Events')}
+            >
+              Back
+            </button>
             <button
               className="btn btn-primary"
               onClick={() => setShowVolunteerModal(true)}
             >
               Volunteer
             </button>
-            <button
-              className="btn btn-outline"
-              onClick={() => navigate('/Events')}
-            >
-              Back to Events
-            </button>
+
           </div>
         </div>
       </div>
