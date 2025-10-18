@@ -109,7 +109,7 @@ const DUMMY_EVENTS = [
   }
 ];
 
-const PendingEventsApproval = () => {
+const PendingEventsManagement = () => {
   const [activeTab, setActiveTab] = useState('approval'); // 'approval' or 'deletion'
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -313,4 +313,4 @@ const PendingEventsApproval = () => {
   );
 };
 
-export default PendingEventsApproval;
+export default PendingEventsManagement;
