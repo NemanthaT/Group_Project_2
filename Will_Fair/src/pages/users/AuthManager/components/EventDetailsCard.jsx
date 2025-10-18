@@ -157,7 +157,7 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeT
         <div className="event-details-footer">
           {activeTab === 'approval' ? (
             <>
-              <button className="event-details-btn event-details-btn-reject" onClick={onClose}>
+              <button className="event-details-btn event-details-btn-reject" onClick={handleDelete}>
                 Reject
               </button>
               <button className="event-details-btn event-details-btn-approve" onClick={handleApprove}>
