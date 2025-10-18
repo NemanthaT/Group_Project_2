@@ -70,14 +70,24 @@ const donorRoutes = require('./routes/donorRoutes');
 const doneeRoutes = require('./routes/doneeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
+<<<<<<< HEAD
 const eventRoutes = require('./routes/eventRoutes');
+=======
+const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
+>>>>>>> 6cf21f9de8a2633ab6837ab94c1769581bf7a9a4
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', volunteerRoutes);
+<<<<<<< HEAD
 app.use('/api', eventRoutes);
 
 // ...category endpoints moved to MVC routes...
+=======
+app.use('/api', donationRoutes); // <-- add this line
+
+
+>>>>>>> 6cf21f9de8a2633ab6837ab94c1769581bf7a9a4
 // ...donee endpoints moved to MVC routes...
 
 app.post('/api/login', async (req, res) => {
@@ -173,4 +183,4 @@ app.listen(PORT, () => {
   console.log(`  📋 GET  http://localhost:${PORT}/api/events/:id`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
-  
+
