@@ -169,6 +169,7 @@ async function getPendingDeletionEvents() {
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
         WHERE e.request_deletion = true
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
         ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
         `;
 
