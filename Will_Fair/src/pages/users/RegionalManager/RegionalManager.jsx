@@ -8,6 +8,7 @@ import NonMonetaryDonationCard from './Dashboard/NonMonetaryDonationCard';
 import EmptyState from './Dashboard/EmptyState';
 import VolunteerEventCard from './Dashboard/VolunteerEventCard';
 import NavButton from './Dashboard/NavButton';
+import MonetaryPieChart from './Dashboard/MonetaryPieChart';
 import styles from "./Styles";
 
 
@@ -25,7 +26,8 @@ const WelfareDashboard = () => {
     completedNotSent: 0,
     sentDonations: 0,
     totalEvents: 0,
-    totalVolunteers: 0
+    totalVolunteers: 0,
+    sentMonetaryAmount: 0
   });
 
   // Fetch data from backend on mount
@@ -41,7 +43,8 @@ const WelfareDashboard = () => {
             completedNotSent: data.stats.completeCampaigns || 0,
             sentDonations: data.stats.sentCampaigns || 0,
             totalEvents: data.stats.totalEvents || 0,
-            totalVolunteers: data.stats.totalVolunteers || 0
+            totalVolunteers: data.stats.totalVolunteers || 0,
+            sentMonetaryAmount: data.stats.sentMonetaryAmount || 0
           });
         } else {
           setStats({
@@ -269,6 +272,7 @@ const WelfareDashboard = () => {
               </div>
             </div>
           </div>
+          <MonetaryPieChart donations={stats} />
         </div>
       )}
 

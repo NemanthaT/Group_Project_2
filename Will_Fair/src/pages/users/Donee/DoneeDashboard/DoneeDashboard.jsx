@@ -80,6 +80,10 @@ function DoneeDashboard( { user } ) {
     navigate('/users/donee/view');
   }
 
+  const goToNewRequest = () => {
+    navigate('/users/donee/form');
+  }
+
   // Stats calculation
   const totalRequests = requests.length;
   const completedRequests = requests.filter(r => r.status === 'completed').length;
@@ -156,6 +160,7 @@ function DoneeDashboard( { user } ) {
               <h1 className="hero-title">Welcome, {user.name} </h1>
               <p className="hero-subtitle">Your dashboard for monitoring donation requests and impact</p>
               <button onClick={goToDonationsView} className="hero-button">View Requests</button>
+              <button onClick={goToNewRequest} className="hero-button" style={{ marginLeft: '12px' }}>New Request</button>
             </div>
           </div>
         </div>
@@ -164,7 +169,7 @@ function DoneeDashboard( { user } ) {
           {/* Analytics Section */}
           <div className="analytics-section">
             <div className="section-header">
-              <h2 className="section-title">Request Analytics</h2>
+              {/*<h2 className="section-title">Request Analytics</h2>
               <div className="period-selector">
                 <select 
                   value={selectedPeriod}
@@ -176,7 +181,7 @@ function DoneeDashboard( { user } ) {
                   <option>This Year</option>
                 </select>
                 <ChevronDown className="select-icon" />
-              </div>
+              </div>*/}
             </div>
 
             <div className="stats-grid">
@@ -229,7 +234,7 @@ function DoneeDashboard( { user } ) {
               </div>
             </div>
 
-            {/* Chart */}
+            {/* Chart
             <div className="chart-card">
               <div className="chart-header">
                 <h3 className="chart-title">Request Trends</h3>
@@ -261,14 +266,14 @@ function DoneeDashboard( { user } ) {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>*/}
           </div>
 
           {/* Requests Table */}
           <div className="table-card">
             <div className="table-header">
               <h3 className="table-title">Your Donation Requests</h3>
-              <button className="primary-button">New Request</button>
+              {/*<button className="primary-button">New Request</button>*/}
             </div>
             <div className="table-container">
               {loading ? (
@@ -285,8 +290,8 @@ function DoneeDashboard( { user } ) {
                       <th>Type</th>
                       <th>Status</th>
                       <th>Deadline</th>
-                      <th>Progress</th>
-                      <th>Actions</th>
+                      {/*<th>Progress</th>
+                      <th>Actions</th>*/}
                     </tr>
                   </thead>
                   <tbody>
@@ -315,7 +320,7 @@ function DoneeDashboard( { user } ) {
                           </span>
                         </td>
                         <td>{request.due_date || request.dropoff_date || '-'}</td>
-                        <td>
+                        {/*<td>
                           <div className="progress-container">
                             <div className="progress-bar">
                               <div 
@@ -338,7 +343,7 @@ function DoneeDashboard( { user } ) {
                               <MoreHorizontal className="icon" />
                             </button>
                           </div>
-                        </td>
+                        </td>*/}
                       </tr>
                     ))}
                   </tbody>
