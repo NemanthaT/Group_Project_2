@@ -196,17 +196,17 @@ async function addOrganiser(organiserData) {
         
         const existingOrganiser = await pool.query(checkSql, [organiserData.email]);
         
-        // If organiser exists, update phone number and return their ID
+        // If organiser exists, update name and phone number and return their ID
         if (existingOrganiser.rows.length > 0) {
             const organiserId = existingOrganiser.rows[0].organiser_id;
             
-            // Update phone number to the latest one provided
+            // Update name and phone number to the latest ones provided
             const updateSql = `
                 UPDATE event_organisers 
-                SET phone = $1, updated_at = NOW()
-                WHERE organiser_id = $2
+                SET name = $1, phone = $2, updated_at = NOW()
+                WHERE organiser_id = $3
             `;
-            await pool.query(updateSql, [organiserData.phone, organiserId]);
+            await pool.query(updateSql, [organiserData.name, organiserData.phone, organiserId]);
             
             return { success: true, organiserId, existing: true };
         }
