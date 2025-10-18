@@ -177,7 +177,8 @@ export function SignUpD() {
       /* Hash the password before sending to server
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(formData.password, salt);*/
-      const hashedPassword = formData.password; // Use plain password for now
+      //const hashedPassword = formData.password; // Use plain password for now
+      const hashedPassword = await bcrypt.hash(formData.password, 10);
 
       const response = await axios.post(
         "http://localhost:5000/donors/signupDonor",
@@ -491,7 +492,8 @@ export function SignUpF() {
     }
 
     try {
-      const hashedPassword = formData.password; // Use plain password for now
+      //const hashedPassword = formData.password; // Use plain password for now
+      const hashedPassword = await bcrypt.hash(formData.password, 10);
 
       const data = new FormData();
       data.append("type", formData.type);
