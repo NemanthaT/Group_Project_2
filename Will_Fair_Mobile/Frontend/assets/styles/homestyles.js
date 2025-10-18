@@ -17,7 +17,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroTitle: {
-    color: "black",
+    color: "white",
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",

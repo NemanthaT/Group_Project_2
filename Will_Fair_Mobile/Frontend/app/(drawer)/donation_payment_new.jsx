@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, Platform } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from "react-native";
+import { API_BASE } from '../constants/API';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const DonationPayment = () => {
@@ -12,11 +13,6 @@ const DonationPayment = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_BASE = Platform.select({
-      android: 'http://192.168.122.72:5000', // replace with your actual IP
-      ios: 'http://localhost:5000',
-      default: 'http://localhost:5000',
-    });
     const fetchRequest = async () => {
       setLoading(true);
       try {

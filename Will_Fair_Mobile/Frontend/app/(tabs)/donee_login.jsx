@@ -1,3 +1,4 @@
+import { API_BASE } from '../constants/API';
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -53,7 +54,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Attempting donee login...');
       
       // FIXED: Use donee_login endpoint and send contactno
-      const response = await fetch('http://192.168.122.72:5000/api/donee_login', {
+  const response = await fetch(`${API_BASE}/api/donee_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

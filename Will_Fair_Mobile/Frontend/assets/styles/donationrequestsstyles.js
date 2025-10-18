@@ -26,7 +26,7 @@ export const donationRequestsStyles = StyleSheet.create({
   },
 
   headerTitle: {
-    color: "#000",
+    color: "#ffffffff",
     fontSize: 20,
     fontWeight: "bold",
   },
