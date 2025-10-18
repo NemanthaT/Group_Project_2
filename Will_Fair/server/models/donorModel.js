@@ -60,6 +60,29 @@ async function getDonorStats() {
   return { totalDonors, totalDonations };
 }
 
-export { registerDonor, getTotalDonors, getAllDonors, getTotalDonations, getDonorStats };
+// Get donor profile by donor ID
+async function getDonorProfileById(donorId) {
+  try {
+    const res = await pool.query(
+      `SELECT donor_id, first_name, last_name, email, phone FROM donors WHERE donor_id = $1`,
+      [donorId]
+    );
+    if (res.rows.length === 0) return null;
+    const donor = res.rows[0];
+    donor.name = donor.first_name + ' ' + donor.last_name;
+    // Get total donations count for this donor
+    const donationRes = await pool.query(
+      `SELECT COUNT(*) AS total FROM donations WHERE donor_id = $1`,
+      [donorId]
+    );
+    donor.totalDonations = Number(donationRes.rows[0].total);
+    return donor;
+  } catch (err) {
+    console.error('Database error during getDonorProfileById():', err);
+    return null;
+  }
+}
+
+export { registerDonor, getTotalDonors, getAllDonors, getTotalDonations, getDonorStats, getDonorProfileById };
 
 // my edits end
