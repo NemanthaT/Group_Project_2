@@ -119,6 +119,31 @@
   transform: translateX(5px);
 }
 
+/* Navigation Badge */
+.authmanager-nav-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  margin-left: auto;
+  transition: all 0.3s ease;
+}
+
+.authmanager-nav-item.authmanager-active .authmanager-nav-badge {
+  background: white;
+  color: #667eea;
+}
+
+.authmanager-nav-item:hover .authmanager-nav-badge {
+  background: white;
+  color: #667eea;
+  transform: scale(1.1);
+}
+
 /* Logout Button */
 .authmanager-logout-btn {
   margin: 1rem;

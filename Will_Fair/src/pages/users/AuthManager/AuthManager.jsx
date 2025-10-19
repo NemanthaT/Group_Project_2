@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import DashboardPage from "./DashboardPage";
 import ProductReviewPage from "./ProductReviewPage";
 import PendingDonationRequests from "./PendingDonationRequests";
@@ -9,8 +10,38 @@ const AuthManager = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [eventCounts, setEventCounts] = useState({
+    pendingApproval: 0,
+    pendingDeletion: 0,
+    total: 0
+  });
 
   const closeSidebar = () => setSidebarVisible(false);
+
+  // Fetch event counts on component mount
+  useEffect(() => {
+    const fetchEventCounts = async () => {
+      try {
+        const [approvalRes, deletionRes] = await Promise.all([
+          axios.get("http://localhost:5000/authManager/pending-events"),
+          axios.get("http://localhost:5000/authManager/pending-deletion-events")
+        ]);
+        
+        const approvalCount = approvalRes.data.events?.length || 0;
+        const deletionCount = deletionRes.data.events?.length || 0;
+        
+        setEventCounts({
+          pendingApproval: approvalCount,
+          pendingDeletion: deletionCount,
+          total: approvalCount + deletionCount
+        });
+      } catch (error) {
+        console.error("Failed to fetch event counts:", error);
+      }
+    };
+    
+    fetchEventCounts();
+  }, []);
 
   const handleNavItemClick = (tabId) => {
     setActiveTab(tabId);
@@ -21,7 +52,7 @@ const AuthManager = () => {
     { id: "dashboard", label: "Dashboard" },
     { id: "requests", label: "Requests" },
     { id: "products", label: "Product Reviews" },
-    { id: "events", label: "Pending Events" },
+    { id: "events", label: "Pending Events", count: eventCounts.total },
   ];
 
   const handleNavClick = (itemId) => {
@@ -47,6 +78,9 @@ const AuthManager = () => {
             <span className="authmanager-nav-item-text">
               {item.label}
             </span>
+            {item.count !== undefined && item.count > 0 && (
+              <span className="authmanager-nav-badge">{item.count}</span>
+            )}
           </div>
             ))}
           </div>

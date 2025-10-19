@@ -13,6 +13,31 @@ const PendingEventsManagement = () => {
   const [stats, setStats] = useState({ pending: 0, approved: 0, declined: 0, total: 0 });
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tabCounts, setTabCounts] = useState({
+    approval: 0,
+    deletion: 0
+  });
+
+  // Fetch counts for both tabs
+  useEffect(() => {
+    const fetchTabCounts = async () => {
+      try {
+        const [approvalRes, deletionRes] = await Promise.all([
+          axios.get("http://localhost:5000/authManager/pending-events"),
+          axios.get("http://localhost:5000/authManager/pending-deletion-events")
+        ]);
+        
+        setTabCounts({
+          approval: approvalRes.data.events?.length || 0,
+          deletion: deletionRes.data.events?.length || 0
+        });
+      } catch (error) {
+        console.error("Failed to fetch tab counts:", error);
+      }
+    };
+    
+    fetchTabCounts();
+  }, []);
 
   useEffect(() => {
     const fetchPendingEvents = async () => {
@@ -81,6 +106,12 @@ const PendingEventsManagement = () => {
       if (response.data.success) {
         setEvents(prev => prev.filter(e => e.event_id !== eventId));
         
+        // Update tab counts
+        setTabCounts(prev => ({
+          ...prev,
+          approval: Math.max(0, prev.approval - 1)
+        }));
+        
         handleCloseModal();
         
         console.log("✅ Event approved successfully:", eventId);
@@ -103,6 +134,12 @@ const PendingEventsManagement = () => {
       
       if (response.data.success) {
         setEvents(prev => prev.filter(e => e.event_id !== eventId));
+        
+        // Update tab counts based on active tab
+        setTabCounts(prev => ({
+          ...prev,
+          [activeTab]: Math.max(0, prev[activeTab] - 1)
+        }));
         
         handleCloseModal();
         
@@ -160,6 +197,9 @@ const PendingEventsManagement = () => {
           >
             <span className="tab-icon">📋</span>
             Pending Approval
+            {tabCounts.approval > 0 && (
+              <span className="pending-events-tab-badge">{tabCounts.approval}</span>
+            )}
           </button>
           <button 
             className={`pending-events-tab-button ${activeTab === 'deletion' ? 'pending-events-tab-active' : ''}`}
@@ -167,6 +207,9 @@ const PendingEventsManagement = () => {
           >
             <span className="tab-icon">🗑️</span>
             Pending Deletion
+            {tabCounts.deletion > 0 && (
+              <span className="pending-events-tab-badge">{tabCounts.deletion}</span>
+            )}
           </button>
         </div>
 
