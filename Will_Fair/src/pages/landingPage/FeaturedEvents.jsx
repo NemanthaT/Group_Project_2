@@ -32,23 +32,23 @@ function FeaturedEvents() {
         <section className="featured-events-section">
             <div className="featured-events-grid">
                 {featuredList.map((event) => {
-                    const volunteersSigned = event.volunteers_signed || 0;
-                    const volunteersNeeded = event.volunteers_needed || 0;
+                    const volunteersSigned = event.volunteersSigned || 0;
+                    const volunteersNeeded = event.volunteersNeeded || 0;
                     const progress = volunteersNeeded ? (volunteersSigned / volunteersNeeded) * 100 : 0;
 
                     return (
                         <div 
-                            key={event.event_id} 
+                            key={event.id} 
                             className="event-card"
                             onClick={() => {
                                 sessionStorage.setItem('eventsScroll', window.scrollY);
-                                navigate(`/Events/${event.event_id}`, { state: { event } });
+                                navigate(`/Events/${event.id}`, { state: { event } });
                             }}
                             style={{ cursor: 'pointer' }}
                         >
                             <div
                                 className="event-card-image"
-                                style={{ backgroundImage: `url(${event.image_url || "/default-event.jpg"})` }}
+                                style={{ backgroundImage: `url(${event.image || "/default-event.jpg"})` }}
                             ></div>
 
 
@@ -56,13 +56,15 @@ function FeaturedEvents() {
                             
                             <div className="event-card-content">
                                 <h3>{event.title}</h3>
+                                <p className="event-location">{event.location}</p>
+                                <p className="event-date">{event.date}</p>
 
                                 <div className="progress-bar-container">
                                     <div className="progress-bar">
                                         <div
                                             className="progress-fill"
                                             style={{ 
-                                                width: `${progress}%`,
+                                                width: `${Math.min(progress, 100)}%`,
                                                 background: 'linear-gradient(90deg, #4CAF50, #8BC34A)'
                                             }}
                                         ></div>

@@ -1,4 +1,6 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById } from "../models/eventModel.js";
+import { sendEmail } from "../services/emailService.js";
+import { eventCreationTemplate, volunteerUnregistrationTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
 import path from "path";
 
@@ -185,6 +187,7 @@ export const createEvent = async (req, res) => {
         }
 
         const eventId = eventResult.eventId;
+        const eventKey = eventResult.eventKey;
 
         // Step 3: Move files from temp to final destination
         const eventDir = path.join('uploads', 'events', String(eventId));
@@ -228,6 +231,31 @@ export const createEvent = async (req, res) => {
             console.error("Warning: Failed to add documents to database:", docsResult.message);
         }
 
+        // Step 6: Send confirmation email to organizer
+        try {
+            const emailContent = eventCreationTemplate({
+                title: name,
+                description: description,
+                location: location,
+                date: isRangeBool ? `${startDate} to ${endDate}` : date,
+                time: commitment, // Using commitment as time indicator
+                secretKey: eventKey,
+                organizerName: contactName
+            });
+
+            await sendEmail({
+                to: contactEmail,
+                subject: emailContent.subject,
+                text: emailContent.text,
+                html: emailContent.html
+            });
+
+            console.log(`✅ Event creation email sent to ${contactEmail}`);
+        } catch (emailError) {
+            // Log error but don't fail the event creation
+            console.error("⚠️ Failed to send event creation email:", emailError.message);
+        }
+
         return res.status(201).json({
             success: true,
             message: "Event created successfully",
@@ -258,4 +286,127 @@ export const createEvent = async (req, res) => {
             error: "Server error during event creation"
         });
     }
+};
+
+export const withdrawVolunteerController = async (req, res) => {
+  try {
+    const { email, volunteerKey } = req.body;
+    
+    // Validation
+    if (!email || !volunteerKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and volunteer key are required'
+      });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    // Validate volunteer key format
+    if (!volunteerKey.startsWith('VOL-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid volunteer key format'
+      });
+    }
+    
+    // Process withdrawal
+    const result = await withdrawVolunteer(email, volunteerKey);
+    
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    // Get event details for the email
+    const eventResult = await getEventById(result.volunteer.event_id);
+    
+    if (eventResult.success) {
+      // Send unregistration confirmation email to volunteer
+      try {
+        const emailContent = volunteerUnregistrationTemplate({
+          volunteerName: result.volunteer.volunteer_name,
+          eventTitle: eventResult.event.name
+        });
+
+        await sendEmail({
+          to: email,
+          subject: emailContent.subject,
+          text: emailContent.text,
+          html: emailContent.html
+        });
+
+        console.log(`✅ Volunteer unregistration email sent to ${email}`);
+      } catch (emailError) {
+        console.error('⚠️ Failed to send unregistration email:', emailError.message);
+      }
+    } else {
+      console.error('⚠️ Could not fetch event details for unregistration email');
+    }
+    
+    return res.status(200).json({
+      ...result,
+      emailSent: true
+    });
+    
+  } catch (error) {
+    console.error('Error in withdrawVolunteerController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing withdrawal'
+    });
+  }
+};
+
+export const requestEventDeletionController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    // Validation
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    // Validate event key format
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    // Process deletion request
+    const result = await requestEventDeletion(email, eventKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in requestEventDeletionController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing deletion request'
+    });
+  }
 };

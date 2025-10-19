@@ -328,16 +328,17 @@ function FeaturedContent() {
         onSubmit={handleEventSubmit}
       />
 
-      <VolunteerEventModal
-        isOpen={showVolunteerModal}
-        onClose={() => setShowVolunteerModal(false)}
-        onSubmit={(data) => {
-          console.log("Volunteer registered:", data);
-          console.log("For event:", selectedEvent);
-          // You can add your POST request to backend here
-        }}
-        event={selectedEvent}
-      />
+      {showVolunteerModal && selectedEvent && (
+              <VolunteerEventModal
+                isOpen={showVolunteerModal}
+                onClose={() => {
+                  setShowVolunteerModal(false);
+                  setSelectedEvent(null);
+                }}
+                eventId={selectedEvent.id}          
+                eventTitle={selectedEvent.title} 
+              />
+            )}
 
 
       <section className="programs">

@@ -8,6 +8,7 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -48,23 +49,18 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    try {
-      // TODO: Replace with actual backend call
-      console.log('Deletion request submitted:', form);
-      alert('Event deletion request submitted successfully!');
+    // Call parent submit handler
+    if (onSubmit) {
+      setIsSubmitting(true);
+      const result = await onSubmit(form);
+      setIsSubmitting(false);
       
-      // Reset form
-      setForm({ email: '', eventKey: '' });
-      setErrors({});
-      onClose();
-      
-      // Call parent submit handler if provided
-      if (onSubmit) {
-        await onSubmit(form);
+      // Only reset form and close if successful
+      if (result?.success) {
+        setForm({ email: '', eventKey: '' });
+        setErrors({});
+        onClose();
       }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit deletion request. Please try again.');
     }
   };
 
@@ -80,7 +76,14 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px' }}>
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Submitting deletion request...</p>
+          </div>
+        )}
+        
         <div className="modal-header">
           <h2>Event Deletion Request</h2>
           <button className="modal-close" onClick={onClose}>✕</button>

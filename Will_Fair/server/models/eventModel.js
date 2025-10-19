@@ -81,7 +81,7 @@ async function getEventById(eventId) {
         ) AS organiser
       FROM events e
       LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
-      WHERE e.event_id = $1 AND e.is_approved = true
+      WHERE e.event_id = $1
     `;
     const result = await pool.query(sql, [eventId]);
     if (result.rows.length === 0) return { success: false, message: "Event not found" };
@@ -235,6 +235,9 @@ async function addOrganiser(organiserData) {
 // Add a new event to the database
 async function addEvent(eventData) {
     try {
+        // Generate unique event key
+        const eventKey = generateEventKey();
+
         const sql = `
             INSERT INTO events (
                 organiser_id,
@@ -251,9 +254,10 @@ async function addEvent(eventData) {
                 skills,
                 image_path,
                 is_approved,
-                request_deletion
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-            RETURNING event_id
+                request_deletion,
+                event_key
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            RETURNING event_id, event_key
         `;
         
         const result = await pool.query(sql, [
@@ -271,11 +275,18 @@ async function addEvent(eventData) {
             eventData.skills,
             eventData.imagePath || null,
             false,
-            false
+            false,
+            eventKey 
         ]);
         
         const eventId = result.rows[0].event_id;
-        return { success: true, eventId };
+        const returnedEventKey = result.rows[0].event_key;
+        
+        return { 
+            success: true, 
+            eventId,
+            eventKey: returnedEventKey 
+        };
     } catch (err) {
         console.error("Database error during addEvent():", err);
         return { success: false, message: "Database error" };
@@ -435,6 +446,121 @@ async function getEventCounts() {
     }
 }
 
+function generateVolunteerKey() {
+  const prefix = 'VOL';
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase();
+  return `${prefix}-${randomPart}-${timestamp}`;
+}
+
+async function withdrawVolunteer(email, volunteerKey) {
+  try {
+    const query = `
+      DELETE FROM event_volunteers 
+      WHERE volunteer_email = $1 
+      AND volunteer_key = $2
+      RETURNING event_id, volunteer_name, volunteer_email;
+    `;
+    
+    const result = await pool.query(query, [email, volunteerKey]);
+    
+    if (result.rows.length === 0) {
+      return {
+        success: false,
+        message: 'No matching volunteer registration found. Please check your email and volunteer key.'
+      };
+    }
+
+    const deletedVolunteer = result.rows[0];
+    
+    // Decrement the volunteers_signed count for the event
+    const updateEventQuery = `
+      UPDATE events 
+      SET volunteers_signed = GREATEST(volunteers_signed - 1, 0)
+      WHERE event_id = $1
+      RETURNING volunteers_signed;
+    `;
+    
+    await pool.query(updateEventQuery, [deletedVolunteer.event_id]);
+    
+    return {
+      success: true,
+      message: 'Successfully withdrawn from the event',
+      volunteer: deletedVolunteer
+    };
+    
+  } catch (error) {
+    console.error('Error withdrawing volunteer:', error);
+    return {
+      success: false,
+      message: 'An error occurred while processing your withdrawal'
+    };
+  }
+}
+
+function generateEventKey() {
+  const prefix = 'EVT';
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase();
+  return `${prefix}-${randomPart}-${timestamp}`;
+}
+
+async function requestEventDeletion(email, eventKey) {
+  try {
+    // First, find the organiser_id from the email
+    const organiserQuery = `
+      SELECT organiser_id 
+      FROM event_organisers 
+      WHERE email = $1;
+    `;
+    
+    const organiserResult = await pool.query(organiserQuery, [email]);
+    
+    if (organiserResult.rows.length === 0) {
+      return {
+        success: false,
+        message: 'No organiser found with this email address.'
+      };
+    }
+
+    const organiserId = organiserResult.rows[0].organiser_id;
+    
+    // Update the event's request_deletion status
+    const updateQuery = `
+      UPDATE events 
+      SET request_deletion = true, 
+          updated_at = NOW()
+      WHERE organiser_id = $1 
+      AND event_key = $2
+      RETURNING event_id, name, event_key;
+    `;
+    
+    const result = await pool.query(updateQuery, [organiserId, eventKey]);
+    
+    if (result.rows.length === 0) {
+      return {
+        success: false,
+        message: 'No matching event found. Please check your email and event key.'
+      };
+    }
+
+    const updatedEvent = result.rows[0];
+    
+    return {
+      success: true,
+      message: 'Event deletion request submitted successfully. An admin will review your request.',
+      event: updatedEvent
+    };
+    
+  } catch (error) {
+    console.error('Error requesting event deletion:', error);
+    return {
+      success: false,
+      message: 'An error occurred while processing your deletion request'
+    };
+  }
+}
+
 export { 
     getEvents, 
     getEventById, 
@@ -448,6 +574,10 @@ export {
     deleteEvent,
     getPendingEventsCount,
     getPendingDeletionEventsCount,
-    getEventCounts
+    getEventCounts,
+    generateVolunteerKey,
+    withdrawVolunteer,
+    generateEventKey,        
+    requestEventDeletion
 };
 
