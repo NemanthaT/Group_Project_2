@@ -379,19 +379,19 @@ function FeaturedContent() {
 
                   <div className="card-actions">
                     <button
-                      className="btn btn-outline"
+                      className="btn-main btn-outline-main"
                       onClick={() => {
-                        sessionStorage.setItem('eventsScroll', window.scrollY); //Save Scroll Position
+                        sessionStorage.setItem('eventsScroll', window.scrollY); 
                         navigate(`/Events/${opp.id}`, { state: { opp } });
                       }}
                     >
                       Details
                     </button>
                     <button
-                      className="btn btn-primary"
+                      className="btn-main btn-primary-main"
                       onClick={() => {
-                        setSelectedEvent(opp);        // store which event was clicked
-                        setShowVolunteerModal(true);  // open modal
+                        setSelectedEvent(opp);        
+                        setShowVolunteerModal(true);  
                       }}
                     >
                       Volunteer

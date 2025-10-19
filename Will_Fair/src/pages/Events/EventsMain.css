@@ -212,6 +212,29 @@
   border-color: #8b5cf6;
 }
 
+/* Add Event button in filter section */
+.filter-dropdown .btn.btn-primary {
+  background: linear-gradient(135deg, #4a6cf7, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.filter-dropdown .btn.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
 /* Program Cards */
 .programs {
   padding: 1.5rem 0;
@@ -315,38 +338,45 @@
   margin-top: auto;
 }
 
-.btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 5px;
-  border: none;
+.btn-main {
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   text-decoration: none;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  flex: 1;
+  border: none;
 }
 
-.btn-outline {
+.btn-outline-main {
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1.5px solid #d1d5db !important;
+  color: #6b7280;
 }
 
-.btn-outline:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+.btn-outline-main:hover {
+  background: rgba(107, 114, 128, 0.08);
+  border-color: #4b5563 !important;
+  color: #4b5563;
+  transform: translateY(-2px);
 }
 
-.btn-primary {
+.btn-primary-main {
   background: linear-gradient(135deg, #4a6cf7, #8b5cf6);
   color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.2);
 }
 
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+.btn-primary-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 /* Responsive Design */

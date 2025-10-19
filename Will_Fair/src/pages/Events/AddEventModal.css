@@ -273,6 +273,42 @@
 
 .modal-form .form-actions .btn {
   min-width: 96px;
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+}
+
+.modal-form .form-actions .btn-primary {
+  background: linear-gradient(135deg, #4a6cf7, #8b5cf6);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.2);
+}
+
+.modal-form .form-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.modal-form .form-actions .btn-outline {
+  background: transparent;
+  border: 1.5px solid #d1d5db;
+  color: #6b7280;
+}
+
+.modal-form .form-actions .btn-outline:hover {
+  background: rgba(107, 114, 128, 0.08);
+  border-color: #4b5563;
+  color: #4b5563;
+  transform: translateY(-2px);
 }
 
 .toggle-inline {
