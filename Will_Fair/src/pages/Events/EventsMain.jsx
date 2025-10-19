@@ -60,6 +60,33 @@ function FeaturedContent() {
 
   useEffect(() => {
     fetchEvents();
+
+    let interval = setInterval(() => {
+      fetchEvents();
+    }, 30000);
+    
+    // Reset timer on any user interaction
+    const resetTimer = () => {
+      clearInterval(interval);
+      interval = setInterval(() => {
+        fetchEvents();
+      }, 30000);
+    };
+
+    // Listen for various user interactions
+    window.addEventListener('click', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+    window.addEventListener('mousemove', resetTimer);
+    
+    // Cleanup all listeners and interval
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('click', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      window.removeEventListener('scroll', resetTimer);
+      window.removeEventListener('mousemove', resetTimer);
+    };
   }, []);
 
   //Save scroll position on mount
