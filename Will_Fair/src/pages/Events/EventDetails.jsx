@@ -17,6 +17,17 @@ function EventDetails({ opportunities = [] }) {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
 
+  // Button click handlers
+  const handleRequestDeletion = () => {
+    alert('Request Event Deletion button clicked!');
+    // TODO: Open deletion request modal
+  };
+
+  const handleUnvolunteer = () => {
+    alert('Unvolunteer button clicked!');
+    // TODO: Open unvolunteer modal
+  };
+
   // Helper to ensure image URL is absolute
   const getImageUrl = (imagePath) => {
     if (!imagePath) return FeaturedBg;
@@ -166,7 +177,18 @@ function EventDetails({ opportunities = [] }) {
             >
               Volunteer
             </button>
-
+            <button
+              className="btn btn-warning"
+              onClick={handleUnvolunteer}
+            >
+              Unvolunteer
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleRequestDeletion}
+            >
+              Request Deletion
+            </button>
           </div>
         </div>
       </div>
