@@ -155,9 +155,8 @@ export const approveEventController = async (req, res) => {
 
         // Send approval email to organizer
         try {
-            // Format date and time
+            // Format date
             let eventDate = 'N/A';
-            let eventTime = 'N/A';
             
             if (event.is_range && event.start_date && event.end_date) {
                 eventDate = `${new Date(event.start_date).toLocaleDateString()} - ${new Date(event.end_date).toLocaleDateString()}`;
@@ -165,17 +164,10 @@ export const approveEventController = async (req, res) => {
                 eventDate = new Date(event.date).toLocaleDateString();
             }
             
-            // Extract time if available (assuming time is part of date field or separate)
-            if (event.date) {
-                const dateObj = new Date(event.date);
-                eventTime = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-            
             const approvalEmailContent = eventApprovalTemplate({
                 organizerName: organizerInfo.name,
                 eventTitle: event.name,
                 eventDate: eventDate,
-                eventTime: eventTime,
                 eventLocation: event.location || 'N/A'
             });
 

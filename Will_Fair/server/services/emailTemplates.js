@@ -2,7 +2,7 @@
  * Email template for event creation confirmation
  */
 function eventCreationTemplate(eventData) {
-  const { title, description, location, date, time, secretKey, organizerName } = eventData;
+  const { title, description, location, date, secretKey, organizerName } = eventData;
   
   return {
     subject: `Event Created Successfully: ${title}`,
@@ -16,7 +16,6 @@ Event Details:
 - Description: ${description}
 - Location: ${location}
 - Date: ${date}
-- Time: ${time}
 
 IMPORTANT - Secret Event Key: ${secretKey}
 Please save this key securely. You will need it to manage your event.
@@ -56,7 +55,6 @@ The WillFair Team
         <p><strong>Description:</strong> ${description}</p>
         <p><strong>Location:</strong> ${location}</p>
         <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Time:</strong> ${time}</p>
       </div>
 
       <div class="secret-key">
@@ -82,7 +80,7 @@ The WillFair Team
  * Email template for successful volunteer registration
  */
 function volunteerRegistrationTemplate(volunteerData) {
-  const { volunteerName, volunteerEmail, eventTitle, eventDate, eventTime, eventLocation, secretKey } = volunteerData;
+  const { volunteerName, volunteerEmail, eventTitle, eventDate, eventLocation, secretKey } = volunteerData;
   
   return {
     subject: `Volunteer Registration Confirmed: ${eventTitle}`,
@@ -94,7 +92,6 @@ You have successfully registered as a volunteer for the event!
 Event Details:
 - Event: ${eventTitle}
 - Date: ${eventDate}
-- Time: ${eventTime}
 - Location: ${eventLocation}
 
 Your Volunteer Secret Key: ${secretKey}
@@ -133,7 +130,6 @@ The WillFair Team
         <h3>Event Details:</h3>
         <p><strong>Event:</strong> ${eventTitle}</p>
         <p><strong>Date:</strong> ${eventDate}</p>
-        <p><strong>Time:</strong> ${eventTime}</p>
         <p><strong>Location:</strong> ${eventLocation}</p>
       </div>
 
@@ -318,7 +314,7 @@ The WillFair Team
  * Email template for event approval notification (organizer)
  */
 function eventApprovalTemplate(eventData) {
-  const { organizerName, eventTitle, eventDate, eventTime, eventLocation } = eventData;
+  const { organizerName, eventTitle, eventDate, eventLocation } = eventData;
   
   return {
     subject: `Event Approved: ${eventTitle}`,
@@ -330,7 +326,6 @@ Great news! Your event "${eventTitle}" has been approved and is now live on Will
 Event Details:
 - Title: ${eventTitle}
 - Date: ${eventDate}
-- Time: ${eventTime}
 - Location: ${eventLocation}
 
 Your event is now visible to volunteers and they can start registering. You will receive notifications when volunteers sign up for your event.
@@ -371,7 +366,6 @@ The WillFair Team
         <h3>Event Details:</h3>
         <p><strong>Title:</strong> ${eventTitle}</p>
         <p><strong>Date:</strong> ${eventDate}</p>
-        <p><strong>Time:</strong> ${eventTime}</p>
         <p><strong>Location:</strong> ${eventLocation}</p>
       </div>
 
