@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import EventDetailsCard from "./components/EventDetailsCard";
 import "./AuthManagerDashboard.css";
 
-const PendingEventsManagement = () => {
+const PendingEventsManagement = ({ onCountChange }) => {
   const [activeTab, setActiveTab] = useState('approval'); // 'approval' or 'deletion'
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,6 +112,11 @@ const PendingEventsManagement = () => {
           approval: Math.max(0, prev.approval - 1)
         }));
         
+        // Notify parent component to update sidebar badge
+        if (onCountChange) {
+          onCountChange();
+        }
+        
         handleCloseModal();
         
         console.log("✅ Event approved successfully:", eventId);
@@ -140,6 +145,11 @@ const PendingEventsManagement = () => {
           ...prev,
           [activeTab]: Math.max(0, prev[activeTab] - 1)
         }));
+        
+        // Notify parent component to update sidebar badge
+        if (onCountChange) {
+          onCountChange();
+        }
         
         handleCloseModal();
         

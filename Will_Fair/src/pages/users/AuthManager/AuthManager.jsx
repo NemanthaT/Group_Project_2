@@ -18,21 +18,22 @@ const AuthManager = () => {
 
   const closeSidebar = () => setSidebarVisible(false);
 
+  // Fetch event counts function
+  const fetchEventCounts = async () => {
+    try {
+      // Use the optimized single endpoint to get all counts
+      const response = await axios.get("http://localhost:5000/authManager/event-counts");
+      
+      if (response.data.success) {
+        setEventCounts(response.data.counts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch event counts:", error);
+    }
+  };
+
   // Fetch event counts on component mount
   useEffect(() => {
-    const fetchEventCounts = async () => {
-      try {
-        // Use the optimized single endpoint to get all counts
-        const response = await axios.get("http://localhost:5000/authManager/event-counts");
-        
-        if (response.data.success) {
-          setEventCounts(response.data.counts);
-        }
-      } catch (error) {
-        console.error("Failed to fetch event counts:", error);
-      }
-    };
-    
     fetchEventCounts();
   }, []);
 
@@ -96,7 +97,7 @@ const AuthManager = () => {
           {activeTab === 'dashboard' && <DashboardPage user={user}/>}
           {activeTab === 'products' && <ProductReviewPage user={user}/>}
           {activeTab === 'requests' && <PendingDonationRequests />}
-          {activeTab === 'events' && <PendingEventsManagement />}
+          {activeTab === 'events' && <PendingEventsManagement onCountChange={fetchEventCounts} />}
         </div>
       </div>
     </div>
