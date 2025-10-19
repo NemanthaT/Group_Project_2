@@ -8,6 +8,7 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     name: "",
     email: "",
     contact: "",
+    notes: ""
   });
 
   const [errors, setErrors] = useState({});
@@ -16,7 +17,7 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setForm({ name: "", email: "", contact: "" });
+      setForm({ name: "", email: "", contact: "", notes: "" });
       setErrors({});
     }
   }, [isOpen]);
@@ -50,9 +51,9 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     }
 
     if (!eventId) {
-    alert("Missing event ID. Please refresh the page and try again.");
-    return; // stop submission
-  }
+      alert("Missing event ID. Please refresh the page and try again.");
+      return; // stop submission
+    }
 
     try {
       await axios.post("http://localhost:5000/api/volunteers", {
@@ -60,10 +61,11 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
         volunteer_name: form.name,
         volunteer_email: form.email,
         volunteer_phone: form.contact,
+        notes:form.notes,
       });
 
       alert(`Thank you for volunteering for ${eventTitle}!`);
-      setForm({ name: "", email: "", contact: "" });
+      setForm({ name: "", email: "", contact: "", notes: "" });
       onClose();
     } catch (err) {
       console.error(err);
@@ -128,6 +130,15 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
               required
             />
             {errors.email && <div className="field-error">{errors.email}</div>}
+          </div>
+
+          <div className="form-row">
+            <label>Notes <span style={{ color: '#94a3b8' }}>(optional)</span></label>
+            <textarea
+              value={form.notes}
+              onChange={(e) => updateField("notes", e.target.value)}
+              placeholder="Any additional info or message"
+            />
           </div>
 
           <div className="form-actions">

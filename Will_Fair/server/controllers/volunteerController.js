@@ -1,7 +1,7 @@
 import pool from "../db.js"; // adjust this if your pool file path differs
 
 export const registerVolunteer = async (req, res) => {
-  const { event_id, volunteer_name, volunteer_email, volunteer_phone } = req.body;
+  const { event_id, volunteer_name, volunteer_email, volunteer_phone, notes } = req.body;
 
   if (!event_id || !volunteer_name || !volunteer_email || !volunteer_phone) {
     return res.status(400).json({ error: "All fields are required" });
@@ -13,8 +13,8 @@ export const registerVolunteer = async (req, res) => {
 
     // 1️⃣ Insert into event_volunteers
     const insertQuery = `
-      INSERT INTO event_volunteers (event_id, volunteer_name, volunteer_email, volunteer_phone)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO event_volunteers (event_id, volunteer_name, volunteer_email, volunteer_phone, notes)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING volunteer_id;
     `;
     const { rows } = await client.query(insertQuery, [
@@ -22,6 +22,7 @@ export const registerVolunteer = async (req, res) => {
       volunteer_name,
       volunteer_email,
       volunteer_phone,
+      notes || null,
     ]);
 
     // 2️⃣ Increment volunteers_signed in events table
