@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
+import { API_BASE } from '../constants/API';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../assets/styles/loginstyles';
-import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
 import BackButton from '../components/backbutton'
+import { saveUserData } from '../../utils/authStorage';
 
 
 const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
@@ -53,7 +53,7 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Attempting donee login...');
       
       // FIXED: Use donee_login endpoint and send contactno
-      const response = await fetch('http://192.168.122.72:5000/api/donee_login', {
+  const response = await fetch(`${API_BASE}/api/donee_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,6 +78,20 @@ const DoneeLogin = ({ visible, onClose, onLoginPress }) => {
       console.log('Login response:', data);
 
       if (response.ok) {
+        // Save user data to AsyncStorage
+        await saveUserData({
+          token: 'dummy-token', // You can add JWT token if your backend provides one
+          user: {
+            donee_id: data.donee.id,
+            donor_id: data.donee.id, // Save as donor_id too for donation compatibility
+            phone: data.donee.phone,
+            first_name: data.donee.firstName,
+            last_name: data.donee.lastName,
+            user_type: 'donee'
+          }
+        });
+        
+        console.log('Donee user data saved to AsyncStorage');
         Alert.alert('Success', `Welcome back, ${data.donee.firstName}!`, [
           {
             text: 'OK',

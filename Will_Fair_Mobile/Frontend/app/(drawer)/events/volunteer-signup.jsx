@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import axios from 'axios';
-
-const API_BASE_URL = 'http://10.237.31.71:5000/api'; // Update this to match your backend URL
+import { API_BASE } from '../../constants/API';
+import { useBackHandlerWithConfirmation } from '../../hooks/useBackHandler';
 
 export default function VolunteerSignUpScreen() {
   const router = useRouter();
@@ -58,6 +57,15 @@ export default function VolunteerSignUpScreen() {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // Check if form has any data (to warn about unsaved changes)
+  const hasUnsavedChanges = formData.name !== '' || 
+                           formData.email !== '' || 
+                           formData.phone !== '' || 
+                           formData.address !== '';
+  
+  // Enable hardware back button with confirmation if form has data
+  useBackHandlerWithConfirmation(hasUnsavedChanges);
 
   // Update form field
   const updateField = (field, value) => {

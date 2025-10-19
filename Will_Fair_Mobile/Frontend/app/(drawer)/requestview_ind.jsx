@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Platform,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_BASE } from '../constants/API';
+import { useBackHandler } from '../hooks/useBackHandler';
 
 const MyDonationReq = () => {
   const { requestId } = useLocalSearchParams();
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     console.log('Request ID:', requestId);
-    const API_BASE = Platform.select({
-      android: 'http://192.168.122.72:5000', // replace with your actual IP
-      ios: 'http://localhost:5000',
-      default: 'http://localhost:5000',
-    });
     const fetchRequest = async () => {
       setLoading(true);
       setError(null);
@@ -53,7 +46,8 @@ const MyDonationReq = () => {
     return <View style={styles.noResultsContainer}><Text>{error || 'Request not found'}</Text></View>;
   }
 
-  const progress = (request.quantity_received / request.quantity_needed) * 100;
+  const isCompleted = Number(request.quantity_received) >= Number(request.quantity_needed);
+  const progress = isCompleted ? 100 : (request.quantity_received / request.quantity_needed) * 100;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -82,7 +76,12 @@ const MyDonationReq = () => {
       </LinearGradient>
 
       <View style={styles.card}>
-        <Image source={{ uri: request.image_path }} style={styles.cardImage} />
+        {request.image_url && (
+          <Image 
+            source={{ uri: request.image_url }} 
+            style={styles.cardImage} 
+          />
+        )}
 
         {/* Category
         <View style={styles.categoryChip}>
@@ -102,13 +101,25 @@ const MyDonationReq = () => {
         </Text>
         {/* Progress Bar - Modern Style */}
         <View style={{
-          backgroundColor: '#F3F4F6',
+          backgroundColor: '#A0AEC0',
           borderRadius: 12,
           height: 18,
           marginVertical: 16,
           justifyContent: 'center',
           position: 'relative',
+          overflow: 'hidden',
         }}>
+          <View style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            height: 18,
+            borderRadius: 12,
+            backgroundColor: '#ffffffff',
+            width: '100%',
+            opacity: isCompleted ? 1 : 0.85,
+            transition: 'width 0.3s',
+          }} />
           <View style={{
             position: 'absolute',
             left: 0,
@@ -117,6 +128,8 @@ const MyDonationReq = () => {
             borderRadius: 12,
             backgroundColor: '#7B61FF',
             width: `${progress}%`,
+            opacity: isCompleted ? 1 : 0.85,
+            transition: 'width 0.3s',
           }} />
           <Text style={{
             position: 'absolute',
@@ -129,7 +142,7 @@ const MyDonationReq = () => {
             textAlignVertical: 'center',
             textAlign: 'right',
             lineHeight: 18,
-          }}>{Math.round(progress)}%</Text>
+          }}>{isCompleted ? '100%' : `${Math.round(progress)}%`}</Text>
         </View>
         <View style={styles.amountRow}>
           <View>
@@ -141,20 +154,7 @@ const MyDonationReq = () => {
             </Text>
           </View>
         </View>
-        {/* Status Badge */}
-        <View style={{
-          backgroundColor:
-            request.status === "active" ? "#4CAF50" :
-            request.status === "completed" ? "#2196F3" : "#9333EA",
-          borderRadius: 6,
-          paddingHorizontal: 8,
-          paddingVertical: 2,
-          alignSelf: 'flex-end',
-          marginTop: 8,
-          marginBottom: 8,
-        }}>
-          <Text style={{ color: '#fff', fontSize: 12 }}>{request.status}</Text>
-        </View>
+        {/* Removed status badge */}
 
         {/* Description */}
         <Text style={styles.description}>Description: {request.description || 'No description provided.'}</Text>
@@ -183,31 +183,42 @@ const MyDonationReq = () => {
 
         {/* Donate Now Button (styled like request_view) */}
         <View style={{ marginTop: 24, alignItems: 'center' }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#7B61FF',
-              borderRadius: 8,
-              paddingVertical: 14,
-              paddingHorizontal: 32,
-              width: '90%',
-              shadowColor: '#7B61FF',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 8,
-              elevation: 3,
-            }}
-            onPress={() => {
-              if ((request.type || '').toLowerCase() === 'monetary') {
-                router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: request.request_id } });
-              } else {
-                router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: request.request_id } });
-              }
-            }}
-          >
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
-              Donate Now
-            </Text>
-          </TouchableOpacity>
+          {request && (
+            <TouchableOpacity
+              style={{
+                backgroundColor:
+                  Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())
+                    ? '#A0AEC0'
+                    : '#7B61FF',
+                borderRadius: 8,
+                paddingVertical: 14,
+                paddingHorizontal: 32,
+                width: '90%',
+                shadowColor: '#7B61FF',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
+              onPress={() => {
+                if (Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())) return;
+                if ((request.type || '').toLowerCase() === 'monetary') {
+                  router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: request.request_id } });
+                } else {
+                  router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: request.request_id } });
+                }
+              }}
+              disabled={Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())}
+            >
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
+                {Number(request.quantity_received) >= Number(request.quantity_needed)
+                  ? 'Completed'
+                  : request.due_date && new Date(request.due_date) < new Date()
+                  ? 'Deadline Passed'
+                  : 'Donate Now'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </ScrollView>

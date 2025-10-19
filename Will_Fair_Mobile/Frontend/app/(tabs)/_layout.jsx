@@ -1,47 +1,10 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useFocusEffect } from '@react-navigation/native';
-import { BackHandler, Alert } from 'react-native';
-import { useCallback } from 'react';
-import { router } from 'expo-router';
 
 export default function Layout() {
-  // Add global back button handler here
-  useFocusEffect(
-    useCallback(() => {
-      console.log('📱 Setting up back handler in tabs layout');
-      
-      const onBackPress = () => {
-        const currentRoute = router.pathname;
-        console.log('🔙 Back pressed! Current route:', currentRoute);
-        
-        if (currentRoute === '/firstpage') {
-          // If on first page, show exit confirmation
-          Alert.alert(
-            'Exit App',
-            'Do you want to exit the app?',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Exit', onPress: () => BackHandler.exitApp() }
-            ]
-          );
-          return true;
-        } else {
-          // For other screens, go back to firstpage
-          console.log('🏠 Navigating back to firstpage');
-          router.push('/firstpage');
-          return true;
-        }
-      };
-
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      
-      return () => {
-        console.log('🧹 Cleaning up back handler');
-        subscription?.remove();
-      };
-    }, [])
-  );
+  // NOTE: Back button handling is now managed by individual screens
+  // using the useBackHandler hook. This prevents conflicts and allows
+  // each screen to have custom back navigation behavior.
 
   return (
     <Stack 

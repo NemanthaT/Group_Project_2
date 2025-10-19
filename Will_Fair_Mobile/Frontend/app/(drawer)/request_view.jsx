@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Platform,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, Modal } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import { router } from 'expo-router';
+import { API_BASE } from '../constants/API';
 
 const RequestView = () => {  
   const navigation = useNavigation();
@@ -25,12 +18,6 @@ const RequestView = () => {
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
 
-  // Platform-aware API base URL
-  const API_BASE = Platform.select({
-    android: 'http://192.168.122.72:5000',
-    ios: 'http://localhost:5000',
-    default: 'http://localhost:5000',
-  });
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -47,13 +34,13 @@ const RequestView = () => {
           const mapped = sorted.map((item) => ({
             id: item.request_id,
             title: item.title,
-            image_path: item.image_path,
+            image_url: item.image_url, // Full URL from backend (based on category)
             raised: item.quantity_received,
             target: item.quantity_needed,
             due_date: item.due_date,
             status: getStatus(item),
             type: getType(item),
-            category: '',
+            category: item.category || item.category_name || '',
           }));
           setAllRequests(mapped);
         } else {
@@ -84,15 +71,16 @@ const RequestView = () => {
   const renderCard = (item) => {
     const progress = item.target > 0 ? (item.raised / item.target) * 100 : 0;
     const isMoney = item.type === 'Monetary';
-    let imageSource = require('../../assets/images/child.jpg');
-    if (item.image_path) {
-      if (item.image_path.startsWith('http')) {
-        imageSource = { uri: item.image_path };
-      } else {
-        imageSource = { uri: `../../assets/images/child.jpg` };
-        console.log('Image URL:', imageSource.uri);
-      }
+    
+    // Only use image_url from backend, no fallback
+    const imageSource = item.image_url ? { uri: item.image_url } : null;
+    if (item.image_url) {
+      console.log('Image URL:', item.image_url);
     }
+    
+    const isCompleted = Number(item.raised) >= Number(item.target);
+    const isPastDeadline = item.due_date && new Date(item.due_date) < new Date();
+    const donateDisabled = isCompleted || isPastDeadline;
     return (
       <View key={item.id} style={{
         backgroundColor: '#fff',
@@ -109,18 +97,20 @@ const RequestView = () => {
         alignSelf: 'center',
       }}>
         <View style={{ position: 'relative', marginBottom: 12 }}>
-          <Image source={imageSource} style={{
-            width: '100%',
-            height: 160,
-            borderRadius: 12,
-            resizeMode: 'cover',
-          }} />
+          {imageSource && (
+            <Image source={imageSource} style={{
+              width: '100%',
+              height: 160,
+              borderRadius: 12,
+              resizeMode: 'cover',
+            }} />
+          )}
           {/* Type badge (top right) */}
           <View style={{
             position: 'absolute',
             right: 12,
             top: 12,
-            backgroundColor: isMoney ? '#FFB800' : '#00BCD4',
+            backgroundColor: isMoney ? '#0e1fb0ff' : '#0e1fb0ff', // purple for non-monetary
             borderRadius: 8,
             paddingHorizontal: 10,
             paddingVertical: 4,
@@ -130,20 +120,7 @@ const RequestView = () => {
           </View>
         </View>
         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4 }}>{item.title}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          {/* Category removed */}
-          <View style={{
-            backgroundColor:
-              item.status === "Active" ? "#4CAF50" :
-              item.status === "Completed" ? "#2196F3" : "#9333EA",
-            borderRadius: 6,
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-            marginLeft: 'auto',
-          }}>
-            <Text style={{ color: '#fff', fontSize: 12 }}>{item.status}</Text>
-          </View>
-        </View>
+        {/* Removed status badge */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
           <Text style={{ fontSize: 14, color: '#333', marginRight: 16 }}>
             {isMoney
@@ -157,8 +134,8 @@ const RequestView = () => {
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Ionicons name="calendar-outline" size={18} color="#FF4444" style={{ marginRight: 4 }} />
-          <Text style={{ color: '#FF4444', fontSize: 14, fontWeight: 'bold' }}>
+          <Ionicons name="calendar-outline" size={18} color="#b61919ff" style={{ marginRight: 4 }} />
+          <Text style={{ color: '#b61919ff', fontSize: 14, fontWeight: 'bold' }}>
             Deadline: {item.due_date ? new Date(item.due_date).toLocaleDateString() : 'N/A'}
           </Text>
         </View>
@@ -166,14 +143,14 @@ const RequestView = () => {
           <View style={{
             height: 8,
             width: `${progress}%`,
-            backgroundColor: isMoney ? '#7B61FF' : '#00BCD4',
+            backgroundColor: isMoney ? '#7B61FF' : '#7B61FF',
             borderRadius: 4,
           }} />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
           <TouchableOpacity
             style={{
-              backgroundColor: '#7B61FF',
+              backgroundColor: donateDisabled ? '#A0AEC0' : '#7B61FF',
               borderRadius: 8,
               paddingVertical: 10,
               paddingHorizontal: 20,
@@ -181,15 +158,17 @@ const RequestView = () => {
               marginRight: 8,
             }}
             onPress={() => {
+              if (donateDisabled) return;
               if ((item.type || '').toLowerCase() === 'monetary') {
                 router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: item.id } });
               } else {
                 router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: item.id } });
               }
             }}
+            disabled={donateDisabled}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
-              Donate Now
+              {isCompleted ? 'Completed' : isPastDeadline ? 'Deadline Passed' : 'Donate Now'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

@@ -1,3 +1,4 @@
+import { API_BASE } from '../constants/API';
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -79,7 +80,7 @@ const handleSubmit = async () => {
 
   setLoading(true);
   try {
-    const response = await fetch('http://192.168.122.72:5000/api/donor_reg', {
+  const response = await fetch(`${API_BASE}/api/donor_reg`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

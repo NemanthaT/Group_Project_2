@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
+import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
+import { API_BASE } from '../../constants/API';
 
 export default function AddEventModal({ isOpen, onClose, onCreate }) {
   const [form, setForm] = useState({

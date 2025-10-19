@@ -4,12 +4,14 @@ import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import AddEventModal from './AddEventModal';
 import axios from 'axios';
-
-// API Configuration - Update this to your mobile backend URL
-const API_BASE_URL = 'http://10.237.31.71:5000/api';
+import { API_BASE } from '../../constants/API';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function EventsScreen() {
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   const [opportunities, setOpportunities] = useState([]);
   const [filters, setFilters] = useState({ sort: '', type: '', commitment: '', location: '', skills: '' });
   const [showAddModal, setShowAddModal] = useState(false);
@@ -21,8 +23,8 @@ export default function EventsScreen() {
       setLoadingEvents(true);
       setEventsError(null);
       try {
-        console.log('Fetching events from:', `${API_BASE_URL}/events`);
-        const res = await axios.get(`${API_BASE_URL}/events`);
+        console.log('Fetching events from:', `${API_BASE}/api/events`);
+        const res = await axios.get(`${API_BASE}/api/events`);
         console.log('Response received:', res.data);
         const data = res.data;
         if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');

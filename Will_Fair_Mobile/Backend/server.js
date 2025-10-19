@@ -14,12 +14,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.originalUrl}`);
-  next();
-});
-
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -81,14 +75,13 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
-
-console.log('📦 Registering routes...');
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', volunteerRoutes);
 app.use('/api', eventRoutes);
-console.log('✅ Event routes registered at /api');
+
+// ...category endpoints moved to MVC routes...
 app.use('/api', donationRoutes); // <-- add this line
 
 

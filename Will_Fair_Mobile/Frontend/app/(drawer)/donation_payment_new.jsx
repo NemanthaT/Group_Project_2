@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, Platform } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from "react-native";
+import { API_BASE } from '../constants/API';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { makeDonationPayment } from '../../utils/donationApi';
+import { getUserInfo } from '../../utils/authHelpers';
 
 const DonationPayment = () => {
   const { requestId } = useLocalSearchParams();
@@ -12,11 +15,6 @@ const DonationPayment = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_BASE = Platform.select({
-      android: 'http://192.168.122.72:5000', // replace with your actual IP
-      ios: 'http://localhost:5000',
-      default: 'http://localhost:5000',
-    });
     const fetchRequest = async () => {
       setLoading(true);
       try {
@@ -50,7 +48,7 @@ const DonationPayment = () => {
     setError("");
   };
 
-  const handleDonate = () => {
+  const handleDonate = async () => {
     const amt = parseInt(amount, 10);
     if (!amt || amt <= 0) {
       if (!errorShown) {
@@ -76,18 +74,39 @@ const DonationPayment = () => {
       }
       return;
     }
-    // Here you would call your backend to process the donation
-    Alert.alert(
-      "Success",
-      `You have donated Rs. ${amt} to '${request.title}'!`,
-      [
-        {
-          text: "OK",
-          onPress: () => router.push("/(drawer)/request_view"),
-        },
-      ]
-    );
-    setAmount("");
+
+    // Get user info (donor_id)
+    const userInfo = await getUserInfo();
+    console.log('User ID retrieved:', userInfo?.donor_id);
+    console.log('Full user info:', userInfo);
+    
+    if (!userInfo || !userInfo.donor_id) {
+      Alert.alert("Error", "User not authenticated. Please login again.");
+      return;
+    }
+
+    // Call backend to process the donation
+    const result = await makeDonationPayment({
+      requestId: request.request_id,
+      amount: amt,
+      donorId: userInfo.donor_id,
+    });
+
+    if (result.success) {
+      Alert.alert(
+        "Success",
+        `You have donated Rs. ${amt} to '${request.title}'!`,
+        [
+          {
+            text: "OK",
+            onPress: () => router.push("/(drawer)/request_view"),
+          },
+        ]
+      );
+      setAmount("");
+    } else {
+      Alert.alert("Error", result.error || "Failed to process donation. Please try again.");
+    }
   };
 
   return (

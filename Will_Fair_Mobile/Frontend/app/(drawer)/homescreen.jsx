@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { homeStyles } from "../../assets/styles/homestyles"; 
 import { Ionicons } from "@expo/vector-icons";
@@ -15,6 +17,23 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 
 const HomeScreen = () => {
+    // Handle back button on home screen - show exit confirmation
+    useEffect(() => {
+      const backAction = () => {
+        Alert.alert(
+          'Exit App',
+          'Are you sure you want to exit?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Exit', onPress: () => BackHandler.exitApp() }
+          ]
+        );
+        return true; // Prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+      return () => backHandler.remove();
+    }, []);
     // const scrollViewRef = useRef(null);
     // const aboutRef = useRef(null);
     // const contactRef = useRef(null);

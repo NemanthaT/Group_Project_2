@@ -6,14 +6,51 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUser } from '../contexts/UserContext';
 
 export default function CustomDrawer(props) {
   const router = useRouter();
   const { user, logout } = useUser();
+  const [username, setUsername] = React.useState('');
+  const [userType, setUserType] = React.useState(''); // donor or donee
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        // Try 'userData' first (used by saveUserData function), then fall back to 'user'
+        let userData = await AsyncStorage.getItem('userData');
+        if (!userData) {
+          userData = await AsyncStorage.getItem('user');
+        }
+        
+        console.log('=== DRAWER DEBUG ===');
+        console.log('Raw userData from AsyncStorage:', userData);
+        
+        if (userData) {
+          const user = JSON.parse(userData);
+          console.log('Parsed user object:', user);
+          console.log('User type:', user.user_type);
+          
+          setUsername(user.firstName || user.first_name || user.username || 'User');
+          setUserType(user.user_type || 'donor'); // Default to donor if not specified
+          
+          console.log('Setting userType to:', user.user_type || 'donor');
+        } else {
+          console.log('No user data found in AsyncStorage');
+          setUsername('User');
+          setUserType('donor');
+        }
+      } catch (error) {
+        console.error('Error reading user data:', error);
+        setUsername('User');
+        setUserType('donor');
+      }
+    };
+    fetchUsername();
+  }, []);
 
   const navigateTo = (route) => {
     router.push(route);
@@ -26,7 +63,7 @@ export default function CustomDrawer(props) {
   };
 
   // Get display name from user object
-  const username = user?.name || user?.firstName || user?.username || 'User';
+  // const username = user?.name || user?.firstName || user?.username || 'User';
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
@@ -36,22 +73,36 @@ export default function CustomDrawer(props) {
             style={styles.profileImage}
           />
           <Text style={styles.username}>{username}</Text>
-          {user?.email && <Text style={styles.userEmail}>{user.email}</Text>}
+          <Text style={styles.userTypeLabel}>
+            {userType === 'donee' ? '👤 Donee' : '💰 Donor'}
+          </Text>
       </View>
 
       <View style={styles.menuItems}>
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/homescreen')} style={styles.menuButton}>
           <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/monetory')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Donee - Donation Request</Text>
-        </TouchableOpacity>
-         <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
-          <Text style={styles.menuText}>My Donation Requests</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
-          <Text style={styles.menuText}>Donor - Requests View </Text>
-        </TouchableOpacity>
+        
+        {/* Show for DONEES only */}
+        {userType === 'donee' && (
+          <>
+            <TouchableOpacity onPress={() => navigateTo('/(drawer)/monetory')} style={styles.menuButton}>
+              <Text style={styles.menuText}>Donation Request Form</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateTo('/(drawer)/mydonationreq')} style={styles.menuButton}>
+              <Text style={styles.menuText}>My Donation Requests</Text>
+            </TouchableOpacity>
+          </>
+        )}
+        
+        {/* Show for DONORS only */}
+        {userType === 'donor' && (
+          <TouchableOpacity onPress={() => navigateTo('/(drawer)/request_view')} style={styles.menuButton}>
+            <Text style={styles.menuText}>View Donations</Text>
+          </TouchableOpacity>
+        )}
+        
+        {/* Show for BOTH */}
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/events/events')} style={styles.menuButton}>
           <Text style={styles.menuText}>Events</Text>
         </TouchableOpacity>
@@ -93,11 +144,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 10,
   },
-  userEmail: {
+  userTypeLabel: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 5,
-    opacity: 0.9,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
   },
   menuItems: {
     marginTop: 10,

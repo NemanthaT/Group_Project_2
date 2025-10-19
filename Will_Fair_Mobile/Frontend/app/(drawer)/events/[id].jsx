@@ -11,13 +11,15 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
-
-// API Configuration - Update this to match your backend URL
-const API_BASE_URL = 'http://10.237.31.71:5000/api';
+import { API_BASE } from '../../constants/API';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function EventDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function EventDetailsScreen() {
       setError(null);
       try {
         console.log('Fetching event details for ID:', id);
-        const res = await axios.get(`${API_BASE_URL}/events/${id}`);
+        const res = await axios.get(`${API_BASE}/events/${id}`);
         console.log('Event details received:', res.data);
         const data = res.data;
         
