@@ -66,3 +66,16 @@ exports.getDonationById = async (requestId) => {
   );
   return result.rows[0];
 };
+
+// Fetch donation requests by donee_id (for My Donation Requests)
+exports.getDonationsByDoneeId = async (doneeId) => {
+  const result = await db.query(
+    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name, dr.status, dr.created_at
+     FROM donation_requests dr
+     LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
+     WHERE dr.donee_id = $1
+     ORDER BY dr.created_at DESC;`,
+    [doneeId]
+  );
+  return result.rows;
+};

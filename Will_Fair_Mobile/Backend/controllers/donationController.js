@@ -159,3 +159,40 @@ exports.getDonationByIdMobile = async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to fetch request', details: err.message });
   }
 };
+
+// Get donation requests by donee_id (for My Donation Requests)
+exports.getMyDonationRequestsMobile = async (req, res) => {
+  try {
+    const doneeId = req.params.doneeId;
+    if (!doneeId) {
+      console.error('No doneeId provided in params');
+      return res.status(400).json({ success: false, error: 'No doneeId provided' });
+    }
+    
+    const donations = await Donation.getDonationsByDoneeId(doneeId);
+    
+    // Build absolute base for image URLs
+    const host = `${req.protocol}://${req.get('host')}`;
+    
+    // Map donations to include full image URLs based on category_name
+    const mappedDonations = donations.map(donation => {
+      const categoryName = donation.category_name || '';
+      const matchedFile = findCategoryImage(categoryName);
+      
+      const image_url = matchedFile
+        ? `${host}/uploads/images/${matchedFile}`
+        : '';
+      
+      return {
+        ...donation,
+        image_url,
+        category: donation.category_name
+      };
+    });
+    
+    res.status(200).json({ success: true, donations: mappedDonations });
+  } catch (err) {
+    console.error('Error fetching donation requests by donee:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch donation requests' });
+  }
+};
