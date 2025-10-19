@@ -1,4 +1,21 @@
-import { registerDonor, getAllDonors } from "../models/donorModel.js";
+import { registerDonor, getDonorProfileById, getAllDonors } from "../models/donorModel.js";
+// Get donor profile by donor ID
+export const getDonorProfile = async (req, res) => {
+  const donorId = req.query.donorId;
+  if (!donorId) {
+    return res.status(400).json({ success: false, error: "Missing donorId" });
+  }
+  try {
+    const donor = await getDonorProfileById(donorId);
+    if (!donor) {
+      return res.status(404).json({ success: false, error: "Donor not found" });
+    }
+    res.status(200).json({ success: true, donor });
+  } catch (err) {
+    console.error("Error in getDonorProfile:", err);
+    res.status(500).json({ success: false, error: "Server error while fetching donor profile" });
+  }
+};
 
 export const signUpDonor = async (req, res) => {
   const { fullName, email, password } = req.body;
