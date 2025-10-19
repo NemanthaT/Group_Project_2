@@ -8,6 +8,7 @@ import {
   Image,
   Platform,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
@@ -17,6 +18,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles, donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE } from '../constants/API';
 
 const NonMonetary = () => {
   const navigation = useNavigation();
@@ -24,6 +27,13 @@ const NonMonetary = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [docFile, setDocFile] = useState(null);
+
+  // Form data states
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // Category Dropdown (dynamic from database)
   const [openCategory, setOpenCategory] = useState(false);
@@ -94,17 +104,130 @@ const NonMonetary = () => {
     setDate(currentDate);
   };
 
-  const handleSubmit = () => {
-    Alert.alert(
-      "Success! 🎉",
-      "Your donation request has been submitted successfully. We will review it and get back to you soon.",
-      [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("homescreen"),
+  const handleSubmit = async () => {
+    // Validation
+    if (!title.trim()) {
+      Alert.alert('Validation Error', 'Please enter a reason for your request');
+      return;
+    }
+    if (!description.trim()) {
+      Alert.alert('Validation Error', 'Please enter a detailed description');
+      return;
+    }
+    if (!itemName.trim()) {
+      Alert.alert('Validation Error', 'Please enter an item name');
+      return;
+    }
+    if (!quantity || parseFloat(quantity) <= 0) {
+      Alert.alert('Validation Error', 'Please enter a valid quantity');
+      return;
+    }
+    if (!category) {
+      Alert.alert('Validation Error', 'Please select a category');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // Get logged-in donee info
+      const userData = await AsyncStorage.getItem('userData');
+      if (!userData) {
+        Alert.alert('Error', 'Please login to submit a donation request');
+        setSubmitting(false);
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      const doneeId = user.donee_id;
+
+      if (!doneeId) {
+        Alert.alert('Error', 'User information is incomplete. Please login again.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Format date as YYYY-MM-DD
+      const formattedDate = date.toISOString().split('T')[0];
+
+      // Create FormData for file uploads (same pattern as monetary donation)
+      const formData = new FormData();
+      formData.append('donee_id', doneeId.toString());
+      formData.append('title', title.trim());
+      formData.append('description', description.trim());
+      formData.append('quantity_needed', quantity.toString());
+      formData.append('due_date', formattedDate);
+      formData.append('type', 'non-monetary');
+      formData.append('category_id', category.toString());
+
+      // Add image file if selected
+      if (imageFile) {
+        formData.append('image', {
+          uri: imageFile.uri,
+          type: imageFile.mimeType || 'image/jpeg',
+          name: imageFile.fileName || `image_${Date.now()}.jpg`
+        });
+        console.log('Image file attached:', imageFile.fileName);
+      }
+
+      // Add document file if selected
+      if (docFile) {
+        formData.append('document', {
+          uri: docFile.uri,
+          type: docFile.mimeType || 'application/pdf',
+          name: docFile.name || `document_${Date.now()}.pdf`
+        });
+        console.log('Document file attached:', docFile.name);
+      }
+
+      console.log('Submitting non-monetary donation request with FormData');
+
+      // Send to backend with FormData
+      const response = await fetch(`${API_BASE}/api/donations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      ]
-    );
+        body: formData
+      });
+
+      const data = await response.json();
+      console.log('Response from server:', data);
+
+      if (data.success) {
+        Alert.alert(
+          'Success! 🎉',
+          `Your donation request has been submitted successfully with status "pending". We will review it and get back to you soon.`,
+          [
+            {
+              text: 'View My Requests',
+              onPress: () => navigation.navigate('mydonationreq'),
+            },
+            {
+              text: 'Go to Home',
+              onPress: () => navigation.navigate('homescreen'),
+            },
+          ]
+        );
+
+        // Clear form
+        setTitle('');
+        setDescription('');
+        setItemName('');
+        setQuantity('');
+        setCategory(null);
+        setDate(new Date());
+        setImageFile(null);
+        setDocFile(null);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to submit donation request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting donation request:', error);
+      Alert.alert('Error', 'Failed to connect to server. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -171,20 +294,31 @@ const NonMonetary = () => {
           style={styles.inputField}
           placeholder="Enter request name"
           placeholderTextColor="#999"
+          value={title}
+          onChangeText={setTitle}
         />
         <Text style={styles.sectionTitle}>Detailed Description</Text>
         <TextInput
           style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
           multiline
           placeholder="Explain your situation, who will benefit, and how the donations will be used."
+          value={description}
+          onChangeText={setDescription}
         />
         <Text style={donationRequestsStyles.sectionTitle}>Item Name</Text>
-        <TextInput style={styles.inputField} placeholder="Enter item name" />
+        <TextInput 
+          style={styles.inputField} 
+          placeholder="Enter item name"
+          value={itemName}
+          onChangeText={setItemName}
+        />
         <Text style={donationRequestsStyles.sectionTitle}>Item Quantity</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Enter quantity needed"
           keyboardType="numeric"
+          value={quantity}
+          onChangeText={setQuantity}
         />
         <Text style={donationRequestsStyles.sectionTitle}>Dropoff Date</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputField}>
@@ -215,8 +349,16 @@ const NonMonetary = () => {
           Upload PDF document/s as proof for your request (medical reports, school documents, etc).
         </Text>
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitText}>Create Request</Text>
+        <TouchableOpacity 
+          style={[styles.submitButton, submitting && { opacity: 0.7 }]} 
+          onPress={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.submitText}>Create Request</Text>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>
