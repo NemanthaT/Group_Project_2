@@ -81,7 +81,7 @@ async function getEventById(eventId) {
         ) AS organiser
       FROM events e
       LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
-      WHERE e.event_id = $1 AND e.is_approved = true
+      WHERE e.event_id = $1
     `;
     const result = await pool.query(sql, [eventId]);
     if (result.rows.length === 0) return { success: false, message: "Event not found" };

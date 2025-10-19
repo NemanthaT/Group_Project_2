@@ -1,6 +1,6 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById } from "../models/eventModel.js";
 import { sendEmail } from "../services/emailService.js";
-import { eventCreationTemplate } from "../services/emailTemplates.js";
+import { eventCreationTemplate, volunteerUnregistrationTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
 import path from "path";
 
@@ -320,11 +320,40 @@ export const withdrawVolunteerController = async (req, res) => {
     // Process withdrawal
     const result = await withdrawVolunteer(email, volunteerKey);
     
-    if (result.success) {
-      return res.status(200).json(result);
-    } else {
+    if (!result.success) {
       return res.status(404).json(result);
     }
+
+    // Get event details for the email
+    const eventResult = await getEventById(result.volunteer.event_id);
+    
+    if (eventResult.success) {
+      // Send unregistration confirmation email to volunteer
+      try {
+        const emailContent = volunteerUnregistrationTemplate({
+          volunteerName: result.volunteer.volunteer_name,
+          eventTitle: eventResult.event.name
+        });
+
+        await sendEmail({
+          to: email,
+          subject: emailContent.subject,
+          text: emailContent.text,
+          html: emailContent.html
+        });
+
+        console.log(`✅ Volunteer unregistration email sent to ${email}`);
+      } catch (emailError) {
+        console.error('⚠️ Failed to send unregistration email:', emailError.message);
+      }
+    } else {
+      console.error('⚠️ Could not fetch event details for unregistration email');
+    }
+    
+    return res.status(200).json({
+      ...result,
+      emailSent: true
+    });
     
   } catch (error) {
     console.error('Error in withdrawVolunteerController:', error);
