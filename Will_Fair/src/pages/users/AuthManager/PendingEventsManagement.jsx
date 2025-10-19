@@ -6,7 +6,7 @@ import EventDetailsCard from "./components/EventDetailsCard";
 import "./AuthManagerDashboard.css";
 
 const PendingEventsManagement = ({ onCountChange }) => {
-  const [activeTab, setActiveTab] = useState('approval'); // 'approval' or 'deletion'
+  const [activeTab, setActiveTab] = useState('approval');
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +22,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
   useEffect(() => {
     const fetchTabCounts = async () => {
       try {
-        // Use the optimized single endpoint to get all counts
         const response = await axios.get("http://localhost:5000/authManager/event-counts");
         
         if (response.data.success) {
@@ -70,7 +69,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
     });
   }, [events]);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isModalOpen) {
       document.body.classList.add('modal-open');
@@ -78,7 +76,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
       document.body.classList.remove('modal-open');
     }
     
-    // Cleanup on unmount
     return () => {
       document.body.classList.remove('modal-open');
     };
@@ -106,13 +103,11 @@ const PendingEventsManagement = ({ onCountChange }) => {
       if (response.data.success) {
         setEvents(prev => prev.filter(e => e.event_id !== eventId));
         
-        // Update tab counts
         setTabCounts(prev => ({
           ...prev,
           approval: Math.max(0, prev.approval - 1)
         }));
         
-        // Notify parent component to update sidebar badge
         if (onCountChange) {
           onCountChange();
         }
@@ -140,13 +135,11 @@ const PendingEventsManagement = ({ onCountChange }) => {
       if (response.data.success) {
         setEvents(prev => prev.filter(e => e.event_id !== eventId));
         
-        // Update tab counts based on active tab
         setTabCounts(prev => ({
           ...prev,
           [activeTab]: Math.max(0, prev[activeTab] - 1)
         }));
         
-        // Notify parent component to update sidebar badge
         if (onCountChange) {
           onCountChange();
         }
@@ -199,7 +192,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
           </div>
         </div>
 
-        {/* Tab Navigation */}
         <div className="pending-events-tab-navigation">
           <button 
             className={`pending-events-tab-button ${activeTab === 'approval' ? 'pending-events-tab-active' : ''}`}
@@ -223,7 +215,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
           </button>
         </div>
 
-        {/* Stats Cards */}
       <div className="authmanager-stats-grid" style={{ marginBottom: 24 }}>
         {statsCards.map((card, idx) => (
           <div className="authmanager-stat-card-full" key={idx}>
@@ -241,7 +232,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
         ))}
       </div>
 
-      {/* Events List */}
       <div className="pending-requests-list">
         {events.length === 0 ? (
           <div className="no-events-message">
@@ -281,7 +271,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
       </div>
       </div>
 
-      {/* Event Details Modal */}
       <EventDetailsCard
         event={selectedEvent}
         isOpen={isModalOpen}
@@ -291,7 +280,6 @@ const PendingEventsManagement = ({ onCountChange }) => {
         activeTab={activeTab}
       />
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
