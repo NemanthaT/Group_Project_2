@@ -71,6 +71,7 @@ export const getDonationStatsController = async (req, res) => {
   }
 };
 
+// Retrieves all events pending approval
 export const getPendingEventsController = async (req, res) => {
     try {
         const result = await getPendingEvents();
@@ -95,6 +96,7 @@ export const getPendingEventsController = async (req, res) => {
     }
 };
 
+// Retrieves all events marked for deletion pending approval
 export const getPendingDeletionEventsController = async (req, res) => {
     try {
         const result = await getPendingDeletionEvents();
@@ -119,6 +121,7 @@ export const getPendingDeletionEventsController = async (req, res) => {
     }
 };
 
+// Approves a pending event and sends confirmation email to organizer
 export const approveEventController = async (req, res) => {
     try {
         const { id } = req.params;
@@ -130,7 +133,6 @@ export const approveEventController = async (req, res) => {
             });
         }
         
-        // Get event details before approval for email
         const eventResult = await getEventById(id);
         
         if (!eventResult.success) {
@@ -143,7 +145,6 @@ export const approveEventController = async (req, res) => {
         const event = eventResult.event;
         const organizerInfo = event.organiser;
         
-        // Approve the event
         const result = await approveEvent(id);
         
         if (!result.success) {
@@ -153,9 +154,7 @@ export const approveEventController = async (req, res) => {
             });
         }
 
-        // Send approval email to organizer
         try {
-            // Format date
             let eventDate = 'N/A';
             
             if (event.is_range && event.start_date && event.end_date) {
@@ -181,7 +180,6 @@ export const approveEventController = async (req, res) => {
             console.log(`✅ Event approval email sent to organizer: ${organizerInfo.email}`);
         } catch (emailError) {
             console.error('⚠️ Failed to send event approval email to organizer:', emailError.message);
-            // Don't fail the request if email fails
         }
 
         return res.status(200).json({ 
@@ -199,6 +197,7 @@ export const approveEventController = async (req, res) => {
     }
 };
 
+// Deletes an event and notifies organizer and volunteers via email
 export const deleteEventController = async (req, res) => {
     try {
         const { id } = req.params;
@@ -210,7 +209,6 @@ export const deleteEventController = async (req, res) => {
             });
         }
         
-        // First, get event details and organizer info before deletion
         const eventResult = await getEventById(id);
         
         if (!eventResult.success) {
@@ -223,7 +221,6 @@ export const deleteEventController = async (req, res) => {
         const event = eventResult.event;
         const organizerInfo = event.organiser;
         
-        // Get all volunteers for this event before deletion
         let volunteers = [];
         try {
             const volunteersQuery = await pool.query(
@@ -235,7 +232,6 @@ export const deleteEventController = async (req, res) => {
             console.error('Error fetching volunteers:', volErr);
         }
         
-        // Delete the event
         const result = await deleteEvent(id);
         
         if (!result.success) {
@@ -245,7 +241,6 @@ export const deleteEventController = async (req, res) => {
             });
         }
 
-        // Send email to organizer
         try {
             const organizerEmailContent = eventDeletionOrganizerTemplate({
                 eventTitle: event.name,
@@ -264,7 +259,6 @@ export const deleteEventController = async (req, res) => {
             console.error('⚠️ Failed to send event deletion email to organizer:', emailError.message);
         }
 
-        // Send cancellation emails to all volunteers
         if (volunteers.length > 0) {
             console.log(`📧 Sending cancellation emails to ${volunteers.length} volunteer(s)...`);
             
@@ -309,7 +303,7 @@ export const deleteEventController = async (req, res) => {
     }
 };
 
-// Get count of pending approval events
+// Gets the count of events pending approval
 export const getPendingEventsCountController = async (req, res) => {
     try {
         const result = await getPendingEventsCount();
@@ -334,7 +328,7 @@ export const getPendingEventsCountController = async (req, res) => {
     }
 };
 
-// Get count of pending deletion events
+// Gets the count of events pending deletion approval
 export const getPendingDeletionEventsCountController = async (req, res) => {
     try {
         const result = await getPendingDeletionEventsCount();
@@ -359,7 +353,7 @@ export const getPendingDeletionEventsCountController = async (req, res) => {
     }
 };
 
-// Get all event counts in one call (more efficient)
+// Gets total count of events pending approval and pending deletion
 export const getEventCountsController = async (req, res) => {
     try {
         const result = await getEventCounts();
