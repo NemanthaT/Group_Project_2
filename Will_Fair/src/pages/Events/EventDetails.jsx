@@ -7,8 +7,10 @@ import VolunteerEventModal from './VolunteerEventModal';
 import RequestEventDeletionModal from './components/RequestEventDeletionModal';
 import WithdrawRegistrationModal from './components/WithdrawRegistrationModal';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function EventDetails({ opportunities = [] }) {
+function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -28,6 +30,26 @@ function EventDetails({ opportunities = [] }) {
 
   const handleUnvolunteer = () => {
     setShowWithdrawModal(true);
+  };
+
+  // Handle withdraw submission
+  const handleWithdrawSubmit = async (formData) => {
+    try {
+      await axios.post('http://localhost:5000/events/withdrawVolunteer', formData);
+      
+      toast.success('Registration withdrawn successfully!');
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Navigate to events main page
+      navigate('/Events');
+      
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to withdraw registration. Please try again.');
+      return { success: false, error };
+    }
   };
 
   // Helper to ensure image URL is absolute
@@ -97,6 +119,18 @@ function EventDetails({ opportunities = [] }) {
 
   return (
     <div className="event-details">
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {/* Banner */}
       <div className="event-title-banner">
         <div className="container">
@@ -233,10 +267,7 @@ function EventDetails({ opportunities = [] }) {
         <WithdrawRegistrationModal
           isOpen={showWithdrawModal}
           onClose={() => setShowWithdrawModal(false)}
-          onSubmit={(data) => {
-            console.log('Withdrawal request submitted:', data);
-            // TODO: Add backend API call here
-          }}
+          onSubmit={handleWithdrawSubmit}
         />
       )}
     </div>

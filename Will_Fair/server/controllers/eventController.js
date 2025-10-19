@@ -1,4 +1,4 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer } from "../models/eventModel.js";
 import fs from "fs";
 import path from "path";
 
@@ -258,4 +258,51 @@ export const createEvent = async (req, res) => {
             error: "Server error during event creation"
         });
     }
+};
+
+export const withdrawVolunteerController = async (req, res) => {
+  try {
+    const { email, volunteerKey } = req.body;
+    
+    // Validation
+    if (!email || !volunteerKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and volunteer key are required'
+      });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    // Validate volunteer key format
+    if (!volunteerKey.startsWith('VOL-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid volunteer key format'
+      });
+    }
+    
+    // Process withdrawal
+    const result = await withdrawVolunteer(email, volunteerKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in withdrawVolunteerController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing withdrawal'
+    });
+  }
 };

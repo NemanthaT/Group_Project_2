@@ -48,23 +48,16 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    try {
-      // TODO: Replace with actual backend call
-      console.log('Withdrawal request submitted:', form);
-      alert('Registration withdrawn successfully!');
+    // Call parent submit handler
+    if (onSubmit) {
+      const result = await onSubmit(form);
       
-      // Reset form
-      setForm({ email: '', volunteerKey: '' });
-      setErrors({});
-      onClose();
-      
-      // Call parent submit handler if provided
-      if (onSubmit) {
-        await onSubmit(form);
+      // Only reset form and close if successful
+      if (result?.success) {
+        setForm({ email: '', volunteerKey: '' });
+        setErrors({});
+        onClose();
       }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to withdraw registration. Please try again.');
     }
   };
 

@@ -435,6 +435,58 @@ async function getEventCounts() {
     }
 }
 
+function generateVolunteerKey() {
+  const prefix = 'VOL';
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase();
+  return `${prefix}-${randomPart}-${timestamp}`;
+}
+
+async function withdrawVolunteer(email, volunteerKey) {
+  try {
+    const query = `
+      DELETE FROM event_volunteers 
+      WHERE volunteer_email = $1 
+      AND volunteer_key = $2
+      RETURNING event_id, volunteer_name, volunteer_email;
+    `;
+    
+    const result = await pool.query(query, [email, volunteerKey]);
+    
+    if (result.rows.length === 0) {
+      return {
+        success: false,
+        message: 'No matching volunteer registration found. Please check your email and volunteer key.'
+      };
+    }
+
+    const deletedVolunteer = result.rows[0];
+    
+    // Decrement the volunteers_signed count for the event
+    const updateEventQuery = `
+      UPDATE events 
+      SET volunteers_signed = GREATEST(volunteers_signed - 1, 0)
+      WHERE event_id = $1
+      RETURNING volunteers_signed;
+    `;
+    
+    await pool.query(updateEventQuery, [deletedVolunteer.event_id]);
+    
+    return {
+      success: true,
+      message: 'Successfully withdrawn from the event',
+      volunteer: deletedVolunteer
+    };
+    
+  } catch (error) {
+    console.error('Error withdrawing volunteer:', error);
+    return {
+      success: false,
+      message: 'An error occurred while processing your withdrawal'
+    };
+  }
+}
+
 export { 
     getEvents, 
     getEventById, 
@@ -448,6 +500,8 @@ export {
     deleteEvent,
     getPendingEventsCount,
     getPendingDeletionEventsCount,
-    getEventCounts
+    getEventCounts,
+    generateVolunteerKey,
+    withdrawVolunteer
 };
 
