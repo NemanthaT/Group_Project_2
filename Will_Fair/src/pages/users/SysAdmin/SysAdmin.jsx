@@ -83,18 +83,18 @@ const AdminDashboard = () => {
 
   return (
     <div style={styles.dashboard} className='adminDashboard'>
-      <header style={styles.header}>
+      {/*<header style={styles.header}>
         <h1 style={styles.headerTitle}>Welfare Platform Admin Dashboard</h1>
         <div style={styles.headerActions}>
           <span style={styles.adminName}>Admin User</span>
         </div>
-      </header>
+      </header>*/}
 
       <nav style={styles.nav}>
         <button style={{...styles.navBtn, ...(activeTab === 'overview' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('overview')}>Overview</button>
         <button style={{...styles.navBtn, ...(activeTab === 'donors' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('donors')}>Donors</button>
         <button style={{...styles.navBtn, ...(activeTab === 'donees' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('donees')}>Donees</button>
-        <button style={{...styles.navBtn, ...(activeTab === 'donations' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('donations')}>Donations</button>
+        {/*<button style={{...styles.navBtn, ...(activeTab === 'donations' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('donations')}>Donations</button>*/}
         <button style={{...styles.navBtn, ...(activeTab === 'categories' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('categories')}>Categories</button>
         <button style={{...styles.navBtn, ...(activeTab === 'admins' ? styles.navBtnActive : {})}} onClick={() => setActiveTab('admins')}>Admin Management</button>
       </nav>

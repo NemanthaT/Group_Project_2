@@ -47,14 +47,14 @@ export function LoginD() {
           location.reload(); // Reload to update user state
           break;
         case "auth_manager":
-          navigate("/users/authManager");
+          navigate("/users/auth_manager");
           location.reload(); 
           break;
         case "regional_manager":
-          navigate("/regional/dashboard");
+          navigate("/users/regional_manager");
           break;
         case "system_admin":
-          navigate("/admin/dashboard");
+          navigate("/users/system_admin");
           break;
         default:
           navigate("/");
