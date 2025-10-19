@@ -22,15 +22,13 @@ router.post("/pending-donations/:id/accept", acceptDonationRequestController);
 router.post("/pending-donations/:id/reject", rejectDonationRequestController);
 router.get("/donation-stats", getDonationStatsController);
 
-// Event routes
+// Event related routes
 router.get('/pending-events', getPendingEventsController);
 router.get('/pending-deletion-events', getPendingDeletionEventsController);
 router.post('/approve-event/:id', approveEventController);
 router.delete('/delete-event/:id', deleteEventController);
-
-// Event count routes (optimized for badge counts)
 router.get('/pending-events-count', getPendingEventsCountController);
 router.get('/pending-deletion-events-count', getPendingDeletionEventsCountController);
-router.get('/event-counts', getEventCountsController); // Get all counts in one call
+router.get('/event-counts', getEventCountsController);
 
 export default router;
