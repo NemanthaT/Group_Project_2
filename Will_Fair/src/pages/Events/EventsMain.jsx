@@ -55,6 +55,11 @@ function FeaturedContent() {
   useEffect(() => {
     fetchEvents();
 
+    // Don't start interval if any modal is open
+    if (showAddModal || showVolunteerModal) {
+      return;
+    }
+
     let interval = setInterval(() => {
       fetchEvents();
     }, 30000);
@@ -78,7 +83,7 @@ function FeaturedContent() {
       window.removeEventListener('scroll', resetTimer);
       window.removeEventListener('mousemove', resetTimer);
     };
-  }, []);
+  }, [showAddModal, showVolunteerModal]);
 
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
@@ -335,7 +340,10 @@ function FeaturedContent() {
 
       <AddEventModal
         isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          fetchEvents();
+        }}
         onSubmit={handleEventSubmit}
       />
 
@@ -345,6 +353,7 @@ function FeaturedContent() {
                 onClose={() => {
                   setShowVolunteerModal(false);
                   setSelectedEvent(null);
+                  fetchEvents();
                 }}
                 eventId={selectedEvent.id}          
                 eventTitle={selectedEvent.title} 

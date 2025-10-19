@@ -412,9 +412,11 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
                 multiple
                 style={{ display: 'none' }}
               />
-              <label htmlFor="eventDocumentUpload" className="choose-files-button">
-                Choose files
-              </label>
+              {documentFiles.length < 5 && (
+                <label htmlFor="eventDocumentUpload" className="choose-files-button">
+                  Choose files
+                </label>
+              )}
 
               <div className="file-display" style={{ marginTop: 12 }}>
                 {documentFiles.length > 0 ? (
