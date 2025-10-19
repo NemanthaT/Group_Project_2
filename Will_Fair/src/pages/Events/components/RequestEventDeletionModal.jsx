@@ -8,6 +8,7 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -50,7 +51,9 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
 
     // Call parent submit handler
     if (onSubmit) {
+      setIsSubmitting(true);
       const result = await onSubmit(form);
+      setIsSubmitting(false);
       
       // Only reset form and close if successful
       if (result?.success) {
@@ -73,7 +76,14 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px' }}>
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Submitting deletion request...</p>
+          </div>
+        )}
+        
         <div className="modal-header">
           <h2>Event Deletion Request</h2>
           <button className="modal-close" onClick={onClose}>✕</button>

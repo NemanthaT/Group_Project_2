@@ -24,6 +24,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
 
   // field errors to show inline tooltips instead of alerts
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // refs for form fields so we can focus / scroll the first invalid one
   const fieldRefs = useRef({});
@@ -223,7 +224,9 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
 
     console.log('Form Data:', formData);
 
+    setIsSubmitting(true);
     const result = await onSubmit(formData);
+    setIsSubmitting(false);
 
     // Only reset form if submission was successful
     if (result.success) {
@@ -278,7 +281,14 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <div className="modal-card">
+      <div className="modal-card" style={{ position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Creating event...</p>
+          </div>
+        )}
+        
         <div className="modal-header">
           <h2>Add Event</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
