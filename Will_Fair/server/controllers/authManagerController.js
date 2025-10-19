@@ -12,8 +12,15 @@ import {
   deleteEvent,
   getPendingEventsCount,
   getPendingDeletionEventsCount,
-  getEventCounts
+  getEventCounts,
+  getEventById
 } from "../models/eventModel.js";
+import { sendEmail } from "../services/emailService.js";
+import { 
+  eventDeletionOrganizerTemplate, 
+  eventCancellationVolunteerTemplate 
+} from "../services/emailTemplates.js";
+import pool from "../db.js";
 
 export const getPendingDonationsController = async (req, res) => {
   const result = await getPendingDonations();
@@ -156,6 +163,32 @@ export const deleteEventController = async (req, res) => {
             });
         }
         
+        // First, get event details and organizer info before deletion
+        const eventResult = await getEventById(id);
+        
+        if (!eventResult.success) {
+            return res.status(404).json({ 
+                success: false, 
+                error: "Event not found" 
+            });
+        }
+        
+        const event = eventResult.event;
+        const organizerInfo = event.organiser;
+        
+        // Get all volunteers for this event before deletion
+        let volunteers = [];
+        try {
+            const volunteersQuery = await pool.query(
+                'SELECT volunteer_name, volunteer_email FROM event_volunteers WHERE event_id = $1',
+                [id]
+            );
+            volunteers = volunteersQuery.rows;
+        } catch (volErr) {
+            console.error('Error fetching volunteers:', volErr);
+        }
+        
+        // Delete the event
         const result = await deleteEvent(id);
         
         if (!result.success) {
@@ -165,10 +198,60 @@ export const deleteEventController = async (req, res) => {
             });
         }
 
+        // Send email to organizer
+        try {
+            const organizerEmailContent = eventDeletionOrganizerTemplate({
+                eventTitle: event.name,
+                organizerName: organizerInfo.name
+            });
+
+            await sendEmail({
+                to: organizerInfo.email,
+                subject: organizerEmailContent.subject,
+                text: organizerEmailContent.text,
+                html: organizerEmailContent.html
+            });
+
+            console.log(`✅ Event deletion email sent to organizer: ${organizerInfo.email}`);
+        } catch (emailError) {
+            console.error('⚠️ Failed to send event deletion email to organizer:', emailError.message);
+        }
+
+        // Send cancellation emails to all volunteers
+        if (volunteers.length > 0) {
+            console.log(`📧 Sending cancellation emails to ${volunteers.length} volunteer(s)...`);
+            
+            for (const volunteer of volunteers) {
+                try {
+                    const volunteerEmailContent = eventCancellationVolunteerTemplate({
+                        volunteerName: volunteer.volunteer_name,
+                        eventTitle: event.name
+                    });
+
+                    await sendEmail({
+                        to: volunteer.volunteer_email,
+                        subject: volunteerEmailContent.subject,
+                        text: volunteerEmailContent.text,
+                        html: volunteerEmailContent.html
+                    });
+
+                    console.log(`✅ Cancellation email sent to volunteer: ${volunteer.volunteer_email}`);
+                } catch (emailError) {
+                    console.error(`⚠️ Failed to send cancellation email to ${volunteer.volunteer_email}:`, emailError.message);
+                }
+            }
+        } else {
+            console.log('ℹ️ No volunteers to notify for this event');
+        }
+
         return res.status(200).json({ 
             success: true, 
             message: "Event deleted successfully",
-            eventId: result.eventId
+            eventId: result.eventId,
+            emailsSent: {
+                organizer: true,
+                volunteers: volunteers.length
+            }
         });
     } catch (err) {
         console.error('Error deleting event:', err);

@@ -1,4 +1,6 @@
 import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion } from "../models/eventModel.js";
+import { sendEmail } from "../services/emailService.js";
+import { eventCreationTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
 import path from "path";
 
@@ -227,6 +229,31 @@ export const createEvent = async (req, res) => {
 
         if (!docsResult.success) {
             console.error("Warning: Failed to add documents to database:", docsResult.message);
+        }
+
+        // Step 6: Send confirmation email to organizer
+        try {
+            const emailContent = eventCreationTemplate({
+                title: name,
+                description: description,
+                location: location,
+                date: isRangeBool ? `${startDate} to ${endDate}` : date,
+                time: commitment, // Using commitment as time indicator
+                secretKey: eventKey,
+                organizerName: contactName
+            });
+
+            await sendEmail({
+                to: contactEmail,
+                subject: emailContent.subject,
+                text: emailContent.text,
+                html: emailContent.html
+            });
+
+            console.log(`✅ Event creation email sent to ${contactEmail}`);
+        } catch (emailError) {
+            // Log error but don't fail the event creation
+            console.error("⚠️ Failed to send event creation email:", emailError.message);
         }
 
         return res.status(201).json({
