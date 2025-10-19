@@ -61,7 +61,10 @@ const Donees = ({ onView, onEdit }) => {
 
   const filtered = donees.filter(d => {
     const matchSearch = d.name.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = filter === 'all' || (filter === 'verified' && d.verified) || (filter === 'unverified' && !d.verified);
+    const matchFilter =
+      filter === 'all' ||
+      (filter === 'active' && d.status === 'Accepted') ||
+      (filter === 'pending' && d.status === 'Pending');
     return matchSearch && matchFilter;
   });
 
@@ -77,8 +80,8 @@ const Donees = ({ onView, onEdit }) => {
           <span style={styles.filterLabel}>Filter:</span>
           <select value={filter} onChange={e => setFilter(e.target.value)} style={styles.select}>
             <option value="all">All</option>
-            <option value="verified">Verified</option>
-            <option value="unverified">Unverified</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
           </select>
         </div>
       </div>
@@ -116,11 +119,11 @@ const Donees = ({ onView, onEdit }) => {
                 </td>
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>
-                    <button style={styles.btnIcon} onClick={() => onEdit(d)}><Edit size={16} /></button>
+                    <button style={styles.btnIcon} onClick={() => onEdit(d)}><Edit size={24} /></button>
                     <button style={styles.btnIcon} onClick={() => handleToggle(d.id)}>
-                      {d.status === 'Accepted' ? <X size={16} /> : <Check size={16} />}
+                      {d.status === 'Accepted' ? <X size={16} /> : <Check size={24} />}
                     </button>
-                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDelete(d.id)}><Trash2 size={16} /></button>
+                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDelete(d.id)}><Trash2 size={24} /></button>
                   </div>
                 </td>
               </tr>

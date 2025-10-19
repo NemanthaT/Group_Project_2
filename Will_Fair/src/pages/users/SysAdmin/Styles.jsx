@@ -1,5 +1,5 @@
 const styles = {
-  dashboard: { fontFamily: 'Arial, sans-serif', fontSize: '30px', minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' },
+  dashboard: { fontFamily: 'Arial, sans-serif', fontSize: '24px', minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' },
   header: { backgroundColor: '#1f2937', color: 'white', padding: '20px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   headerTitle: { margin: 0, fontSize: '24px' },
   headerActions: { display: 'flex', alignItems: 'center', gap: '15px' },
@@ -15,7 +15,7 @@ const styles = {
   statTitle: { margin: 0, fontSize: '20px', color: '#6b7280', fontWeight: '500' },
   statValue: { margin: '5px 0 0 0', fontSize: '24px', fontWeight: 'bold', color: '#1f2937' },
   recentSection: { backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
-  sectionTitle: { margin: '0 0 20px 0', fontSize: '30px', fontWeight: 'bold', color: '#1f2937' },
+  sectionTitle: { margin: '0 0 20px 0', fontSize: '24px', fontWeight: 'bold', color: '#1f2937' },
   sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' },
   table: { width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' },
   th: { padding: '12px', textAlign: 'left', backgroundColor: '#f9fafb', fontWeight: '600', fontSize: '13px', color: '#374151', borderBottom: '1px solid #e5e7eb' },
