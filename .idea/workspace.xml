@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f77b27d7-c7ed-43a7-9e42-dbfc7bfd17ab" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/controllers/eventController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/controllers/eventController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/models/eventModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/models/eventModel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/routes/eventRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Will_Fair_Mobile/Backend/routes/eventRoutes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Will_Fair_Mobile/Frontend/.expo/types/router.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Will_Fair_Mobile/Frontend/.expo/types/router.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Will_Fair_Mobile/Frontend/app/components/customerdrawer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Will_Fair_Mobile/Frontend/app/components/customerdrawer.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,9 +24,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="30Aj4OLjHzeeyGZ1JxEM1H2vF0y" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -36,9 +41,9 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "v1",
+    "git-widget-placeholder": "thisarani02",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/User/OneDrive/Documents/WillFair/Group_Project_2",
+    "last_opened_file_path": "E:/Desktop/Uni/yr3/Project Willfair/Group_Project_2",
     "settings.editor.selected.configurable": "AndroidSdkUpdater"
   }
 }]]></component>

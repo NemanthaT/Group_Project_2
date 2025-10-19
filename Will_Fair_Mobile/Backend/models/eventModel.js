@@ -1,7 +1,7 @@
 // Event Model for Mobile Backend
 const pool = require('../config/db');
 
-// Get all volunteer events with organiser info and attached documents
+// Get all events with organiser info and attached documents
 async function getEvents() {
     try {
         const sql = `
@@ -20,6 +20,7 @@ async function getEvents() {
             e.volunteers_needed,
             e.volunteers_signed,
             e.image_path,
+            e.request_deletion,
             json_build_object(
                 'organiser_id', o.organiser_id,
                 'name', o.name,
@@ -34,7 +35,11 @@ async function getEvents() {
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
-        ORDER BY e.start_date DESC NULLS LAST, e.date DESC NULLS LAST
+        WHERE e.is_approved = true 
+            AND e.request_deletion = false
+            AND e.volunteers_needed > e.volunteers_signed
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
+        ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
         `;
 
         const result = await pool.query(sql);
@@ -78,7 +83,7 @@ async function getEventById(eventId) {
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
-        WHERE e.event_id = $1
+        WHERE e.event_id = $1 AND e.is_approved = true AND e.request_deletion = false
         `;
 
         const result = await pool.query(sql, [eventId]);
@@ -92,7 +97,144 @@ async function getEventById(eventId) {
     }
 }
 
+// Add a new organiser to the database (or return existing one by email)
+async function addOrganiser(organiserData) {
+    try {
+        // First, check if organiser with this email already exists
+        const checkSql = `
+            SELECT organiser_id FROM volunteer_organisers 
+            WHERE email = $1
+        `;
+        
+        const existingOrganiser = await pool.query(checkSql, [organiserData.email]);
+        
+        // If organiser exists, update phone number and return their ID
+        if (existingOrganiser.rows.length > 0) {
+            const organiserId = existingOrganiser.rows[0].organiser_id;
+            
+            // Update phone number to the latest one provided
+            const updateSql = `
+                UPDATE volunteer_organisers 
+                SET phone = $1, updated_at = NOW()
+                WHERE organiser_id = $2
+            `;
+            await pool.query(updateSql, [organiserData.phone, organiserId]);
+            
+            return { success: true, organiserId, existing: true };
+        }
+        
+        // If not, create a new organiser
+        const insertSql = `
+            INSERT INTO volunteer_organisers (name, email, phone)
+            VALUES ($1, $2, $3)
+            RETURNING organiser_id
+        `;
+        
+        const result = await pool.query(insertSql, [
+            organiserData.name,
+            organiserData.email,
+            organiserData.phone
+        ]);
+        
+        const organiserId = result.rows[0].organiser_id;
+        return { success: true, organiserId, existing: false };
+    } catch (err) {
+        console.error("Database error during addOrganiser():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+// Add a new event to the database
+async function addEvent(eventData) {
+    try {
+        const sql = `
+            INSERT INTO volunteer_events (
+                organiser_id,
+                name,
+                is_range,
+                date,
+                start_date,
+                end_date,
+                description,
+                volunteers_needed,
+                location,
+                type,
+                commitment,
+                skills,
+                image_path,
+                is_approved,
+                request_deletion
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [
+            eventData.organiserId,
+            eventData.name,
+            eventData.isRange || false,
+            eventData.date || null,
+            eventData.startDate || null,
+            eventData.endDate || null,
+            eventData.description,
+            eventData.volunteersNeeded || 1,
+            eventData.location,
+            eventData.type,
+            eventData.commitment,
+            eventData.skills,
+            eventData.imagePath || null,
+            false,
+            false
+        ]);
+        
+        const eventId = result.rows[0].event_id;
+        return { success: true, eventId };
+    } catch (err) {
+        console.error("Database error during addEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+// Add documents for an event
+async function addDocuments(eventId, documents) {
+    try {
+        // documents should be an array of objects with { filename, path }
+        if (!Array.isArray(documents) || documents.length === 0) {
+            return { success: true, message: "No documents to add" };
+        }
+        
+        const sql = `
+            INSERT INTO event_documents (event_id, filename, path)
+            VALUES ($1, $2, $3)
+        `;
+        
+        for (const doc of documents) {
+            await pool.query(sql, [eventId, doc.filename, doc.path]);
+        }
+        
+        return { success: true, message: `${documents.length} document(s) added successfully` };
+    } catch (err) {
+        console.error("Database error during addDocuments():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+// Update event image path after file has been moved
+async function updateEventImage(eventId, imagePath) {
+    try {
+        const sql = `UPDATE volunteer_events SET image_path = $1 WHERE event_id = $2`;
+        await pool.query(sql, [imagePath, eventId]);
+        return { success: true };
+    } catch (err) {
+        console.error("Database error during updateEventImage():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
 module.exports = { 
     getEvents, 
-    getEventById 
+    getEventById,
+    addOrganiser,
+    addEvent,
+    addDocuments,
+    updateEventImage
 };
