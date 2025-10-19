@@ -15,6 +15,7 @@ function Donee() {
             <Route path="/form" element={<DonationForm user={user} />} />
             <Route path="/donation/:id/view" element={<DoneeDonationDetail mode="view" />} />
             <Route path="/donation/:id/edit" element={<DoneeDonationDetail mode="edit" />} />
+
         </Routes>
     );
 }
