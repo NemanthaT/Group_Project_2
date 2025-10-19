@@ -17,7 +17,7 @@ const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<LandingPage user={user} />} />
       <Route path="/featured" element={<FeaturedContent user={user} />} />
       <Route path="/loginD/*" element={<Reg />} />
       <Route path="/loginF/*" element={<Reg />} />
