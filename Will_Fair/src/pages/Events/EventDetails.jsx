@@ -2,7 +2,7 @@ import './EventDetails.css';
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import axios from 'axios';
 

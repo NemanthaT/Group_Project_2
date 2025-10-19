@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
@@ -26,7 +26,7 @@ function FeaturedContent() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 9; // 3x3 grid
+  const eventsPerPage = 9;
 
   // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
