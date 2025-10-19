@@ -1,3 +1,30 @@
+// Update donor phone number
+async function updateDonorPhone(donorId, newPhone) {
+  try {
+    await pool.query(
+      `UPDATE donors SET phone = $1 WHERE donor_id = $2`,
+      [newPhone, donorId]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during updateDonorPhone():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+// Update donor password (expects already hashed password)
+async function updateDonorPassword(donorId, newPasswordHash) {
+  try {
+    await pool.query(
+      `UPDATE donors SET password_hash = $1 WHERE donor_id = $2`,
+      [newPasswordHash, donorId]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during updateDonorPassword():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
 import pool from "../db.js";
 
 async function registerDonor(fullName, email, password) {
@@ -31,7 +58,6 @@ async function registerDonor(fullName, email, password) {
   }
 }
 
-// my edits
 // Get total number of donors
 async function getTotalDonors() {
   const res = await pool.query('SELECT COUNT(*) AS total FROM donors');
@@ -83,6 +109,5 @@ async function getDonorProfileById(donorId) {
   }
 }
 
-export { registerDonor, getTotalDonors, getAllDonors, getTotalDonations, getDonorStats, getDonorProfileById };
+export { registerDonor, getTotalDonors, getAllDonors, getTotalDonations, getDonorStats, getDonorProfileById, updateDonorPhone, updateDonorPassword };
 
-// my edits end
