@@ -315,6 +315,81 @@ The WillFair Team
 }
 
 /**
+ * Email template for event approval notification (organizer)
+ */
+function eventApprovalTemplate(eventData) {
+  const { organizerName, eventTitle, eventDate, eventTime, eventLocation } = eventData;
+  
+  return {
+    subject: `Event Approved: ${eventTitle}`,
+    text: `
+Hello ${organizerName},
+
+Great news! Your event "${eventTitle}" has been approved and is now live on WillFair!
+
+Event Details:
+- Title: ${eventTitle}
+- Date: ${eventDate}
+- Time: ${eventTime}
+- Location: ${eventLocation}
+
+Your event is now visible to volunteers and they can start registering. You will receive notifications when volunteers sign up for your event.
+
+Thank you for organizing events on WillFair and making a positive impact in the community!
+
+Best regards,
+The WillFair Team
+    `,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+    .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+    .details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #4CAF50; }
+    .success-badge { background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 15px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #777; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✅ Event Approved!</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong>${organizerName}</strong>,</p>
+      <p>Congratulations! Your event has been approved and is now live on WillFair!</p>
+      
+      <div class="success-badge">
+        🎉 Your event is now visible to volunteers
+      </div>
+      
+      <div class="details">
+        <h3>Event Details:</h3>
+        <p><strong>Title:</strong> ${eventTitle}</p>
+        <p><strong>Date:</strong> ${eventDate}</p>
+        <p><strong>Time:</strong> ${eventTime}</p>
+        <p><strong>Location:</strong> ${eventLocation}</p>
+      </div>
+
+      <p>Volunteers can now view and register for your event. You will receive email notifications when volunteers sign up.</p>
+      
+      <p>Thank you for organizing events on WillFair and making a positive impact in the community!</p>
+    </div>
+    <div class="footer">
+      <p>© 2025 WillFair. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `
+  };
+}
+
+/**
  * Email template for new volunteer notification (organizer)
  */
 function newVolunteerNotificationTemplate(data) {
@@ -385,5 +460,6 @@ export {
   volunteerUnregistrationTemplate,
   eventDeletionOrganizerTemplate,
   eventCancellationVolunteerTemplate,
-  newVolunteerNotificationTemplate
+  newVolunteerNotificationTemplate,
+  eventApprovalTemplate
 };

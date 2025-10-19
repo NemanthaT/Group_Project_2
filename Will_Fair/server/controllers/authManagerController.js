@@ -18,7 +18,8 @@ import {
 import { sendEmail } from "../services/emailService.js";
 import { 
   eventDeletionOrganizerTemplate, 
-  eventCancellationVolunteerTemplate 
+  eventCancellationVolunteerTemplate,
+  eventApprovalTemplate 
 } from "../services/emailTemplates.js";
 import pool from "../db.js";
 
@@ -129,6 +130,20 @@ export const approveEventController = async (req, res) => {
             });
         }
         
+        // Get event details before approval for email
+        const eventResult = await getEventById(id);
+        
+        if (!eventResult.success) {
+            return res.status(404).json({ 
+                success: false, 
+                error: "Event not found" 
+            });
+        }
+        
+        const event = eventResult.event;
+        const organizerInfo = event.organiser;
+        
+        // Approve the event
         const result = await approveEvent(id);
         
         if (!result.success) {
@@ -138,10 +153,50 @@ export const approveEventController = async (req, res) => {
             });
         }
 
+        // Send approval email to organizer
+        try {
+            // Format date and time
+            let eventDate = 'N/A';
+            let eventTime = 'N/A';
+            
+            if (event.is_range && event.start_date && event.end_date) {
+                eventDate = `${new Date(event.start_date).toLocaleDateString()} - ${new Date(event.end_date).toLocaleDateString()}`;
+            } else if (event.date) {
+                eventDate = new Date(event.date).toLocaleDateString();
+            }
+            
+            // Extract time if available (assuming time is part of date field or separate)
+            if (event.date) {
+                const dateObj = new Date(event.date);
+                eventTime = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            const approvalEmailContent = eventApprovalTemplate({
+                organizerName: organizerInfo.name,
+                eventTitle: event.name,
+                eventDate: eventDate,
+                eventTime: eventTime,
+                eventLocation: event.location || 'N/A'
+            });
+
+            await sendEmail({
+                to: organizerInfo.email,
+                subject: approvalEmailContent.subject,
+                text: approvalEmailContent.text,
+                html: approvalEmailContent.html
+            });
+
+            console.log(`✅ Event approval email sent to organizer: ${organizerInfo.email}`);
+        } catch (emailError) {
+            console.error('⚠️ Failed to send event approval email to organizer:', emailError.message);
+            // Don't fail the request if email fails
+        }
+
         return res.status(200).json({ 
             success: true, 
             message: "Event approved successfully",
-            eventId: result.eventId
+            eventId: result.eventId,
+            emailSent: true
         });
     } catch (err) {
         console.error('Error approving event:', err);
