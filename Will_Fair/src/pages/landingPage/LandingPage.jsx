@@ -11,8 +11,9 @@ function LandingPage() {
   // Initialize the useNavigate hook from react-router-dom
   const navigate = useNavigate();
 
-  const goToFeatured = () => {
-    navigate("/featured");
+  const goToEvents = () => {
+    window.scrollTo(0, 0);
+    navigate("/events");
   };
 
   const [volunteerOpportunities] = useState([
@@ -138,7 +139,7 @@ function LandingPage() {
             ))}
           </div>
           <div className="see-more">
-            <button className="btn-small1" onClick={goToFeatured}>
+            <button className="btn-small1" onClick={goToEvents}>
               See more
             </button>
           </div>

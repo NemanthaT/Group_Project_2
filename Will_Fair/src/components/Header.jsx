@@ -71,7 +71,7 @@ function Header({ user }) {
             <a href="/sysadmin">Market Place</a>
           </li>
           <li>
-            <a href="/Events">Volunteer</a>
+            <a href="/Events">Events</a>
           </li>
           <li>
             <a href="/regManager">Contact Us</a>

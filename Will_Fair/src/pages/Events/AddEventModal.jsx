@@ -1,42 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AddEventModal.css';
+import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
-// Option lists
-const TYPE_OPTIONS = [
-  { value: 'environment', label: 'Environment' },
-  { value: 'teaching', label: 'Teaching' },
-  { value: 'caregiving', label: 'Caregiving' },
-  { value: 'construction', label: 'Construction' },
-  { value: 'admin', label: 'Administration' }
-];
-
-const COMMITMENT_OPTIONS = [
-  { value: 'one-time', label: 'One-time' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'flexible', label: 'Flexible' }
-];
-
-const LOCATION_OPTIONS = [
-  { value: 'Colombo', label: 'Colombo' },
-  { value: 'Galle', label: 'Galle' },
-  { value: 'Kandy', label: 'Kandy' },
-  { value: 'Matara', label: 'Matara' },
-  { value: 'Yala', label: 'Yala' }
-];
-
-const SKILLS_OPTIONS = [
-  { value: 'teaching', label: 'Teaching' },
-  { value: 'caregiving', label: 'Care-Giving' },
-  { value: 'manual', label: 'Manual Labour' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'none', label: 'No Experience' }
-];
-
-export default function AddEventModal({ isOpen, onClose, onSuccess }) {
+export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const [form, setForm] = useState({
     name: '',
     isRange: false,
@@ -79,8 +47,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
     // clear image-related error
     setErrors(prev => ({ ...prev, image: null }));
   };
-
-
 
   const handleDocumentUpload = (e) => {
     const files = Array.from(e.target.files || []);
@@ -257,12 +223,10 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
 
     console.log('Form Data:', formData);
 
-    try {
-      await axios.post('http://localhost:5000/events/createEvent', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success('Event submitted for approval!');
-      
+    const result = await onSubmit(formData);
+
+    // Only reset form if submission was successful
+    if (result.success) {
       // Reset form and files
       setForm({
         name: '',
@@ -287,16 +251,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
       setImagePreview(null);
       setDocumentFiles([]);
       setErrors({});
-      
-      // Refresh the events list
-      if (onSuccess) {
-        onSuccess();
-      }
-      
-      onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to submit event. Please try again.');
     }
   };
 
@@ -324,7 +278,6 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <ToastContainer />
       <div className="modal-card">
         <div className="modal-header">
           <h2>Add Event</h2>
@@ -353,7 +306,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
               </div>
             </div>
 
-                {!form.isRange ? (
+            {!form.isRange ? (
               <>
                 <input ref={el => fieldRefs.current.date = el} type="date" value={form.date} onChange={(e) => updateField('date', e.target.value)} required />
                 {renderError('date')}
@@ -372,8 +325,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
           <div className="form-row">
             <label>Location</label>
             <select ref={el => fieldRefs.current.location = el} value={form.location} onChange={(e) => updateField('location', e.target.value)}>
-              <option value="">Location</option>
-              {LOCATION_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.location, 'Location').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -383,8 +335,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
           <div className="form-row">
             <label>Volunteer Type</label>
             <select ref={el => fieldRefs.current.type = el} value={form.type} onChange={(e) => updateField('type', e.target.value)}>
-              <option value="">Volunteer Type</option>
-              {TYPE_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.type, 'Volunteer Type').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -394,8 +345,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
           <div className="form-row">
             <label>Time Commitment</label>
             <select ref={el => fieldRefs.current.commitment = el} value={form.commitment} onChange={(e) => updateField('commitment', e.target.value)}>
-              <option value="">Time Commitment</option>
-              {COMMITMENT_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.commitment, 'Time Commitment').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -405,8 +355,7 @@ export default function AddEventModal({ isOpen, onClose, onSuccess }) {
           <div className="form-row">
             <label>Skills</label>
             <select ref={el => fieldRefs.current.skills = el} value={form.skills} onChange={(e) => updateField('skills', e.target.value)}>
-              <option value="">Skills Needed</option>
-              {SKILLS_OPTIONS.map(opt => (
+              {withPlaceholder(EVENT_OPTIONS.skills, 'Skills Needed').map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>

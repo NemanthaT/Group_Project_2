@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { getEventsController, createEvent } from "../controllers/eventController.js";
+import { getEventById } from "../models/eventModel.js";
 
 const router = express.Router();
 
@@ -41,6 +42,13 @@ router.post('/createEvent', eventUpload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'documents', maxCount: 5 }
 ]), createEvent);
+
+// GET event by ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  const result = await getEventById(id);
+  res.json(result);//returns { success: true, event: {...} } or { success: false, message: "..." }
+});
 
 //public Routes
 router.get('/', getEventsController);
