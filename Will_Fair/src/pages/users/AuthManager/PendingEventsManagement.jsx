@@ -153,18 +153,20 @@ const PendingEventsManagement = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="tab-navigation">
+        <div className="pending-events-tab-navigation">
           <button 
-            className={`tab-button ${activeTab === 'approval' ? 'active' : ''}`}
+            className={`pending-events-tab-button ${activeTab === 'approval' ? 'pending-events-tab-active' : ''}`}
             onClick={() => setActiveTab('approval')}
           >
-            📋 Pending Approval
+            <span className="tab-icon">📋</span>
+            Pending Approval
           </button>
           <button 
-            className={`tab-button ${activeTab === 'deletion' ? 'active' : ''}`}
+            className={`pending-events-tab-button ${activeTab === 'deletion' ? 'pending-events-tab-active' : ''}`}
             onClick={() => setActiveTab('deletion')}
           >
-            🗑️ Pending Deletion
+            <span className="tab-icon">🗑️</span>
+            Pending Deletion
           </button>
         </div>
 
