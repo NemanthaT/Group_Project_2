@@ -18,7 +18,7 @@ const styles = {
   sectionTitle: { margin: '0 0 20px 0', fontSize: '24px', fontWeight: 'bold', color: '#1f2937' },
   sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' },
   table: { width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' },
-  th: { padding: '12px', textAlign: 'left', backgroundColor: '#f9fafb', fontWeight: '600', fontSize: '13px', color: '#374151', borderBottom: '1px solid #e5e7eb' },
+  th: { padding: '12px', textAlign: 'left', backgroundColor: '#f9fafb', fontWeight: '600', fontSize: '20px', color: '#374151', borderBottom: '1px solid #e5e7eb' },
   td: { padding: '12px', borderBottom: '1px solid #e5e7eb', fontSize: '20px', color: '#1f2937' },
   tr: { transition: 'background-color 0.2s' },
   badge: { padding: '4px 12px', borderRadius: '12px', fontSize: '20px', fontWeight: '500', display: 'inline-block' },
