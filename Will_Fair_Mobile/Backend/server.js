@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Create uploads directory if it doesn't exist
 const uploadsDir = 'uploads';
 if (!fs.existsSync(uploadsDir)) {
@@ -65,260 +68,24 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "Backend is working!" });
 });
 
-// Donor registration endpoint
-app.post('/api/donor_reg', async (req, res) => {
-  try {
-    const { fullName, email, password } = req.body;
-    
-    // Validate required fields
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+// Donor registration route (MVC)
+const donorRoutes = require('./routes/donorRoutes');
+const doneeRoutes = require('./routes/doneeRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const volunteerRoutes = require('./routes/volunteerRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
+app.use('/api', donorRoutes);
+app.use('/api', doneeRoutes);
+app.use('/api', categoryRoutes);
+app.use('/api', volunteerRoutes);
+app.use('/api', eventRoutes);
 
-    // Split fullName into first_name and last_name
-    const nameParts = fullName.trim().split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(' ') || '';
+// ...category endpoints moved to MVC routes...
+app.use('/api', donationRoutes); // <-- add this line
 
-    // Check if email already exists
-    const existingUser = await pool.query(
-      'SELECT email FROM donors WHERE email = $1',
-      [email.toLowerCase()]
-    );
 
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-    
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Insert into database
-    const result = await pool.query(
-      'INSERT INTO donors (email, password_hash, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING donor_id',
-      [email.toLowerCase(), hashedPassword, firstName, lastName]
-    );
-    
-    res.status(201).json({ 
-      message: 'Donor created successfully', 
-      donorId: result.rows[0].donor_id 
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Individual Donee Registration Endpoint (Uses Phone)
-app.post('/api/donee_ind_reg', upload.single('proofDocument'), async (req, res) => {
-  try {
-    console.log('=== Individual Donee Registration ===');
-    console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
-    
-    const { fullName, contactno, password, category } = req.body;
-    if (!fullName || !category || !contactno || !password) {
-      console.log('Missing required fields');
-      return res.status(400).json({ 
-        message: 'All fields are required',
-        received: { 
-          fullName: !!fullName, 
-          category: !!category,
-          contactno: !!contactno, 
-          password: !!password 
-        }
-      });
-    }
-
-    if (!/^\d{10}$/.test(contactno)) {
-      console.log('Invalid phone number:', contactno);
-      return res.status(400).json({ 
-        message: 'Please enter a valid phone number (10 digits)' 
-      });
-    }
-
-    const nameParts = fullName.trim().split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-    console.log('Parsed names:', { firstName, lastName });
-
-    const existingUser = await pool.query(
-      'SELECT phone FROM donees WHERE phone = $1',
-      [contactno]
-    );
-
-    if (existingUser.rows.length > 0) {
-      console.log('Phone number already exists:', contactno);
-      return res.status(400).json({ 
-        message: 'Phone number already registered' 
-      });
-    }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Password hashed successfully');
-    
-    const documentPath = req.file ? req.file.path : null;
-    console.log('Document path:', documentPath);
-    
-    const result = await pool.query(
-      'INSERT INTO donees (password_hash, first_name, last_name, phone, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING donee_id',
-      [hashedPassword, firstName, lastName, contactno, category, 'individual', documentPath]
-    );
-    
-    console.log('Database insert successful:', result.rows[0]);
-    
-    res.status(201).json({ 
-      message: 'Individual donee created successfully', 
-      doneeId: result.rows[0].donee_id,
-      documentUploaded: !!req.file
-    });
-    
-  } catch (error) {
-    console.error('Individual donee registration error:', error);
-    res.status(500).json({ 
-      message: 'Server error',
-      error: error.message 
-    });
-  }
-});
-
-// Representative Donee Registration Endpoint (Uses Email - FIXED)
-app.post('/api/donee_rep_reg', upload.single('proofDocument'), async (req, res) => {
-  try {
-    console.log('=== Individual Donee Registration ===');
-    console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
-    
-    const { fullName, contactno, password, category } = req.body;
-
-    if (!fullName || !category || !contactno || !password) {
-      console.log('Missing required fields');
-      return res.status(400).json({ 
-        message: 'All fields are required',
-        received: { 
-          fullName: !!fullName, 
-          category: !!category,
-          contactno: !!contactno, 
-          password: !!password 
-        }
-      });
-    }
-
-    if (!/^\d{10,15}$/.test(contactno)) {
-      console.log('Invalid phone number:', contactno);
-      return res.status(400).json({ 
-        message: 'Please enter a valid phone number (10-15 digits)' 
-      });
-    }
-
-    const nameParts = fullName.trim().split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-    console.log('Parsed names:', { firstName, lastName });
-
-    const existingUser = await pool.query(
-      'SELECT phone FROM donees WHERE phone = $1',
-      [contactno]
-    );
-
-    if (existingUser.rows.length > 0) {
-      console.log('Phone number already exists:', contactno);
-      return res.status(400).json({ 
-        message: 'Phone number already registered' 
-      });
-    }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Password hashed successfully');
-    
-    const documentPath = req.file ? req.file.path : null;
-    console.log('Document path:', documentPath);
-    
-    const result = await pool.query(
-      'INSERT INTO donees (password_hash, first_name, last_name, phone, category, type, proof_document_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING donee_id',
-      [hashedPassword, firstName, lastName, contactno, category, 'representative', documentPath]
-    );
-    
-    console.log('Database insert successful:', result.rows[0]);
-    
-    res.status(201).json({ 
-      message: 'Representative donee created successfully', 
-      doneeId: result.rows[0].donee_id,
-      documentUploaded: !!req.file
-    });
-    
-  } catch (error) {
-    console.error('Representative donee registration error:', error);
-    res.status(500).json({ 
-      message: 'Server error',
-      error: error.message 
-    });
-  }
-});
-
-// Add this right after the Donee Login endpoint definition:
-
-// Donee Login endpoint (Phone-based)
-app.post('/api/donee_login', async (req, res) => {
-  try {
-    console.log('Donee login request received:', req.body);
-    
-    const { contactno, password } = req.body;
-    
-    // Validate required fields
-    if (!contactno || !password) {
-      return res.status(400).json({ 
-        message: 'Phone number and password are required'
-      });
-    }
-
-    // Validate phone number format
-    if (!/^\d{10,15}$/.test(contactno)) {
-      return res.status(400).json({ 
-        message: 'Please enter a valid phone number (10-15 digits)' 
-      });
-    }
-
-    // Check if donee exists in database
-    const doneeResult = await pool.query(
-      'SELECT donee_id, phone, password_hash, first_name, last_name, type FROM donees WHERE phone = $1',
-      [contactno]
-    );
-
-    if (doneeResult.rows.length === 0) {
-      return res.status(401).json({ message: 'Invalid phone number or password' });
-    }
-
-    const donee = doneeResult.rows[0];
-
-    // Compare password with hashed password
-    const isValidPassword = await bcrypt.compare(password, donee.password_hash);
-
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Invalid phone number or password' });
-    }
-
-    // Login successful
-    res.status(200).json({
-      message: 'Login successful',
-      donee: {
-        id: donee.donee_id,
-        phone: donee.phone,
-        firstName: donee.first_name,
-        lastName: donee.last_name,
-        type: donee.type
-      }
-    });
-
-  } catch (error) {
-    console.error('Donee login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-console.log('✅ Donee login endpoint registered');
+// ...donee endpoints moved to MVC routes...
 
 app.post('/api/login', async (req, res) => {
   try {
@@ -369,6 +136,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
+
+// ...volunteer endpoints moved to MVC routes...
+
 // Replace the entire server startup section (from line 400 onwards) with this:
 
 // =================== ERROR HANDLING ===================
@@ -402,6 +173,11 @@ app.listen(PORT, () => {
   console.log(`  🏢 POST http://localhost:${PORT}/api/donee_rep_reg`);
   console.log(`  🔐 POST http://localhost:${PORT}/api/donee_login`);
   console.log(`  🔑 POST http://localhost:${PORT}/api/login`);
+  console.log(`  👤 POST http://localhost:${PORT}/api/volunteer_ind_reg`);
+  console.log(`  🏢 POST http://localhost:${PORT}/api/volunteer_rep_reg`);
+  console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
+  console.log(`  📅 GET  http://localhost:${PORT}/api/events`);
+  console.log(`  📋 GET  http://localhost:${PORT}/api/events/:id`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
-  
+

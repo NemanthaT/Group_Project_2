@@ -16,6 +16,7 @@ import { donationRequestsStyles as styles } from "../../assets/styles/donationre
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { router } from 'expo-router';
 import BackButton from '../components/backbutton'
+import { useBackHandlerWithConfirmation } from '../hooks/useBackHandler';
 
 
 
@@ -27,6 +28,11 @@ const DonationForm = () => {
   const [agreed, setAgreed] = useState(false);
   const navigation = useNavigation(); // ← Hook for drawer access
   
+  // Check if form has any data
+  const hasUnsavedChanges = quantity !== '' || location !== '';
+  
+  // Enable hardware back button with confirmation
+  useBackHandlerWithConfirmation(hasUnsavedChanges);
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -76,7 +82,7 @@ const DonationForm = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
-            <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+            <View style={[styles.header, { backgroundColor: "#7B61FF" }]}>
                <TouchableOpacity
                           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
                           style={{
@@ -101,7 +107,7 @@ const DonationForm = () => {
               <Text style={styles.headerSubtitle}>
                 Connect with generous donors who want to help your cause
               </Text>
-            </LinearGradient>
+            </View>
 
       {/* Instruction Box */}
       <View style={styles.instructionBox}>

@@ -1,3 +1,4 @@
+import { API_BASE } from '../constants/API';
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -140,7 +141,7 @@ const DoneeOrg = ({ visible, onClose, onLoginPress }) => {
 
       console.log('Submitting form data...');
 
-      const response = await fetch('http://192.168.182.72:5000/api/donee_ind_reg', {
+  const response = await fetch(`${API_BASE}/api/donee_ind_reg`, {
         method: 'POST',
         body: formData,
       });
