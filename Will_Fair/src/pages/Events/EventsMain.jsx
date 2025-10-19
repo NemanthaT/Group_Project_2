@@ -342,13 +342,6 @@ function FeaturedContent() {
 
       <section className="programs">
         <div className="programs-container">
-          {/* Pagination info */}
-          {sortedOpportunities.length > 0 && (
-            <div className="pagination-info">
-              Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
-            </div>
-          )}
-
           <div className="programs-grid">
             {currentEvents.map(opp => (
               <div className="program-card" key={opp.id}>
@@ -409,6 +402,13 @@ function FeaturedContent() {
               </div>
             ))}
           </div>
+
+          {/* Pagination info */}
+          {sortedOpportunities.length > 0 && (
+            <div className="pagination-info">
+              Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
+            </div>
+          )}
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
