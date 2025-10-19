@@ -214,8 +214,8 @@ function EventDetails({ opportunities = [] }) {
         <VolunteerEventModal
           isOpen={showVolunteerModal}
           onClose={() => setShowVolunteerModal(false)}
-          eventId={event.id}          // ✅ use the mapped field "id"
-          eventTitle={event.title} // ✅ use the mapped field "title"
+          eventId={event.id}          
+          eventTitle={event.title} 
         />
       )}
 
