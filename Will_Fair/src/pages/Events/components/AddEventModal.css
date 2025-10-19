@@ -116,9 +116,9 @@
 .tooltip-text {
   position: absolute;
   white-space: nowrap;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(100% + 8px);
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
   background: #0f172a;
   color: #fff;
   padding: 6px 8px;
@@ -127,7 +127,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 120ms ease-in-out, transform 120ms ease-in-out;
-  transform-origin: bottom center;
+  transform-origin: left center;
 }
 
 /* inline field error tooltip / hint */
@@ -146,7 +146,7 @@
 .tooltip:focus-within .tooltip-text {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(-4px);
+  transform: translateY(-50%) translateX(4px);
 }
 
 /* File/Image upload styles */
@@ -318,6 +318,18 @@
   border-color: #4b5563;
   color: #4b5563;
   transform: translateY(-2px);
+}
+
+.modal-form .form-actions .btn-danger-submit {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.modal-form .form-actions .btn-danger-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
 }
 
 .toggle-inline {
