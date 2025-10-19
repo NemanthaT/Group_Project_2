@@ -86,14 +86,14 @@ function Header({ user }) {
           <li>
             <a href="/#home">Home</a>
           </li>
-          <li>
+          {/*<li>
             <a href="/sysadmin">Market Place</a>
-          </li>
+          </li>*/}
           <li>
             <a href="/Events">Events</a>
           </li>
           <li>
-            <a href="/regManager">Contact Us</a>
+            <a href="/#contact">Contact Us</a>
           </li>
           <li>
             <a href="/#about">About</a>

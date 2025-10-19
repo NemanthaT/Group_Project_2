@@ -110,7 +110,7 @@ const Donees = ({ onView, onEdit }) => {
                 </td>
                 <td style={styles.td}>
                   {d.documents.length > 0 ? (
-                    <a href={d.documents[0]} target="_blank" rel="noopener noreferrer" style={styles.btnLink}>
+                    <a href={'http://localhost:5173/'+d.documents[0]} target="_blank" rel="noopener noreferrer" style={styles.btnLink}>
                       View Document
                     </a>
                   ) : (
