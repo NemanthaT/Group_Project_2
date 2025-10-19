@@ -1,4 +1,62 @@
-import { registerDonor, getAllDonors } from "../models/donorModel.js";
+import { registerDonor, getDonorProfileById, updateDonorPhone, updateDonorPassword, getAllDonors } from "../models/donorModel.js";
+import bcrypt from "bcryptjs";
+// Update donor phone number
+export const updatePhone = async (req, res) => {
+  const { donorId, phone } = req.body;
+  if (!donorId || !phone) {
+    return res.status(400).json({ success: false, error: "Missing donorId or phone" });
+  }
+  try {
+    const result = await updateDonorPhone(donorId, phone);
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(500).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error("Error in updatePhone:", err);
+    res.status(500).json({ success: false, error: "Server error while updating phone" });
+  }
+};
+
+// Update donor password
+export const updatePassword = async (req, res) => {
+  const { donorId, newPassword } = req.body;
+  if (!donorId || !newPassword) {
+    return res.status(400).json({ success: false, error: "Missing donorId or newPassword" });
+  }
+  try {
+    // Hash the new password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const result = await updateDonorPassword(donorId, hashedPassword);
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(500).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error("Error in updatePassword:", err);
+    res.status(500).json({ success: false, error: "Server error while updating password" });
+  }
+};
+// Get donor profile by donor ID
+export const getDonorProfile = async (req, res) => {
+  const donorId = req.query.donorId;
+  if (!donorId) {
+    return res.status(400).json({ success: false, error: "Missing donorId" });
+  }
+  try {
+    const donor = await getDonorProfileById(donorId);
+    if (!donor) {
+      return res.status(404).json({ success: false, error: "Donor not found" });
+    }
+    res.status(200).json({ success: true, donor });
+  } catch (err) {
+    console.error("Error in getDonorProfile:", err);
+    res.status(500).json({ success: false, error: "Server error while fetching donor profile" });
+  }
+};
 
 export const signUpDonor = async (req, res) => {
   const { fullName, email, password } = req.body;
