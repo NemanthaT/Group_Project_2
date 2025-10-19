@@ -66,7 +66,7 @@ const Monetary = () => {
       setLoadingCategories(true);
       try {
         // Use local backend. On Android emulator replace localhost with 10.0.2.2
-        const base = Platform.OS === "android" ? "http://192.168.122.72:5000" : "http://localhost:5000";
+        const base = Platform.OS === "android" ? "http://10.36.223.72:5000" : "http://localhost:5000";
         const url = `${base}/api/donations/monetaryCategories`;
 
         const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -252,7 +252,7 @@ const Monetary = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+      <LinearGradient colors={["#7B61FF", "#7B61FF"]} style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           style={{ position: "absolute", top: 10, left: 10, zIndex: 5 }}
