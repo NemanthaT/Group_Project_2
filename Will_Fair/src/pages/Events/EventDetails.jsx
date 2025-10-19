@@ -1,0 +1,180 @@
+import './EventDetails.css';
+import FeaturedBg from '@/assets/images/featuredBg.png';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import AddEventModal from './AddEventModal';
+import VolunteerEventModal from './VolunteerEventModal';
+import axios from 'axios';
+
+function EventDetails({ opportunities = [] }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [event, setEvent] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+
+  const [loadingEvent, setLoadingEvent] = useState(true);
+  const [eventError, setEventError] = useState(null);
+
+  // Helper to ensure image URL is absolute
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return FeaturedBg;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`;
+  };
+
+
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      setLoadingEvent(true);
+      setEventError(null);
+      try {
+        const res = await axios.get(`http://localhost:5000/events/${id}`);
+        const data = res.data;
+
+        if (!data || !data.success) throw new Error(data?.message || 'Failed to load event');
+        const eventData = data.event;
+
+        // Map the event here
+        const mappedEvent = {
+          id: eventData.event_id,
+          title: eventData.name,
+          description: eventData.description,
+          type: eventData.type,
+          commitment: eventData.commitment,
+          location: eventData.location,
+          skills: eventData.skills,
+          volunteersNeeded: eventData.volunteers_needed,
+          volunteersSigned: eventData.volunteers_signed,
+          organizer: eventData.organiser?.name,
+          organizerEmail: eventData.organiser?.email,  // <-- NEW
+          date: eventData.date,                         // <-- NEW
+          startDate: eventData.start_date,              // <-- NEW
+          endDate: eventData.end_date,                  // <-- NEW
+          image: eventData.image_path
+        };
+
+
+        setEvent(mappedEvent);
+
+      } catch (err) {
+        setEventError(err.message || 'Error loading event details');
+      } finally {
+        setLoadingEvent(false);
+      }
+    };
+
+    fetchEventDetails();
+  }, [id]);
+
+  if (loadingEvent) return <div className="event-details not-found">Loading event...</div>;
+  if (eventError) return <div className="event-details not-found">{eventError}</div>;
+
+  return (
+    <div className="event-details">
+      {/* Banner */}
+      <div className="event-title-banner">
+        <div className="container">
+          <div className="event-title-content">
+            <h1>{event.title}</h1>
+            <p>{event.location}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Body Section */}
+      <div className="event-body">
+        <div
+          className="event-image"
+          style={{
+            backgroundImage: `url(${getImageUrl(event.image)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        ></div>
+
+        <div className="event-info">
+          {/* <div className="event-header">
+            <h2>{event.organizer}</h2>
+          </div> */}
+
+
+          <div className="event-date">
+            Date: {event.startDate && event.endDate
+              ? `${new Date(event.startDate).toLocaleDateString()} – ${new Date(event.endDate).toLocaleDateString()}`
+              : event.date
+                ? new Date(event.date).toLocaleDateString()
+                : 'TBA'}
+          </div>
+
+          <div className="progress-row">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{
+                  width: `${(event.volunteersSigned / event.volunteersNeeded) * 100}%`
+                }}
+              ></div>
+            </div>
+            <div className="funding-info">
+              <div>
+                <div className="funding-label">Volunteers Signed:</div>
+                <div className="funding-amount">{event.volunteersSigned}</div>
+              </div>
+              <div>
+                <div className="funding-label">Volunteers Needed:</div>
+                <div className="funding-amount">{event.volunteersNeeded}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="event-description">
+            <span className="label">Description: </span>
+            <span className="content">{event.description}</span>
+          </div>
+
+
+          {/* Organizer */}
+          <div className="event-organizer">
+            <span className="label">Event Organizer: </span>
+            <span className="content">{event.organizer} – {event.organizerEmail}</span>
+          </div>
+
+          <div className="event-actions">
+            <button
+              className="btn btn-outline"
+              onClick={() => navigate('/Events')}
+            >
+              Back
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowVolunteerModal(true)}
+            >
+              Volunteer
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      {showAddModal && (
+        <AddEventModal onClose={() => setShowAddModal(false)} />
+      )}
+
+      {showVolunteerModal && (
+        <VolunteerEventModal
+          isOpen={showVolunteerModal}
+          onClose={() => setShowVolunteerModal(false)}
+          event={event}
+        />
+      )}
+    </div>
+  );
+}
+
+export default EventDetails;
