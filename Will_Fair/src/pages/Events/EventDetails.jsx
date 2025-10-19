@@ -86,7 +86,7 @@ function EventDetails({ opportunities = [] }) {
       <p className="event-details-loading-text">Loading event details...</p>
     </div>
   );
-  
+
   if (eventError) return (
     <div className="event-details-error-container">
       <p className="event-details-error-text">{eventError}</p>
@@ -212,7 +212,8 @@ function EventDetails({ opportunities = [] }) {
         <VolunteerEventModal
           isOpen={showVolunteerModal}
           onClose={() => setShowVolunteerModal(false)}
-          event={event}
+          eventId={event.id}          // ✅ use the mapped field "id"
+          eventTitle={event.title} // ✅ use the mapped field "title"
         />
       )}
     </div>

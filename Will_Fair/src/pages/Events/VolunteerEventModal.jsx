@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './VolunteerEventModal.css';
+import axios from 'axios';
 
-export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Community Event" }) {
+export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Community Event", eventId }) {
+
   const [form, setForm] = useState({
-    name: '',
-    email: ''
+    name: "",
+    email: "",
+    contact: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -13,7 +16,7 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setForm({ name: '', email: '' });
+      setForm({ name: "", email: "", contact: "" });
       setErrors({});
     }
   }, [isOpen]);
@@ -22,105 +25,118 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     setForm(prev => ({ ...prev, [key]: value }));
     setErrors(prev => ({ ...prev, [key]: null }));
   };
-
-  const renderError = (key) => {
-    if (!errors[key]) return null;
-    return <div className="field-error">{errors[key]}</div>;
+  //Validation of fields
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.contact.trim()) newErrors.contact = "Contact number is required";
+    if (!form.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(form.email))
+      newErrors.email = "Enter a valid email";
+    return newErrors;
   };
+
+  // const renderError = (key) => {
+  //   if (!errors[key]) return null;
+  //   return <div className="field-error">{errors[key]}</div>;
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = {};
-
-    // Validate only email (required)
-    if (!form.email || !form.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = 'Enter a valid email address';
-    }
-
+    const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      const firstKey = Object.keys(newErrors)[0];
-      setTimeout(() => {
-        const el = fieldRefs.current[firstKey];
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (el && typeof el.focus === 'function') el.focus();
-      }, 50);
       return;
     }
 
+    if (!eventId) {
+    alert("Missing event ID. Please refresh the page and try again.");
+    return; // stop submission
+  }
+
     try {
-      // TODO: replace with backend call
+      await axios.post("http://localhost:5000/api/volunteers", {
+        event_id: eventId,
+        volunteer_name: form.name,
+        volunteer_email: form.email,
+        volunteer_phone: form.contact,
+      });
+
       alert(`Thank you for volunteering for ${eventTitle}!`);
-      setForm({ name: '', email: '' });
+      setForm({ name: "", email: "", contact: "" });
       onClose();
     } catch (err) {
       console.error(err);
-      alert('Failed to submit. Please try again.');
+      if (err.response?.data?.error)
+        alert(err.response.data.error);
+      else alert("Submission failed. Please try again.");
     }
   };
 
-  // Prevent background scroll when open
-  useEffect(() => {
-    if (!isOpen) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = original; };
-  }, [isOpen]);
+  // // Prevent background scroll when open
+  // useEffect(() => {
+  //   if (!isOpen) return;
+  //   const original = document.body.style.overflow;
+  //   document.body.style.overflow = 'hidden';
+  //   return () => { document.body.style.overflow = original; };
+  // }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
+    <div
+      className="modal-overlay"
+      onClick={(e) => e.target.className === "modal-overlay" && onClose()}
+    >
       <div className="modal-card">
         <div className="modal-header">
           <h2>Volunteer for this Event</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
-        <form className="modal-form" onSubmit={handleSubmit} noValidate>
+        <form className="modal-form" onSubmit={handleSubmit}>
           <div className="form-row">
-            <label>Your Name <span style={{ color: '#94a3b8' }}>(optional)</span></label>
+            <label>Name</label>
             <input
-              ref={el => fieldRefs.current.name = el}
               type="text"
-              placeholder="John Doe"
               value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => updateField("name", e.target.value)}
+              required
             />
+            {errors.name && <div className="field-error">{errors.name}</div>}
           </div>
 
           <div className="form-row">
-            <label>Email Address</label>
+            <label>Contact Number</label>
             <input
-              ref={el => fieldRefs.current.email = el}
-              type="email"
-              placeholder="example@gmail.com"
-              value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
+              type="text"
+              value={form.contact}
+              onChange={(e) => updateField("contact", e.target.value)}
               required
             />
-            {renderError('email')}
+            {errors.contact && <div className="field-error">{errors.contact}</div>}
+          </div>
+
+          <div className="form-row">
+            <label>Email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => updateField("email", e.target.value)}
+              required
+            />
+            {errors.email && <div className="field-error">{errors.email}</div>}
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn btn-primary">Volunteer</button>
-          </div>
-
-          {/* Motivational description / dummy content */}
-          <div className="volunteer-description">
-            <h3>Why Volunteer?</h3>
-            <p>
-              Every helping hand matters! 🌱  
-              So far, <strong>126 people</strong> have volunteered for this event — each bringing us one step
-              closer to making a real difference in the community.
-            </p>
-            <p>
-              By volunteering, you not only support a cause but also grow, connect, and inspire others.
-              Let’s build a kinder world — together!
-            </p>
+            <button type="button" className="btn btn-outline" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Volunteer
+            </button>
           </div>
         </form>
       </div>
