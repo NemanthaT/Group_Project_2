@@ -2,7 +2,7 @@ import express from "express";
 import { getAdminOverview } from "../controllers/adminController.js";
 import { getDonorsAdmin } from "../controllers/donorController.js";
 import { getDoneesAdmin } from "../controllers/doneeController.js";
-import { getCategoriesAdmin, addCategoryAdmin } from "../controllers/categoryController.js";
+import { getCategoriesAdmin, addCategoryAdmin, toggleCategoryAdmin, deleteCategoryAdmin, editCategoryAdmin } from "../controllers/categoryController.js";
 
 const router = express.Router();
 
@@ -16,5 +16,11 @@ router.get("/donees", getDoneesAdmin);
 router.get("/categories", getCategoriesAdmin);
 // POST /admin/categories - add a new category
 router.post("/categories", addCategoryAdmin);
+// PATCH /admin/categories/:id/toggle - toggle category status
+router.patch("/categories/:id/toggle", toggleCategoryAdmin);
+// DELETE /admin/categories/:id - delete a category
+router.delete("/categories/:id", deleteCategoryAdmin);
+// PUT /admin/categories/:id - edit a category
+router.put("/categories/:id", editCategoryAdmin);
 
 export default router;

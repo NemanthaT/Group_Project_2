@@ -49,3 +49,48 @@ export async function addCategoryAdmin(req, res) {
     res.status(500).json({ success: false, error: "Failed to add category" });
   }
 }
+
+// PATCH /admin/categories/:id/toggle - Toggle category status
+export async function toggleCategoryAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `UPDATE donation_categories SET status = CASE WHEN status = 'Active' THEN 'Inactive' ELSE 'Active' END WHERE category_id = $1 RETURNING status`,
+      [id]
+    );
+    if (result.rows.length) {
+      res.json({ success: true, status: result.rows[0].status });
+    } else {
+      res.status(404).json({ success: false, error: "Category not found" });
+    }
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to toggle category" });
+  }
+}
+
+// DELETE /admin/categories/:id - Delete category
+export async function deleteCategoryAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    await pool.query(`DELETE FROM donation_categories WHERE category_id = $1`, [id]);
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to delete category" });
+  }
+}
+
+// PUT /admin/categories/:id - Edit category
+export async function editCategoryAdmin(req, res) {
+  const { id } = req.params;
+  const { name, description, type } = req.body;
+  try {
+    const dtype = type == 'Monetary' ? 'True' : 'False';
+    await pool.query(
+      `UPDATE donation_categories SET category_name = $1, description = $2, type = $3 WHERE category_id = $4`,
+      [name, description, dtype, id]
+    );
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to update category" });
+  }
+}
