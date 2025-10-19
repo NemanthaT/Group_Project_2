@@ -30,11 +30,11 @@
 }
 
 .pagination-btn {
-  background: #3498db;
+  background: #0d429b;
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
