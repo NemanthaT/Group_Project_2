@@ -69,8 +69,18 @@ function EventDetails({ opportunities = [] }) {
     fetchEventDetails();
   }, [id]);
 
-  if (loadingEvent) return <div className="event-details not-found">Loading event...</div>;
-  if (eventError) return <div className="event-details not-found">{eventError}</div>;
+  if (loadingEvent) return (
+    <div className="event-details-loading-container">
+      <div className="event-details-loading-spinner"></div>
+      <p className="event-details-loading-text">Loading event details...</p>
+    </div>
+  );
+  
+  if (eventError) return (
+    <div className="event-details-error-container">
+      <p className="event-details-error-text">{eventError}</p>
+    </div>
+  );
 
   return (
     <div className="event-details">
