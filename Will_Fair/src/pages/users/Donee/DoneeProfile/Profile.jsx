@@ -1,18 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { User, Mail, Phone, Lock, Edit2, Save, X, Eye, EyeOff, FileText, Download, Users, UserCircle } from 'lucide-react';
 
-export default function DoneeProfile() {
+export default function DoneeProfile({ user }) {
   const [donee, setDonee] = useState({
-    name: 'Sarah Williams',
-    email: '', // empty initially since not asked during account creation
-    phone: '+1 (555) 987-6543',
-    category: 'individual', // 'individual' or 'representative'
-    subcategory: 'student', // student, differently-abled, senior-citizen, unemployed, crisis-affected, medical-needs
-    proofDocuments: [
-      { id: 1, name: 'Student_ID_Card.pdf', uploadDate: '2024-10-15', size: '2.4 MB' },
-      { id: 2, name: 'Enrollment_Verification.pdf', uploadDate: '2024-10-15', size: '1.8 MB' }
-    ]
+    name: '',
+    email: '',
+    phone: '',
+    category: '',
+    subcategory: '',
+    proofDocuments: []
   });
+
+  // Fetch donee profile from backend on mount (replace with actual ID logic as needed)
+  useEffect(() => {
+    const doneeId = user.id;
+    fetch(`http://localhost:5000/donees/profile?doneeId=${doneeId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && data.donee) {
+          setDonee({
+            name: data.donee.name || '',
+            email: data.donee.email || '',
+            phone: data.donee.phone || '',
+            category: data.donee.category || '',
+            subcategory: data.donee.subcategory || '',
+            proofDocuments: data.donee.proofDocuments || []
+          });
+        }
+      })
+      .catch(err => {
+        // Optionally handle error
+        console.error('Failed to fetch donee profile:', err);
+      });
+  }, [user.id]);
 
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [emailInput, setEmailInput] = useState(donee.email);
@@ -41,14 +63,28 @@ export default function DoneeProfile() {
     { value: 'medical-needs', label: 'Medical Needs' }
   ];
 
-  const handleEmailSave = () => {
+  const handleEmailSave = async () => {
     if (emailInput.trim() && emailInput.includes('@')) {
-      setDonee({ ...donee, email: emailInput });
-      setIsEditingEmail(false);
-      setMessage({ type: 'success', text: 'Email address updated successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      try {
+        const doneeId = user.id;
+        const response = await fetch('http://localhost:5000/donees/updateEmail', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ doneeId, email: emailInput })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setDonee({ ...donee, email: emailInput });
+          setIsEditingEmail(false);
+          toast.success('Email address updated successfully!');
+        } else {
+          toast.error(data.error || 'Failed to update email address');
+        }
+      } catch (err) {
+        toast.error('Network error while updating email address');
+      }
     } else {
-      setMessage({ type: 'error', text: 'Please enter a valid email address' });
+      toast.error('Please enter a valid email address');
     }
   };
 
@@ -57,26 +93,37 @@ export default function DoneeProfile() {
     setIsEditingEmail(false);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (!passwordData.current || !passwordData.new || !passwordData.confirm) {
-      setMessage({ type: 'error', text: 'All password fields are required' });
+      toast.error('All password fields are required');
       return;
     }
-    
     if (passwordData.new !== passwordData.confirm) {
-      setMessage({ type: 'error', text: 'New passwords do not match' });
+      toast.error('New passwords do not match');
       return;
     }
-    
     if (passwordData.new.length < 8) {
-      setMessage({ type: 'error', text: 'Password must be at least 8 characters long' });
+      toast.error('Password must be at least 8 characters long');
       return;
     }
-
-    setMessage({ type: 'success', text: 'Password changed successfully!' });
-    setPasswordData({ current: '', new: '', confirm: '' });
-    setIsChangingPassword(false);
-    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    try {
+      const doneeId = user.id;
+      const response = await fetch('http://localhost:5000/donees/updatePassword', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ doneeId, newPassword: passwordData.new })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Password changed successfully!');
+        setPasswordData({ current: '', new: '', confirm: '' });
+        setIsChangingPassword(false);
+      } else {
+        toast.error(data.error || 'Failed to change password');
+      }
+    } catch (err) {
+      toast.error('Network error while changing password');
+    }
   };
 
   const togglePasswordVisibility = (field) => {
@@ -129,15 +176,8 @@ export default function DoneeProfile() {
             </div>
           </div>
 
-          {/* Message Alert */}
-          {message.text && (
-            <div 
-              className="fade-in"
-              style={message.type === 'success' ? styles.successMessage : styles.errorMessage}
-            >
-              {message.text}
-            </div>
-          )}
+          {/* Toast Container for notifications */}
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
 
           {/* Profile Details */}
           <div style={styles.content}>
@@ -392,8 +432,9 @@ export default function DoneeProfile() {
 
 const styles = {
   container: {
+    marginTop: '90px',
     minHeight: '100vh',
-    background: 'linear-gradient(to bottom right, #fef3c7, #fde68a)',
+    background: 'whitesmoke',
     padding: '24px',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
   },
@@ -408,7 +449,7 @@ const styles = {
     overflow: 'hidden'
   },
   header: {
-    background: 'linear-gradient(to right, #f59e0b, #d97706)',
+    background: 'linear-gradient(to right, #2563eb, #4f46e5)',
     padding: '48px 32px',
     color: 'white'
   },
@@ -436,7 +477,7 @@ const styles = {
     margin: '0'
   },
   userSubtitle: {
-    color: '#fed7aa',
+    color: '#bfdbfe',
     marginTop: '4px',
     margin: '0'
   },
@@ -460,8 +501,8 @@ const styles = {
     padding: '32px',
   },
   categoryCard: {
-    background: 'linear-gradient(to right, #fef3c7, #fde68a)',
-    border: '2px solid #fcd34d',
+    background: '#bfdbfe',
+    border: '2px solid #9cc6f9ff',
     borderRadius: '12px',
     padding: '24px',
     marginBottom: '24px'
@@ -479,12 +520,12 @@ const styles = {
   categoryDivider: {
     width: '2px',
     height: '60px',
-    backgroundColor: '#fbbf24'
+    backgroundColor: '#9cc6f9ff'
   },
   categoryLabel: {
     fontSize: '12px',
     fontWeight: '600',
-    color: '#92400e',
+    color: '#0d0c0cff',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     marginBottom: '8px',
@@ -500,7 +541,7 @@ const styles = {
   categoryValue: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: '#92400e',
+    color: '#0d0c0cff',
     margin: '0'
   },
   section: {

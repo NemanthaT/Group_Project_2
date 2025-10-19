@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import {MapPin, Phone, Mail} from "lucide-react";
 import { useState } from 'react';
 
-function LandingPage() {
+function LandingPage({user}) {
   // Initialize the useNavigate hook from react-router-dom
   const navigate = useNavigate();
 
@@ -81,9 +81,22 @@ function LandingPage() {
               <a href="#programs" className="btn-primary">
                 Get Started
               </a>
-              <a href="#about" className="btn-secondary">
-                Donate Now
-              </a>
+              { !user ? (
+                <a href="loginD" className="btn-secondary">
+                  Donate Now
+                </a>
+              ) : (
+                user.role !== 'donor' ? (
+                  <a href="loginD" className="btn-secondary">
+                    Donate Now
+                  </a>
+                ) : (
+                  <a href="users/donor/all-donations" className="btn-secondary">
+                    Donate Now
+                  </a>
+                )
+              )}
+              
             </div>
           </div>
         </div>
