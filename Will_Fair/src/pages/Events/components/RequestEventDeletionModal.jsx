@@ -48,23 +48,16 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    try {
-      // TODO: Replace with actual backend call
-      console.log('Deletion request submitted:', form);
-      alert('Event deletion request submitted successfully!');
+    // Call parent submit handler
+    if (onSubmit) {
+      const result = await onSubmit(form);
       
-      // Reset form
-      setForm({ email: '', eventKey: '' });
-      setErrors({});
-      onClose();
-      
-      // Call parent submit handler if provided
-      if (onSubmit) {
-        await onSubmit(form);
+      // Only reset form and close if successful
+      if (result?.success) {
+        setForm({ email: '', eventKey: '' });
+        setErrors({});
+        onClose();
       }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit deletion request. Please try again.');
     }
   };
 

@@ -1,4 +1,4 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion } from "../models/eventModel.js";
 import fs from "fs";
 import path from "path";
 
@@ -185,6 +185,7 @@ export const createEvent = async (req, res) => {
         }
 
         const eventId = eventResult.eventId;
+        const eventKey = eventResult.eventKey;
 
         // Step 3: Move files from temp to final destination
         const eventDir = path.join('uploads', 'events', String(eventId));
@@ -303,6 +304,53 @@ export const withdrawVolunteerController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Server error occurred while processing withdrawal'
+    });
+  }
+};
+
+export const requestEventDeletionController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    // Validation
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    // Validate event key format
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    // Process deletion request
+    const result = await requestEventDeletion(email, eventKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in requestEventDeletionController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing deletion request'
     });
   }
 };

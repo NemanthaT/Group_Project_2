@@ -52,6 +52,26 @@ function EventDetails() {
     }
   };
 
+  // Handle delete request submission
+  const handleDeleteRequestSubmit = async (formData) => {
+    try {
+      await axios.post('http://localhost:5000/events/deleteRequest', formData);
+      
+      toast.success('Event deletion request submitted successfully!');
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Navigate to events main page
+      navigate('/Events');
+      
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to submit deletion request. Please try again.');
+      return { success: false, error };
+    }
+  };
+
   // Helper to ensure image URL is absolute
   const getImageUrl = (imagePath) => {
     if (!imagePath) return FeaturedBg;
@@ -257,10 +277,7 @@ function EventDetails() {
         <RequestEventDeletionModal
           isOpen={showDeletionModal}
           onClose={() => setShowDeletionModal(false)}
-          onSubmit={(data) => {
-            console.log('Deletion request submitted:', data);
-            // TODO: Add backend API call here
-          }}
+          onSubmit={handleDeleteRequestSubmit}
         />
       )}
 
