@@ -194,6 +194,50 @@ function FeaturedContent() {
 
       <section className="filters">
         <div className="filter-container">
+          {/* Search Bar Row - Now at the top */}
+          <div className="filter-search-row">
+            <div className="search-bar">
+              <svg 
+                className="search-icon" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search events by name..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              {searchQuery && (
+                <button 
+                  className="search-clear"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCurrentPage(1);
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="search-results-info">
+                Found {filteredOpportunities.length} event{filteredOpportunities.length !== 1 ? 's' : ''} matching "{searchQuery}"
+              </div>
+            )}
+          </div>
+
+          {/* Filter Dropdowns */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
@@ -274,49 +318,6 @@ function FeaturedContent() {
                 + Add Event
               </button>
             </div>
-          </div>
-
-          {/* Search Bar Row */}
-          <div className="filter-search-row">
-            <div className="search-bar">
-              <svg 
-                className="search-icon" 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search events by name..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-              {searchQuery && (
-                <button 
-                  className="search-clear"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setCurrentPage(1);
-                  }}
-                  aria-label="Clear search"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-            {searchQuery && (
-              <div className="search-results-info">
-                Found {filteredOpportunities.length} event{filteredOpportunities.length !== 1 ? 's' : ''} matching "{searchQuery}"
-              </div>
-            )}
           </div>
         </div>
       </section>
