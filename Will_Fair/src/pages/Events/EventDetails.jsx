@@ -164,31 +164,41 @@ function EventDetails({ opportunities = [] }) {
             <span className="content">{event.organizer} – {event.organizerEmail}</span>
           </div>
 
-          <div className="event-actions">
-            <button
-              className="btn btn-outline"
-              onClick={() => navigate('/Events')}
-            >
-              Back
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowVolunteerModal(true)}
-            >
-              Volunteer
-            </button>
-            <button
-              className="btn btn-warning"
-              onClick={handleUnvolunteer}
-            >
-              Unvolunteer
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={handleRequestDeletion}
-            >
-              Request Deletion
-            </button>
+          {/* Action Buttons - Split into two groups */}
+          <div className="event-actions-container">
+            {/* Primary Actions */}
+            <div className="primary-actions">
+              <button
+                className="btn btn-back-to-events"
+                onClick={() => navigate('/Events')}
+              >
+                ← Back to Events
+              </button>
+              <button
+                className="btn btn-volunteer"
+                onClick={() => setShowVolunteerModal(true)}
+              >
+                Join as Volunteer
+              </button>
+            </div>
+
+            {/* Secondary Actions */}
+            <div className="secondary-actions">
+              <button
+                className="btn btn-withdraw"
+                onClick={handleUnvolunteer}
+                title="Withdraw from this event"
+              >
+                Withdraw Registration
+              </button>
+              <button
+                className="btn btn-delete-request"
+                onClick={handleRequestDeletion}
+                title="Request event deletion (organizers only)"
+              >
+                Request Event Deletion
+              </button>
+            </div>
           </div>
         </div>
       </div>
