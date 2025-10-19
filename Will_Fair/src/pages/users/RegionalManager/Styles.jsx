@@ -81,7 +81,7 @@ const styles = {
   descriptionLabel: { fontSize: '12px', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' },
   descriptionText: { fontSize: '14px', color: '#374151', lineHeight: '1.6' },
   eventActions: { display: 'flex', gap: '12px', flexWrap: 'wrap' },
-  viewBtn: { flex: 1, minWidth: '200px', padding: '14px 24px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+  viewBtn: { flex: 1, width:'100%', minWidth: '200px', padding: '14px 24px', marginBottom: '10px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   sendBtn: { flex: 1, minWidth: '200px', padding: '14px 24px', background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }
 };
 

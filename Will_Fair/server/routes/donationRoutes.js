@@ -14,7 +14,8 @@ import {
   getDonationByIdController,
   getDonationsForRegController,
   markCompleted,
-  markSent
+  markSent,
+  getDonationContributors
 } from "../controllers/donationController.js";
 
 const router = express.Router();
@@ -44,6 +45,7 @@ router.get('/recent', getRecentDonationsController);
 router.get('/active', getActiveDonationsController);
 router.get('/stats', getDonationStatsController);
 router.get('/donations/:id', getDonationByIdController);
+router.get('/:id/contributors', getDonationContributors);
 
 // RegManager Routes
 router.get('/donationsReg', getDonationsForRegController);

@@ -9,7 +9,8 @@ import {
   getDonationById,
   getDonationsForReg,
   markDonationCompleted,
-  markDonationSent
+  markDonationSent,
+  getContributorsByDonationId
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -356,3 +357,18 @@ export async function markSent(req, res) {
     res.status(500).json({ success: false, error: 'Failed to mark donation sent' });
   }
 }
+
+// Get contributors for a donation (donors and amounts)
+export const getDonationContributors = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ success: false, error: 'Donation ID required' });
+  }
+  try {
+    const contributors = await getContributorsByDonationId(id);
+    res.json({ success: true, contributors });
+  } catch (err) {
+    console.error('Error fetching contributors:', err);
+    res.status(500).json({ success: false, error: 'Server error fetching contributors' });
+  }
+};
