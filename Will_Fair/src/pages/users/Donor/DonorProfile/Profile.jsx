@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { User, Mail, Phone, Lock, Edit2, Save, X, Eye, EyeOff, Heart } from 'lucide-react';
 
 export default function DonorProfile({user}) {
@@ -27,7 +29,7 @@ export default function DonorProfile({user}) {
     confirm: false
   });
 
-  const [message, setMessage] = useState({ type: '', text: '' });
+  // Remove message state, use toast instead
 
   // Fetch donor profile from backend when user is available
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function DonorProfile({user}) {
         const donorId = user.id;
         console.log("Fetching profile for ID:", donorId);
         
-        const response = await fetch(`http://localhost:5000/donors/profile?donorId=${donorId}`);
+  const response = await fetch(`http://localhost:5000/donors/profile?donorId=${donorId}`);
         const data = await response.json();
         
         console.log("Full API Response:", data);
@@ -78,12 +80,26 @@ export default function DonorProfile({user}) {
     setPhoneInput(donor.phone);
   }, [donor.phone]);
 
-  const handlePhoneSave = () => {
+  const handlePhoneSave = async () => {
     if (phoneInput.trim()) {
-      setDonor({ ...donor, phone: phoneInput });
-      setIsEditingPhone(false);
-      setMessage({ type: 'success', text: 'Phone number updated successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      try {
+        const donorId = user.id;
+        const response = await fetch('http://localhost:5000/donors/updatePhone', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ donorId, phone: phoneInput })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setDonor({ ...donor, phone: phoneInput });
+          setIsEditingPhone(false);
+          toast.success('Phone number updated successfully!');
+        } else {
+          toast.error(data.error || 'Failed to update phone number');
+        }
+      } catch (err) {
+        toast.error('Network error while updating phone number');
+      }
     }
   };
 
@@ -92,26 +108,37 @@ export default function DonorProfile({user}) {
     setIsEditingPhone(false);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (!passwordData.current || !passwordData.new || !passwordData.confirm) {
-      setMessage({ type: 'error', text: 'All password fields are required' });
+      toast.error('All password fields are required');
       return;
     }
-    
     if (passwordData.new !== passwordData.confirm) {
-      setMessage({ type: 'error', text: 'New passwords do not match' });
+      toast.error('New passwords do not match');
       return;
     }
-    
     if (passwordData.new.length < 8) {
-      setMessage({ type: 'error', text: 'Password must be at least 8 characters long' });
+      toast.error('Password must be at least 8 characters long');
       return;
     }
-
-    setMessage({ type: 'success', text: 'Password changed successfully!' });
-    setPasswordData({ current: '', new: '', confirm: '' });
-    setIsChangingPassword(false);
-    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    try {
+      const donorId = user.id;
+      const response = await fetch('http://localhost:5000/donors/updatePassword', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ donorId, newPassword: passwordData.new })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Password changed successfully!');
+        setPasswordData({ current: '', new: '', confirm: '' });
+        setIsChangingPassword(false);
+      } else {
+        toast.error(data.error || 'Failed to change password');
+      }
+    } catch (err) {
+      toast.error('Network error while changing password');
+    }
   };
 
   const togglePasswordVisibility = (field) => {
@@ -190,15 +217,8 @@ export default function DonorProfile({user}) {
             </div>
           </div>
 
-          {/* Message Alert */}
-          {message.text && (
-            <div 
-              className="fade-in"
-              style={message.type === 'success' ? styles.successMessage : styles.errorMessage}
-            >
-              {message.text}
-            </div>
-          )}
+          {/* Toast Container for notifications */}
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
 
           {/* Profile Details */}
           <div style={styles.content}>
