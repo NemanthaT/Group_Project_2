@@ -22,19 +22,12 @@ const AuthManager = () => {
   useEffect(() => {
     const fetchEventCounts = async () => {
       try {
-        const [approvalRes, deletionRes] = await Promise.all([
-          axios.get("http://localhost:5000/authManager/pending-events"),
-          axios.get("http://localhost:5000/authManager/pending-deletion-events")
-        ]);
+        // Use the optimized single endpoint to get all counts
+        const response = await axios.get("http://localhost:5000/authManager/event-counts");
         
-        const approvalCount = approvalRes.data.events?.length || 0;
-        const deletionCount = deletionRes.data.events?.length || 0;
-        
-        setEventCounts({
-          pendingApproval: approvalCount,
-          pendingDeletion: deletionCount,
-          total: approvalCount + deletionCount
-        });
+        if (response.data.success) {
+          setEventCounts(response.data.counts);
+        }
       } catch (error) {
         console.error("Failed to fetch event counts:", error);
       }

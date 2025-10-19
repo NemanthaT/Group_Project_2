@@ -5,7 +5,15 @@ import {
   getPendingDonationDetail,
   getDonationStats
 } from "../models/authManagerModel.js";
-import { getPendingEvents, getPendingDeletionEvents, approveEvent, deleteEvent } from "../models/eventModel.js";
+import { 
+  getPendingEvents, 
+  getPendingDeletionEvents, 
+  approveEvent, 
+  deleteEvent,
+  getPendingEventsCount,
+  getPendingDeletionEventsCount,
+  getEventCounts
+} from "../models/eventModel.js";
 
 export const getPendingDonationsController = async (req, res) => {
   const result = await getPendingDonations();
@@ -167,6 +175,81 @@ export const deleteEventController = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             error: 'Server error while deleting event' 
+        });
+    }
+};
+
+// Get count of pending approval events
+export const getPendingEventsCountController = async (req, res) => {
+    try {
+        const result = await getPendingEventsCount();
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            count: result.count 
+        });
+    } catch (err) {
+        console.error('Error fetching pending events count:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching pending events count' 
+        });
+    }
+};
+
+// Get count of pending deletion events
+export const getPendingDeletionEventsCountController = async (req, res) => {
+    try {
+        const result = await getPendingDeletionEventsCount();
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            count: result.count 
+        });
+    } catch (err) {
+        console.error('Error fetching pending deletion events count:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching pending deletion events count' 
+        });
+    }
+};
+
+// Get all event counts in one call (more efficient)
+export const getEventCountsController = async (req, res) => {
+    try {
+        const result = await getEventCounts();
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            counts: result.counts 
+        });
+    } catch (err) {
+        console.error('Error fetching event counts:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while fetching event counts' 
         });
     }
 };

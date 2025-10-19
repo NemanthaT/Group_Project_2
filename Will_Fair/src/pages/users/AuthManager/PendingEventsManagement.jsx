@@ -22,15 +22,15 @@ const PendingEventsManagement = () => {
   useEffect(() => {
     const fetchTabCounts = async () => {
       try {
-        const [approvalRes, deletionRes] = await Promise.all([
-          axios.get("http://localhost:5000/authManager/pending-events"),
-          axios.get("http://localhost:5000/authManager/pending-deletion-events")
-        ]);
+        // Use the optimized single endpoint to get all counts
+        const response = await axios.get("http://localhost:5000/authManager/event-counts");
         
-        setTabCounts({
-          approval: approvalRes.data.events?.length || 0,
-          deletion: deletionRes.data.events?.length || 0
-        });
+        if (response.data.success) {
+          setTabCounts({
+            approval: response.data.counts.pendingApproval,
+            deletion: response.data.counts.pendingDeletion
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch tab counts:", error);
       }

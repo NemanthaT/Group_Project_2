@@ -8,7 +8,10 @@ import {
   getPendingEventsController,
   getPendingDeletionEventsController,
   approveEventController,
-  deleteEventController
+  deleteEventController,
+  getPendingEventsCountController,
+  getPendingDeletionEventsCountController,
+  getEventCountsController
 } from "../controllers/authManagerController.js";
 
 const router = express.Router();
@@ -18,9 +21,16 @@ router.get("/pending-donations/:id", getPendingDonationDetailController);
 router.post("/pending-donations/:id/accept", acceptDonationRequestController);
 router.post("/pending-donations/:id/reject", rejectDonationRequestController);
 router.get("/donation-stats", getDonationStatsController);
+
+// Event routes
 router.get('/pending-events', getPendingEventsController);
 router.get('/pending-deletion-events', getPendingDeletionEventsController);
 router.post('/approve-event/:id', approveEventController);
 router.delete('/delete-event/:id', deleteEventController);
+
+// Event count routes (optimized for badge counts)
+router.get('/pending-events-count', getPendingEventsCountController);
+router.get('/pending-deletion-events-count', getPendingDeletionEventsCountController);
+router.get('/event-counts', getEventCountsController); // Get all counts in one call
 
 export default router;

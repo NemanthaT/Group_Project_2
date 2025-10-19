@@ -373,5 +373,81 @@ async function deleteEvent(eventId) {
     }
 }
 
-export { getEvents, getEventById, getPendingEvents, getPendingDeletionEvents, addOrganiser, addEvent, addDocuments, updateEventImage, approveEvent, deleteEvent };
+// Get count of pending approval events
+async function getPendingEventsCount() {
+    try {
+        const sql = `
+            SELECT COUNT(*) as count
+            FROM events
+            WHERE is_approved = false 
+                AND request_deletion = false
+                AND COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        return { success: true, count: parseInt(result.rows[0].count) };
+    } catch (err) {
+        console.error("Error in getPendingEventsCount:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+// Get count of pending deletion events
+async function getPendingDeletionEventsCount() {
+    try {
+        const sql = `
+            SELECT COUNT(*) as count
+            FROM events
+            WHERE request_deletion = true
+                AND COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        return { success: true, count: parseInt(result.rows[0].count) };
+    } catch (err) {
+        console.error("Error in getPendingDeletionEventsCount:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+// Get both counts in one call for efficiency
+async function getEventCounts() {
+    try {
+        const sql = `
+            SELECT 
+                COUNT(*) FILTER (WHERE is_approved = false AND request_deletion = false) as pending_approval,
+                COUNT(*) FILTER (WHERE request_deletion = true) as pending_deletion
+            FROM events
+            WHERE COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        const counts = {
+            pendingApproval: parseInt(result.rows[0].pending_approval),
+            pendingDeletion: parseInt(result.rows[0].pending_deletion),
+            total: parseInt(result.rows[0].pending_approval) + parseInt(result.rows[0].pending_deletion)
+        };
+        
+        return { success: true, counts };
+    } catch (err) {
+        console.error("Error in getEventCounts:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+export { 
+    getEvents, 
+    getEventById, 
+    getPendingEvents, 
+    getPendingDeletionEvents, 
+    addOrganiser, 
+    addEvent, 
+    addDocuments, 
+    updateEventImage, 
+    approveEvent, 
+    deleteEvent,
+    getPendingEventsCount,
+    getPendingDeletionEventsCount,
+    getEventCounts
+};
 
