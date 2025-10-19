@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../Styles";
-import { Edit, Trash2, UserPlus, Check, X, AlertCircle } from "lucide-react";
+import { Edit, Trash2, Check, X } from "lucide-react";
 
-const Donees = ({ onView, onEdit, onDelete }) => {
+const Donees = ({ onView, onEdit }) => {
   const [donees, setDonees] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -27,6 +27,37 @@ const Donees = ({ onView, onEdit, onDelete }) => {
     };
     fetchDonees();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this donee?")) return;
+    try {
+      const resp = await axios.delete(`http://localhost:5000/admin/donees/${id}`);
+      if (resp.data && resp.data.success) {
+        setDonees(prev => prev.filter(d => d.id !== id));
+      } else {
+        alert('Failed to delete donee');
+      }
+    } catch {
+      alert('Error deleting donee');
+    }
+  };
+
+  const handleToggle = async (id) => {
+    try {
+      const resp = await axios.patch(`http://localhost:5000/admin/donees/${id}/toggle`);
+      if (resp.data && resp.data.success) {
+        setDonees(prev =>
+          prev.map(d =>
+            d.id === id ? { ...d, status: resp.data.status, verified: resp.data.status === 'Accepted' } : d
+          )
+        );
+      } else {
+        alert('Failed to update status');
+      }
+    } catch {
+      alert('Error updating status');
+    }
+  };
 
   const filtered = donees.filter(d => {
     const matchSearch = d.name.toLowerCase().includes(search.toLowerCase());
@@ -86,7 +117,10 @@ const Donees = ({ onView, onEdit, onDelete }) => {
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>
                     <button style={styles.btnIcon} onClick={() => onEdit(d)}><Edit size={16} /></button>
-                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => onDelete(d.id)}><Trash2 size={16} /></button>
+                    <button style={styles.btnIcon} onClick={() => handleToggle(d.id)}>
+                      {d.status === 'Accepted' ? <X size={16} /> : <Check size={16} />}
+                    </button>
+                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDelete(d.id)}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>

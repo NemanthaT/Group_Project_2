@@ -1,5 +1,6 @@
 // doneeController.js
 import { registerDonee, getAllDonees } from "../models/doneeModel.js";
+import pool from "../db.js";
 
 export const signUpDonee = async (req, res) => {
   const { type, name, phone, password } = req.body;
@@ -54,3 +55,33 @@ export const getDoneesAdmin = async (req, res) => {
     res.status(500).json({ success: false, error: "Server error fetching donees" });
   }
 };
+
+// PATCH /admin/donees/:id/toggle - Toggle donee status
+export async function toggleDoneeAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `UPDATE donees SET verification_status = CASE WHEN verification_status = 'accepted' THEN 'pending' ELSE 'accepted' END WHERE donee_id = $1 RETURNING verification_status`,
+      [id]
+    );
+    if (result.rows.length) {
+      const status = result.rows[0].verification_status === 'accepted' ? 'Accepted' : 'Pending';
+      res.json({ success: true, status });
+    } else {
+      res.status(404).json({ success: false, error: "Donee not found" });
+    }
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to toggle donee status" });
+  }
+}
+
+// DELETE /admin/donees/:id - Delete donee
+export async function deleteDoneeAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    await pool.query(`DELETE FROM donees WHERE donee_id = $1`, [id]);
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to delete donee" });
+  }
+}

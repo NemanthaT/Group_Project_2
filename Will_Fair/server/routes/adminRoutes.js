@@ -1,7 +1,7 @@
 import express from "express";
 import { getAdminOverview } from "../controllers/adminController.js";
 import { getDonorsAdmin } from "../controllers/donorController.js";
-import { getDoneesAdmin } from "../controllers/doneeController.js";
+import { getDoneesAdmin, toggleDoneeAdmin, deleteDoneeAdmin } from "../controllers/doneeController.js";
 import { getCategoriesAdmin, addCategoryAdmin, toggleCategoryAdmin, deleteCategoryAdmin, editCategoryAdmin } from "../controllers/categoryController.js";
 
 const router = express.Router();
@@ -12,6 +12,10 @@ router.get("/overview", getAdminOverview);
 router.get("/donors", getDonorsAdmin);
 // GET /admin/donees - donee details for dashboard
 router.get("/donees", getDoneesAdmin);
+// PATCH /admin/donees/:id/toggle - toggle donee status
+router.patch("/donees/:id/toggle", toggleDoneeAdmin);
+// DELETE /admin/donees/:id - delete a donee
+router.delete("/donees/:id", deleteDoneeAdmin);
 // GET /admin/categories - category details for dashboard
 router.get("/categories", getCategoriesAdmin);
 // POST /admin/categories - add a new category
