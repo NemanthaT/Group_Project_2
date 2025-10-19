@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import RequestEventDeletionModal from './components/RequestEventDeletionModal';
+import WithdrawRegistrationModal from './components/WithdrawRegistrationModal';
 import axios from 'axios';
 
 function EventDetails({ opportunities = [] }) {
@@ -15,6 +16,7 @@ function EventDetails({ opportunities = [] }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
@@ -25,8 +27,7 @@ function EventDetails({ opportunities = [] }) {
   };
 
   const handleUnvolunteer = () => {
-    alert('Unvolunteer button clicked!');
-    // TODO: Open unvolunteer modal
+    setShowWithdrawModal(true);
   };
 
   // Helper to ensure image URL is absolute
@@ -223,6 +224,17 @@ function EventDetails({ opportunities = [] }) {
           onClose={() => setShowDeletionModal(false)}
           onSubmit={(data) => {
             console.log('Deletion request submitted:', data);
+            // TODO: Add backend API call here
+          }}
+        />
+      )}
+
+      {showWithdrawModal && (
+        <WithdrawRegistrationModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          onSubmit={(data) => {
+            console.log('Withdrawal request submitted:', data);
             // TODO: Add backend API call here
           }}
         />
