@@ -110,7 +110,7 @@ function EventDetails() {
       <p className="event-details-loading-text">Loading event details...</p>
     </div>
   );
-  
+
   if (eventError) return (
     <div className="event-details-error-container">
       <p className="event-details-error-text">{eventError}</p>
@@ -248,7 +248,8 @@ function EventDetails() {
         <VolunteerEventModal
           isOpen={showVolunteerModal}
           onClose={() => setShowVolunteerModal(false)}
-          event={event}
+          eventId={event.id}          
+          eventTitle={event.title} 
         />
       )}
 
