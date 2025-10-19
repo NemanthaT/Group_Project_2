@@ -111,6 +111,18 @@
 .donation-actions .btn {
   flex: 1;
   text-align: center;
+  padding: 1rem 1.2rem;
+}
+
+.donation-actions .btn.btn-secondary{
+  color: #0d429b;
+  background: rgba(13, 66, 155, 0.1);
+  border: 1px solid #0d429b;
+}
+
+.donation-actions .btn.btn-secondary:hover{
+    border-color: #8b5cf6;
+    color: #8b5cf6;
 }
 
 @media (max-width: 768px) {

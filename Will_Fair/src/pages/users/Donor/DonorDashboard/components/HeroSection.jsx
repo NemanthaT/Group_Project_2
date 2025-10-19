@@ -55,7 +55,6 @@ const HeroSection = ({ user }) => {
               Make a Donation
               <ArrowRight className="icon" />
             </button>
-            <button className="btn btn-secondary">View Impact</button>
           </div>
 
           <div className="hero-stats">

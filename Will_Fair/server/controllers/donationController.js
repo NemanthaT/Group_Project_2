@@ -6,7 +6,11 @@ import {
   getNonMonetaryDonationCategories,
   deleteDonationById,
   getRecentDonations,
-  getDonationById
+  getDonationById,
+  getDonationsForReg,
+  markDonationCompleted,
+  markDonationSent,
+  getContributorsByDonationId
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -301,5 +305,70 @@ export const getDonationByIdController = async (req, res) => {
       success: false,
       error: "Server error while fetching donation details"
     });
+  }
+};
+
+export const getDonationsForRegController = async (req, res) => {
+  const { type } = req.query;
+
+  if (!type || (type !== 'monetary' && type !== 'nonMonetary')) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid or missing donation type',
+    });
+  }
+
+  try {
+    const result = await getDonationsForReg(type);
+
+    if (result.success) {
+      res.status(200).json({ success: true, donations: result.donations });
+    } else {
+      res.status(404).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error('Error in getDonationsByType:', err);
+    res.status(500).json({ success: false, error: 'Server error while fetching donations' });
+  }
+};
+
+// Controller for marking donation as completed
+export async function markCompleted(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const result = await markDonationCompleted(id);
+    if (!result) return res.status(404).json({ success: false, error: 'Donation not found' });
+    res.json({ success: true, request_id: result.request_id, status: result.status });
+  } catch (err) {
+    console.error('Error marking donation completed:', err && err.stack ? err.stack : err);
+    res.status(500).json({ success: false, error: 'Failed to mark donation completed' });
+  }
+}
+
+// Controller for marking donation as sent
+export async function markSent(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const result = await markDonationSent(id);
+    if (!result) return res.status(404).json({ success: false, error: 'Donation not found' });
+    res.json({ success: true, request_id: result.request_id, status: result.status });
+  } catch (err) {
+    console.error('Error marking donation sent:', err && err.stack ? err.stack : err);
+    res.status(500).json({ success: false, error: 'Failed to mark donation sent' });
+  }
+}
+
+// Get contributors for a donation (donors and amounts)
+export const getDonationContributors = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ success: false, error: 'Donation ID required' });
+  }
+  try {
+    const contributors = await getContributorsByDonationId(id);
+    res.json({ success: true, contributors });
+  } catch (err) {
+    console.error('Error fetching contributors:', err);
+    res.status(500).json({ success: false, error: 'Server error fetching contributors' });
   }
 };

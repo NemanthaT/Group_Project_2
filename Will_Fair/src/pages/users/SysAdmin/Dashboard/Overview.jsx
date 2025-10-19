@@ -19,7 +19,7 @@ const Overview = ({ stats, donations }) => (
             <th style={styles.th}>Donee</th>
             <th style={styles.th}>Amount</th>
             <th style={styles.th}>Date</th>
-            <th style={styles.th}>Status</th>
+            {/*<th style={styles.th}>Status</th>*/}
           </tr>
         </thead>
         <tbody>
@@ -29,11 +29,11 @@ const Overview = ({ stats, donations }) => (
               <td style={styles.td}>{d.doneeName}</td>
               <td style={styles.td}>${d.amount}</td>
               <td style={styles.td}>{d.date}</td>
-              <td style={styles.td}>
+              {/*<td style={styles.td}>
                 <span style={{...styles.badge, ...(d.status === 'Completed' ? styles.badgeCompleted : styles.badgePending)}}>
                   {d.status}
                 </span>
-              </td>
+              </td>*/}
             </tr>
           ))}
         </tbody>

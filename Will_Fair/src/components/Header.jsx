@@ -15,6 +15,25 @@ function Header({ user }) {
     navigate("/loginF");
   };
 
+  const handleProfileClick = (role) => {
+    if (role === 'donor') {
+      navigate('/donor/profile');
+    }
+    else if (role === 'donee') {
+      navigate('/donee/profile');
+    }
+    else if (role === 'authmanager') {
+      navigate('/authmanager/profile');
+    }
+    else if (role === 'regionalmanager') {
+      navigate('/regionalmanager/profile');
+    }
+    else if (role === 'sysadmin') {
+      navigate('/sysadmin/profile');
+    }
+
+  };
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/";
@@ -67,11 +86,11 @@ function Header({ user }) {
           <li>
             <a href="/#home">Home</a>
           </li>
-          <li>
+          {/*<li>
             <a href="/sysadmin">Market Place</a>
-          </li>
+          </li>*/}
           <li>
-            <a href="/Events">Volunteer</a>
+            <a href="/Events">Events</a>
           </li>
           <li>
             <a href="/#contact">Contact Us</a>
@@ -107,12 +126,9 @@ function Header({ user }) {
             )}
             {dropdownOpen && (
               <div className="profile-dropdown" style={{ position: "absolute", top: 40, right: 0, background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.12)", borderRadius: 8, zIndex: 10, minWidth: 160 }}>
-                <Link to="/profile" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
-                  Profile
-                </Link>
-                <Link to="/buyerDashboard" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
-                  Buyer Dashboard
-                </Link>
+                <div className="dropdown-item" style={{ padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #eee" }} onClick={() => { handleProfileClick(user.role); setDropdownOpen(false); }}>
+                  View Profile
+                </div>
               </div>
             )}
           </div>
