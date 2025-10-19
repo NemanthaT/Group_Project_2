@@ -71,7 +71,7 @@ function Header({ user }) {
             <a href="/sysadmin">Market Place</a>
           </li>
           <li>
-            <a href="/Events">Volunteer</a>
+            <a href="/Events">Events</a>
           </li>
           <li>
             <a href="/regManager">Contact Us</a>
@@ -107,7 +107,7 @@ function Header({ user }) {
             )}
             {dropdownOpen && (
               <div className="profile-dropdown" style={{ position: "absolute", top: 40, right: 0, background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.12)", borderRadius: 8, zIndex: 10, minWidth: 160 }}>
-                <Link to="/profile" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
+                <Link to="donor/profile" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>
                   Profile
                 </Link>
                 <Link to="/buyerDashboard" className="profile-dropdown-item" style={{ display: "block", padding: "10px 16px", color: "#222", textDecoration: "none" }} onClick={() => setDropdownOpen(false)}>

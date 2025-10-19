@@ -1,5 +1,5 @@
 const styles = {
-  dashboard: { maxWidth: '1400px', margin: '0 auto', padding: '20px' },
+  dashboard: { width: '70%', maxWith: '90', margin: '0 auto', padding: '20px' },
   dashboardHeader: { background: 'white', borderRadius: '16px', padding: '32px', marginBottom: '24px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' },
   headerContent: { textAlign: 'center' },
   dashboardTitle: { fontSize: '32px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' },
@@ -65,7 +65,7 @@ const styles = {
   progressBar: { width: '100%', height: '12px', background: '#e5e7eb', borderRadius: '6px', overflow: 'hidden', marginBottom: '8px' },
   progressFill: { height: '100%', transition: 'width 0.3s ease', borderRadius: '6px' },
   progressText: { fontSize: '14px', color: '#6b7280', fontWeight: '600' },
-  completeBtn: { width: '100%', padding: '14px 24px', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px' },
+  completeBtn: { width: '100%', padding: '14px 24px', background: '#0d429b', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px',  transition: 'all 0.3s ease'},
   sentBtnDonation: { width: '100%', padding: '14px 24px', background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   eventCard: { border: '2px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' },
   eventHeader: { background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)', padding: '20px 24px', borderBottom: '2px solid #e5e7eb' },

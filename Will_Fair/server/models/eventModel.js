@@ -1,6 +1,10 @@
-//import fs from "fs";
-//import path from "path";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
 import pool from "../db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //Get all events with organiser info and attached documents
 async function getEvents() {
@@ -21,6 +25,7 @@ async function getEvents() {
             e.volunteers_needed,
             e.volunteers_signed,
             e.image_path,
+            e.request_deletion,
             json_build_object(
                 'organiser_id', o.organiser_id,
                 'name', o.name,
@@ -28,15 +33,18 @@ async function getEvents() {
                 'phone', o.phone
             ) AS organiser,
             COALESCE(d.docs, '[]'::json) AS documents
-        FROM volunteer_events e
-        LEFT JOIN volunteer_organisers o ON o.organiser_id = e.organiser_id
+        FROM events e
+        LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
         LEFT JOIN (
             SELECT event_id, json_agg(json_build_object('document_id', document_id, 'filename', filename, 'path', path)) AS docs
             FROM event_documents
             GROUP BY event_id
         ) d ON d.event_id = e.event_id
-        WHERE e.is_approved = true
-        ORDER BY e.start_date DESC NULLS LAST, e.date DESC NULLS LAST
+        WHERE e.is_approved = true 
+            AND e.request_deletion = false
+            AND e.volunteers_needed > e.volunteers_signed
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
+        ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
         `;
 
         const result = await pool.query(sql);
@@ -47,35 +55,165 @@ async function getEvents() {
     }
 }
 
+async function getEventById(eventId) {
+    try{
+        const sql = `
+      SELECT
+        e.event_id,
+        e.name,
+        e.description,
+        e.type,
+        e.commitment,
+        e.location,
+        e.skills,
+        e.is_range,
+        e.date,
+        e.start_date,
+        e.end_date,
+        e.volunteers_needed,
+        e.volunteers_signed,
+        e.image_path,
+        json_build_object(
+          'organiser_id', o.organiser_id,
+          'name', o.name,
+          'email', o.email,
+          'phone', o.phone
+        ) AS organiser
+      FROM events e
+      LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
+      WHERE e.event_id = $1 AND e.is_approved = true
+    `;
+    const result = await pool.query(sql, [eventId]);
+    if (result.rows.length === 0) return { success: false, message: "Event not found" };
+    return { success: true, event: result.rows[0] };
+    } catch (err) {
+    console.error("Error in getEventById:", err);
+    return { success: false, message: "Database query error" };
+    }
+}
+
+async function getPendingEvents() {
+    try {
+        const sql = `
+        SELECT
+            e.event_id,
+            e.name,
+            e.description,
+            e.type,
+            e.commitment,
+            e.location,
+            e.skills,
+            e.is_range,
+            e.date,
+            e.start_date,
+            e.end_date,
+            e.volunteers_needed,
+            e.volunteers_signed,
+            e.image_path,
+            e.request_deletion,
+            json_build_object(
+                'organiser_id', o.organiser_id,
+                'name', o.name,
+                'email', o.email,
+                'phone', o.phone
+            ) AS organiser,
+            COALESCE(d.docs, '[]'::json) AS documents
+        FROM events e
+        LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
+        LEFT JOIN (
+            SELECT event_id, json_agg(json_build_object('document_id', document_id, 'filename', filename, 'path', path)) AS docs
+            FROM event_documents
+            GROUP BY event_id
+        ) d ON d.event_id = e.event_id
+        WHERE e.is_approved = false 
+            AND e.request_deletion = false
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
+        ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
+        `;
+
+        const result = await pool.query(sql);
+        return { success: true, events: result.rows };
+    } catch (err) {
+        console.error("Error in getPendingEvents:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+async function getPendingDeletionEvents() {
+    try {
+        const sql = `
+        SELECT
+            e.event_id,
+            e.name,
+            e.description,
+            e.type,
+            e.commitment,
+            e.location,
+            e.skills,
+            e.is_range,
+            e.date,
+            e.start_date,
+            e.end_date,
+            e.volunteers_needed,
+            e.volunteers_signed,
+            e.image_path,
+            e.request_deletion,
+            json_build_object(
+                'organiser_id', o.organiser_id,
+                'name', o.name,
+                'email', o.email,
+                'phone', o.phone
+            ) AS organiser,
+            COALESCE(d.docs, '[]'::json) AS documents
+        FROM events e
+        LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
+        LEFT JOIN (
+            SELECT event_id, json_agg(json_build_object('document_id', document_id, 'filename', filename, 'path', path)) AS docs
+            FROM event_documents
+            GROUP BY event_id
+        ) d ON d.event_id = e.event_id
+        WHERE e.request_deletion = true
+            AND COALESCE(e.start_date, e.date) > CURRENT_DATE
+        ORDER BY COALESCE(e.start_date, e.date) ASC NULLS LAST
+        `;
+
+        const result = await pool.query(sql);
+        return { success: true, events: result.rows };
+    } catch (err) {
+        console.error("Error in getPendingEvents:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
 // Add a new organiser to the database (or return existing one by email)
 async function addOrganiser(organiserData) {
     try {
         // First, check if organiser with this email already exists
         const checkSql = `
-            SELECT organiser_id FROM volunteer_organisers 
+            SELECT organiser_id FROM event_organisers 
             WHERE email = $1
         `;
         
         const existingOrganiser = await pool.query(checkSql, [organiserData.email]);
         
-        // If organiser exists, update phone number and return their ID
+        // If organiser exists, update name and phone number and return their ID
         if (existingOrganiser.rows.length > 0) {
             const organiserId = existingOrganiser.rows[0].organiser_id;
             
-            // Update phone number to the latest one provided
+            // Update name and phone number to the latest ones provided
             const updateSql = `
-                UPDATE volunteer_organisers 
-                SET phone = $1, updated_at = NOW()
-                WHERE organiser_id = $2
+                UPDATE event_organisers 
+                SET name = $1, phone = $2, updated_at = NOW()
+                WHERE organiser_id = $3
             `;
-            await pool.query(updateSql, [organiserData.phone, organiserId]);
+            await pool.query(updateSql, [organiserData.name, organiserData.phone, organiserId]);
             
             return { success: true, organiserId, existing: true };
         }
         
         // If not, create a new organiser
         const insertSql = `
-            INSERT INTO volunteer_organisers (name, email, phone)
+            INSERT INTO event_organisers (name, email, phone)
             VALUES ($1, $2, $3)
             RETURNING organiser_id
         `;
@@ -98,7 +236,7 @@ async function addOrganiser(organiserData) {
 async function addEvent(eventData) {
     try {
         const sql = `
-            INSERT INTO volunteer_events (
+            INSERT INTO events (
                 organiser_id,
                 name,
                 is_range,
@@ -112,8 +250,9 @@ async function addEvent(eventData) {
                 commitment,
                 skills,
                 image_path,
-                is_approved
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                is_approved,
+                request_deletion
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING event_id
         `;
         
@@ -131,6 +270,7 @@ async function addEvent(eventData) {
             eventData.commitment,
             eventData.skills,
             eventData.imagePath || null,
+            false,
             false
         ]);
         
@@ -141,6 +281,7 @@ async function addEvent(eventData) {
         return { success: false, message: "Database error" };
     }
 }
+
 
 // Add documents for an event
 async function addDocuments(eventId, documents) {
@@ -169,7 +310,7 @@ async function addDocuments(eventId, documents) {
 // Update event image path after file has been moved
 async function updateEventImage(eventId, imagePath) {
     try {
-        const sql = `UPDATE volunteer_events SET image_path = $1 WHERE event_id = $2`;
+        const sql = `UPDATE events SET image_path = $1 WHERE event_id = $2`;
         await pool.query(sql, [imagePath, eventId]);
         return { success: true };
     } catch (err) {
@@ -178,4 +319,135 @@ async function updateEventImage(eventId, imagePath) {
     }
 }
 
-export { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage };
+// Approve an event (set is_approved to true)
+async function approveEvent(eventId) {
+    try {
+        const sql = `
+            UPDATE events 
+            SET is_approved = true, updated_at = NOW()
+            WHERE event_id = $1
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [eventId]);
+        
+        if (result.rows.length === 0) {
+            return { success: false, message: "Event not found" };
+        }
+        
+        return { success: true, eventId: result.rows[0].event_id };
+    } catch (err) {
+        console.error("Database error during approveEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+// Delete an event (volunteers and documents auto-delete via CASCADE)
+async function deleteEvent(eventId) {
+    try {
+        const sql = `
+            DELETE FROM events 
+            WHERE event_id = $1
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [eventId]);
+        
+        if (result.rows.length === 0) {
+            return { success: false, message: "Event not found" };
+        }
+
+        const eventFolder = path.join(__dirname, '..', 'uploads', 'events', eventId.toString());
+        
+        if (fs.existsSync(eventFolder)) {
+            fs.rmSync(eventFolder, { recursive: true, force: true });
+            console.log(`✅ Deleted event folder: ${eventFolder}`);
+        } else {
+            console.log(`⚠️ Event folder not found: ${eventFolder}`);
+        }
+        
+        return { success: true, eventId: result.rows[0].event_id };
+    } catch (err) {
+        console.error("Database error during deleteEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
+// Get count of pending approval events
+async function getPendingEventsCount() {
+    try {
+        const sql = `
+            SELECT COUNT(*) as count
+            FROM events
+            WHERE is_approved = false 
+                AND request_deletion = false
+                AND COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        return { success: true, count: parseInt(result.rows[0].count) };
+    } catch (err) {
+        console.error("Error in getPendingEventsCount:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+// Get count of pending deletion events
+async function getPendingDeletionEventsCount() {
+    try {
+        const sql = `
+            SELECT COUNT(*) as count
+            FROM events
+            WHERE request_deletion = true
+                AND COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        return { success: true, count: parseInt(result.rows[0].count) };
+    } catch (err) {
+        console.error("Error in getPendingDeletionEventsCount:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+// Get both counts in one call for efficiency
+async function getEventCounts() {
+    try {
+        const sql = `
+            SELECT 
+                COUNT(*) FILTER (WHERE is_approved = false AND request_deletion = false) as pending_approval,
+                COUNT(*) FILTER (WHERE request_deletion = true) as pending_deletion
+            FROM events
+            WHERE COALESCE(start_date, date) > CURRENT_DATE
+        `;
+        
+        const result = await pool.query(sql);
+        const counts = {
+            pendingApproval: parseInt(result.rows[0].pending_approval),
+            pendingDeletion: parseInt(result.rows[0].pending_deletion),
+            total: parseInt(result.rows[0].pending_approval) + parseInt(result.rows[0].pending_deletion)
+        };
+        
+        return { success: true, counts };
+    } catch (err) {
+        console.error("Error in getEventCounts:", err);
+        return { success: false, message: "Database query error" };
+    }
+}
+
+export { 
+    getEvents, 
+    getEventById, 
+    getPendingEvents, 
+    getPendingDeletionEvents, 
+    addOrganiser, 
+    addEvent, 
+    addDocuments, 
+    updateEventImage, 
+    approveEvent, 
+    deleteEvent,
+    getPendingEventsCount,
+    getPendingDeletionEventsCount,
+    getEventCounts
+};
+

@@ -1,12 +1,42 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "../Styles";
 import { Edit, Trash2, UserPlus, Check, X, AlertCircle } from "lucide-react";
 
-const Donees = ({ donees, search, setSearch, filter, setFilter, onView, onEdit, onDelete }) => {
+const Donees = ({ onView, onEdit, onDelete }) => {
+  const [donees, setDonees] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDonees = async () => {
+      setLoading(true);
+      try {
+        const resp = await axios.get("http://localhost:5000/admin/donees");
+        if (resp.data && resp.data.success) {
+          setDonees(resp.data.donees);
+        } else {
+          setError("Failed to fetch donees");
+        }
+      } catch {
+        setError("Error fetching donees");
+      }
+      setLoading(false);
+    };
+    fetchDonees();
+  }, []);
+
   const filtered = donees.filter(d => {
     const matchSearch = d.name.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'all' || (filter === 'verified' && d.verified) || (filter === 'unverified' && !d.verified);
     return matchSearch && matchFilter;
   });
+
+  if (loading) return <div>Loading donees...</div>;
+  if (error) return <div style={{color: 'red'}}>{error}</div>;
+
   return (
     <div>
       <div style={styles.sectionHeader}>
@@ -30,8 +60,7 @@ const Donees = ({ donees, search, setSearch, filter, setFilter, onView, onEdit, 
               <th style={styles.th}>Phone</th>
               <th style={styles.th}>Total Received</th>
               <th style={styles.th}>Status</th>
-              <th style={styles.th}>Verified</th>
-              <th style={styles.th}>Documents</th>
+              <th style={styles.th}>Document</th>
               <th style={styles.th}>Actions</th>
             </tr>
           </thead>
@@ -46,14 +75,13 @@ const Donees = ({ donees, search, setSearch, filter, setFilter, onView, onEdit, 
                   <span style={{...styles.badge, ...(d.status === 'Accepted' ? styles.badgeCompleted : styles.badgePending)}}>{d.status}</span>
                 </td>
                 <td style={styles.td}>
-                  {d.verified ? (
-                    <span style={{...styles.verificationBadge, ...styles.verifiedBadge}}><Check size={14} /> Verified</span>
+                  {d.documents.length > 0 ? (
+                    <a href={d.documents[0]} target="_blank" rel="noopener noreferrer" style={styles.btnLink}>
+                      View Document
+                    </a>
                   ) : (
-                    <span style={{...styles.verificationBadge, ...styles.badgePending}}><AlertCircle size={14} /> Pending</span>
+                    <span style={{color: '#888'}}>No document</span>
                   )}
-                </td>
-                <td style={styles.td}>
-                  <button style={styles.btnLink} onClick={() => onView(d.documents, `${d.name}'s Documents`)}>View ({d.documents.length})</button>
                 </td>
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>

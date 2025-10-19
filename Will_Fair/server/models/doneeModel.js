@@ -10,13 +10,32 @@ async function getTotalDonees() {
   return Number(res.rows[0].total);
 }
 
-// Get all donees with summary info
+// Get all donees with summary info and totalReceived per donee
 async function getAllDonees() {
-  const res = await pool.query('SELECT donee_id, first_name, last_name, email, phone, verification_status FROM donees');
-  res.rows.forEach(row => {
-    row.name = row.first_name + ' ' + row.last_name;
-  });
-  return res.rows;
+  try {
+    const res = await pool.query(`
+      SELECT d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path,
+        COALESCE(SUM(n.quantity_received),0) AS totalReceived
+      FROM donees d
+      LEFT JOIN donation_requests n ON d.donee_id = n.donee_id
+      GROUP BY d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path
+      ORDER BY d.donee_id
+    `);
+    res.rows.forEach(row => {
+      row.name = row.first_name + ' ' + row.last_name;
+      row.totalReceived = Number(row.totalreceived || row.totalReceived || 0);
+      row.status = row.verification_status === 'accepted' ? 'Accepted' : 'Pending';
+      row.verified = row.verification_status === 'accepted';
+      // Attach documents array with the saved file path if available
+      const docPath = "server/"+row.proof_document_path;
+      row.documents = docPath ? [docPath] : [];
+      row.id = row.donee_id;
+    });
+    return res.rows;
+  } catch (err) {
+    console.error("Error in getAllDonees:", err);
+    return [];
+  }
 }
 
 // Get number of donees pending verification

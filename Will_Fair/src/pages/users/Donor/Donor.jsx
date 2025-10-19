@@ -5,6 +5,7 @@ import NonMonetary from './NonMonetary/NonMonetary';
 import DonationView from './DonorDashboard/components/DonationView';
 import MakeDonation from './DonorDashboard/components/MakeDonation';
 import AllDonations from './DonorDashboard/components/AllDonations';
+import DonorProfile from './DonorProfile/Profile';  
 
 function Donor () {
     const user = JSON.parse(localStorage.getItem('userData'));
