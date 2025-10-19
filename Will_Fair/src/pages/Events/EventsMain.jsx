@@ -21,17 +21,13 @@ function FeaturedContent() {
     skills: ''
   });
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 9;
 
-  // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
 
-  //Volunteer Modal State
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -39,7 +35,6 @@ function FeaturedContent() {
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState(null);
 
-  // fetch events on mount (use axios pattern)
   const fetchEvents = async () => {
     setLoadingEvents(true);
     setEventsError(null);
@@ -48,7 +43,6 @@ function FeaturedContent() {
       const data = res.data;
       if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
 
-      // Backend now returns frontend-ready event objects. Use them directly.
       setOpportunities(data.events || []);
     } catch (err) {
       console.error('Error fetching events', err);
@@ -65,7 +59,6 @@ function FeaturedContent() {
       fetchEvents();
     }, 30000);
     
-    // Reset timer on any user interaction
     const resetTimer = () => {
       clearInterval(interval);
       interval = setInterval(() => {
@@ -73,13 +66,11 @@ function FeaturedContent() {
       }, 30000);
     };
 
-    // Listen for various user interactions
     window.addEventListener('click', resetTimer);
     window.addEventListener('keydown', resetTimer);
     window.addEventListener('scroll', resetTimer);
     window.addEventListener('mousemove', resetTimer);
     
-    // Cleanup all listeners and interval
     return () => {
       clearInterval(interval);
       window.removeEventListener('click', resetTimer);
@@ -89,12 +80,11 @@ function FeaturedContent() {
     };
   }, []);
 
-  //Save scroll position on mount
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
     if (scrollY) {
       window.scrollTo(0, parseInt(scrollY));
-      sessionStorage.removeItem('eventsScroll'); //Clear saved position(optional)
+      sessionStorage.removeItem('eventsScroll');
     }
 
   }, []);
@@ -104,16 +94,16 @@ function FeaturedContent() {
       ...filters,
       [filterName]: e.target.value
     });
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    setCurrentPage(1); 
   };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reset to page 1 when search changes
+    setCurrentPage(1); 
   };
 
   const filteredOpportunities = opportunities.filter(opp => {
-    // Search filter
+
     const matchesSearch = searchQuery === '' || 
       opp.title.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -137,13 +127,11 @@ function FeaturedContent() {
     return 0;
   });
 
-  // Calculate pagination
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
   const currentEvents = sortedOpportunities.slice(indexOfFirstEvent, indexOfLastEvent);
   const totalPages = Math.ceil(sortedOpportunities.length / eventsPerPage);
 
-  // Pagination handlers
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -185,10 +173,8 @@ function FeaturedContent() {
       
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Refresh the events list
       await fetchEvents();
       
-      // Close the modal
       setShowAddModal(false);
       
       return { success: true };
@@ -221,7 +207,6 @@ function FeaturedContent() {
 
       <section className="filters">
         <div className="filter-container">
-          {/* Search Bar Row - Now at the top */}
           <div className="filter-search-row">
             <div className="search-bar">
               <svg 
@@ -264,7 +249,6 @@ function FeaturedContent() {
             )}
           </div>
 
-          {/* Filter Dropdowns */}
           <div className="filter-dropdown">
             <select
               className="filter-select"
@@ -383,7 +367,6 @@ function FeaturedContent() {
                   <h3 className="card-title">{opp.title}</h3>
                   <p className="card-description">{opp.description}</p>
 
-                  {/* Volunteer progress bar */}
                   <div className="progress-bar">
                     <div
                       className="progress-fill"
@@ -431,14 +414,12 @@ function FeaturedContent() {
             ))}
           </div>
 
-          {/* Pagination info */}
           {sortedOpportunities.length > 0 && (
             <div className="pagination-info">
               Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
             </div>
           )}
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="pagination-container">
               <button 
@@ -453,7 +434,6 @@ function FeaturedContent() {
                 {[...Array(totalPages)].map((_, index) => {
                   const pageNumber = index + 1;
                   
-                  // Show first page, last page, current page, and adjacent pages
                   if (
                     pageNumber === 1 ||
                     pageNumber === totalPages ||
@@ -490,7 +470,6 @@ function FeaturedContent() {
         </div>
       </section>
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

@@ -10,7 +10,6 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setForm({ email: '', volunteerKey: '' });
@@ -32,14 +31,12 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
     e.preventDefault();
     const newErrors = {};
 
-    // Validate email
     if (!form.email || !form.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = 'Enter a valid email address';
     }
 
-    // Validate volunteer key
     if (!form.volunteerKey || !form.volunteerKey.trim()) {
       newErrors.volunteerKey = 'Volunteer key is required';
     }
@@ -49,13 +46,11 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    // Call parent submit handler
     if (onSubmit) {
       setIsSubmitting(true);
       const result = await onSubmit(form);
       setIsSubmitting(false);
       
-      // Only reset form and close if successful
       if (result?.success) {
         setForm({ email: '', volunteerKey: '' });
         setErrors({});
@@ -64,7 +59,6 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
     }
   };
 
-  // Prevent background scroll when open
   useEffect(() => {
     if (!isOpen) return;
     const original = document.body.style.overflow;
