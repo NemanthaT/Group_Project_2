@@ -1,50 +1,121 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   Image,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
-import { useNavigation, DrawerActions } from '@react-navigation/native';
-import BackButton from '../components/backbutton'
-
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_BASE } from '../constants/API';
 
 const MyDonationReq = () => {
-  const navigation = useNavigation(); 
-  const request = {
-    id: 1,
-    title: "Renovations at Early Bird Child Care",
-    location: "Karapitiya",
-    category: "Education",
-    image: require("../../assets/images/program1.png"),
-    raised: 7000,
-    target: 60000,
-    status: "Active",
-    description:
-      "Early Bird Child Care is in need of essential renovations to provide a safer, more engaging, and nurturing environment for our children. With your generous support, we aim to upgrade classrooms, improve play areas, and ensure our facilities meet the highest standards of care and learning. Every contribution brings us closer to giving these young learners the bright and supportive space they deserve.",
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const [request, setRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    console.log('Request ID:', id);
+    const fetchRequest = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`${API_BASE}/api/donations/${id}`);
+        const data = await response.json();
+        console.log('Fetched request data:', data);
+        if (data.success && data.request) {
+          setRequest(data.request);
+        } else {
+          setError('Request not found');
+        }
+      } catch (err) {
+        console.error('Error fetching request:', err);
+        setError('Failed to load request');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchRequest();
+  }, [id]);
+
+  const handleEdit = () => {
+    // Navigate to edit page (you can create this later)
+    Alert.alert('Edit', 'Edit functionality will be implemented');
+    // router.push({ pathname: '/(drawer)/edit_donation_request', params: { id } });
   };
 
-  const progress = (request.raised / request.target) * 100;
+  const handleRemove = () => {
+    Alert.alert(
+      'Remove Request',
+      'Are you sure you want to remove this donation request?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // TODO: Implement delete API call
+              Alert.alert('Success', 'Request removed successfully');
+              router.back();
+            } catch (_err) {
+              Alert.alert('Error', 'Failed to remove request');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#7B61FF" />
+        <Text style={{ marginTop: 12, color: '#666' }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error || !request) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+        <Ionicons name="alert-circle-outline" size={64} color="#FF4444" />
+        <Text style={{ marginTop: 12, fontSize: 16, color: '#666' }}>{error || 'Request not found'}</Text>
+        <TouchableOpacity
+          style={{ marginTop: 20, backgroundColor: '#7B61FF', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 }}
+          onPress={() => router.back()}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const isCompleted = Number(request.quantity_received) >= Number(request.quantity_needed);
+  const progress = isCompleted ? 100 : (request.quantity_received / request.quantity_needed) * 100;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
         <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            style={{
-              position: 'absolute',
-              top: 10,
-              left: 10,
-              zIndex: 5,
-            }}
-          >
-            <Ionicons name="menu-outline" size={30} color="#fff" />
-          </TouchableOpacity>
+          onPress={() => router.back()}
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            zIndex: 5,
+          }}
+        >
+          <Ionicons name="arrow-back-outline" size={30} color="#fff" />
+        </TouchableOpacity>
 
         <View style={styles.logoContainer}>
           <View style={styles.logoBackground}>
@@ -58,64 +129,159 @@ const MyDonationReq = () => {
         <Text style={styles.headerTitle}>{request.title}</Text>
       </LinearGradient>
 
-      {/* Image Card */}
+      {/* Card Content */}
       <View style={styles.card}>
-        <Image source={request.image} style={styles.cardImage} />
+        {/* Image */}
+        {request.image_url ? (
+          <Image 
+            source={{ uri: request.image_url }} 
+            style={styles.cardImage} 
+          />
+        ) : (
+          <View style={[styles.cardImage, { backgroundColor: '#E0E0E0', justifyContent: 'center', alignItems: 'center' }]}>
+            <Ionicons name="image-outline" size={48} color="#999" />
+          </View>
+        )}
 
-        {/* Location & Category */}
-       <View style={styles.infoRow}>
-        {/* Location on the left */}
-        <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={18} color="#7B61FF" />
-            <Text style={styles.sectionTitle}>{request.location}</Text>
+        {/* Fundraising Progress Title */}
+        <Text style={{
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: '#333',
+          marginBottom: 4,
+          marginTop: 16,
+          textAlign: 'left',
+        }}>
+          Fundraising Progress
+        </Text>
+
+        {/* Progress Bar - Modern Style (same as requestview_ind) */}
+        <View style={{
+          backgroundColor: '#A0AEC0',
+          borderRadius: 12,
+          height: 18,
+          marginVertical: 16,
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <View style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            height: 18,
+            borderRadius: 12,
+            backgroundColor: '#ffffffff',
+            width: '100%',
+            opacity: isCompleted ? 1 : 0.85,
+          }} />
+          <View style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            height: 18,
+            borderRadius: 12,
+            backgroundColor: '#7B61FF',
+            width: `${progress}%`,
+            opacity: isCompleted ? 1 : 0.85,
+          }} />
+          <Text style={{
+            position: 'absolute',
+            right: 12,
+            top: 0,
+            height: 18,
+            color: '#7B61FF',
+            fontWeight: 'bold',
+            fontSize: 13,
+            textAlignVertical: 'center',
+            textAlign: 'right',
+            lineHeight: 18,
+          }}>
+            {isCompleted ? '100%' : `${Math.round(progress)}%`}
+          </Text>
         </View>
 
-        {/* Category button on the right */}
-        <View style={styles.categoryChip}>
-            <Text style={styles.categoryText}>{request.category}</Text>
-        </View>
-        </View>
-
-
-        {/* Progress Bar */}
-        <View style={styles.progressBarBackground}>
-          <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-        </View>
-        
-
+        {/* Amount Display */}
         <View style={styles.amountRow}>
-        {/* Left: Raised and Target */}
-        <View>
+          <View>
             <Text style={styles.amountLabel}>
-            Raised: {request.raised.toLocaleString()}.00
+              Raised: Rs. {Number(request.quantity_received || 0).toLocaleString('en-US')}.00
             </Text>
             <Text style={styles.amountLabel}>
-            Target: {request.target.toLocaleString()}.00
+              Target: Rs. {Number(request.quantity_needed || 0).toLocaleString('en-US')}.00
             </Text>
+          </View>
         </View>
-
-        {/* Right: Status badge */}
-        <View style={styles.statusBadgeNew}>
-            <Text style={styles.statusTextNew}>{request.status}</Text>
-        </View>
-        </View>
-
 
         {/* Description */}
-        <Text style={styles.description}>{request.description}</Text>
+        <Text style={styles.description}>
+          Description: {request.description || 'No description provided.'}
+        </Text>
 
-        {/* Action Buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.statusBadgeNew}>
-            <Text style={styles.statusTextNew}>Send Feedback</Text>
+        {/* Deadline, Category, Organizer with Icons */}
+        <View style={{ marginTop: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Ionicons name="calendar-outline" size={18} color="#FF4444" style={{ marginRight: 6 }} />
+            <Text style={[styles.amountLabel, { color: '#FF4444', fontWeight: 'bold' }]}>
+              Deadline: {request.due_date ? new Date(request.due_date).toLocaleDateString() : 'N/A'}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Ionicons name="pricetag-outline" size={18} color="#7B61FF" style={{ marginRight: 6 }} />
+            <Text style={styles.amountLabel}>
+              Category: {request.category || 'N/A'}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="person-outline" size={18} color="#9333EA" style={{ marginRight: 6 }} />
+            <Text style={styles.amountLabel}>
+              Organizer: Anonymous
+            </Text>
+          </View>
+        </View>
+
+        {/* Action Buttons - Edit and Remove */}
+        <View style={{ marginTop: 24, flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: '#7B61FF',
+              borderRadius: 8,
+              paddingVertical: 14,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#7B61FF',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
+            onPress={handleEdit}
+          >
+            <Ionicons name="create-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.editButtonNew}>
-            <Ionicons name="create-outline" size={14} color="#fff" />
-            <Text style={styles.editTextNew}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.removeButton}>
-            <Ionicons name="trash-outline" size={14} color="#fff" />
-            <Text style={styles.removeText}>Remove</Text>
+
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: '#FF4444',
+              borderRadius: 8,
+              paddingVertical: 14,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#FF4444',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
+            onPress={handleRemove}
+          >
+            <Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Remove</Text>
           </TouchableOpacity>
         </View>
       </View>
