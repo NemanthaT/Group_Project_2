@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
@@ -26,7 +26,7 @@ function FeaturedContent() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 9; // 3x3 grid
+  const eventsPerPage = 9;
 
   // Add Event modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -379,19 +379,19 @@ function FeaturedContent() {
 
                   <div className="card-actions">
                     <button
-                      className="btn btn-outline"
+                      className="btn-main btn-outline-main"
                       onClick={() => {
-                        sessionStorage.setItem('eventsScroll', window.scrollY); //Save Scroll Position
+                        sessionStorage.setItem('eventsScroll', window.scrollY); 
                         navigate(`/Events/${opp.id}`, { state: { opp } });
                       }}
                     >
                       Details
                     </button>
                     <button
-                      className="btn btn-primary"
+                      className="btn-main btn-primary-main"
                       onClick={() => {
-                        setSelectedEvent(opp);        // store which event was clicked
-                        setShowVolunteerModal(true);  // open modal
+                        setSelectedEvent(opp);        
+                        setShowVolunteerModal(true);  
                       }}
                     >
                       Volunteer

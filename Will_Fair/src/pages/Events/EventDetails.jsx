@@ -2,8 +2,10 @@ import './EventDetails.css';
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
+import RequestEventDeletionModal from './components/RequestEventDeletionModal';
+import WithdrawRegistrationModal from './components/WithdrawRegistrationModal';
 import axios from 'axios';
 
 function EventDetails({ opportunities = [] }) {
@@ -13,19 +15,19 @@ function EventDetails({ opportunities = [] }) {
   const [event, setEvent] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
 
   // Button click handlers
   const handleRequestDeletion = () => {
-    alert('Request Event Deletion button clicked!');
-    // TODO: Open deletion request modal
+    setShowDeletionModal(true);
   };
 
   const handleUnvolunteer = () => {
-    alert('Unvolunteer button clicked!');
-    // TODO: Open unvolunteer modal
+    setShowWithdrawModal(true);
   };
 
   // Helper to ensure image URL is absolute
@@ -214,6 +216,28 @@ function EventDetails({ opportunities = [] }) {
           onClose={() => setShowVolunteerModal(false)}
           eventId={event.id}          // ✅ use the mapped field "id"
           eventTitle={event.title} // ✅ use the mapped field "title"
+        />
+      )}
+
+      {showDeletionModal && (
+        <RequestEventDeletionModal
+          isOpen={showDeletionModal}
+          onClose={() => setShowDeletionModal(false)}
+          onSubmit={(data) => {
+            console.log('Deletion request submitted:', data);
+            // TODO: Add backend API call here
+          }}
+        />
+      )}
+
+      {showWithdrawModal && (
+        <WithdrawRegistrationModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          onSubmit={(data) => {
+            console.log('Withdrawal request submitted:', data);
+            // TODO: Add backend API call here
+          }}
         />
       )}
     </div>
