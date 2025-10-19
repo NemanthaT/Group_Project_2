@@ -227,3 +227,79 @@ exports.deleteDonationRequestMobile = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete donation request' });
   }
 };
+
+// Create new donation request (for both monetary and non-monetary forms)
+// Status is automatically set to 'pending'
+exports.createDonationRequestMobile = async (req, res) => {
+  try {
+    const {
+      donee_id,
+      title,
+      description,
+      quantity_needed,
+      due_date,
+      type, // 'monetary' or 'non-monetary'
+      category_id,
+      image_path
+    } = req.body;
+
+    console.log('Create donation request received:', req.body);
+
+    // Validate required fields
+    if (!donee_id) {
+      return res.status(400).json({ success: false, message: 'Donee ID is required' });
+    }
+    if (!title) {
+      return res.status(400).json({ success: false, message: 'Title is required' });
+    }
+    if (!quantity_needed) {
+      return res.status(400).json({ success: false, message: 'Quantity needed is required' });
+    }
+    if (!due_date) {
+      return res.status(400).json({ success: false, message: 'Due date is required' });
+    }
+    if (!type) {
+      return res.status(400).json({ success: false, message: 'Type is required (monetary or non-monetary)' });
+    }
+    if (!category_id) {
+      return res.status(400).json({ success: false, message: 'Category ID is required' });
+    }
+
+    // Validate type value
+    if (type !== 'monetary' && type !== 'non-monetary') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Type must be either "monetary" or "non-monetary"' 
+      });
+    }
+
+    console.log(`Creating ${type} donation request for donee ${donee_id}`);
+
+    // Call model function to insert into database
+    const result = await Donation.createDonationRequest({
+      donee_id,
+      title,
+      description,
+      quantity_needed,
+      due_date,
+      type,
+      category_id,
+      image_path
+    });
+
+    if (result.success) {
+      console.log('Donation request created successfully:', result.request);
+      return res.status(201).json(result);
+    } else {
+      console.error('Failed to create donation request:', result.message);
+      return res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error('Error creating donation request:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create donation request',
+      error: err.message
+    });
+  }
+};

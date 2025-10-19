@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile, addDonationAmountMobile, getMyDonationRequestsMobile, deleteDonationRequestMobile } = require('../controllers/donationController');
+const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile, addDonationAmountMobile, getMyDonationRequestsMobile, deleteDonationRequestMobile, createDonationRequestMobile } = require('../controllers/donationController');
+
+// POST /api/donations - Create new donation request (monetary or non-monetary)
+router.post('/donations', createDonationRequestMobile);
 
 // POST /api/donations/add-amount
 router.post('/donations/add-amount', addDonationAmountMobile);

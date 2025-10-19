@@ -8,6 +8,7 @@ import {
   Image,
   Platform,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as DocumentPicker from "expo-document-picker";
@@ -17,6 +18,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles, donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE } from '../constants/API';
 
 const Monetary = () => {
   const navigation = useNavigation();
@@ -27,6 +30,13 @@ const Monetary = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [docFile, setDocFile] = useState(null);
+
+  // Form data states
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [targetAmount, setTargetAmount] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // ✅ Category Dropdown (dynamic from database)
   const [openCategory, setOpenCategory] = useState(false);
@@ -116,17 +126,109 @@ const Monetary = () => {
     setDate(currentDate);
   };
 
-  const handleSubmit = () => {
-    Alert.alert(
-      "Success! 🎉",
-      "Your donation request has been submitted successfully. We will review it and get back to you soon.",
-      [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("homescreen"),
+  const handleSubmit = async () => {
+    // Validation
+    if (!title.trim()) {
+      Alert.alert('Validation Error', 'Please enter a reason for your request');
+      return;
+    }
+    if (!description.trim()) {
+      Alert.alert('Validation Error', 'Please enter a detailed description');
+      return;
+    }
+    if (!targetAmount || parseFloat(targetAmount) <= 0) {
+      Alert.alert('Validation Error', 'Please enter a valid target amount');
+      return;
+    }
+    if (!category) {
+      Alert.alert('Validation Error', 'Please select a category');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // Get logged-in donee info
+      const userData = await AsyncStorage.getItem('userData');
+      if (!userData) {
+        Alert.alert('Error', 'Please login to submit a donation request');
+        setSubmitting(false);
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      const doneeId = user.donee_id;
+
+      if (!doneeId) {
+        Alert.alert('Error', 'User information is incomplete. Please login again.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Format date as YYYY-MM-DD
+      const formattedDate = date.toISOString().split('T')[0];
+
+      // Prepare request data
+      const requestData = {
+        donee_id: doneeId,
+        title: title.trim(),
+        description: description.trim(),
+        quantity_needed: parseFloat(targetAmount),
+        due_date: formattedDate,
+        type: 'monetary',
+        category_id: parseInt(category),
+        image_path: null // TODO: Implement image upload if needed
+      };
+
+      console.log('Submitting donation request:', requestData);
+
+      // Send to backend
+      const response = await fetch(`${API_BASE}/api/donations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ]
-    );
+        body: JSON.stringify(requestData)
+      });
+
+      const data = await response.json();
+      console.log('Response from server:', data);
+
+      if (data.success) {
+        Alert.alert(
+          'Success! 🎉',
+          `Your donation request has been submitted successfully with status "pending". We will review it and get back to you soon.`,
+          [
+            {
+              text: 'View My Requests',
+              onPress: () => navigation.navigate('mydonationreq'),
+            },
+            {
+              text: 'Go to Home',
+              onPress: () => navigation.navigate('homescreen'),
+            },
+          ]
+        );
+
+        // Clear form
+        setTitle('');
+        setDescription('');
+        setTargetAmount('');
+        setCategory(null);
+        setBankName(null);
+        setBankAccount('');
+        setDate(new Date());
+        setImageFile(null);
+        setDocFile(null);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to submit donation request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting donation request:', error);
+      Alert.alert('Error', 'Failed to connect to server. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -198,6 +300,8 @@ const Monetary = () => {
           style={styles.inputField}
           placeholder="Enter request name"
           placeholderTextColor="#999"
+          value={title}
+          onChangeText={setTitle}
         />
 
         <Text style={styles.sectionTitle}>Detailed Description</Text>
@@ -205,6 +309,8 @@ const Monetary = () => {
           style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
           multiline
           placeholder="Explain your situation, who will benefit, and how the donations will be used."
+          value={description}
+          onChangeText={setDescription}
         />
 
         <Text style={donationRequestsStyles.sectionTitle}>Target Amount</Text>
@@ -213,6 +319,8 @@ const Monetary = () => {
           placeholder="Rs.0"
           placeholderTextColor="#999"
           keyboardType="numeric"
+          value={targetAmount}
+          onChangeText={setTargetAmount}
         />
 
         {/* Bank Details */}
@@ -240,6 +348,8 @@ const Monetary = () => {
           placeholder="Account Number"
           placeholderTextColor="#999"
           keyboardType="numeric"
+          value={bankAccount}
+          onChangeText={setBankAccount}
         />
 
         {/* Date Picker */}
@@ -248,7 +358,7 @@ const Monetary = () => {
           <Text>{date.toLocaleDateString()}</Text>
         </TouchableOpacity>
         {showDatePicker && (
-          <DateTimePicker value={date} mode="date" display="default" onChange={onChangeDate} />
+          <DateTimePicker value={date} mode="date" display="default" onChange={onChangeDate} minimumDate={new Date()} />
         )}
 
         {/* Image Upload */}
@@ -278,8 +388,16 @@ const Monetary = () => {
         </Text>
 
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitText}>Create Request</Text>
+        <TouchableOpacity 
+          style={[styles.submitButton, submitting && { opacity: 0.6 }]} 
+          onPress={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.submitText}>Create Request</Text>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>

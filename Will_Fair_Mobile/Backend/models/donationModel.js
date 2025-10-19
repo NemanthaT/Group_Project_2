@@ -117,3 +117,68 @@ exports.deleteDonationRequest = async (requestId, doneeId) => {
     return { success: false, message: 'Database error: ' + err.message };
   }
 };
+
+// Create new donation request (for monetary and non-monetary forms)
+// Status is always set to 'pending' when created
+exports.createDonationRequest = async (donationData) => {
+  try {
+    const {
+      donee_id,
+      title,
+      description,
+      quantity_needed,
+      due_date,
+      type, // 'monetary' or 'non-monetary'
+      category_id,
+      image_path
+    } = donationData;
+
+    // Validate required fields
+    if (!donee_id || !title || !quantity_needed || !due_date || !type || !category_id) {
+      return { 
+        success: false, 
+        message: 'Missing required fields: donee_id, title, quantity_needed, due_date, type, category_id are required' 
+      };
+    }
+
+    // Validate type
+    if (type !== 'monetary' && type !== 'non-monetary') {
+      return { 
+        success: false, 
+        message: 'Type must be either "monetary" or "non-monetary"' 
+      };
+    }
+
+    // Insert new donation request with status='pending'
+    const result = await db.query(
+      `INSERT INTO donation_requests 
+        (donee_id, title, description, quantity_needed, quantity_received, due_date, type, category_id, status, image_path, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+       RETURNING request_id, title, type, status, created_at`,
+      [
+        donee_id,
+        title,
+        description || null,
+        quantity_needed,
+        0, // quantity_received starts at 0
+        due_date,
+        type,
+        category_id,
+        'pending', // Always set status to 'pending' for new requests
+        image_path || null
+      ]
+    );
+
+    return { 
+      success: true, 
+      message: 'Donation request created successfully',
+      request: result.rows[0]
+    };
+  } catch (err) {
+    console.error('Database error during createDonationRequest():', err);
+    return { 
+      success: false, 
+      message: 'Database error: ' + err.message 
+    };
+  }
+};
