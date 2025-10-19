@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE } from '../constants/API';
 
 const MyDonationReq = () => {
@@ -46,12 +47,32 @@ const MyDonationReq = () => {
   }, [id]);
 
   const handleEdit = () => {
+    // Check if status is pending
+    if (request.status?.toLowerCase() !== 'pending') {
+      Alert.alert(
+        'Cannot Edit',
+        'Only pending donation requests can be edited. This request is currently in "' + request.status + '" status.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    
     // Navigate to edit page (you can create this later)
     Alert.alert('Edit', 'Edit functionality will be implemented');
     // router.push({ pathname: '/(drawer)/edit_donation_request', params: { id } });
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    // Check if status is pending
+    if (request.status?.toLowerCase() !== 'pending') {
+      Alert.alert(
+        'Cannot Remove',
+        'Only pending donation requests can be removed. This request is currently in "' + request.status + '" status.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     Alert.alert(
       'Remove Request',
       'Are you sure you want to remove this donation request?',
@@ -62,11 +83,51 @@ const MyDonationReq = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // TODO: Implement delete API call
-              Alert.alert('Success', 'Request removed successfully');
-              router.back();
-            } catch (_err) {
-              Alert.alert('Error', 'Failed to remove request');
+              // Get donee_id from AsyncStorage
+              let userDataString = await AsyncStorage.getItem('userData');
+              if (!userDataString) {
+                userDataString = await AsyncStorage.getItem('user');
+              }
+
+              if (!userDataString) {
+                Alert.alert('Error', 'User session not found. Please login again.');
+                return;
+              }
+
+              const user = JSON.parse(userDataString);
+              const doneeId = user.donee_id;
+
+              if (!doneeId) {
+                Alert.alert('Error', 'User ID not found');
+                return;
+              }
+
+              console.log(`Deleting request ${id} for donee ${doneeId}`);
+
+              // Call DELETE API
+              const response = await fetch(`${API_BASE}/api/donations/${id}?doneeId=${doneeId}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              const data = await response.json();
+              console.log('Delete response:', data);
+
+              if (data.success) {
+                Alert.alert('Success', 'Request removed successfully', [
+                  {
+                    text: 'OK',
+                    onPress: () => router.back()
+                  }
+                ]);
+              } else {
+                Alert.alert('Error', data.message || 'Failed to remove request');
+              }
+            } catch (err) {
+              console.error('Error removing request:', err);
+              Alert.alert('Error', 'Failed to remove request. Please try again.');
             }
           },
         },
@@ -240,24 +301,45 @@ const MyDonationReq = () => {
           </View>
         </View>
 
+        {/* Status Badge */}
+        <View style={{ marginTop: 16, alignItems: 'center' }}>
+          <View style={{
+            backgroundColor: 
+              request.status?.toLowerCase() === 'pending' ? '#FFA500' :
+              request.status?.toLowerCase() === 'active' ? '#00C853' :
+              request.status?.toLowerCase() === 'completed' ? '#2196F3' :
+              request.status?.toLowerCase() === 'rejected' ? '#FF4444' : '#A0AEC0',
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            borderRadius: 20,
+          }}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 14, textTransform: 'uppercase' }}>
+              {request.status || 'Unknown'}
+            </Text>
+          </View>
+        </View>
+
         {/* Action Buttons - Edit and Remove */}
+        {/* Only enabled if status is 'pending' */}
         <View style={{ marginTop: 24, flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
           <TouchableOpacity
             style={{
               flex: 1,
-              backgroundColor: '#7B61FF',
+              backgroundColor: request.status?.toLowerCase() === 'pending' ? '#7B61FF' : '#A0AEC0',
               borderRadius: 8,
               paddingVertical: 14,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: '#7B61FF',
+              shadowColor: request.status?.toLowerCase() === 'pending' ? '#7B61FF' : '#A0AEC0',
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 8,
               elevation: 3,
+              opacity: request.status?.toLowerCase() === 'pending' ? 1 : 0.5,
             }}
             onPress={handleEdit}
+            disabled={request.status?.toLowerCase() !== 'pending'}
           >
             <Ionicons name="create-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Edit</Text>
@@ -266,24 +348,39 @@ const MyDonationReq = () => {
           <TouchableOpacity
             style={{
               flex: 1,
-              backgroundColor: '#FF4444',
+              backgroundColor: request.status?.toLowerCase() === 'pending' ? '#FF4444' : '#A0AEC0',
               borderRadius: 8,
               paddingVertical: 14,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: '#FF4444',
+              shadowColor: request.status?.toLowerCase() === 'pending' ? '#FF4444' : '#A0AEC0',
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 8,
               elevation: 3,
+              opacity: request.status?.toLowerCase() === 'pending' ? 1 : 0.5,
             }}
             onPress={handleRemove}
+            disabled={request.status?.toLowerCase() !== 'pending'}
           >
             <Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Remove</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Helper text for non-pending requests */}
+        {request.status?.toLowerCase() !== 'pending' && (
+          <Text style={{ 
+            marginTop: 12, 
+            textAlign: 'center', 
+            color: '#666', 
+            fontSize: 13,
+            fontStyle: 'italic'
+          }}>
+            Only pending requests can be edited or removed
+          </Text>
+        )}
       </View>
     </ScrollView>
   );

@@ -79,3 +79,41 @@ exports.getDonationsByDoneeId = async (doneeId) => {
   );
   return result.rows;
 };
+
+// Delete donation request by ID (only if status is 'pending')
+exports.deleteDonationRequest = async (requestId, doneeId) => {
+  try {
+    // First check if the request exists and belongs to the donee
+    const checkResult = await db.query(
+      'SELECT request_id, status, donee_id FROM donation_requests WHERE request_id = $1',
+      [requestId]
+    );
+
+    if (checkResult.rows.length === 0) {
+      return { success: false, message: 'Donation request not found' };
+    }
+
+    const request = checkResult.rows[0];
+
+    // Verify the request belongs to the donee
+    if (request.donee_id !== parseInt(doneeId)) {
+      return { success: false, message: 'Unauthorized: This request does not belong to you' };
+    }
+
+    // Check if status is pending
+    if (request.status?.toLowerCase() !== 'pending') {
+      return { success: false, message: 'Only pending requests can be deleted' };
+    }
+
+    // Delete the request
+    await db.query(
+      'DELETE FROM donation_requests WHERE request_id = $1',
+      [requestId]
+    );
+
+    return { success: true, message: 'Donation request deleted successfully' };
+  } catch (err) {
+    console.error('Database error during deleteDonationRequest():', err);
+    return { success: false, message: 'Database error: ' + err.message };
+  }
+};

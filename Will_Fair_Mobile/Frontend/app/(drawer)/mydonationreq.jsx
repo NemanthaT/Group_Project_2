@@ -81,7 +81,7 @@ const MyDonationReq = () => {
     }
   };
 
-  // Show all requests directly
+  // Show all requests for the logged-in user
   const filteredRequests = allRequests;
 
   const renderCard = (item) => {
@@ -90,6 +90,23 @@ const MyDonationReq = () => {
     const progress = target > 0 ? (raised / target) * 100 : 0;
     // Handle both 'monetary' and 'Monetary' for type comparison
     const isMoney = item.type?.toLowerCase() === 'monetary';
+
+    // Get status badge color
+    const getStatusColor = (status) => {
+      const statusLower = status?.toLowerCase() || 'pending';
+      switch (statusLower) {
+        case 'pending':
+          return '#FF9800'; // Orange
+        case 'active':
+          return '#4CAF50'; // Green
+        case 'completed':
+          return '#2196F3'; // Blue
+        case 'rejected':
+          return '#F44336'; // Red
+        default:
+          return '#9E9E9E'; // Gray
+      }
+    };
 
     return (
       <View key={item.request_id} style={{
@@ -125,6 +142,20 @@ const MyDonationReq = () => {
               <Ionicons name="image-outline" size={48} color="#999" />
             </View>
           )}
+          {/* Status Badge */}
+          <View style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            backgroundColor: getStatusColor(item.status),
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 12,
+          }}>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold', textTransform: 'capitalize' }}>
+              {item.status || 'Pending'}
+            </Text>
+          </View>
         </View>
         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4 }}>{item.title}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -147,26 +178,34 @@ const MyDonationReq = () => {
           <View style={{
             height: 8,
             width: `${progress}%`,
-            backgroundColor: isMoney ? '#7B61FF' : '#00BCD4',
+            backgroundColor: isMoney ? '#7B61FF' : '#7B61FF',
             borderRadius: 4,
           }} />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+          {/* Edit Button - Only enabled for pending status */}
           <TouchableOpacity
             style={{
-              backgroundColor: '#7B61FF',
+              backgroundColor: item.status?.toLowerCase() === 'pending' ? '#7B61FF' : '#CCCCCC',
               borderRadius: 8,
               paddingVertical: 10,
               paddingHorizontal: 20,
               flex: 1,
               marginRight: 8,
+              opacity: item.status?.toLowerCase() === 'pending' ? 1 : 0.6,
             }}
-            onPress={() => router.push(`/mydonationreq_ind?id=${item.request_id}`)}
+            onPress={() => {
+              if (item.status?.toLowerCase() === 'pending') {
+                router.push(`/mydonationreq_ind?id=${item.request_id}`);
+              }
+            }}
+            disabled={item.status?.toLowerCase() !== 'pending'}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
               Edit
             </Text>
           </TouchableOpacity>
+          {/* View Button - Always enabled */}
           <TouchableOpacity
             style={{
               borderColor: '#7B61FF',
@@ -237,7 +276,7 @@ const MyDonationReq = () => {
             backgroundColor: '#f5f5f5'
           }}>
             <Text style={{ fontSize: 14, color: '#333', fontWeight: 'bold' }}>
-              Showing {filteredRequests.length} requests
+              Showing {filteredRequests.length} request{filteredRequests.length !== 1 ? 's' : ''}
             </Text>
             <TouchableOpacity 
               style={{

@@ -196,3 +196,34 @@ exports.getMyDonationRequestsMobile = async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to fetch donation requests' });
   }
 };
+
+// Delete donation request (only if status is pending)
+exports.deleteDonationRequestMobile = async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    const doneeId = req.query.doneeId || req.body.doneeId;
+
+    console.log('Delete request received:', { requestId, doneeId, query: req.query, body: req.body });
+
+    if (!requestId) {
+      return res.status(400).json({ success: false, message: 'Request ID is required' });
+    }
+
+    if (!doneeId) {
+      return res.status(400).json({ success: false, message: 'Donee ID is required' });
+    }
+
+    console.log(`Deleting donation request ${requestId} for donee ${doneeId}`);
+
+    const result = await Donation.deleteDonationRequest(requestId, doneeId);
+
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error('Error deleting donation request:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete donation request' });
+  }
+};
