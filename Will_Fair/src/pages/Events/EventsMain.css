@@ -54,6 +54,96 @@
   flex-wrap: wrap;
   justify-content: center;
   padding: 1rem 0;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Search Row - Full Width Below Filters */
+.filter-search-row {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.search-bar:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.search-bar:focus-within .search-icon {
+  color: #6366f1;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #1e293b;
+  background: transparent;
+  padding: 0;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-clear {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.search-clear:hover {
+  background: #e2e8f0;
+  color: #334155;
+  transform: rotate(90deg);
+}
+
+.search-results-info {
+  margin-top: 0.75rem;
+  text-align: left;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .filter-dropdown {
@@ -277,6 +367,31 @@
   .filter-container {
     flex-direction: column;
     gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .filter-search-row {
+    margin-top: 0.75rem;
+  }
+
+  .search-bar {
+    padding: 0.65rem 0.875rem;
+  }
+
+  .search-input {
+    font-size: 0.95rem;
+  }
+
+  .search-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+  }
+
+  .search-results-info {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
   }
 
   .programs-grid {
