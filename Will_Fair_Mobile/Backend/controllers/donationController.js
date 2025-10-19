@@ -239,11 +239,15 @@ exports.createDonationRequestMobile = async (req, res) => {
       quantity_needed,
       due_date,
       type, // 'monetary' or 'non-monetary'
-      category_id,
-      image_path
+      category_id
     } = req.body;
 
+    // Extract file paths from uploaded files (same pattern as donee registration)
+    const image_path = req.files && req.files.image ? req.files.image[0].path : null;
+    const document_path = req.files && req.files.document ? req.files.document[0].path : null;
+
     console.log('Create donation request received:', req.body);
+    console.log('Uploaded files:', { image_path, document_path });
 
     // Validate required fields
     if (!donee_id) {
@@ -284,7 +288,8 @@ exports.createDonationRequestMobile = async (req, res) => {
       due_date,
       type,
       category_id,
-      image_path
+      image_path,
+      document_path
     });
 
     if (result.success) {

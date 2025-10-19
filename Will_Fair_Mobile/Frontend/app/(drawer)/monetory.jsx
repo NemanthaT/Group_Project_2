@@ -168,27 +168,45 @@ const Monetary = () => {
       // Format date as YYYY-MM-DD
       const formattedDate = date.toISOString().split('T')[0];
 
-      // Prepare request data
-      const requestData = {
-        donee_id: doneeId,
-        title: title.trim(),
-        description: description.trim(),
-        quantity_needed: parseFloat(targetAmount),
-        due_date: formattedDate,
-        type: 'monetary',
-        category_id: parseInt(category),
-        image_path: null // TODO: Implement image upload if needed
-      };
+      // Create FormData for file uploads (same pattern as donee registration)
+      const formData = new FormData();
+      formData.append('donee_id', doneeId.toString());
+      formData.append('title', title.trim());
+      formData.append('description', description.trim());
+      formData.append('quantity_needed', targetAmount.toString());
+      formData.append('due_date', formattedDate);
+      formData.append('type', 'monetary');
+      formData.append('category_id', category.toString());
 
-      console.log('Submitting donation request:', requestData);
+      // Add image file if selected
+      if (imageFile) {
+        formData.append('image', {
+          uri: imageFile.uri,
+          type: imageFile.mimeType || 'image/jpeg',
+          name: imageFile.fileName || `image_${Date.now()}.jpg`
+        });
+        console.log('Image file attached:', imageFile.fileName);
+      }
 
-      // Send to backend
+      // Add document file if selected
+      if (docFile) {
+        formData.append('document', {
+          uri: docFile.uri,
+          type: docFile.mimeType || 'application/pdf',
+          name: docFile.name || `document_${Date.now()}.pdf`
+        });
+        console.log('Document file attached:', docFile.name);
+      }
+
+      console.log('Submitting donation request with FormData');
+
+      // Send to backend with FormData
       const response = await fetch(`${API_BASE}/api/donations`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(requestData)
+        body: formData
       });
 
       const data = await response.json();

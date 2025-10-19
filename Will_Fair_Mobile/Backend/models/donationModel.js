@@ -130,7 +130,8 @@ exports.createDonationRequest = async (donationData) => {
       due_date,
       type, // 'monetary' or 'non-monetary'
       category_id,
-      image_path
+      image_path,
+      document_path
     } = donationData;
 
     // Validate required fields
@@ -152,8 +153,8 @@ exports.createDonationRequest = async (donationData) => {
     // Insert new donation request with status='pending'
     const result = await db.query(
       `INSERT INTO donation_requests 
-        (donee_id, title, description, quantity_needed, quantity_received, due_date, type, category_id, status, image_path, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        (donee_id, title, description, quantity_needed, quantity_received, due_date, type, category_id, status, image_path, document_path, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
        RETURNING request_id, title, type, status, created_at`,
       [
         donee_id,
@@ -165,7 +166,8 @@ exports.createDonationRequest = async (donationData) => {
         type,
         category_id,
         'pending', // Always set status to 'pending' for new requests
-        image_path || null
+        image_path || null,
+        document_path || null
       ]
     );
 
