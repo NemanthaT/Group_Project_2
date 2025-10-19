@@ -5,10 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { API_BASE } from '../constants/API';
+import { useBackHandler } from '../hooks/useBackHandler';
 
 const MyDonationReq = () => {
   const { requestId } = useLocalSearchParams();
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

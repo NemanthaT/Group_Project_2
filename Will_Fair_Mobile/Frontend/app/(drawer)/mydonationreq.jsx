@@ -15,9 +15,13 @@ import { donationRequestsStyles as styles } from "../../assets/styles/donationre
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE } from '../constants/API';
+import { useBackHandler } from '../hooks/useBackHandler';
 
 const MyDonationReq = () => {  
   const navigation = useNavigation();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   const [allRequests, setAllRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);

@@ -5,9 +5,13 @@ import { useRouter } from 'expo-router';
 import AddEventModal from './AddEventModal';
 import axios from 'axios';
 import { API_BASE } from '../../constants/API';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function EventsScreen() {
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   const [opportunities, setOpportunities] = useState([]);
   const [filters, setFilters] = useState({ sort: '', type: '', commitment: '', location: '', skills: '' });
   const [showAddModal, setShowAddModal] = useState(false);

@@ -12,10 +12,14 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 import { API_BASE } from '../../constants/API';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function EventDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  
+  // Enable hardware back button navigation
+  useBackHandler();
   
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);

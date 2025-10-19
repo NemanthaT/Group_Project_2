@@ -13,6 +13,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { API_BASE } from '../../constants/API';
+import { useBackHandlerWithConfirmation } from '../../hooks/useBackHandler';
 
 export default function VolunteerSignUpScreen() {
   const router = useRouter();
@@ -35,6 +36,15 @@ export default function VolunteerSignUpScreen() {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // Check if form has any data (to warn about unsaved changes)
+  const hasUnsavedChanges = formData.name !== '' || 
+                           formData.email !== '' || 
+                           formData.phone !== '' || 
+                           formData.address !== '';
+  
+  // Enable hardware back button with confirmation if form has data
+  useBackHandlerWithConfirmation(hasUnsavedChanges);
 
   // Update form field
   const updateField = (field, value) => {
