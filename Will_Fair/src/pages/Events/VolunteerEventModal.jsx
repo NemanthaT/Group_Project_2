@@ -44,28 +44,22 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   //   return <div className="field-error">{errors[key]}</div>;
   // };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      Object.values(newErrors).forEach(error => {
-        toast.error(error, {
-          position: "top-right",
-          autoClose: 3000
-        });
-      });
       return;
     }
 
     if (!eventId) {
-      toast.error("Missing event ID. Please refresh the page and try again.", {
-        position: "top-right",
-        autoClose: 3000
-      });
-      return; // stop submission
+      setErrors({ ...newErrors, general: "Missing event ID. Please refresh the page." });
+      return;
     }
 
+    setIsSubmitting(true);
     try {
       const response = await axios.post("http://localhost:5000/api/volunteers", {
         event_id: eventId,
@@ -76,24 +70,37 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
       });
 
       if (response.data.success) {
-        toast.success(response.data.data.message, {
+        toast.success("Successfully registered as volunteer! Check your email for confirmation.", {
           position: "top-right",
-          autoClose: 5000
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
         setForm({ name: "", email: "", contact: "", notes: "" });
-        onClose();
+        // Delay modal close to allow toast to show
+        setTimeout(() => {
+          onClose();
+        }, 1000);
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }
     } catch (err) {
-      console.error(err);
-      toast.error(
-        err.response?.data?.error || "Failed to submit volunteer application. Please try again.",
-        {
-          position: "top-right",
-          autoClose: 5000
-        }
-      );
+      const errorMessage = err.response?.data?.error || 
+                          err.response?.data?.message || 
+                          "Failed to submit volunteer application. Please try again.";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setErrors({ ...newErrors, general: errorMessage });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -123,15 +130,12 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   if (!isOpen) return null;
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => e.target.className === "modal-overlay" && onClose()}
-    >
+    <>
       <ToastContainer
         position="top-right"
-        autoClose={3000}
+        autoClose={5000}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop={true}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
@@ -139,7 +143,18 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
         pauseOnHover
         theme="light"
       />
-      <div className="modal-card">
+      <div
+        className="modal-overlay"
+        onClick={(e) => e.target.className === "modal-overlay" && onClose()}
+      >
+      
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Processing registration...</p>
+          </div>
+        )}
         <div className="modal-header">
           <h2>Volunteer for this Event</h2>
           <button className="modal-close" onClick={onClose}>
@@ -201,5 +216,6 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
         </form>
       </div>
     </div>
+    </>
   );
 }
