@@ -1,481 +1,127 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  Platform,
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 import { API_BASE } from '../../constants/API';
-import { useBackHandlerWithConfirmation } from '../../hooks/useBackHandler';
 
 export default function VolunteerSignUpScreen() {
   const router = useRouter();
   const { id, eventName } = useLocalSearchParams();
 
-  // Form state
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: '',
     email: '',
-    phone: '',
-    address: '',
-    dob: new Date(),
-    eventId: id || '',
-    eventName: eventName || '',
-    availability: '',
-    volunteerRole: '',
-    emergencyContact: '',
-    emergencyPhone: '',
+    contact: '',
+    notes: ''
   });
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState({});
-  
-  // Check if form has any data (to warn about unsaved changes)
-  const hasUnsavedChanges = formData.name !== '' || 
-                           formData.email !== '' || 
-                           formData.phone !== '' || 
-                           formData.address !== '';
-  
-  // Enable hardware back button with confirmation if form has data
-  useBackHandlerWithConfirmation(hasUnsavedChanges);
 
-  // Update form field
-  const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
+  useEffect(() => {
+    setForm({ name: '', email: '', contact: '', notes: '' });
+    setErrors({});
+  }, [id]);
+
+  const updateField = (key, value) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+    setErrors(prev => ({ ...prev, [key]: null }));
   };
 
-  // Validate form
-  const validateForm = () => {
+  const validate = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Phone number must be 10 digits';
-    }
-    if (!formData.address.trim()) newErrors.address = 'Address/City is required';
-    if (!formData.availability) newErrors.availability = 'Availability is required';
-    if (!formData.emergencyContact.trim()) newErrors.emergencyContact = 'Emergency contact name is required';
-    if (!formData.emergencyPhone.trim()) {
-      newErrors.emergencyPhone = 'Emergency contact phone is required';
-    } else if (!/^\d{10}$/.test(formData.emergencyPhone.replace(/\s/g, ''))) {
-      newErrors.emergencyPhone = 'Emergency phone must be 10 digits';
-    }
-
+    if (!form.name.trim()) newErrors.name = 'Name is required';
+    if (!form.contact.trim()) newErrors.contact = 'Contact number is required';
+    if (!form.email.trim()) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Enter a valid email';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle date change
-  const onDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    if (selectedDate) {
-      updateField('dob', selectedDate);
+  const handleSubmit = async () => {
+    if (!validate()) {
+      Alert.alert('Validation', 'Please fix the errors in the form');
+      return;
     }
-  };
-
-  // Format date for display
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    if (validateForm()) {
-      // TODO: Implement API call to submit volunteer registration
-      console.log('Form submitted:', formData);
-      
-      // For now, show success and navigate back
-      alert('Thank you for volunteering! Your registration has been submitted!');
-      router.back();
-    } else {
-      alert('Please fill in all required fields correctly.');
+    if (!id) {
+      Alert.alert('Error', 'Missing event ID. Please try again.');
+      return;
+    }
+    try {
+      await axios.post(`${API_BASE}/api/volunteers`, {
+        event_id: id,
+        volunteer_name: form.name,
+        volunteer_email: form.email,
+        volunteer_phone: form.contact,
+        notes: form.notes,
+      });
+      Alert.alert(
+        'Success', 
+        `Thank you for volunteering for ${eventName || 'this event'}!`,
+        [
+          {
+            text: 'Back to Events',
+            onPress: () => router.push('/events/events')
+          }
+        ]
+      );
+      setForm({ name: '', email: '', contact: '', notes: '' });
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.error)
+        Alert.alert('Error', err.response.data.error);
+      else Alert.alert('Error', 'Submission failed. Please try again.');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        {/* Header */}
+    <View style={styles.overlay}>
+      <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Volunteer Sign Up</Text>
-          <Text style={styles.headerSubtitle}>
-            Join us in making a difference!
-          </Text>
+          <Text style={styles.title}>Volunteer for this Event</Text>
+          <TouchableOpacity onPress={() => router.push('/events/events')} style={styles.closeBtn}>
+            <Text style={{fontSize:18}}>✕</Text>
+          </TouchableOpacity>
         </View>
+        <ScrollView contentContainerStyle={{ padding: 12 }}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput style={styles.input} value={form.name} onChangeText={t => updateField('name', t)} />
+          {errors.name && <Text style={styles.err}>{errors.name}</Text>}
 
-        {/* Form */}
-        <View style={styles.formContainer}>
-          {/* Event Information (Read-only) */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Event Information</Text>
-            
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Event ID</Text>
-              <View style={styles.readOnlyInput}>
-                <Text style={styles.readOnlyText}>{formData.eventId}</Text>
-              </View>
-            </View>
+          <Text style={styles.label}>Contact Number</Text>
+          <TextInput style={styles.input} value={form.contact} onChangeText={t => updateField('contact', t)} keyboardType="phone-pad" />
+          {errors.contact && <Text style={styles.err}>{errors.contact}</Text>}
 
-            {eventName && (
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Event Name</Text>
-                <View style={styles.readOnlyInput}>
-                  <Text style={styles.readOnlyText}>{eventName}</Text>
-                </View>
-              </View>
-            )}
-          </View>
+          <Text style={styles.label}>Email</Text>
+          <TextInput style={styles.input} value={form.email} onChangeText={t => updateField('email', t)} keyboardType="email-address" />
+          {errors.email && <Text style={styles.err}>{errors.email}</Text>}
 
-          {/* Personal Information */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+          <Text style={styles.label}>Notes (optional)</Text>
+          <TextInput style={[styles.input, { height: 80 }]} value={form.notes} onChangeText={t => updateField('notes', t)} multiline />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Full Name <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.name && styles.inputError]}
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChangeText={(value) => updateField('name', value)}
-              />
-              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Email Address <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.email && styles.inputError]}
-                placeholder="your.email@example.com"
-                value={formData.email}
-                onChangeText={(value) => updateField('email', value)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Phone Number <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.phone && styles.inputError]}
-                placeholder="0771234567"
-                value={formData.phone}
-                onChangeText={(value) => updateField('phone', value)}
-                keyboardType="phone-pad"
-                maxLength={10}
-              />
-              {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Address / City <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.address && styles.inputError]}
-                placeholder="Enter your city or address"
-                value={formData.address}
-                onChangeText={(value) => updateField('address', value)}
-              />
-              {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Date of Birth <Text style={styles.required}>*</Text>
-              </Text>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>{formatDate(formData.dob)}</Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={formData.dob}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={onDateChange}
-                  maximumDate={new Date()}
-                />
-              )}
-            </View>
-          </View>
-
-          {/* Volunteer Details */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Volunteer Details</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Availability Duration <Text style={styles.required}>*</Text>
-              </Text>
-              <View style={[styles.pickerContainer, errors.availability && styles.inputError]}>
-                <Picker
-                  selectedValue={formData.availability}
-                  onValueChange={(value) => updateField('availability', value)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select availability..." value="" />
-                  <Picker.Item label="Morning (8:00 AM - 12:00 PM)" value="morning" />
-                  <Picker.Item label="Evening (1:00 PM - 5:00 PM)" value="evening" />
-                  <Picker.Item label="Full Day (8:00 AM - 8:00 PM)" value="fullday" />
-                </Picker>
-              </View>
-              {errors.availability && (
-                <Text style={styles.errorText}>{errors.availability}</Text>
-              )}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Volunteer Role (Optional)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., Team Leader, Helper, Coordinator"
-                value={formData.volunteerRole}
-                onChangeText={(value) => updateField('volunteerRole', value)}
-              />
-              <Text style={styles.helperText}>
-                Leave blank if not applicable
-              </Text>
-            </View>
-          </View>
-
-          {/* Emergency Contact */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Emergency Contact</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Emergency Contact Name <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.emergencyContact && styles.inputError]}
-                placeholder="Enter emergency contact name"
-                value={formData.emergencyContact}
-                onChangeText={(value) => updateField('emergencyContact', value)}
-              />
-              {errors.emergencyContact && (
-                <Text style={styles.errorText}>{errors.emergencyContact}</Text>
-              )}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                Emergency Contact Phone <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.input, errors.emergencyPhone && styles.inputError]}
-                placeholder="0771234567"
-                value={formData.emergencyPhone}
-                onChangeText={(value) => updateField('emergencyPhone', value)}
-                keyboardType="phone-pad"
-                maxLength={10}
-              />
-              {errors.emergencyPhone && (
-                <Text style={styles.errorText}>{errors.emergencyPhone}</Text>
-              )}
-            </View>
-          </View>
-
-          {/* Action Buttons */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={() => router.back()}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
+            <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={() => router.push('/events/events')}>
+              <Text>Back to Events</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.submitButton]}
-              onPress={handleSubmit}
-            >
-              <Text style={styles.submitButtonText}>Submit Registration</Text>
+            <TouchableOpacity style={[styles.btn, styles.btnPrimary]} onPress={handleSubmit}>
+              <Text style={{ color: '#fff' }}>Volunteer</Text>
             </TouchableOpacity>
           </View>
-
-          <Text style={styles.footerNote}>
-            <Text style={styles.required}>*</Text> Required fields
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    backgroundColor: '#7B61FF',
-    padding: 24,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#EEDCFF',
-    textAlign: 'center',
-  },
-  formContainer: {
-    padding: 16,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 16,
-    paddingBottom: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#7B61FF',
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  required: {
-    color: '#FF3B30',
-    fontSize: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    color: '#333',
-  },
-  inputError: {
-    borderColor: '#FF3B30',
-  },
-  readOnlyInput: {
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    padding: 12,
-  },
-  readOnlyText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  dateButton: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#fff',
-  },
-  dateButtonText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  errorText: {
-    color: '#FF3B30',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  helperText: {
-    color: '#999',
-    fontSize: 13,
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 10,
-    marginBottom: 16,
-  },
-  button: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1.5,
-    borderColor: '#7B61FF',
-  },
-  cancelButtonText: {
-    color: '#7B61FF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  submitButton: {
-    backgroundColor: '#7B61FF',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  footerNote: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 14,
-    marginTop: 8,
-    marginBottom: 24,
-  },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 16 },
+  card: { backgroundColor: '#fff', borderRadius: 8, maxHeight: '90%' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderColor: '#eee' },
+  title: { fontSize: 18, fontWeight: '600' },
+  closeBtn: { padding: 6 },
+  label: { marginTop: 8, fontSize: 14, color: '#333' },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 6, padding: 8, marginTop: 6 },
+  btn: { padding: 12, borderRadius: 6, minWidth: 120, alignItems: 'center' },
+  btnPrimary: { backgroundColor: '#7B61FF' },
+  btnOutline: { borderWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' },
+  err: { color: '#d9534f', marginTop: 4 }
 });
