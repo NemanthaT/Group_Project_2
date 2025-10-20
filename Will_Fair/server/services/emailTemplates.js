@@ -543,6 +543,69 @@ The WillFair Team
   };
 }
 
+/**
+ * Email template for event rejection notification (organizer)
+ */
+function eventRejectionTemplate(eventData) {
+  const { organizerName, eventTitle, rejectionReason } = eventData;
+  
+  return {
+    subject: `Event Not Approved: ${eventTitle}`,
+    text: `
+Hello ${organizerName},
+
+We regret to inform you that your event "${eventTitle}" has not been approved for listing on WillFair.
+
+${rejectionReason ? `Reason: ${rejectionReason}` : 'Our team reviewed your submission and determined it does not meet our current criteria.'}
+
+If you have any questions or would like to submit a revised event proposal, please feel free to create a new event with updated information.
+
+Thank you for your interest in WillFair.
+
+Best regards,
+The WillFair Team
+    `,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+    .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+    .rejection-notice { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #777; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Event Review Update</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong>${organizerName}</strong>,</p>
+      <p>We regret to inform you that your event <strong>"${eventTitle}"</strong> has not been approved for listing on WillFair.</p>
+      
+      <div class="rejection-notice">
+        <h3>Review Decision</h3>
+        <p>${rejectionReason || 'Our team reviewed your submission and determined it does not meet our current criteria at this time.'}</p>
+      </div>
+
+      <p>If you have any questions or would like to submit a revised event proposal, please feel free to create a new event with updated information.</p>
+      
+      <p>Thank you for your interest in making a difference through WillFair.</p>
+    </div>
+    <div class="footer">
+      <p>© 2025 WillFair. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `
+  };
+}
+
 export {
   eventCreationTemplate,
   volunteerRegistrationTemplate,
@@ -551,5 +614,6 @@ export {
   eventCancellationVolunteerTemplate,
   newVolunteerNotificationTemplate,
   eventApprovalTemplate,
-  volunteerListTemplate
+  volunteerListTemplate,
+  eventRejectionTemplate
 };

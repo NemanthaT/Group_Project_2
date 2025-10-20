@@ -350,6 +350,35 @@ async function approveEvent(eventId) {
     }
 }
 
+// Rejects an event by deleting it from the database
+async function rejectEvent(eventId) {
+    try {
+        const sql = `
+            DELETE FROM events 
+            WHERE event_id = $1 AND is_approved = false
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [eventId]);
+        
+        if (result.rows.length === 0) {
+            return { success: false, message: "Event not found or already approved" };
+        }
+
+        const eventFolder = path.join(__dirname, '..', 'uploads', 'events', eventId.toString());
+        
+        if (fs.existsSync(eventFolder)) {
+            fs.rmSync(eventFolder, { recursive: true, force: true });
+            console.log(`✅ Deleted event folder: ${eventFolder}`);
+        }
+        
+        return { success: true, eventId: result.rows[0].event_id };
+    } catch (err) {
+        console.error("Database error during rejectEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
 // Deletes an event and its associated files from database and filesystem
 async function deleteEvent(eventId) {
     try {
@@ -620,7 +649,8 @@ export {
     addEvent, 
     addDocuments, 
     updateEventImage, 
-    approveEvent, 
+    approveEvent,
+    rejectEvent,
     deleteEvent,
     getPendingEventsCount,
     getPendingDeletionEventsCount,

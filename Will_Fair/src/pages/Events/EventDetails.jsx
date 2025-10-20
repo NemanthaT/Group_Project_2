@@ -30,7 +30,6 @@ function EventDetails() {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
 
-  // Button click handlers
   const handleRequestDeletion = () => {
     setShowDeletionModal(true);
   };
@@ -156,10 +155,10 @@ function EventDetails() {
           volunteersNeeded: eventData.volunteers_needed,
           volunteersSigned: eventData.volunteers_signed,
           organizer: eventData.organiser?.name,
-          organizerEmail: eventData.organiser?.email,  // <-- NEW
-          date: eventData.date,                         // <-- NEW
-          startDate: eventData.start_date,              // <-- NEW
-          endDate: eventData.end_date,                  // <-- NEW
+          organizerEmail: eventData.organiser?.email,
+          date: eventData.date,
+          startDate: eventData.start_date,
+          endDate: eventData.end_date,
           image: eventData.image_path
         };
 
@@ -215,9 +214,6 @@ function EventDetails() {
           ></div>
 
           <div className="event-info">
-            {/* <div className="event-header">
-            <h2>{event.organizer}</h2>
-          </div> */}
 
 
             <div className="event-date">
@@ -237,26 +233,26 @@ function EventDetails() {
                   }}
                 ></div>
               </div>
-            <div className="funding-info">
-              <div>
-                <div className="funding-label">Volunteers Signed:</div>
-                <div className="funding-amount">{event.volunteersSigned}</div>
+              <div className="funding-info">
+                <div>
+                  <div className="funding-label">Volunteers Signed:</div>
+                  <div className="funding-amount">{event.volunteersSigned}</div>
+                </div>
+                <div>
+                  <div className="funding-label">Volunteers Needed:</div>
+                  <div className="funding-amount">{event.volunteersNeeded}</div>
+                </div>
               </div>
-              <div>
-                <div className="funding-label">Volunteers Needed:</div>
-                <div className="funding-amount">{event.volunteersNeeded}</div>
-              </div>
-            </div>
 
-            {/* Request Volunteer List Button */}
-            <button
-              className="btn-request-volunteer-list"
-              onClick={handleRequestVolunteerList}
-              title="Request list of registered volunteers"
-            >
-              Request Volunteer List
-            </button>
-          </div>            {/* Description */}
+              {/* Request Volunteer List Button */}
+              <button
+                className="btn-request-volunteer-list"
+                onClick={handleRequestVolunteerList}
+                title="Request list of registered volunteers"
+              >
+                Request Volunteer List
+              </button>
+            </div>            {/* Description */}
             <div className="event-description">
               <span className="label">Description: </span>
               <span className="content">{event.description}</span>
@@ -322,6 +318,13 @@ function EventDetails() {
             onClose={() => setShowVolunteerModal(false)}
             eventId={event.id}
             eventTitle={event.title}
+            eventOrganiserEmail={event.organizerEmail}
+            onVolunteerSuccess={() => {
+              setEvent(prev => ({
+                ...prev,
+                volunteersSigned: prev.volunteersSigned + 1
+              }));
+            }}
           />
         )}
 

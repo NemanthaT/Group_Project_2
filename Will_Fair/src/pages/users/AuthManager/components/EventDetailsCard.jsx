@@ -2,7 +2,7 @@ import React from "react";
 import { CalendarDays, MapPin, Tag, Clock, Target, Users, FileText, Paperclip, User, StickyNote } from "lucide-react";
 import "./EventDetailsCard.css";
 
-const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeTab }) => {
+const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onReject, onDelete, activeTab }) => {
   if (!isOpen || !event) return null;
 
   // Helper function to format date
@@ -32,6 +32,10 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeT
 
   const handleApprove = () => {
     onApprove(event.event_id);
+  };
+
+  const handleReject = () => {
+    onReject(event.event_id);
   };
 
   const handleDelete = () => {
@@ -143,7 +147,7 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeT
         <div className="event-details-footer">
           {activeTab === 'approval' ? (
             <>
-              <button className="event-details-btn event-details-btn-reject" onClick={handleDelete}>
+              <button className="event-details-btn event-details-btn-reject" onClick={handleReject}>
                 Reject
               </button>
               <button className="event-details-btn event-details-btn-approve" onClick={handleApprove}>

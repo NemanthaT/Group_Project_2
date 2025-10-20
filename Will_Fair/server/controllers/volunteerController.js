@@ -4,6 +4,7 @@ import { volunteerRegistrationTemplate } from "../services/emailTemplates.js";
 import { createVolunteer, updateVolunteerCount, getEventDetailsForEmail } from "../models/volunteerModel.js";
 
 
+// Volunteer key generator
 const generateVolunteerKey = () => {
     const prefix = 'VOL';
     const timestamp = Date.now().toString(36);
@@ -11,6 +12,7 @@ const generateVolunteerKey = () => {
     return `${prefix}-${timestamp}${random}`.toUpperCase();
 };
 
+// Handles volunteer registration with email confirmation
 export const registerVolunteer = async (req, res) => {
   const { event_id, volunteer_name, volunteer_email, volunteer_phone, notes } = req.body;
 
