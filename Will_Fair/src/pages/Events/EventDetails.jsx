@@ -155,10 +155,10 @@ function EventDetails() {
           volunteersNeeded: eventData.volunteers_needed,
           volunteersSigned: eventData.volunteers_signed,
           organizer: eventData.organiser?.name,
-          organizerEmail: eventData.organiser?.email,  
-          date: eventData.date,                         
-          startDate: eventData.start_date,              
-          endDate: eventData.end_date,                  
+          organizerEmail: eventData.organiser?.email,
+          date: eventData.date,
+          startDate: eventData.start_date,
+          endDate: eventData.end_date,
           image: eventData.image_path
         };
 
@@ -233,26 +233,26 @@ function EventDetails() {
                   }}
                 ></div>
               </div>
-            <div className="funding-info">
-              <div>
-                <div className="funding-label">Volunteers Signed:</div>
-                <div className="funding-amount">{event.volunteersSigned}</div>
+              <div className="funding-info">
+                <div>
+                  <div className="funding-label">Volunteers Signed:</div>
+                  <div className="funding-amount">{event.volunteersSigned}</div>
+                </div>
+                <div>
+                  <div className="funding-label">Volunteers Needed:</div>
+                  <div className="funding-amount">{event.volunteersNeeded}</div>
+                </div>
               </div>
-              <div>
-                <div className="funding-label">Volunteers Needed:</div>
-                <div className="funding-amount">{event.volunteersNeeded}</div>
-              </div>
-            </div>
 
-            {/* Request Volunteer List Button */}
-            <button
-              className="btn-request-volunteer-list"
-              onClick={handleRequestVolunteerList}
-              title="Request list of registered volunteers"
-            >
-              Request Volunteer List
-            </button>
-          </div>            {/* Description */}
+              {/* Request Volunteer List Button */}
+              <button
+                className="btn-request-volunteer-list"
+                onClick={handleRequestVolunteerList}
+                title="Request list of registered volunteers"
+              >
+                Request Volunteer List
+              </button>
+            </div>            {/* Description */}
             <div className="event-description">
               <span className="label">Description: </span>
               <span className="content">{event.description}</span>
@@ -319,6 +319,12 @@ function EventDetails() {
             eventId={event.id}
             eventTitle={event.title}
             eventOrganiserEmail={event.organizerEmail}
+            onVolunteerSuccess={() => {
+              setEvent(prev => ({
+                ...prev,
+                volunteersSigned: prev.volunteersSigned + 1
+              }));
+            }}
           />
         )}
 

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Community Event", eventId, eventOrganiserEmail }) {
+export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSuccess, eventTitle = "Community Event", eventId, eventOrganiserEmail }) {
 
   const [form, setForm] = useState({
     name: "",
@@ -43,7 +43,7 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
       });
     }
 
-    
+
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.contact.trim()) newErrors.contact = "Contact number is required";
     if (!form.email.trim()) newErrors.email = "Email is required";
@@ -93,11 +93,15 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
           pauseOnHover: true,
           draggable: true,
         });
+
+
         setForm({ name: "", email: "", contact: "", notes: "" });
-        // Delay modal close to allow toast to show
+
         setTimeout(() => {
           const savedPosition = sessionStorage.getItem('eventsScroll');
           onClose();
+          
+          if (typeof onVolunteerSuccess === "function") onVolunteerSuccess();
           if (savedPosition) {
             window.scrollTo(0, parseInt(savedPosition));
             sessionStorage.removeItem('eventsScroll');
@@ -127,7 +131,6 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   // Handle scroll locking and position restoration
   useEffect(() => {
     if (!isOpen) {
-      // On modal close, restore scroll position and cleanup
       const savedPosition = sessionStorage.getItem('eventsScroll');
       if (savedPosition) {
         document.body.style.position = '';
