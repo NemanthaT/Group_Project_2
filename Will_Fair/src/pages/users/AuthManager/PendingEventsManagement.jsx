@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Clock, ClipboardList, Trash2 } from "lucide-react";
 import axios from "axios"; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -166,7 +167,7 @@ const PendingEventsManagement = ({ onCountChange }) => {
   };
 
   const statsCards = [
-    { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" }
+    { value: stats.pending, label: "Pending", icon: <Clock size={28} />, color: "#f59e0b" }
   ];
 
   // Helper function to format date
@@ -205,7 +206,7 @@ const PendingEventsManagement = ({ onCountChange }) => {
             className={`pending-events-tab-button ${activeTab === 'approval' ? 'pending-events-tab-active' : ''}`}
             onClick={() => setActiveTab('approval')}
           >
-            <span className="tab-icon">📋</span>
+            <span className="tab-icon"><ClipboardList size={20} /></span>
             Pending Approval
             {tabCounts.approval > 0 && (
               <span className="pending-events-tab-badge">{tabCounts.approval}</span>
@@ -215,7 +216,7 @@ const PendingEventsManagement = ({ onCountChange }) => {
             className={`pending-events-tab-button ${activeTab === 'deletion' ? 'pending-events-tab-active' : ''}`}
             onClick={() => setActiveTab('deletion')}
           >
-            <span className="tab-icon">🗑️</span>
+            <span className="tab-icon"><Trash2 size={20} /></span>
             Pending Deletion
             {tabCounts.deletion > 0 && (
               <span className="pending-events-tab-badge">{tabCounts.deletion}</span>
@@ -229,7 +230,7 @@ const PendingEventsManagement = ({ onCountChange }) => {
           <div className="authmanager-stat-card-full" key={idx}>
             <div
               className="authmanager-stat-icon"
-              style={{ backgroundColor: card.color + "15", color: card.color }}
+              style={{ color: card.color }}
             >
               {card.icon}
             </div>
