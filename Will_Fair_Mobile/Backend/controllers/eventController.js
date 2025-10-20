@@ -85,6 +85,14 @@ const getEventByIdController = async (req, res) => {
             ? (formatDate(ev.start_date) || '') + (ev.end_date ? ` to ${formatDate(ev.end_date)}` : '')
             : (formatDate(ev.date) || formatDate(ev.start_date) || '');
 
+        // Process documents to include full URLs
+        const documents = (ev.documents || []).map(doc => ({
+            ...doc,
+            url: doc.path 
+                ? (String(doc.path).startsWith('http') ? String(doc.path) : `${host}/${String(doc.path).replace(/^\/+/, '')}`)
+                : ''
+        }));
+
         const mapped = {
             id: ev.event_id || ev.id,
             title: ev.name || ev.title || '',
@@ -97,8 +105,9 @@ const getEventByIdController = async (req, res) => {
             volunteersSigned: Number(ev.volunteers_signed) || 0,
             image,
             date,
+            eventKey: ev.event_key || '',
             organiser: ev.organiser || null,
-            documents: ev.documents || [],
+            documents: documents,
             raw: ev
         };
 

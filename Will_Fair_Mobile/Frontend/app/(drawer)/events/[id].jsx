@@ -31,7 +31,7 @@ export default function EventDetailsScreen() {
       setError(null);
       try {
         console.log('Fetching event details for ID:', id);
-        const res = await axios.get(`${API_BASE}/events/${id}`);
+        const res = await axios.get(`${API_BASE}/api/events/${id}`);
         console.log('Event details received:', res.data);
         const data = res.data;
         
