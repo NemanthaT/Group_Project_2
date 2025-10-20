@@ -34,7 +34,7 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
     //Organiser Email Check
     if (form.email.trim() === eventOrganiserEmail) {
       newErrors.email = "Organizer cannot register here!";
-      toast.error("Organizers cannot volunteer for their own events!", {
+      toast.error("Organizers cannot volunteer for their own event!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -45,7 +45,25 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
 
 
     if (!form.name.trim()) newErrors.name = "Name is required";
-    if (!form.contact.trim()) newErrors.contact = "Contact number is required";
+    if (!form.contact.trim()) {
+      newErrors.contact = "Contact number is required";
+    } else {
+      const contact = form.contact.trim();
+
+      // Mobile numbers starting with 07X, 10 digits
+      const mobileRegex = /^07\d{8}$/;
+
+      // Landline numbers: 011, 021, etc., 10 digits
+      const landlineRegex = /^0\d{9}$/;
+
+      // Numbers with +94 prefix
+      const plus94Regex = /^\+94\d{9}$/;
+
+      if (!(mobileRegex.test(contact) || landlineRegex.test(contact) || plus94Regex.test(contact))) {
+        newErrors.contact = "Enter a valid Sri Lankan phone number (e.g. 0712345678, +94712345678)";
+      }
+    }
+
     if (!form.email.trim()) newErrors.email = "Email is required";
 
 
@@ -100,7 +118,7 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
         setTimeout(() => {
           const savedPosition = sessionStorage.getItem('eventsScroll');
           onClose();
-          
+
           if (typeof onVolunteerSuccess === "function") onVolunteerSuccess();
           if (savedPosition) {
             window.scrollTo(0, parseInt(savedPosition));
