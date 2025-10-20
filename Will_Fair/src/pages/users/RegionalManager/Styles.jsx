@@ -6,7 +6,7 @@ const styles = {
   dashboardSubtitle: { fontSize: '16px', color: '#6b7280' },
   navContainer: { display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '30px', marginTop:'150px' },
   navBtn: { padding: '12px 32px', border: '2px solid #e5e7eb', background: 'white', borderRadius: '8px', fontSize: '16px', fontWeight: '600', color: '#6b7280', cursor: 'pointer', transition: 'all 0.2s' },
-  navBtnActive: { background: 'linear-gradient(135deg, #667eea, #764ba2)', borderColor: '#667eea', color: 'white' },
+  navBtnActive: { background: '#667eea', borderColor: '#667eea', color: 'white' },
   statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '24px', marginTop: '30px' },
   statCard: { background: 'white', borderRadius: '12px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)' },
   statIcon: { width: '56px', height: '56px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' },
