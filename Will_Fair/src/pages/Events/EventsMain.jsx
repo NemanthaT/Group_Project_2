@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import { EVENT_OPTIONS, withPlaceholder } from '@/constants/eventOptions';
 
@@ -21,14 +21,13 @@ function FeaturedContent() {
     skills: ''
   });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 9; // 3x3 grid
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Add Event modal state
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 9;
+
   const [showAddModal, setShowAddModal] = useState(false);
 
-  //Volunteer Modal State
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -36,7 +35,6 @@ function FeaturedContent() {
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [eventsError, setEventsError] = useState(null);
 
-  // fetch events on mount (use axios pattern)
   const fetchEvents = async () => {
     setLoadingEvents(true);
     setEventsError(null);
@@ -45,7 +43,6 @@ function FeaturedContent() {
       const data = res.data;
       if (!data || !data.success) throw new Error(data?.message || 'Failed to load events');
 
-      // Backend now returns frontend-ready event objects. Use them directly.
       setOpportunities(data.events || []);
     } catch (err) {
       console.error('Error fetching events', err);
@@ -57,16 +54,46 @@ function FeaturedContent() {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
 
-  //Save scroll position on mount
+    // Don't start interval if any modal is open
+    if (showAddModal || showVolunteerModal) {
+      return;
+    }
+
+    let interval = setInterval(() => {
+      fetchEvents();
+    }, 30000);
+    
+    const resetTimer = () => {
+      clearInterval(interval);
+      interval = setInterval(() => {
+        fetchEvents();
+      }, 30000);
+    };
+
+    window.addEventListener('click', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+    window.addEventListener('mousemove', resetTimer);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('click', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      window.removeEventListener('scroll', resetTimer);
+      window.removeEventListener('mousemove', resetTimer);
+    };
+  }, [showAddModal, showVolunteerModal]);
+
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
     if (scrollY) {
-      window.scrollTo(0, parseInt(scrollY));
-      sessionStorage.removeItem('eventsScroll'); //Clear saved position(optional)
+      // Use requestAnimationFrame to ensure the scroll happens after render
+      requestAnimationFrame(() => {
+        window.scrollTo(0, parseInt(scrollY));
+        sessionStorage.removeItem('eventsScroll');
+      });
     }
-
   }, []);
 
   const handleFilterChange = (e, filterName) => {
@@ -74,11 +101,21 @@ function FeaturedContent() {
       ...filters,
       [filterName]: e.target.value
     });
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    setCurrentPage(1); 
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); 
   };
 
   const filteredOpportunities = opportunities.filter(opp => {
+
+    const matchesSearch = searchQuery === '' || 
+      opp.title.toLowerCase().includes(searchQuery.toLowerCase());
+
     return (
+      matchesSearch &&
       (filters.type === '' || opp.type === filters.type) &&
       (filters.commitment === '' || opp.commitment === filters.commitment) &&
       (filters.location === '' || opp.location === filters.location) &&
@@ -97,13 +134,11 @@ function FeaturedContent() {
     return 0;
   });
 
-  // Calculate pagination
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
   const currentEvents = sortedOpportunities.slice(indexOfFirstEvent, indexOfLastEvent);
   const totalPages = Math.ceil(sortedOpportunities.length / eventsPerPage);
 
-  // Pagination handlers
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -145,10 +180,8 @@ function FeaturedContent() {
       
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Refresh the events list
       await fetchEvents();
       
-      // Close the modal
       setShowAddModal(false);
       
       return { success: true };
@@ -181,6 +214,48 @@ function FeaturedContent() {
 
       <section className="filters">
         <div className="filter-container">
+          <div className="filter-search-row">
+            <div className="search-bar">
+              <svg 
+                className="search-icon" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search events by name..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              {searchQuery && (
+                <button 
+                  className="search-clear"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCurrentPage(1);
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="search-results-info">
+                Found {filteredOpportunities.length} event{filteredOpportunities.length !== 1 ? 's' : ''} matching "{searchQuery}"
+              </div>
+            )}
+          </div>
+
           <div className="filter-dropdown">
             <select
               className="filter-select"
@@ -267,31 +342,27 @@ function FeaturedContent() {
 
       <AddEventModal
         isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          fetchEvents();
+        }}
         onSubmit={handleEventSubmit}
       />
 
       <VolunteerEventModal
         isOpen={showVolunteerModal}
-        onClose={() => setShowVolunteerModal(false)}
-        onSubmit={(data) => {
-          console.log("Volunteer registered:", data);
-          console.log("For event:", selectedEvent);
-          // You can add your POST request to backend here
+        onClose={() => {
+          setShowVolunteerModal(false);
+          setSelectedEvent(null);
+          fetchEvents();
         }}
-        event={selectedEvent}
+        eventId={selectedEvent?.id}
+        eventTitle={selectedEvent?.title}
       />
 
 
       <section className="programs">
         <div className="programs-container">
-          {/* Pagination info */}
-          {sortedOpportunities.length > 0 && (
-            <div className="pagination-info">
-              Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
-            </div>
-          )}
-
           <div className="programs-grid">
             {currentEvents.map(opp => (
               <div className="program-card" key={opp.id}>
@@ -305,7 +376,6 @@ function FeaturedContent() {
                   <h3 className="card-title">{opp.title}</h3>
                   <p className="card-description">{opp.description}</p>
 
-                  {/* Volunteer progress bar */}
                   <div className="progress-bar">
                     <div
                       className="progress-fill"
@@ -329,19 +399,24 @@ function FeaturedContent() {
 
                   <div className="card-actions">
                     <button
-                      className="btn btn-outline"
+                      className="btn-main btn-outline-main"
                       onClick={() => {
-                        sessionStorage.setItem('eventsScroll', window.scrollY); //Save Scroll Position
+                        sessionStorage.setItem('eventsScroll', window.scrollY.toString());
                         navigate(`/Events/${opp.id}`, { state: { opp } });
                       }}
                     >
                       Details
                     </button>
                     <button
-                      className="btn btn-primary"
+                      className="btn-main btn-primary-main"
                       onClick={() => {
-                        setSelectedEvent(opp);        // store which event was clicked
-                        setShowVolunteerModal(true);  // open modal
+                        const currentPosition = window.scrollY;
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${currentPosition}px`;
+                        document.body.style.width = '100%';
+                        sessionStorage.setItem('eventsScroll', currentPosition.toString());
+                        setSelectedEvent(opp);
+                        setShowVolunteerModal(true);
                       }}
                     >
                       Volunteer
@@ -353,7 +428,12 @@ function FeaturedContent() {
             ))}
           </div>
 
-          {/* Pagination Controls */}
+          {sortedOpportunities.length > 0 && (
+            <div className="pagination-info">
+              Showing {indexOfFirstEvent + 1} - {Math.min(indexOfLastEvent, sortedOpportunities.length)} of {sortedOpportunities.length} events
+            </div>
+          )}
+
           {totalPages > 1 && (
             <div className="pagination-container">
               <button 
@@ -368,7 +448,6 @@ function FeaturedContent() {
                 {[...Array(totalPages)].map((_, index) => {
                   const pageNumber = index + 1;
                   
-                  // Show first page, last page, current page, and adjacent pages
                   if (
                     pageNumber === 1 ||
                     pageNumber === totalPages ||
@@ -405,7 +484,6 @@ function FeaturedContent() {
         </div>
       </section>
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

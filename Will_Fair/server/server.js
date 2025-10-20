@@ -11,6 +11,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import volunteerRoutes from "./routes/volunteerRoutes.js";
 
 
 const app = express();
@@ -31,6 +32,8 @@ app.use("/admin", adminRoutes);
 app.use("/events", eventRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
+
+app.use("/api/volunteers", volunteerRoutes); // New volunteer routes
 
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");

@@ -1,8 +1,10 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById, getVolunteerListByEvent } from "../models/eventModel.js";
+import { sendEmail } from "../services/emailService.js";
+import { eventCreationTemplate, volunteerUnregistrationTemplate, volunteerListTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
 import path from "path";
 
-// Helper to format a date value into YYYY-MM-DD (safe)
+// Formats a date value into YYYY-MM-DD string safely
 const formatDate = (d) => {
     if (!d) return '';
     try {
@@ -12,7 +14,7 @@ const formatDate = (d) => {
     } catch (e) { void e; return String(d); }
 };
 
-// Helper to move file from temp to final destination
+// Moves a file from temporary location to final destination
 const moveFile = (file, destinationPath) => {
     return new Promise((resolve, reject) => {
         const sourcePath = file.path;
@@ -26,14 +28,14 @@ const moveFile = (file, destinationPath) => {
     });
 };
 
-// Helper to ensure directory exists
+// Ensures a directory exists, creating it recursively if needed
 const ensureDir = (dirPath) => {
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
 };
 
-//Controller to get all events and return them in a frontend-friendly shape
+// Retrieves all events and returns them in a frontend-friendly format
 export const getEventsController = async (req, res) => {
     try {
         const result = await getEvents();
@@ -41,7 +43,6 @@ export const getEventsController = async (req, res) => {
             return res.status(400).json({ success: false, error: result.message });
         }
 
-        // Build absolute base for image URLs from request (does not change server.js)
         const host = `${req.protocol}://${req.get('host')}`;
 
         const mapped = (result.events || []).map(ev => {
@@ -67,7 +68,7 @@ export const getEventsController = async (req, res) => {
                 volunteersSigned: Number(ev.volunteers_signed) || 0,
                 image,
                 date,
-                raw: ev // include raw row for any future needs
+                raw: ev
             };
         });
 
@@ -78,7 +79,7 @@ export const getEventsController = async (req, res) => {
     }
 };
 
-// Controller for creating a new event
+// Creates a new event with organizer details, images, and documents
 export const createEvent = async (req, res) => {
     const {
         name,
@@ -104,7 +105,6 @@ export const createEvent = async (req, res) => {
     console.log("Image file:", image);
     console.log("Documents:", documents);
 
-    // Validate required fields
     if (!name || !location || !type || !commitment || !skills || !description || !contactName || !contactEmail || !contactNumber) {
         return res.status(400).json({
             success: false,
@@ -112,7 +112,6 @@ export const createEvent = async (req, res) => {
         });
     }
 
-    // Validate date fields
     const isRangeBool = isRange === 'true' || isRange === true;
     if (!isRangeBool && !date) {
         return res.status(400).json({
@@ -127,7 +126,6 @@ export const createEvent = async (req, res) => {
         });
     }
 
-    // Validate image upload
     if (!image) {
         return res.status(400).json({
             success: false,
@@ -135,7 +133,6 @@ export const createEvent = async (req, res) => {
         });
     }
 
-    // Validate documents upload
     if (!documents || documents.length === 0) {
         return res.status(400).json({
             success: false,
@@ -144,7 +141,6 @@ export const createEvent = async (req, res) => {
     }
 
     try {
-        // Step 1: Create organiser
         const organiserResult = await addOrganiser({
             name: contactName,
             email: contactEmail,
@@ -160,7 +156,6 @@ export const createEvent = async (req, res) => {
 
         const organiserId = organiserResult.organiserId;
 
-        // Step 2: Create event with temporary image path
         const eventResult = await addEvent({
             organiserId,
             name,
@@ -174,7 +169,7 @@ export const createEvent = async (req, res) => {
             type,
             commitment,
             skills,
-            imagePath: image.path // temporary path for now
+            imagePath: image.path
         });
 
         if (!eventResult.success) {
@@ -185,27 +180,24 @@ export const createEvent = async (req, res) => {
         }
 
         const eventId = eventResult.eventId;
+        const eventKey = eventResult.eventKey;
 
-        // Step 3: Move files from temp to final destination
         const eventDir = path.join('uploads', 'events', String(eventId));
         const docsDir = path.join(eventDir, 'docs');
         
         ensureDir(eventDir);
         ensureDir(docsDir);
 
-        // Move image
         const imageExt = path.extname(image.originalname);
         const imageName = `event_image${imageExt}`;
         const finalImagePath = path.join(eventDir, imageName).replace(/\\/g, '/');
         await moveFile(image, finalImagePath);
 
-        // Update event with final image path using model function
         const updateResult = await updateEventImage(eventId, finalImagePath);
         if (!updateResult.success) {
             console.error("Warning: Failed to update image path:", updateResult.message);
         }
 
-        // Step 4: Move documents and add to database
         const documentData = [];
         for (let i = 0; i < documents.length; i++) {
             const doc = documents[i];
@@ -221,11 +213,33 @@ export const createEvent = async (req, res) => {
             });
         }
 
-        // Step 5: Add documents to database
         const docsResult = await addDocuments(eventId, documentData);
 
         if (!docsResult.success) {
             console.error("Warning: Failed to add documents to database:", docsResult.message);
+        }
+
+        try {
+            const emailContent = eventCreationTemplate({
+                title: name,
+                description: description,
+                location: location,
+                date: isRangeBool ? `${startDate} to ${endDate}` : date,
+                time: commitment,
+                secretKey: eventKey,
+                organizerName: contactName
+            });
+
+            await sendEmail({
+                to: contactEmail,
+                subject: emailContent.subject,
+                text: emailContent.text,
+                html: emailContent.html
+            });
+
+            console.log(`✅ Event creation email sent to ${contactEmail}`);
+        } catch (emailError) {
+            console.error("⚠️ Failed to send event creation email:", emailError.message);
         }
 
         return res.status(201).json({
@@ -237,7 +251,6 @@ export const createEvent = async (req, res) => {
     } catch (err) {
         console.error("Error in createEvent:", err);
         
-        // Clean up uploaded files on error
         try {
             if (image && fs.existsSync(image.path)) {
                 fs.unlinkSync(image.path);
@@ -258,4 +271,234 @@ export const createEvent = async (req, res) => {
             error: "Server error during event creation"
         });
     }
+};
+
+// Processes volunteer withdrawal from an event and sends confirmation email
+export const withdrawVolunteerController = async (req, res) => {
+  try {
+    const { email, volunteerKey } = req.body;
+    
+    if (!email || !volunteerKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and volunteer key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!volunteerKey.startsWith('VOL-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid volunteer key format'
+      });
+    }
+    
+    const result = await withdrawVolunteer(email, volunteerKey);
+    
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    const eventResult = await getEventById(result.volunteer.event_id);
+    
+    if (eventResult.success) {
+      try {
+        const emailContent = volunteerUnregistrationTemplate({
+          volunteerName: result.volunteer.volunteer_name,
+          eventTitle: eventResult.event.name
+        });
+
+        await sendEmail({
+          to: email,
+          subject: emailContent.subject,
+          text: emailContent.text,
+          html: emailContent.html
+        });
+
+        console.log(`✅ Volunteer unregistration email sent to ${email}`);
+      } catch (emailError) {
+        console.error('⚠️ Failed to send unregistration email:', emailError.message);
+      }
+    } else {
+      console.error('⚠️ Could not fetch event details for unregistration email');
+    }
+    
+    return res.status(200).json({
+      ...result,
+      emailSent: true
+    });
+    
+  } catch (error) {
+    console.error('Error in withdrawVolunteerController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing withdrawal'
+    });
+  }
+};
+
+// Handles event organizer's request to delete their event
+export const requestEventDeletionController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    const result = await requestEventDeletion(email, eventKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in requestEventDeletionController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while processing deletion request'
+    });
+  }
+};
+
+// Handles organizer's request to get volunteer list for their event
+export const getVolunteerListController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    const result = await getVolunteerListByEvent(email, eventKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in getVolunteerListController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while retrieving volunteer list'
+    });
+  }
+};
+
+// Handles sending volunteer list via email to organizer
+export const sendVolunteerListEmailController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    const result = await getVolunteerListByEvent(email, eventKey);
+    
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    try {
+      const emailContent = volunteerListTemplate({
+        organizerName: result.organiserName,
+        eventTitle: result.eventName,
+        volunteers: result.volunteers,
+        totalVolunteers: result.volunteers.length
+      });
+
+      await sendEmail({
+        to: email,
+        subject: emailContent.subject,
+        text: emailContent.text,
+        html: emailContent.html
+      });
+
+      console.log(`✅ Volunteer list email sent to ${email}`);
+      
+      return res.status(200).json({
+        success: true,
+        message: 'Volunteer list has been sent to your email successfully!'
+      });
+    } catch (emailError) {
+      console.error('⚠️ Failed to send volunteer list email:', emailError.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send email. Please try again.'
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error in sendVolunteerListEmailController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while sending volunteer list'
+    });
+  }
 };
