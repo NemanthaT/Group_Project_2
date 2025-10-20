@@ -2,20 +2,75 @@ import './EventDetails.css';
 import FeaturedBg from '@/assets/images/featuredBg.png';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import AddEventModal from './AddEventModal';
+import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
+import RequestEventDeletionModal from './components/RequestEventDeletionModal';
+import WithdrawRegistrationModal from './components/WithdrawRegistrationModal';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function EventDetails({ opportunities = [] }) {
+function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [event, setEvent] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
+
+  // Button click handlers
+  const handleRequestDeletion = () => {
+    setShowDeletionModal(true);
+  };
+
+  const handleUnvolunteer = () => {
+    setShowWithdrawModal(true);
+  };
+
+  // Handle withdraw submission
+  const handleWithdrawSubmit = async (formData) => {
+    try {
+      await axios.post('http://localhost:5000/events/withdrawVolunteer', formData);
+      
+      toast.success('Registration withdrawn successfully!');
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Navigate to events main page
+      navigate('/Events');
+      
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to withdraw registration. Please try again.');
+      return { success: false, error };
+    }
+  };
+
+  // Handle delete request submission
+  const handleDeleteRequestSubmit = async (formData) => {
+    try {
+      await axios.post('http://localhost:5000/events/deleteRequest', formData);
+      
+      toast.success('Event deletion request submitted successfully!');
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Navigate to events main page
+      navigate('/Events');
+      
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to submit deletion request. Please try again.');
+      return { success: false, error };
+    }
+  };
 
   // Helper to ensure image URL is absolute
   const getImageUrl = (imagePath) => {
@@ -69,11 +124,33 @@ function EventDetails({ opportunities = [] }) {
     fetchEventDetails();
   }, [id]);
 
-  if (loadingEvent) return <div className="event-details not-found">Loading event...</div>;
-  if (eventError) return <div className="event-details not-found">{eventError}</div>;
+  if (loadingEvent) return (
+    <div className="event-details-loading-container">
+      <div className="event-details-loading-spinner"></div>
+      <p className="event-details-loading-text">Loading event details...</p>
+    </div>
+  );
+
+  if (eventError) return (
+    <div className="event-details-error-container">
+      <p className="event-details-error-text">{eventError}</p>
+    </div>
+  );
 
   return (
     <div className="event-details">
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {/* Banner */}
       <div className="event-title-banner">
         <div className="container">
@@ -143,20 +220,41 @@ function EventDetails({ opportunities = [] }) {
             <span className="content">{event.organizer} – {event.organizerEmail}</span>
           </div>
 
-          <div className="event-actions">
-            <button
-              className="btn btn-outline"
-              onClick={() => navigate('/Events')}
-            >
-              Back
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowVolunteerModal(true)}
-            >
-              Volunteer
-            </button>
+          {/* Action Buttons - Split into two groups */}
+          <div className="event-actions-container">
+            {/* Primary Actions */}
+            <div className="primary-actions">
+              <button
+                className="btn btn-back-to-events"
+                onClick={() => navigate('/Events')}
+              >
+                ← Back to Events
+              </button>
+              <button
+                className="btn btn-volunteer"
+                onClick={() => setShowVolunteerModal(true)}
+              >
+                Join as Volunteer
+              </button>
+            </div>
 
+            {/* Secondary Actions */}
+            <div className="secondary-actions">
+              <button
+                className="btn btn-withdraw"
+                onClick={handleUnvolunteer}
+                title="Withdraw from this event"
+              >
+                Withdraw Registration
+              </button>
+              <button
+                className="btn btn-delete-request"
+                onClick={handleRequestDeletion}
+                title="Request event deletion (organizers only)"
+              >
+                Request Event Deletion
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -170,7 +268,24 @@ function EventDetails({ opportunities = [] }) {
         <VolunteerEventModal
           isOpen={showVolunteerModal}
           onClose={() => setShowVolunteerModal(false)}
-          event={event}
+          eventId={event.id}          
+          eventTitle={event.title} 
+        />
+      )}
+
+      {showDeletionModal && (
+        <RequestEventDeletionModal
+          isOpen={showDeletionModal}
+          onClose={() => setShowDeletionModal(false)}
+          onSubmit={handleDeleteRequestSubmit}
+        />
+      )}
+
+      {showWithdrawModal && (
+        <WithdrawRegistrationModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          onSubmit={handleWithdrawSubmit}
         />
       )}
     </div>
