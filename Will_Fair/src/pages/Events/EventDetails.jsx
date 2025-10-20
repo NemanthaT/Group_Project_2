@@ -23,7 +23,6 @@ function EventDetails() {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
 
-  // Button click handlers
   const handleRequestDeletion = () => {
     setShowDeletionModal(true);
   };
@@ -32,7 +31,7 @@ function EventDetails() {
     setShowWithdrawModal(true);
   };
 
-  // Handle withdraw submission
+  // Handles volunteer withdrawal and redirects to events page
   const handleWithdrawSubmit = async (formData) => {
     try {
       await axios.post('http://localhost:5000/events/withdrawVolunteer', formData);
@@ -104,10 +103,10 @@ function EventDetails() {
           volunteersNeeded: eventData.volunteers_needed,
           volunteersSigned: eventData.volunteers_signed,
           organizer: eventData.organiser?.name,
-          organizerEmail: eventData.organiser?.email,  // <-- NEW
-          date: eventData.date,                         // <-- NEW
-          startDate: eventData.start_date,              // <-- NEW
-          endDate: eventData.end_date,                  // <-- NEW
+          organizerEmail: eventData.organiser?.email,  
+          date: eventData.date,                         
+          startDate: eventData.start_date,              
+          endDate: eventData.end_date,                  
           image: eventData.image_path
         };
 
@@ -163,9 +162,6 @@ function EventDetails() {
           ></div>
 
           <div className="event-info">
-            {/* <div className="event-header">
-            <h2>{event.organizer}</h2>
-          </div> */}
 
 
             <div className="event-date">

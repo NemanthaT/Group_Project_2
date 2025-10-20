@@ -16,7 +16,6 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   const [errors, setErrors] = useState({});
   const fieldRefs = useRef({});
 
-  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setForm({ name: "", email: "", contact: "", notes: "" });
@@ -28,7 +27,8 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     setForm(prev => ({ ...prev, [key]: value }));
     setErrors(prev => ({ ...prev, [key]: null }));
   };
-  //Validation of fields
+
+  // Validates required fields and email format
   const validate = () => {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
