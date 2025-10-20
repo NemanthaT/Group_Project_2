@@ -60,32 +60,67 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       Alert.alert('Limit', 'Only one image can be submitted.');
       return;
     }
-    let result = await ImagePicker.launchImageLibraryAsync({
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
       allowsEditing: true,
-      quality: 0.8,
     });
-    if (!result.cancelled) {
-      setImageFile(result);
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImage = result.assets[0];
+      console.log("Selected Image:", selectedImage.uri);  // Add logging
+      setImageFile(selectedImage);
       setErrors(prev => ({ ...prev, image: null }));
     }
   };
+
 
   const handleDocumentPick = async () => {
     if (documentFiles.length >= 5) {
       Alert.alert('Limit', 'Maximum 5 PDF documents allowed.');
       return;
     }
-    let result = await DocumentPicker.getDocumentAsync({
-      type: 'application/pdf',
-      multiple: true
-    });
-    if (result.type === 'success') {
-      setDocumentFiles(prev => {
-        const newFiles = [...prev, result];
-        return newFiles.slice(0, 5);
+    
+    try {
+      let result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf',
+        multiple: true,
+        copyToCacheDirectory: true
       });
-      setErrors(prev => ({ ...prev, documents: null }));
+      
+      if (result.canceled === false && result.assets) {
+        // Handle the new API format with multiple assets
+        const newFiles = [...documentFiles];
+        
+        for (const asset of result.assets) {
+          if (newFiles.length < 5) {
+            newFiles.push({
+              uri: asset.uri,
+              name: asset.name,
+              type: 'application/pdf',
+              size: asset.size
+            });
+          }
+        }
+        
+        setDocumentFiles(newFiles);
+        setErrors(prev => ({ ...prev, documents: null }));
+        
+        if (result.assets.length > 5 - documentFiles.length) {
+          Alert.alert('Some files not added', `Only added ${5 - documentFiles.length} file(s) to stay within the 5 PDF limit.`);
+        }
+      } else if (result.type === 'success') {
+        // Handle legacy format for backward compatibility
+        setDocumentFiles(prev => {
+          const newFiles = [...prev, result];
+          return newFiles.slice(0, 5);
+        });
+        setErrors(prev => ({ ...prev, documents: null }));
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick document. Please try again.');
+      console.error('Document picking error:', error);
     }
   };
 
@@ -123,11 +158,15 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       formData.append('date', form.date);
     }
 
-    if (imageFile) {
+    if (imageFile && imageFile.uri) {
+      const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
+      const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
+      const imageType = imageFile.type || 'image/jpeg';
+      
       formData.append('image', {
-        uri: Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri,
-        name: 'event_image.jpg',
-        type: 'image/jpeg'
+        uri: imageUri,
+        name: imageName,
+        type: imageType
       });
     }
 
@@ -297,22 +336,44 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick} disabled={!!imageFile}>
               <Text style={styles.uploadText}>{imageFile ? 'Image selected' : 'Choose image'}</Text>
             </TouchableOpacity>
-            {imageFile && <Text style={{ marginTop: 4 }}>{imageFile.uri.split('/').pop()}</Text>}
+            {imageFile && imageFile.uri && (
+              <View style={styles.fileItem}>
+                <Text style={styles.fileName}>{imageFile.uri.split('/').pop()}</Text>
+                <TouchableOpacity onPress={() => setImageFile(null)} style={styles.removeBtn}>
+                  <Text style={styles.removeText}>✕</Text>
+                </TouchableOpacity>
+              </View>
+            )}
             {errors.image && <Text style={styles.err}>{errors.image}</Text>}
 
             {/* Proof Documents (PDF) (required) */}
-            <Text style={styles.label}>Proof Documents (PDF) (required)</Text>
-            <TouchableOpacity style={styles.uploadBox} onPress={handleDocumentPick} disabled={documentFiles.length >= 5}>
-              <Text style={styles.uploadText}>{documentFiles.length < 5 ? 'Choose PDF' : 'Max 5 PDFs'}</Text>
+            <Text style={styles.label}>Proof Documents (PDF) (required) - Max 5</Text>
+            <TouchableOpacity 
+              style={[styles.uploadBox, documentFiles.length >= 5 ? styles.uploadBoxDisabled : {}]} 
+              onPress={handleDocumentPick} 
+              disabled={documentFiles.length >= 5}
+            >
+              <Text style={styles.uploadText}>
+                {documentFiles.length < 5 ? `Select PDF Files (${documentFiles.length}/5)` : 'Max 5 PDFs reached'}
+              </Text>
             </TouchableOpacity>
-            {documentFiles.map((file, idx) => (
-              <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                <Text>{file.name}</Text>
-                <TouchableOpacity onPress={() => removeDocument(idx)} style={{ marginLeft: 8 }}>
-                  <Text style={{ color: '#d9534f' }}>Remove</Text>
-                </TouchableOpacity>
+            
+            {documentFiles.length > 0 && (
+              <View style={styles.fileListContainer}>
+                <Text style={styles.fileListHeader}>Selected PDF Files:</Text>
+                {documentFiles.map((file, idx) => (
+                  <View key={idx} style={styles.fileItem}>
+                    <Text style={styles.fileName} numberOfLines={1} ellipsizeMode="middle">
+                      {file.name || `Document ${idx + 1}`}
+                    </Text>
+                    <TouchableOpacity onPress={() => removeDocument(idx)} style={styles.removeBtn}>
+                      <Text style={styles.removeText}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </View>
-            ))}
+            )}
+            
             {errors.documents && <Text style={styles.err}>{errors.documents}</Text>}
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
@@ -354,10 +415,48 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
+  uploadBoxDisabled: {
+    borderColor: '#ccc',
+    backgroundColor: '#f5f5f5',
+  },
   uploadText: {
     color: '#4d4187a3',
     fontWeight: '600',
     fontSize: 16,
+  },
+  fileListContainer: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 6,
+    padding: 8,
+  },
+  fileListHeader: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+    color: '#333',
+  },
+  fileItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 6,
+  },
+  fileName: {
+    flex: 1,
+    fontSize: 14,
+  },
+  removeBtn: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  removeText: {
+    color: '#d9534f',
+    fontSize: 16,
+    fontWeight: '600',
   },
   err: { color: '#d9534f', marginTop: 4 }
 });
