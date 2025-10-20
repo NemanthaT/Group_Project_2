@@ -33,6 +33,33 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     setErrors(prev => ({ ...prev, [key]: null }));
   };
 
+  const clearForm = () => {
+    setForm({
+      name: '',
+      isRange: false,
+      date: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+      volunteersNeeded: '5',
+      location: '',
+      type: '',
+      commitment: '',
+      skills: '',
+      contactName: '',
+      contactEmail: '',
+      contactNumber: ''
+    });
+    setImageFile(null);
+    setDocumentFiles([]);
+    setErrors({});
+  };
+
+  const handleClose = () => {
+    clearForm();
+    onClose && onClose();
+  };
+
   const sanitizePhoneNumber = (phone) => phone.replace(/\s+/g, '');
   const validatePhoneNumber = (phone) => /^\+94\d{9}$/.test(sanitizePhoneNumber(phone));
 
@@ -190,25 +217,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
 
       if (result && result.success) {
         Alert.alert('Success', 'Event created successfully!');
-        setForm({
-          name: '',
-          isRange: false,
-          date: '',
-          startDate: '',
-          endDate: '',
-          description: '',
-          volunteersNeeded: '5',
-          location: '',
-          type: '',
-          commitment: '',
-          skills: '',
-          contactName: '',
-          contactEmail: '',
-          contactNumber: ''
-        });
-        setImageFile(null);
-        setDocumentFiles([]);
-        setErrors({});
+        clearForm();
         onClose && onClose();
       }
     } catch (error) {
@@ -227,7 +236,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
         <View style={styles.card}>
           <View style={styles.header}>
             <Text style={styles.title}>Add Event</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 12 }}>
             {/* Event Name */}
@@ -391,7 +400,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             {errors.documents && <Text style={styles.err}>{errors.documents}</Text>}
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
-              <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={onClose}>
+              <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={handleClose}>
                 <Text>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.btn, styles.btnPrimary]} onPress={handleSubmit} disabled={isSubmitting}>
