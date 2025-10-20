@@ -1,4 +1,4 @@
-import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById } from "../models/eventModel.js";
+import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById, getVolunteerListByEvent } from "../models/eventModel.js";
 import { sendEmail } from "../services/emailService.js";
 import { eventCreationTemplate, volunteerUnregistrationTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
@@ -384,6 +384,50 @@ export const requestEventDeletionController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Server error occurred while processing deletion request'
+    });
+  }
+};
+
+// Handles organizer's request to get volunteer list for their event
+export const getVolunteerListController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    const result = await getVolunteerListByEvent(email, eventKey);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(404).json(result);
+    }
+    
+  } catch (error) {
+    console.error('Error in getVolunteerListController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while retrieving volunteer list'
     });
   }
 };

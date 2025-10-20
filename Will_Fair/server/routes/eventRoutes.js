@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { getEventsController, createEvent, withdrawVolunteerController, requestEventDeletionController } from "../controllers/eventController.js";
+import { getEventsController, createEvent, withdrawVolunteerController, requestEventDeletionController, getVolunteerListController } from "../controllers/eventController.js";
 import { getEventById } from "../models/eventModel.js";
 
 const router = express.Router();
@@ -43,6 +43,7 @@ router.post('/createEvent', eventUpload.fields([
 
 router.post('/withdrawVolunteer', withdrawVolunteerController);
 router.post('/deleteRequest', requestEventDeletionController);
+router.post('/getVolunteerList', getVolunteerListController);
 
 // GET event by ID
 router.get('/:id', async (req, res) => {
