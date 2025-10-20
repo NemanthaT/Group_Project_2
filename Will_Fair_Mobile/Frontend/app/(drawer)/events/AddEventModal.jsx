@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
+import { Modal, View, Text, TextInput, ScrollView, StyleSheet, Platform, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -31,6 +31,33 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const updateField = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
     setErrors(prev => ({ ...prev, [key]: null }));
+  };
+
+  const clearForm = () => {
+    setForm({
+      name: '',
+      isRange: false,
+      date: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+      volunteersNeeded: '5',
+      location: '',
+      type: '',
+      commitment: '',
+      skills: '',
+      contactName: '',
+      contactEmail: '',
+      contactNumber: ''
+    });
+    setImageFile(null);
+    setDocumentFiles([]);
+    setErrors({});
+  };
+
+  const handleClose = () => {
+    clearForm();
+    onClose && onClose();
   };
 
   const sanitizePhoneNumber = (phone) => phone.replace(/\s+/g, '');
@@ -138,76 +165,66 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       return;
     }
 
+    if (!onSubmit) {
+      Alert.alert('Error', 'Submit handler not provided');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
-    let formData = new FormData();
-    Object.entries(form).forEach(([k, v]) => {
-      if (k === 'volunteersNeeded') {
-        formData.append(k, Number(v));
+    try {
+      const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
+      let formData = new FormData();
+      Object.entries(form).forEach(([k, v]) => {
+        if (k === 'volunteersNeeded') {
+          formData.append(k, Number(v));
+        } else {
+          formData.append(k, v);
+        }
+      });
+      formData.append('contactNumber', sanitizedPhone);
+
+      if (form.isRange) {
+        formData.append('startDate', form.startDate);
+        formData.append('endDate', form.endDate);
       } else {
-        formData.append(k, v);
+        formData.append('date', form.date);
       }
-    });
-    formData.append('contactNumber', sanitizedPhone);
 
-    if (form.isRange) {
-      formData.append('startDate', form.startDate);
-      formData.append('endDate', form.endDate);
-    } else {
-      formData.append('date', form.date);
-    }
+      if (imageFile && imageFile.uri) {
+        const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
+        const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
+        const imageType = imageFile.type || 'image/jpeg';
+        
+        formData.append('image', {
+          uri: imageUri,
+          name: imageName,
+          type: imageType
+        });
+      }
 
-    if (imageFile && imageFile.uri) {
-      console.log('=== IMAGE FILE DEBUG ===');
-      console.log('Full imageFile object:', JSON.stringify(imageFile, null, 2));
-      
-      formData.append('image', {
-        uri: imageFile.uri,
-        type: imageFile.mimeType || imageFile.type || 'image/jpeg',
-        name: imageFile.fileName || `event_image_${Date.now()}.jpg`
+      documentFiles.forEach((file, idx) => {
+        formData.append('documents', {
+          uri: file.uri,
+          name: file.name || `document_${idx + 1}.pdf`,
+          type: 'application/pdf'
+        });
       });
-      
-      console.log('Image appended to FormData');
-    }
 
-    documentFiles.forEach((file, idx) => {
-      console.log(`=== DOCUMENT ${idx + 1} DEBUG ===`);
-      console.log('Full file object:', JSON.stringify(file, null, 2));
-      
-      formData.append('documents', {
-        uri: file.uri,
-        type: file.mimeType || 'application/pdf',
-        name: file.name || `event_document_${Date.now()}_${idx + 1}.pdf`
-      });
-      
-      console.log(`Document ${idx + 1} appended to FormData`);
-    });
+      console.log('Calling onSubmit with formData...');
+      const result = await onSubmit(formData);
+      console.log('onSubmit result:', result);
 
-    const result = await onSubmit(formData);
-    setIsSubmitting(false);
-
-    if (result && result.success) {
-      setForm({
-        name: '',
-        isRange: false,
-        date: '',
-        startDate: '',
-        endDate: '',
-        description: '',
-        volunteersNeeded: '5',
-        location: '',
-        type: '',
-        commitment: '',
-        skills: '',
-        contactName: '',
-        contactEmail: '',
-        contactNumber: ''
-      });
-      setImageFile(null);
-      setDocumentFiles([]);
-      setErrors({});
-      onClose && onClose();
+      if (result && result.success) {
+        Alert.alert('Success', 'Event created successfully!');
+        clearForm();
+        onClose && onClose();
+      }
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      Alert.alert('Error', 'An unexpected error occurred while creating the event');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -219,7 +236,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
         <View style={styles.card}>
           <View style={styles.header}>
             <Text style={styles.title}>Add Event</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 12 }}>
             {/* Event Name */}
@@ -383,7 +400,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             {errors.documents && <Text style={styles.err}>{errors.documents}</Text>}
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
-              <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={onClose}>
+              <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={handleClose}>
                 <Text>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.btn, styles.btnPrimary]} onPress={handleSubmit} disabled={isSubmitting}>

@@ -181,43 +181,38 @@ export default function EventsScreen() {
         onClose={() => setShowAddModal(false)} 
         onSubmit={async (formData) => {
           try {
-            console.log('Submitting event to backend...');
-            console.log('FormData keys:', Array.from(formData.keys ? formData.keys() : []));
+            console.log('Submitting event to API...');
             
-            // Use fetch instead of axios for proper FormData handling in React Native
-            const response = await fetch(`${API_BASE}/api/events`, {
-              method: 'POST',
+            const response = await axios.post(`${API_BASE}/api/events`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
-              body: formData
             });
-            
-            const data = await response.json();
-            console.log('Event creation response:', data);
-            
-            if (data.success) {
-              // Refresh events list
+
+            console.log('Event creation response:', response.data);
+
+            if (response.data.success) {
+              // Refresh events list after successful creation
               const res = await axios.get(`${API_BASE}/api/events`);
-              if (res.data.success) {
+              if (res.data && res.data.success) {
                 setOpportunities(res.data.events || []);
               }
+              
+              setShowAddModal(false);
               return { success: true };
             } else {
-              alert('Error: ' + (data.error || 'Failed to create event'));
+              alert(response.data.message || 'Failed to create event');
               return { success: false };
             }
           } catch (error) {
             console.error('Error creating event:', error);
             let errorMessage = 'Failed to create event';
             if (error.response) {
-              errorMessage = error.response.data?.error || error.message;
-            } else if (error.message) {
-              errorMessage = error.message;
-            } else {
-              errorMessage = 'Network error - cannot reach server';
+              errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+            } else if (error.request) {
+              errorMessage = 'Network error: Cannot connect to server';
             }
-            alert('Error: ' + errorMessage);
+            alert(errorMessage);
             return { success: false };
           }
         }} 

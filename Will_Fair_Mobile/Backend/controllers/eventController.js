@@ -85,6 +85,14 @@ const getEventByIdController = async (req, res) => {
             ? (formatDate(ev.start_date) || '') + (ev.end_date ? ` to ${formatDate(ev.end_date)}` : '')
             : (formatDate(ev.date) || formatDate(ev.start_date) || '');
 
+        // Process documents to include full URLs
+        const documents = (ev.documents || []).map(doc => ({
+            ...doc,
+            url: doc.path 
+                ? (String(doc.path).startsWith('http') ? String(doc.path) : `${host}/${String(doc.path).replace(/^\/+/, '')}`)
+                : ''
+        }));
+
         const mapped = {
             id: ev.event_id || ev.id,
             title: ev.name || ev.title || '',
@@ -97,8 +105,9 @@ const getEventByIdController = async (req, res) => {
             volunteersSigned: Number(ev.volunteers_signed) || 0,
             image,
             date,
+            eventKey: ev.event_key || '',
             organiser: ev.organiser || null,
-            documents: ev.documents || [],
+            documents: documents,
             raw: ev
         };
 
@@ -109,145 +118,309 @@ const getEventByIdController = async (req, res) => {
     }
 };
 
-// Controller to create a new event
-const createEventController = async (req, res) => {
+// Create new event with organizer and file uploads
+const createEventMobile = async (req, res) => {
     try {
-        console.log('=== CREATE EVENT REQUEST ===');
-        console.log('Body:', req.body);
-        console.log('Files:', req.files);
-        console.log('Content-Type:', req.headers['content-type']);
-        
-        // Log detailed file information
-        if (req.files) {
-            if (req.files.image) {
-                console.log('Image file details:', {
-                    fieldname: req.files.image[0].fieldname,
-                    originalname: req.files.image[0].originalname,
-                    filename: req.files.image[0].filename,
-                    path: req.files.image[0].path,
-                    size: req.files.image[0].size
-                });
-            }
-            if (req.files.documents) {
-                console.log('Document files count:', req.files.documents.length);
-                req.files.documents.forEach((doc, idx) => {
-                    console.log(`Document ${idx + 1}:`, {
-                        originalname: doc.originalname,
-                        filename: doc.filename,
-                        path: doc.path,
-                        size: doc.size
-                    });
-                });
-            }
-        }
+        console.log('=== CREATE EVENT REQUEST RECEIVED ===');
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+        console.log('Request headers:', req.headers);
+        console.log('=====================================');
 
-        // Extract form data
         const {
-            name, description, type, commitment, location, skills,
-            isRange, date, startDate, endDate,
-            volunteersNeeded,
-            contactName, contactEmail, contactNumber
-        } = req.body;
-
-        // Validate required fields
-        if (!name || !description || !type || !commitment || !location || !skills) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Missing required fields: name, description, type, commitment, location, skills' 
-            });
-        }
-
-        if (!contactName || !contactEmail || !contactNumber) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Missing contact information' 
-            });
-        }
-
-        // Validate date fields
-        const isRangeEvent = isRange === true || isRange === 'true';
-        if (!isRangeEvent && !date) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Date is required for non-range events' 
-            });
-        }
-        if (isRangeEvent && (!startDate || !endDate)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Start date and end date are required for range events' 
-            });
-        }
-
-        // Get uploaded files
-        const imageFile = req.files && req.files.image ? req.files.image[0] : null;
-        const documentFiles = req.files && req.files.documents ? req.files.documents : [];
-
-        if (!imageFile) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Event image is required' 
-            });
-        }
-
-        if (documentFiles.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'At least one PDF document is required' 
-            });
-        }
-
-        // Build image path (relative to server root)
-        const imagePath = imageFile.path.replace(/\\/g, '/');
-
-        // Build document paths
-        const documentPaths = documentFiles.map(doc => ({
-            filename: doc.originalname,
-            path: doc.path.replace(/\\/g, '/')
-        }));
-
-        // Prepare event data
-        const eventData = {
             name,
+            isRange,
+            date,
+            startDate,
+            endDate,
             description,
+            volunteersNeeded,
+            location,
             type,
             commitment,
-            location,
             skills,
-            isRange: isRangeEvent,
-            date: isRangeEvent ? null : date,
-            startDate: isRangeEvent ? startDate : null,
-            endDate: isRangeEvent ? endDate : null,
-            volunteersNeeded: Number(volunteersNeeded) || 0,
-            imagePath,
-            documentPaths,
             contactName,
             contactEmail,
             contactNumber
-        };
+        } = req.body;
 
-        console.log('Event data prepared:', eventData);
+        console.log('Create event request received:', req.body);
+        console.log('Files received:', req.files);
 
-        // Call model to create event
-        const result = await eventModel.createEvent(eventData);
+        // Validate required fields
+        if (!name) {
+            return res.status(400).json({ success: false, message: 'Event name is required' });
+        }
+        if (!description) {
+            return res.status(400).json({ success: false, message: 'Description is required' });
+        }
+        if (!volunteersNeeded) {
+            return res.status(400).json({ success: false, message: 'Number of volunteers needed is required' });
+        }
+        if (!location) {
+            return res.status(400).json({ success: false, message: 'Location is required' });
+        }
+        if (!type) {
+            return res.status(400).json({ success: false, message: 'Event type is required' });
+        }
+        if (!commitment) {
+            return res.status(400).json({ success: false, message: 'Commitment is required' });
+        }
+        if (!contactName) {
+            return res.status(400).json({ success: false, message: 'Contact name is required' });
+        }
+        if (!contactEmail) {
+            return res.status(400).json({ success: false, message: 'Contact email is required' });
+        }
+        if (!contactNumber) {
+            return res.status(400).json({ success: false, message: 'Contact number is required' });
+        }
 
-        if (!result.success) {
-            return res.status(500).json({ 
+        // Validate date fields based on isRange
+        const isRangeBool = isRange === 'true' || isRange === true;
+        if (isRangeBool) {
+            if (!startDate || !endDate) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Start date and end date are required for date range events' 
+                });
+            }
+        } else {
+            if (!date) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Date is required for single date events' 
+                });
+            }
+        }
+
+        console.log(`Creating event for organizer: ${contactName} (${contactEmail})`);
+
+        // Step 1: Add or update organizer
+        const organiserResult = await eventModel.addOrganiser({
+            name: contactName,
+            email: contactEmail,
+            phone: contactNumber
+        });
+
+        if (!organiserResult.success) {
+            return res.status(400).json({ 
                 success: false, 
-                error: result.message 
+                message: organiserResult.message || 'Failed to add organizer' 
             });
+        }
+
+        const organiserId = organiserResult.organiserId;
+        console.log('Organizer ID:', organiserId);
+
+        // Step 2: Create event record (without image path initially)
+        const eventResult = await eventModel.addEvent({
+            organiserId,
+            name,
+            isRange: isRangeBool,
+            date: isRangeBool ? null : date,
+            startDate: isRangeBool ? startDate : null,
+            endDate: isRangeBool ? endDate : null,
+            description,
+            volunteersNeeded: parseInt(volunteersNeeded),
+            location,
+            type,
+            commitment,
+            skills: skills || '',
+            imagePath: null // Will update after file upload
+        });
+
+        if (!eventResult.success) {
+            return res.status(400).json({ 
+                success: false, 
+                message: eventResult.message || 'Failed to create event' 
+            });
+        }
+
+        const eventId = eventResult.eventId;
+        console.log('Event created with ID:', eventId);
+
+        // Step 3: Handle image upload if present
+        if (req.files && req.files.image && req.files.image.length > 0) {
+            const imageFile = req.files.image[0];
+            const imagePath = `uploads/events/${imageFile.filename}`;
+            
+            const updateImageResult = await eventModel.updateEventImage(eventId, imagePath);
+            if (!updateImageResult.success) {
+                console.error('Failed to update event image:', updateImageResult.message);
+            } else {
+                console.log('Event image updated:', imagePath);
+            }
+        }
+
+        // Step 4: Handle document uploads if present
+        if (req.files && req.files.documents && req.files.documents.length > 0) {
+            const documents = req.files.documents.map(doc => ({
+                filename: doc.originalname,
+                path: `uploads/events/${doc.filename}`
+            }));
+
+            const addDocsResult = await eventModel.addDocuments(eventId, documents);
+            if (!addDocsResult.success) {
+                console.error('Failed to add event documents:', addDocsResult.message);
+            } else {
+                console.log('Documents added successfully:', documents.length);
+            }
         }
 
         return res.status(201).json({ 
             success: true, 
-            message: 'Event created successfully',
-            eventId: result.eventId
+            message: 'Event created successfully and is pending approval',
+            event: {
+                eventId: eventId,
+                eventKey: eventResult.eventKey,
+                name: name
+            }
         });
+
     } catch (err) {
-        console.error('Server error while creating event:', err);
-        return res.status(500).json({ 
+        console.error('Error creating event:', err);
+        res.status(500).json({ 
             success: false, 
-            error: 'Server error while creating event: ' + err.message 
+            message: 'Failed to create event',
+            error: err.message
+        });
+    }
+};
+
+// Simplified version without file uploads for testing
+const createEventMobileSimple = async (req, res) => {
+    try {
+        console.log('=== CREATE EVENT SIMPLE REQUEST ===');
+        console.log('Request body:', req.body);
+        console.log('====================================');
+
+        const {
+            name,
+            isRange,
+            date,
+            startDate,
+            endDate,
+            description,
+            volunteersNeeded,
+            location,
+            type,
+            commitment,
+            skills,
+            contactName,
+            contactEmail,
+            contactNumber
+        } = req.body;
+
+        // Validate required fields
+        if (!name) {
+            return res.status(400).json({ success: false, message: 'Event name is required' });
+        }
+        if (!description) {
+            return res.status(400).json({ success: false, message: 'Description is required' });
+        }
+        if (!volunteersNeeded) {
+            return res.status(400).json({ success: false, message: 'Number of volunteers needed is required' });
+        }
+        if (!location) {
+            return res.status(400).json({ success: false, message: 'Location is required' });
+        }
+        if (!type) {
+            return res.status(400).json({ success: false, message: 'Event type is required' });
+        }
+        if (!commitment) {
+            return res.status(400).json({ success: false, message: 'Commitment is required' });
+        }
+        if (!contactName) {
+            return res.status(400).json({ success: false, message: 'Contact name is required' });
+        }
+        if (!contactEmail) {
+            return res.status(400).json({ success: false, message: 'Contact email is required' });
+        }
+        if (!contactNumber) {
+            return res.status(400).json({ success: false, message: 'Contact number is required' });
+        }
+
+        // Validate date fields based on isRange
+        const isRangeBool = isRange === 'true' || isRange === true;
+        if (isRangeBool) {
+            if (!startDate || !endDate) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Start date and end date are required for date range events' 
+                });
+            }
+        } else {
+            if (!date) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Date is required for single date events' 
+                });
+            }
+        }
+
+        console.log(`Creating event for organizer: ${contactName} (${contactEmail})`);
+
+        // Step 1: Add or update organizer
+        const organiserResult = await eventModel.addOrganiser({
+            name: contactName,
+            email: contactEmail,
+            phone: contactNumber
+        });
+
+        if (!organiserResult.success) {
+            return res.status(400).json({ 
+                success: false, 
+                message: organiserResult.message || 'Failed to add organizer' 
+            });
+        }
+
+        const organiserId = organiserResult.organiserId;
+        console.log('Organizer ID:', organiserId);
+
+        // Step 2: Create event record
+        const eventResult = await eventModel.addEvent({
+            organiserId,
+            name,
+            isRange: isRangeBool,
+            date: isRangeBool ? null : date,
+            startDate: isRangeBool ? startDate : null,
+            endDate: isRangeBool ? endDate : null,
+            description,
+            volunteersNeeded: parseInt(volunteersNeeded),
+            location,
+            type,
+            commitment,
+            skills: skills || '',
+            imagePath: null
+        });
+
+        if (!eventResult.success) {
+            return res.status(400).json({ 
+                success: false, 
+                message: eventResult.message || 'Failed to create event' 
+            });
+        }
+
+        const eventId = eventResult.eventId;
+        console.log('Event created with ID:', eventId);
+
+        return res.status(201).json({ 
+            success: true, 
+            message: 'Event created successfully and is pending approval',
+            event: {
+                eventId: eventId,
+                eventKey: eventResult.eventKey,
+                name: name
+            }
+        });
+
+    } catch (err) {
+        console.error('Error creating event (simple):', err);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create event',
+            error: err.message
         });
     }
 };
@@ -255,5 +428,6 @@ const createEventController = async (req, res) => {
 module.exports = {
     getEventsController,
     getEventByIdController,
-    createEventController
+    createEventMobile,
+    createEventMobileSimple
 };

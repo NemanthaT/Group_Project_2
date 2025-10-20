@@ -79,13 +79,28 @@ async function getEventById(eventId) {
             e.volunteers_needed,
             e.volunteers_signed,
             e.image_path,
+            e.event_key,
             json_build_object(
                 'organiser_id', o.organiser_id,
                 'name', o.name,
                 'email', o.email,
                 'phone', o.phone
             ) AS organiser,
-            '[]'::json AS documents
+            COALESCE(
+                (
+                    SELECT json_agg(
+                        json_build_object(
+                            'document_id', d.document_id,
+                            'filename', d.filename,
+                            'path', d.path,
+                            'uploaded_at', d.uploaded_at
+                        )
+                    )
+                    FROM event_documents d
+                    WHERE d.event_id = e.event_id
+                ),
+                '[]'::json
+            ) AS documents
         FROM events e
         LEFT JOIN event_organisers o ON o.organiser_id = e.organiser_id
         WHERE e.event_id = $1
