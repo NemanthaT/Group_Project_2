@@ -275,7 +275,10 @@ function EventDetails() {
               <div className="primary-actions">
                 <button
                   className="btn btn-back-to-events"
-                  onClick={() => navigate('/Events')}
+                  onClick={() => {
+                    // The scroll position was saved when navigating to details
+                    navigate('/Events');
+                  }}
                 >
                   ← Back to Events
                 </button>

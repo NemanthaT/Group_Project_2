@@ -81,7 +81,12 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
         setForm({ name: "", email: "", contact: "", notes: "" });
         // Delay modal close to allow toast to show
         setTimeout(() => {
+          const savedPosition = sessionStorage.getItem('eventsScroll');
           onClose();
+          if (savedPosition) {
+            window.scrollTo(0, parseInt(savedPosition));
+            sessionStorage.removeItem('eventsScroll');
+          }
         }, 1000);
       } else {
         throw new Error(response.data.message || 'Submission failed');
@@ -104,26 +109,33 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     }
   };
 
-  // Prevent background scroll when modal is open
+  // Handle scroll locking and position restoration
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      // On modal close, restore scroll position and cleanup
+      const savedPosition = sessionStorage.getItem('eventsScroll');
+      if (savedPosition) {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, parseInt(savedPosition));
+        sessionStorage.removeItem('eventsScroll');
+      }
+      return;
+    }
     
-    // Store the original values
-    const originalStyle = window.getComputedStyle(document.body);
-    const originalOverflow = originalStyle.overflow;
-    const originalPaddingRight = originalStyle.paddingRight;
-    
-    // Calculate scroll bar width
+    // Calculate scrollbar width compensation
     const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-    
-    // Add padding right to prevent content shift
-    document.body.style.paddingRight = `${scrollBarWidth}px`;
-    document.body.style.overflow = 'hidden';
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
 
-    // Cleanup function to restore original styles
+    // Cleanup function
     return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.paddingRight = originalPaddingRight;
+      if (scrollBarWidth > 0) {
+        document.body.style.paddingRight = '';
+      }
     };
   }, [isOpen]);
 
