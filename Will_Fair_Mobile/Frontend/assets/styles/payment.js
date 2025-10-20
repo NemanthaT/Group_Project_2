@@ -46,7 +46,7 @@ logoBackground: {
   },
 
   headerTitle: {
-    color: "#000",
+    color: "#ffffffff",
     fontSize: 20,
     fontWeight: "bold",
   },

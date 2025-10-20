@@ -17,7 +17,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroTitle: {
-    color: "black",
+    color: "white",
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
@@ -26,7 +26,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroSubtitle: {
-    color: "black",
+    color: "white",
     fontSize: 14,
     textAlign: "center",
     marginBottom: 20,
