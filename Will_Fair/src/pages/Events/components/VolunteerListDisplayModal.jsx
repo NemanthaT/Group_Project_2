@@ -1,13 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './VolunteerListDisplayModal.css';
 
-export default function VolunteerListDisplayModal({ isOpen, onClose, volunteers }) {
+export default function VolunteerListDisplayModal({ isOpen, onClose, volunteers, email, eventKey, onSendEmail }) {
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
   useEffect(() => {
     if (!isOpen) return;
     const original = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = original; };
   }, [isOpen]);
+
+  const handleSendEmail = async () => {
+    if (onSendEmail && email && eventKey) {
+      setIsSendingEmail(true);
+      await onSendEmail({ email, eventKey });
+      setIsSendingEmail(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -56,6 +66,13 @@ export default function VolunteerListDisplayModal({ isOpen, onClose, volunteers 
         </div>
 
         <div className="volunteer-list-modal-footer">
+          <button 
+            className="btn-volunteer-list-email" 
+            onClick={handleSendEmail}
+            disabled={isSendingEmail || !volunteers || volunteers.length === 0}
+          >
+            {isSendingEmail ? 'Sending...' : '📧 Send List to Email'}
+          </button>
           <button className="btn-volunteer-list-close" onClick={onClose}>
             Close
           </button>

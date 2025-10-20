@@ -137,8 +137,35 @@
   padding: 16px 20px;
   border-top: 1px solid #f1f5f9;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
   background: #f9fafb;
+}
+
+.btn-volunteer-list-email {
+  padding: 0.65rem 1.8rem;
+  border-radius: 8px;
+  border: 1.5px solid #4a6cf7;
+  background: linear-gradient(135deg, #4a6cf7, #8b5cf6);
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-volunteer-list-email:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-volunteer-list-email:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-volunteer-list-close {
@@ -173,5 +200,15 @@
   .volunteer-list-table th,
   .volunteer-list-table td {
     padding: 10px 12px;
+  }
+
+  .volunteer-list-modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-volunteer-list-email,
+  .btn-volunteer-list-close {
+    width: 100%;
   }
 }

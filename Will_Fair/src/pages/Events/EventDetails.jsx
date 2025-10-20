@@ -24,6 +24,8 @@ function EventDetails() {
   const [showRequestVolunteerListModal, setShowRequestVolunteerListModal] = useState(false);
   const [showVolunteerListDisplayModal, setShowVolunteerListDisplayModal] = useState(false);
   const [volunteerList, setVolunteerList] = useState([]);
+  const [volunteerListEmail, setVolunteerListEmail] = useState('');
+  const [volunteerListEventKey, setVolunteerListEventKey] = useState('');
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
@@ -88,6 +90,8 @@ function EventDetails() {
       if (response.data.success) {
         toast.success('Volunteer list retrieved successfully!');
         setVolunteerList(response.data.volunteers);
+        setVolunteerListEmail(formData.email);
+        setVolunteerListEventKey(formData.eventKey);
         setShowRequestVolunteerListModal(false);
         setShowVolunteerListDisplayModal(true);
         return { success: true };
@@ -100,6 +104,23 @@ function EventDetails() {
       const errorMessage = error.response?.data?.message || 'Failed to retrieve volunteer list. Please try again.';
       toast.error(errorMessage);
       return { success: false, error };
+    }
+  };
+
+  // Handle sending volunteer list via email
+  const handleSendVolunteerListEmail = async (formData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/events/sendVolunteerListEmail', formData);
+
+      if (response.data.success) {
+        toast.success('Volunteer list has been sent to your email!');
+      } else {
+        toast.error(response.data.message || 'Failed to send email.');
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMessage = error.response?.data?.message || 'Failed to send email. Please try again.';
+      toast.error(errorMessage);
     }
   };
 
@@ -330,6 +351,9 @@ function EventDetails() {
             isOpen={showVolunteerListDisplayModal}
             onClose={() => setShowVolunteerListDisplayModal(false)}
             volunteers={volunteerList}
+            email={volunteerListEmail}
+            eventKey={volunteerListEventKey}
+            onSendEmail={handleSendVolunteerListEmail}
           />
         )}
       </div>

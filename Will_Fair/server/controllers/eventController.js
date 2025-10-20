@@ -1,6 +1,6 @@
 import { getEvents, addOrganiser, addEvent, addDocuments, updateEventImage, withdrawVolunteer, requestEventDeletion, getEventById, getVolunteerListByEvent } from "../models/eventModel.js";
 import { sendEmail } from "../services/emailService.js";
-import { eventCreationTemplate, volunteerUnregistrationTemplate } from "../services/emailTemplates.js";
+import { eventCreationTemplate, volunteerUnregistrationTemplate, volunteerListTemplate } from "../services/emailTemplates.js";
 import fs from "fs";
 import path from "path";
 
@@ -428,6 +428,80 @@ export const getVolunteerListController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Server error occurred while retrieving volunteer list'
+    });
+  }
+};
+
+// Handles sending volunteer list via email to organizer
+export const sendVolunteerListEmailController = async (req, res) => {
+  try {
+    const { email, eventKey } = req.body;
+    
+    if (!email || !eventKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and event key are required'
+      });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+    
+    if (!eventKey.startsWith('EVT-')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid event key format'
+      });
+    }
+    
+    const result = await getVolunteerListByEvent(email, eventKey);
+    
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+    
+    const organizerQuery = await import('../models/eventModel.js').then(module => module.default || module);
+    
+
+    try {
+      const emailContent = volunteerListTemplate({
+        organizerName: email.split('@')[0],
+        eventTitle: result.eventName,
+        volunteers: result.volunteers,
+        totalVolunteers: result.volunteers.length
+      });
+
+      await sendEmail({
+        to: email,
+        subject: emailContent.subject,
+        text: emailContent.text,
+        html: emailContent.html
+      });
+
+      console.log(`✅ Volunteer list email sent to ${email}`);
+      
+      return res.status(200).json({
+        success: true,
+        message: 'Volunteer list has been sent to your email successfully!'
+      });
+    } catch (emailError) {
+      console.error('⚠️ Failed to send volunteer list email:', emailError.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send email. Please try again.'
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error in sendVolunteerListEmailController:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred while sending volunteer list'
     });
   }
 };
