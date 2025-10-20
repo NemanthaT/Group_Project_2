@@ -120,9 +120,9 @@ const HomeScreen = () => {
         </View>
 
         {/* Featured Programs */}
-        <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
+        {/* <Text style={homeStyles.sectionTitle}>Featured Programs</Text> */}
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
+        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
          {programs.map((item) => (
         <TouchableOpacity 
           key={item.id} 
@@ -139,7 +139,7 @@ const HomeScreen = () => {
     >
             
             {/* Image */}
-            <Image
+            {/* <Image
                 source={item.image}
                 style={homeStyles.programImage}
                 resizeMode="cover"
@@ -154,7 +154,7 @@ const HomeScreen = () => {
             </View>
           </TouchableOpacity>
         ))}
-</ScrollView>
+        </ScrollView> */}
 
 
         {/* Testimonial Section */}
@@ -167,7 +167,7 @@ const HomeScreen = () => {
         </View>
 
         {/* Contact Form */}
-        <View style={homeStyles.contactContainer}>
+        {/* <View style={homeStyles.contactContainer}>
           <Text style={homeStyles.sectionTitle}>Are you willing to make a DIFFERENCE?</Text>
           <TextInput placeholder="Full Name" style={homeStyles.inputField} />
           <TextInput placeholder="Email" style={homeStyles.inputField} />
@@ -180,7 +180,7 @@ const HomeScreen = () => {
           <TouchableOpacity style={homeStyles.donateButton}>
             <Text style={homeStyles.buttonText}>Submit</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
      {/* Contact Us */}
       {/* <View ref={contactRef} onLayout={(event) => setContactY(event.nativeEvent.layout.y)} style={homeStyles.testimonialContainer}> */}
