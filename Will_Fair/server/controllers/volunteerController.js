@@ -1,7 +1,15 @@
-import pool from "../db.js"; // adjust this if your pool file path differs
+import pool from "../db.js";
+import { sendEmail } from "../services/emailService.js";
+import { volunteerRegistrationTemplate } from "../services/emailTemplates.js";
+import { createVolunteer, updateVolunteerCount, getEventDetailsForEmail } from "../models/volunteerModel.js";
 
-//import GENERATE VOLUNTEER SECRET KEY function here from eventModal.js
 
+const generateVolunteerKey = () => {
+    const prefix = 'VOL';
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 6);
+    return `${prefix}-${timestamp}${random}`.toUpperCase();
+};
 
 export const registerVolunteer = async (req, res) => {
   const { event_id, volunteer_name, volunteer_email, volunteer_phone, notes } = req.body;
@@ -13,49 +21,49 @@ export const registerVolunteer = async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    //generate volunteer key
+    const volunteerKey = generateVolunteerKey();
 
-    // 1️⃣ Insert into event_volunteers
-
-
-
-//PUT GENERATE SECRET Key functions here
-//Edit Query to include secret key insertion
-
-
-
-    const insertQuery = `
-      INSERT INTO event_volunteers (event_id, volunteer_name, volunteer_email, volunteer_phone, notes)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING volunteer_id;
-    `;
-    const { rows } = await client.query(insertQuery, [
+    const { rows } = await createVolunteer(client, {
       event_id,
       volunteer_name,
       volunteer_email,
       volunteer_phone,
-      notes || null,
-      //PUT SECRET KEY VARIABLE here
-    ]);
+      notes,
+      volunteerKey
+    });
 
-    // 2️⃣ Increment volunteers_signed in events table
-    const updateEvent = `
-      UPDATE events
-      SET volunteers_signed = volunteers_signed + 1
-      WHERE event_id = $1;
-    `;
-    await client.query(updateEvent, [event_id]);
+    await updateVolunteerCount(client, event_id);
 
+    const eventResult = await getEventDetailsForEmail(client, event_id);
+    const eventDetails = eventResult.rows[0];
 
-
-    //Gmail API to send confirmation email to volunteer with secret key
-
-
-    
+    // Send confirmation email with volunteer key
+    try {
+      const emailData = {
+        volunteerName: volunteer_name,
+        volunteerEmail: volunteer_email,
+        eventTitle: eventDetails.title,
+        eventDate: eventDetails.event_date,
+        eventLocation: eventDetails.location,
+        secretKey: volunteerKey
+      };
+      
+      const { subject, text, html } = volunteerRegistrationTemplate(emailData);
+      await sendEmail({ to: volunteer_email, subject, text, html });
+    } catch (emailError) {
+      console.error('Error sending volunteer confirmation email:', emailError);
+      // Continue with registration even if email fails
+    }
 
     await client.query("COMMIT");
     res.status(201).json({
-      message: "Volunteer registered successfully",
-      volunteer_id: rows[0].volunteer_id,
+      success: true,
+      data: {
+        message: "Thank you for volunteering! Please check your email for your volunteer key.",
+        volunteer_id: rows[0].volunteer_id,
+        volunteer_key: volunteerKey
+      }
     });
   } catch (err) {
     await client.query("ROLLBACK");

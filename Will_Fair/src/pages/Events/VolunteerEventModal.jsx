@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './VolunteerEventModal.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Community Event", eventId }) {
 
@@ -42,6 +44,8 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
   //   return <div className="field-error">{errors[key]}</div>;
   // };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
@@ -51,46 +55,106 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     }
 
     if (!eventId) {
-      alert("Missing event ID. Please refresh the page and try again.");
-      return; // stop submission
+      setErrors({ ...newErrors, general: "Missing event ID. Please refresh the page." });
+      return;
     }
 
+    setIsSubmitting(true);
     try {
-      await axios.post("http://localhost:5000/api/volunteers", {
+      const response = await axios.post("http://localhost:5000/api/volunteers", {
         event_id: eventId,
         volunteer_name: form.name,
         volunteer_email: form.email,
         volunteer_phone: form.contact,
-        notes:form.notes,
+        notes: form.notes,
       });
 
-      alert(`Thank you for volunteering for ${eventTitle}!`);
-      setForm({ name: "", email: "", contact: "", notes: "" });
-      onClose();
+      if (response.data.success) {
+        toast.success("Successfully registered as volunteer! Check your email for confirmation.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        setForm({ name: "", email: "", contact: "", notes: "" });
+        // Delay modal close to allow toast to show
+        setTimeout(() => {
+          onClose();
+        }, 1000);
+      } else {
+        throw new Error(response.data.message || 'Submission failed');
+      }
     } catch (err) {
-      console.error(err);
-      if (err.response?.data?.error)
-        alert(err.response.data.error);
-      else alert("Submission failed. Please try again.");
+      const errorMessage = err.response?.data?.error || 
+                          err.response?.data?.message || 
+                          "Failed to submit volunteer application. Please try again.";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setErrors({ ...newErrors, general: errorMessage });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // // Prevent background scroll when open
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   const original = document.body.style.overflow;
-  //   document.body.style.overflow = 'hidden';
-  //   return () => { document.body.style.overflow = original; };
-  // }, [isOpen]);
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // Store the original values
+    const originalStyle = window.getComputedStyle(document.body);
+    const originalOverflow = originalStyle.overflow;
+    const originalPaddingRight = originalStyle.paddingRight;
+    
+    // Calculate scroll bar width
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
+    // Add padding right to prevent content shift
+    document.body.style.paddingRight = `${scrollBarWidth}px`;
+    document.body.style.overflow = 'hidden';
+
+    // Cleanup function to restore original styles
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => e.target.className === "modal-overlay" && onClose()}
-    >
-      <div className="modal-card">
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <div
+        className="modal-overlay"
+        onClick={(e) => e.target.className === "modal-overlay" && onClose()}
+      >
+      
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Processing registration...</p>
+          </div>
+        )}
         <div className="modal-header">
           <h2>Volunteer for this Event</h2>
           <button className="modal-close" onClick={onClose}>
@@ -152,5 +216,6 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
         </form>
       </div>
     </div>
+    </>
   );
 }

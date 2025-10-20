@@ -36,14 +36,14 @@ function EventDetails() {
   const handleWithdrawSubmit = async (formData) => {
     try {
       await axios.post('http://localhost:5000/events/withdrawVolunteer', formData);
-      
+
       toast.success('Registration withdrawn successfully!');
-      
+
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Navigate to events main page
       navigate('/Events');
-      
+
       return { success: true };
     } catch (error) {
       console.error(error);
@@ -56,14 +56,14 @@ function EventDetails() {
   const handleDeleteRequestSubmit = async (formData) => {
     try {
       await axios.post('http://localhost:5000/events/deleteRequest', formData);
-      
+
       toast.success('Event deletion request submitted successfully!');
-      
+
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Navigate to events main page
       navigate('/Events');
-      
+
       return { success: true };
     } catch (error) {
       console.error(error);
@@ -138,10 +138,150 @@ function EventDetails() {
   );
 
   return (
-    <div className="event-details">
-      <ToastContainer 
+    <>
+      <div className="event-details">
+
+        {/* Banner */}
+        <div className="event-title-banner">
+          <div className="container">
+            <div className="event-title-content">
+              <h1>{event.title}</h1>
+              <p>{event.location}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Body Section */}
+        <div className="event-body">
+          <div
+            className="event-image"
+            style={{
+              backgroundImage: `url(${getImageUrl(event.image)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          ></div>
+
+          <div className="event-info">
+            {/* <div className="event-header">
+            <h2>{event.organizer}</h2>
+          </div> */}
+
+
+            <div className="event-date">
+              Date: {event.startDate && event.endDate
+                ? `${new Date(event.startDate).toLocaleDateString()} – ${new Date(event.endDate).toLocaleDateString()}`
+                : event.date
+                  ? new Date(event.date).toLocaleDateString()
+                  : 'TBA'}
+            </div>
+
+            <div className="progress-row">
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${(event.volunteersSigned / event.volunteersNeeded) * 100}%`
+                  }}
+                ></div>
+              </div>
+              <div className="funding-info">
+                <div>
+                  <div className="funding-label">Volunteers Signed:</div>
+                  <div className="funding-amount">{event.volunteersSigned}</div>
+                </div>
+                <div>
+                  <div className="funding-label">Volunteers Needed:</div>
+                  <div className="funding-amount">{event.volunteersNeeded}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="event-description">
+              <span className="label">Description: </span>
+              <span className="content">{event.description}</span>
+            </div>
+
+
+            {/* Organizer */}
+            <div className="event-organizer">
+              <span className="label">Event Organizer: </span>
+              <span className="content">{event.organizer} – {event.organizerEmail}</span>
+            </div>
+
+            {/* Action Buttons - Split into two groups */}
+            <div className="event-actions-container">
+              {/* Primary Actions */}
+              <div className="primary-actions">
+                <button
+                  className="btn btn-back-to-events"
+                  onClick={() => navigate('/Events')}
+                >
+                  ← Back to Events
+                </button>
+                <button
+                  className="btn btn-volunteer"
+                  onClick={() => setShowVolunteerModal(true)}
+                >
+                  Join as Volunteer
+                </button>
+              </div>
+
+              {/* Secondary Actions */}
+              <div className="secondary-actions">
+                <button
+                  className="btn btn-withdraw"
+                  onClick={handleUnvolunteer}
+                  title="Withdraw from this event"
+                >
+                  Withdraw Registration
+                </button>
+                <button
+                  className="btn btn-delete-request"
+                  onClick={handleRequestDeletion}
+                  title="Request event deletion (organizers only)"
+                >
+                  Request Event Deletion
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modals */}
+        {showAddModal && (
+          <AddEventModal onClose={() => setShowAddModal(false)} />
+        )}
+
+        {showVolunteerModal && (
+          <VolunteerEventModal
+            isOpen={showVolunteerModal}
+            onClose={() => setShowVolunteerModal(false)}
+            eventId={event.id}
+            eventTitle={event.title}
+          />
+        )}
+
+        {showDeletionModal && (
+          <RequestEventDeletionModal
+            isOpen={showDeletionModal}
+            onClose={() => setShowDeletionModal(false)}
+            onSubmit={handleDeleteRequestSubmit}
+          />
+        )}
+
+        {showWithdrawModal && (
+          <WithdrawRegistrationModal
+            isOpen={showWithdrawModal}
+            onClose={() => setShowWithdrawModal(false)}
+            onSubmit={handleWithdrawSubmit}
+          />
+        )}
+      </div>
+      <ToastContainer
         position="top-right"
-        autoClose={3000}
+        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -151,144 +291,7 @@ function EventDetails() {
         pauseOnHover
         theme="light"
       />
-      {/* Banner */}
-      <div className="event-title-banner">
-        <div className="container">
-          <div className="event-title-content">
-            <h1>{event.title}</h1>
-            <p>{event.location}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Body Section */}
-      <div className="event-body">
-        <div
-          className="event-image"
-          style={{
-            backgroundImage: `url(${getImageUrl(event.image)})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        ></div>
-
-        <div className="event-info">
-          {/* <div className="event-header">
-            <h2>{event.organizer}</h2>
-          </div> */}
-
-
-          <div className="event-date">
-            Date: {event.startDate && event.endDate
-              ? `${new Date(event.startDate).toLocaleDateString()} – ${new Date(event.endDate).toLocaleDateString()}`
-              : event.date
-                ? new Date(event.date).toLocaleDateString()
-                : 'TBA'}
-          </div>
-
-          <div className="progress-row">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${(event.volunteersSigned / event.volunteersNeeded) * 100}%`
-                }}
-              ></div>
-            </div>
-            <div className="funding-info">
-              <div>
-                <div className="funding-label">Volunteers Signed:</div>
-                <div className="funding-amount">{event.volunteersSigned}</div>
-              </div>
-              <div>
-                <div className="funding-label">Volunteers Needed:</div>
-                <div className="funding-amount">{event.volunteersNeeded}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="event-description">
-            <span className="label">Description: </span>
-            <span className="content">{event.description}</span>
-          </div>
-
-
-          {/* Organizer */}
-          <div className="event-organizer">
-            <span className="label">Event Organizer: </span>
-            <span className="content">{event.organizer} – {event.organizerEmail}</span>
-          </div>
-
-          {/* Action Buttons - Split into two groups */}
-          <div className="event-actions-container">
-            {/* Primary Actions */}
-            <div className="primary-actions">
-              <button
-                className="btn btn-back-to-events"
-                onClick={() => navigate('/Events')}
-              >
-                ← Back to Events
-              </button>
-              <button
-                className="btn btn-volunteer"
-                onClick={() => setShowVolunteerModal(true)}
-              >
-                Join as Volunteer
-              </button>
-            </div>
-
-            {/* Secondary Actions */}
-            <div className="secondary-actions">
-              <button
-                className="btn btn-withdraw"
-                onClick={handleUnvolunteer}
-                title="Withdraw from this event"
-              >
-                Withdraw Registration
-              </button>
-              <button
-                className="btn btn-delete-request"
-                onClick={handleRequestDeletion}
-                title="Request event deletion (organizers only)"
-              >
-                Request Event Deletion
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Modals */}
-      {showAddModal && (
-        <AddEventModal onClose={() => setShowAddModal(false)} />
-      )}
-
-      {showVolunteerModal && (
-        <VolunteerEventModal
-          isOpen={showVolunteerModal}
-          onClose={() => setShowVolunteerModal(false)}
-          eventId={event.id}          
-          eventTitle={event.title} 
-        />
-      )}
-
-      {showDeletionModal && (
-        <RequestEventDeletionModal
-          isOpen={showDeletionModal}
-          onClose={() => setShowDeletionModal(false)}
-          onSubmit={handleDeleteRequestSubmit}
-        />
-      )}
-
-      {showWithdrawModal && (
-        <WithdrawRegistrationModal
-          isOpen={showWithdrawModal}
-          onClose={() => setShowWithdrawModal(false)}
-          onSubmit={handleWithdrawSubmit}
-        />
-      )}
-    </div>
+    </>
   );
 }
 
