@@ -1,27 +1,26 @@
 import "./App.css";
+import "@/components/loading.module.css";
+import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import LandingPage from "./pages/landingPage/LandingPage";
-import FeaturedContent from "./pages/landingPage/FeaturedContent";
-import Reg from "./pages/signIn/Reg";
-import MarketplaceHomepage from "./pages/MarketPlace/MarketplaceHomepage";
-import Users from "./pages/users/users";
-import AppRoutes from "./components/AppRoutes";
-import IndividualProductsView from "./pages/MarketPlace/IndividualProductsView";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-const feat = "/featured";
+const AppRoutes = lazy(() => import("@/components/AppRoutes"));
+
 
 function App() {
   const user = JSON.parse(localStorage.getItem("userData"));
   console.log(user);
   return (
     <Router>
-      {(user == null || user.role !== "auth_manager") && <Header user={user} />}
+      {/*(user == null || user.role !== "auth_manager") && <Header user={user} />*/}
+      <Header user={user} />
       <main>
-        <AppRoutes user={user}/>
+        <Suspense fallback={<div className="loading">Loading...</div>}>
+          <AppRoutes user={user} />
+        </Suspense>
       </main>
-      {(user == null || user.role !== "auth_manager") && <Footer />}
+      {(user == null || (user.role == "donor" && user.role == "donee") ) && <Footer />}
     </Router>
   );
 }

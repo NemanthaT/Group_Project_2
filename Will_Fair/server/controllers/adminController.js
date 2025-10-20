@@ -14,7 +14,8 @@ export async function getAdminOverview(req, res) {
     };
     res.json({ success: true, stats, recentDonations });
   } catch (err) {
-    console.error("Error in getAdminOverview:", err);
-    res.status(500).json({ success: false, error: "Server error" });
+    console.error("Error in getAdminOverview:", err && err.stack ? err.stack : err);
+    // return error details during local development
+    res.status(500).json({ success: false, error: "Server error", details: err && err.message ? err.message : null });
   }
 }

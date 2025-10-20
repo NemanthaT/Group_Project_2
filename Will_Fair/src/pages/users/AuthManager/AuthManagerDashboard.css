@@ -119,6 +119,31 @@
   transform: translateX(5px);
 }
 
+/* Navigation Badge */
+.authmanager-nav-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  margin-left: auto;
+  transition: all 0.3s ease;
+}
+
+.authmanager-nav-item.authmanager-active .authmanager-nav-badge {
+  background: white;
+  color: #667eea;
+}
+
+.authmanager-nav-item:hover .authmanager-nav-badge {
+  background: white;
+  color: #667eea;
+  transform: scale(1.1);
+}
+
 /* Logout Button */
 .authmanager-logout-btn {
   margin: 1rem;
@@ -1608,4 +1633,224 @@ td {
   width: 100%;
   border: #1d4ed8;
   border-radius: 16px;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.tab-button {
+  padding: 14px 28px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button:hover {
+  color: #374151;
+  background: #f8fafc;
+}
+
+.tab-button.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: #f8fafc;
+}
+
+.no-events-message {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+}
+
+/* Full Width Stat Card */
+.authmanager-stat-card-full {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid #f1f5f9;
+  grid-column: 1 / -1;
+}
+
+.authmanager-stat-card-full:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   Pending Events Management - Tab Navigation Styles
+   ======================================== */
+
+/* Tab Navigation Container */
+.pending-events-tab-navigation {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  background: white;
+  padding: 8px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Tab Button */
+.pending-events-tab-button {
+  padding: 14px 28px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Hover Effect */
+.pending-events-tab-button:hover:not(.pending-events-tab-active) {
+  color: #374151;
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+/* Active Tab */
+.pending-events-tab-button.pending-events-tab-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Shine Effect on Active Tab */
+.pending-events-tab-button.pending-events-tab-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.pending-events-tab-button.pending-events-tab-active:hover::before {
+  left: 100%;
+}
+
+/* Tab Icon */
+.pending-events-tab-button .tab-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tab Badge (for counts) */
+.pending-events-tab-badge {
+  background: rgba(102, 126, 234, 0.15);
+  color: #667eea;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.pending-events-tab-button.pending-events-tab-active .pending-events-tab-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Responsive Design for Pending Events Tabs */
+@media (max-width: 768px) {
+  .pending-events-tab-navigation {
+    gap: 12px;
+    padding: 6px;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .pending-events-tab-button {
+    padding: 12px 20px;
+    font-size: 14px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .pending-events-tab-button .tab-icon {
+    font-size: 16px;
+  }
+
+  .pending-events-tab-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pending-events-tab-navigation {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .pending-events-tab-button {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+
+  .pending-events-tab-button.pending-events-tab-active {
+    transform: translateY(0);
+  }
+
+  .pending-events-tab-button:hover:not(.pending-events-tab-active) {
+    transform: translateY(0);
+  }
 }

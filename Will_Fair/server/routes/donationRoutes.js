@@ -11,7 +11,11 @@ import {
   getRecentDonationsController,
   getActiveDonationsController,
   getDonationStatsController,
-  getDonationByIdController
+  getDonationByIdController,
+  getDonationsForRegController,
+  markCompleted,
+  markSent,
+  getDonationContributors
 } from "../controllers/donationController.js";
 
 const router = express.Router();
@@ -41,6 +45,13 @@ router.get('/recent', getRecentDonationsController);
 router.get('/active', getActiveDonationsController);
 router.get('/stats', getDonationStatsController);
 router.get('/donations/:id', getDonationByIdController);
+router.get('/:id/contributors', getDonationContributors);
+
+// RegManager Routes
+router.get('/donationsReg', getDonationsForRegController);
+// PATCH endpoints for donation status
+router.patch('/:id/completed', markCompleted);
+router.patch('/:id/sent', markSent);
 
 // Get a single donation by ID
 router.get('/:id', async (req, res) => {

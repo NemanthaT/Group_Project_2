@@ -28,8 +28,8 @@ export const authenticateUser = async (email, password) => {
         const user = result.rows[0];
         
         // Compare hashed password
-        //const passwordMatch = await bcrypt.compare(password, user.password_hash);
-        const passwordMatch = password === user.password_hash; // Use plain password for now
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+        //const passwordMatch = password === user.password_hash; // Use plain password for now
         
         if (passwordMatch) {
           return { 
@@ -67,7 +67,8 @@ export const authenticateDonee = async (phone, password) => {
       if (result.rows.length > 0) {
         const user = result.rows[0];
 
-        const passwordMatch = password === user.password_hash;
+        //const passwordMatch = password === user.password_hash;
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
         
         if (passwordMatch) {
           return { 
@@ -89,8 +90,9 @@ export const authenticateDonee = async (phone, password) => {
 };
 
 export async function getNameById(userId, role, userType) {
+  const roleType = role === 'system_admin' ? 'admin' : role;
   const result = await pool.query(
-    `SELECT first_name, last_name FROM ${userType} WHERE ${role}_id = $1`,
+    `SELECT first_name, last_name FROM ${userType} WHERE ${roleType}_id = $1`,
     [userId]
   );
   if (result.rows.length > 0) {

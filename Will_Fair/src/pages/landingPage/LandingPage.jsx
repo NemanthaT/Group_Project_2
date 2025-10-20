@@ -7,12 +7,13 @@ import { useNavigate } from "react-router-dom";
 import {MapPin, Phone, Mail} from "lucide-react";
 import { useState } from 'react';
 
-function LandingPage() {
+function LandingPage({user}) {
   // Initialize the useNavigate hook from react-router-dom
   const navigate = useNavigate();
 
-  const goToFeatured = () => {
-    navigate("/featured");
+  const goToEvents = () => {
+    window.scrollTo(0, 0);
+    navigate("/events");
   };
 
   const [volunteerOpportunities] = useState([
@@ -80,9 +81,22 @@ function LandingPage() {
               <a href="#programs" className="btn-primary">
                 Get Started
               </a>
-              <a href="#about" className="btn-secondary">
-                Donate Now
-              </a>
+              { !user ? (
+                <a href="loginD" className="btn-secondary">
+                  Donate Now
+                </a>
+              ) : (
+                user.role !== 'donor' ? (
+                  <a href="loginD" className="btn-secondary">
+                    Donate Now
+                  </a>
+                ) : (
+                  <a href="users/donor/all-donations" className="btn-secondary">
+                    Donate Now
+                  </a>
+                )
+              )}
+              
             </div>
           </div>
         </div>
@@ -138,7 +152,7 @@ function LandingPage() {
             ))}
           </div>
           <div className="see-more">
-            <button className="btn-small1" onClick={goToFeatured}>
+            <button className="btn-small1" onClick={goToEvents}>
               See more
             </button>
           </div>
@@ -146,7 +160,7 @@ function LandingPage() {
       </section>
 
       
-      <section className="marketplace-cta">
+      {/*<section className="marketplace-cta">
         <div className="container">
           <div className="marketplace-cta-content">
             <div className="marketplace-cta-text">
@@ -178,7 +192,7 @@ function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
 
       <section className="testimonials">
