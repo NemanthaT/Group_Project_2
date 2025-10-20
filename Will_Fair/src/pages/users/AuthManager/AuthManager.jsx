@@ -8,7 +8,7 @@ import "./AuthManagerDashboard.css";
 
 const AuthManager = () => {
   const user = JSON.parse(localStorage.getItem('userData'));
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("donations");
   
   const [stats, setStats] = useState({
     totalAcceptedDonations: 0,
@@ -101,13 +101,13 @@ const AuthManager = () => {
         </div>
       </div>
       <nav className="dashboard-nav">
-        <button 
+        {/*<button 
           className={`nav-tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           <BarChart3 size={18} />
           Overview
-        </button>
+        </button>*/}
         <button 
           className={`nav-tab ${activeTab === 'donations' ? 'active' : ''}`}
           onClick={() => setActiveTab('donations')}
