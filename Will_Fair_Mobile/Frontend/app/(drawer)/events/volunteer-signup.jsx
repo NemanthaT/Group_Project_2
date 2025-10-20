@@ -54,9 +54,17 @@ export default function VolunteerSignUpScreen() {
         volunteer_phone: form.contact,
         notes: form.notes,
       });
-      Alert.alert('Success', `Thank you for volunteering for ${eventName || 'this event'}!`);
+      Alert.alert(
+        'Success', 
+        `Thank you for volunteering for ${eventName || 'this event'}!`,
+        [
+          {
+            text: 'Back to Events',
+            onPress: () => router.push('/events/events')
+          }
+        ]
+      );
       setForm({ name: '', email: '', contact: '', notes: '' });
-      router.back();
     } catch (err) {
       console.error(err);
       if (err.response?.data?.error)
@@ -70,7 +78,9 @@ export default function VolunteerSignUpScreen() {
       <View style={styles.card}>
         <View style={styles.header}>
           <Text style={styles.title}>Volunteer for this Event</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/events/events')} style={styles.closeBtn}>
+            <Text style={{fontSize:18}}>✕</Text>
+          </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={{ padding: 12 }}>
           <Text style={styles.label}>Name</Text>
@@ -89,8 +99,8 @@ export default function VolunteerSignUpScreen() {
           <TextInput style={[styles.input, { height: 80 }]} value={form.notes} onChangeText={t => updateField('notes', t)} multiline />
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
-            <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={() => router.back()}>
-              <Text>Cancel</Text>
+            <TouchableOpacity style={[styles.btn, styles.btnOutline]} onPress={() => router.push('/events/events')}>
+              <Text>Back to Events</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.btn, styles.btnPrimary]} onPress={handleSubmit}>
               <Text style={{ color: '#fff' }}>Volunteer</Text>

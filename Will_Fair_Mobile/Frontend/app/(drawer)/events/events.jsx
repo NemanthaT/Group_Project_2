@@ -132,9 +132,9 @@ export default function EventsScreen() {
           </Picker>
         </View>
 
-        <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
+        {/* <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
           <Text style={{ color: '#fff' }}>+ Add Event</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <FlatList data={sorted} keyExtractor={i => String(i.id)} contentContainerStyle={{ padding: 12 }} renderItem={({ item }) => (

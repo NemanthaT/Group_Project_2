@@ -91,7 +91,7 @@ export default function EventDetailsScreen() {
         <Text style={styles.errorTitle}>Event Not Found</Text>
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => router.push('/(drawer)/events/events')}
         >
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
@@ -199,7 +199,7 @@ export default function EventDetailsScreen() {
           <View style={styles.actionButtons}>
             <TouchableOpacity 
               style={[styles.button, styles.outlineButton]}
-              onPress={() => router.back()}
+              onPress={() => router.push('/(drawer)/events/events')}
             >
               <Text style={styles.outlineButtonText}>Back to Events</Text>
             </TouchableOpacity>
@@ -208,7 +208,7 @@ export default function EventDetailsScreen() {
               style={[styles.button, styles.primaryButton]}
               onPress={() => {
                 router.push({
-                  pathname: '/events/volunteer-signup',
+                  pathname: '/(drawer)/events/volunteer-signup',
                   params: { id: event.id, eventName: event.title }
                 });
               }}
