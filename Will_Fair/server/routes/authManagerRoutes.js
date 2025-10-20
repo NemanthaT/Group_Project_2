@@ -8,6 +8,7 @@ import {
   getPendingEventsController,
   getPendingDeletionEventsController,
   approveEventController,
+  rejectEventController,
   deleteEventController,
   getPendingEventsCountController,
   getPendingDeletionEventsCountController,
@@ -26,6 +27,7 @@ router.get("/donation-stats", getDonationStatsController);
 router.get('/pending-events', getPendingEventsController);
 router.get('/pending-deletion-events', getPendingDeletionEventsController);
 router.post('/approve-event/:id', approveEventController);
+router.post('/reject-event/:id', rejectEventController);
 router.delete('/delete-event/:id', deleteEventController);
 router.get('/pending-events-count', getPendingEventsCountController);
 router.get('/pending-deletion-events-count', getPendingDeletionEventsCountController);

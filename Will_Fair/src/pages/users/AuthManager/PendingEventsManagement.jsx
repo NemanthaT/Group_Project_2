@@ -127,6 +127,41 @@ const PendingEventsManagement = ({ onCountChange }) => {
     }
   };
 
+  const handleRejectEvent = async (eventId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/authManager/reject-event/${eventId}`,
+        {
+          rejectionReason: '' // You can add a reason input field if needed
+        }
+      );
+      
+      if (response.data.success) {
+        setEvents(prev => prev.filter(e => e.event_id !== eventId));
+        
+        setTabCounts(prev => ({
+          ...prev,
+          approval: Math.max(0, prev.approval - 1)
+        }));
+        
+        if (onCountChange) {
+          onCountChange();
+        }
+        
+        handleCloseModal();
+        
+        console.log("✅ Event rejected successfully:", eventId);
+        toast.success("Event rejected successfully!");
+      }
+    } catch (error) {
+      console.error("❌ Failed to reject event:", error);
+      
+      toast.error("Failed to reject event. Please try again.");
+      
+      handleCloseModal();
+    }
+  };
+
   const handleDeleteEvent = async (eventId) => {
     try {
       const response = await axios.delete(
@@ -277,6 +312,7 @@ const PendingEventsManagement = ({ onCountChange }) => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onApprove={handleApproveEvent}
+        onReject={handleRejectEvent}
         onDelete={handleDeleteEvent}
         activeTab={activeTab}
       />
