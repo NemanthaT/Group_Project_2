@@ -54,9 +54,9 @@ const handleLogin = async () => {
 
   setLoading(true);
   try {
-    console.log('Attempting login...');
+    console.log('Attempting guest user login...');
     
-  const response = await fetch(`${API_BASE}/api/volunteer_login`, {
+  const response = await fetch(`${API_BASE}/api/guestuser_login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const handleLogin = async () => {
     console.log('Login response:', data);
 
     if (response.ok) {
-      Alert.alert('Success', `Welcome back, ${data.user.firstName}!`, [
+      Alert.alert('Success', `Welcome back, ${data.user.username}!`, [
         {
           text: 'OK',
           onPress: () => {
@@ -215,13 +215,13 @@ const handleLogin = async () => {
               {/* Signup Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('volunteer_ind_reg')} 
+                onPress={() => navigation.navigate('guestuser_reg')} 
               >
                 <Text style={styles.loginText}>
                   Don&#39;t have an account?{' '}
                   <Text
                     style={styles.loginLink}
-                    onPress={() => navigation.navigate('volunteerind__reg')}
+                    onPress={() => navigation.navigate('guestuser_reg')}
                   >
                     Sign Up
                   </Text>

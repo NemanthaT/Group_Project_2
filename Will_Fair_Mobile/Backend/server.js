@@ -72,17 +72,17 @@ app.get("/api/health", (req, res) => {
 const donorRoutes = require('./routes/donorRoutes');
 const doneeRoutes = require('./routes/doneeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const volunteerRoutes = require('./routes/volunteerRoutes');
+// const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require('./routes/eventRoutes');
-const donationRoutes = require('./routes/donationRoutes'); // <-- add this line
+const donationRoutes = require('./routes/donationRoutes');
+const guestuserRoutes = require('./routes/guestuserRoutes');
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
-app.use('/api', volunteerRoutes);
+// app.use('/api', volunteerRoutes);
 app.use('/api', eventRoutes);
-
-// ...category endpoints moved to MVC routes...
-app.use('/api', donationRoutes); // <-- add this line
+app.use('/api', donationRoutes);
+app.use('/api', guestuserRoutes);
 
 
 // ...donee endpoints moved to MVC routes...
