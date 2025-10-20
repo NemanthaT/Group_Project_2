@@ -62,13 +62,14 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
       allowsEditing: true,
-      quality: 0.8,
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedImage = result.assets[0];
+      console.log("Selected Image:", selectedImage.uri);  // Add logging
       setImageFile(selectedImage);
       setErrors(prev => ({ ...prev, image: null }));
     }
@@ -157,11 +158,15 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       formData.append('date', form.date);
     }
 
-    if (imageFile) {
+    if (imageFile && imageFile.uri) {
+      const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
+      const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
+      const imageType = imageFile.type || 'image/jpeg';
+      
       formData.append('image', {
-        uri: Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri,
-        name: 'event_image.jpg',
-        type: 'image/jpeg'
+        uri: imageUri,
+        name: imageName,
+        type: imageType
       });
     }
 
