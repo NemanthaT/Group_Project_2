@@ -76,9 +76,9 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
       });
 
       if (response.data.success) {
-        toast.success(`Thank you for volunteering for ${eventTitle}!`, {
+        toast.success(response.data.data.message, {
           position: "top-right",
-          autoClose: 3000
+          autoClose: 5000
         });
         setForm({ name: "", email: "", contact: "", notes: "" });
         onClose();
