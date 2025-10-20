@@ -89,7 +89,7 @@ const HomeScreen = () => {
       <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
 
         {/* Hero Section */}
-        <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
+        <View style={[homeStyles.hero, { backgroundColor: "#5c41e0ff", marginTop: 40 }]}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -99,7 +99,7 @@ const HomeScreen = () => {
               zIndex: 5,
             }}
           >
-            <Ionicons name="menu-outline" size={30} color="#fff" />
+           <Ionicons name="menu-outline" size={30} color="#fff" style={{ marginTop: 10 }} />
           </TouchableOpacity>
           
           <Text style={homeStyles.heroTitle}>
@@ -117,7 +117,7 @@ const HomeScreen = () => {
               <Text style={homeStyles.buttonText}>Donate Now</Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Featured Programs */}
         <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
@@ -156,20 +156,6 @@ const HomeScreen = () => {
         ))}
 </ScrollView>
 
-        {/* Impact Section */}
-        <View style={homeStyles.impactContainer}>
-          <Text style={homeStyles.sectionTitle}>Our Impact</Text>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="school-outline" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>12,000+</Text>
-            <Text style={homeStyles.impactLabel}>Children educated</Text>
-          </View>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="add-circle" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>10,000+</Text>
-            <Text style={homeStyles.impactLabel}>Medical Treatment</Text>
-          </View>
-        </View>
 
         {/* Testimonial Section */}
         <View style={homeStyles.testimonialContainer}>

@@ -148,7 +148,7 @@ export default function EventsScreen() {
           </View>
 
           <View style={styles.progressRow}>
-            <View style={styles.progressBarBackground}>
+              <View style={styles.progressBarBackground}>
               <View style={[styles.progressFill, { width: `${(item.volunteersSigned / Math.max(1,item.volunteersNeeded)) * 100}%` }]} />
             </View>
             <Text style={styles.progressText}>{item.volunteersSigned}/{item.volunteersNeeded} signed</Text>
