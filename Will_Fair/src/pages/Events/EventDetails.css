@@ -203,7 +203,7 @@
   justify-content: center;
   text-align: center;
   white-space: nowrap;
-  min-width: 180px;
+  /*min-width: 180px;*/
   flex: 1;
 }
 
