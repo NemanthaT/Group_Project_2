@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
 
@@ -12,32 +12,8 @@ const BackButton = ({
 }) => {
   const pathname = usePathname();
 
-  // Handle hardware back button for this screen
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      console.log('🔙 Hardware back pressed on:', pathname);
-      
-      if (onPress) {
-        onPress();
-        return true; // Prevent default behavior
-      }
-      
-      if (navigateTo) {
-        router.push(navigateTo);
-        return true;
-      }
-      
-      // Default back behavior
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.push('/firstpage');
-      }
-      return true;
-    });
-
-    return () => backHandler.remove();
-  }, [onPress, navigateTo, pathname]);
+  // NOTE: Hardware back button is now handled by useBackHandler hook
+  // This component only handles visual back button clicks
 
   const handlePress = () => {
     console.log('👆 BackButton pressed programmatically on:', pathname);

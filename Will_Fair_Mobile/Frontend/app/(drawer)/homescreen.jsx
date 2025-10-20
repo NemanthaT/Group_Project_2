@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { homeStyles } from "../../assets/styles/homestyles"; 
@@ -16,6 +18,23 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 
 const HomeScreen = () => {
+    // Handle back button on home screen - show exit confirmation
+    useEffect(() => {
+      const backAction = () => {
+        Alert.alert(
+          'Exit App',
+          'Are you sure you want to exit?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Exit', onPress: () => BackHandler.exitApp() }
+          ]
+        );
+        return true; // Prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+      return () => backHandler.remove();
+    }, []);
     // const scrollViewRef = useRef(null);
     // const aboutRef = useRef(null);
     // const contactRef = useRef(null);
@@ -70,7 +89,7 @@ const HomeScreen = () => {
       <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
 
         {/* Hero Section */}
-        <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
+        <View style={[homeStyles.hero, { backgroundColor: "#5c41e0ff", marginTop: 40 }]}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -80,7 +99,7 @@ const HomeScreen = () => {
               zIndex: 5,
             }}
           >
-            <Ionicons name="menu-outline" size={30} color="#fff" />
+           <Ionicons name="menu-outline" size={30} color="#fff" style={{ marginTop: 10 }} />
           </TouchableOpacity>
           
           <Text style={homeStyles.heroTitle}>
@@ -98,12 +117,12 @@ const HomeScreen = () => {
               <Text style={homeStyles.buttonText}>Donate Now</Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Featured Programs */}
-        <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
+        {/* <Text style={homeStyles.sectionTitle}>Featured Programs</Text> */}
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
+        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
          {programs.map((item) => (
         <TouchableOpacity 
           key={item.id} 
@@ -120,7 +139,7 @@ const HomeScreen = () => {
     >
             
             {/* Image */}
-            <Image
+            {/* <Image
                 source={item.image}
                 style={homeStyles.programImage}
                 resizeMode="cover"
@@ -135,22 +154,8 @@ const HomeScreen = () => {
             </View>
           </TouchableOpacity>
         ))}
-</ScrollView>
+        </ScrollView> */}
 
-        {/* Impact Section */}
-        <View style={homeStyles.impactContainer}>
-          <Text style={homeStyles.sectionTitle}>Our Impact</Text>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="school-outline" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>12,000+</Text>
-            <Text style={homeStyles.impactLabel}>Children educated</Text>
-          </View>
-          <View style={homeStyles.impactBox}>
-            <Ionicons name="add-circle" size={24} color="#7B61FF" />
-            <Text style={homeStyles.impactValue}>10,000+</Text>
-            <Text style={homeStyles.impactLabel}>Medical Treatment</Text>
-          </View>
-        </View>
 
         {/* Testimonial Section */}
         <View style={homeStyles.testimonialContainer}>
@@ -162,7 +167,7 @@ const HomeScreen = () => {
         </View>
 
         {/* Contact Form */}
-        <View style={homeStyles.contactContainer}>
+        {/* <View style={homeStyles.contactContainer}>
           <Text style={homeStyles.sectionTitle}>Are you willing to make a DIFFERENCE?</Text>
           <TextInput placeholder="Full Name" style={homeStyles.inputField} />
           <TextInput placeholder="Email" style={homeStyles.inputField} />
@@ -175,7 +180,7 @@ const HomeScreen = () => {
           <TouchableOpacity style={homeStyles.donateButton}>
             <Text style={homeStyles.buttonText}>Submit</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
      {/* Contact Us */}
       {/* <View ref={contactRef} onLayout={(event) => setContactY(event.nativeEvent.layout.y)} style={homeStyles.testimonialContainer}> */}

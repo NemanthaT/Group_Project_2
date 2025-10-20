@@ -17,7 +17,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroTitle: {
-    color: "black",
+    color: "white",
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
@@ -26,7 +26,7 @@ export const homeStyles = StyleSheet.create({
   },
 
   heroSubtitle: {
-    color: "black",
+    color: "white",
     fontSize: 14,
     textAlign: "center",
     marginBottom: 20,
@@ -38,22 +38,25 @@ export const homeStyles = StyleSheet.create({
   },
 
   ctaButton: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f4f4f4ff",
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
 
   donateButton: {
-    backgroundColor: "#9333EA",
+    backgroundColor: "#5c41e0ff",
+    borderColor: "#f4f4f4ff",
+    borderWidth: 1,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
 
   ctaText: {
-    color: "#7B61FF",
-    fontWeight: "600",
+    color: "#5c41e0ff",
+    fontSize: 16,
+    fontWeight: "500",
   },
 
   sectionTitle: {
@@ -140,7 +143,8 @@ export const homeStyles = StyleSheet.create({
 
   testimonialContainer: {
     padding: 20,
-    backgroundColor: "#EEE9FF",
+    backgroundColor: "#f2f2f2ff",
+    borderColor: "#ecececff",
     borderRadius: 12,
     marginHorizontal: 16,
     marginVertical: 20,
@@ -154,6 +158,8 @@ export const homeStyles = StyleSheet.create({
 
   contactContainer: {
     padding: 20,
+    backgroundColor: "#f2f2f2ff",
+    borderColor: "#ecececff",
   },
 
   inputField: {
@@ -174,13 +180,15 @@ export const homeStyles = StyleSheet.create({
   },
 
   submitButtonText: {
-    color: "#fff",
+    color: "#000000ff",
     fontWeight: "600",
   },
 
   aboutContainer: {
     padding: 20,
-    backgroundColor: "#EEE9FF",
+    backgroundColor: "#f2f2f2ff",
+    borderColor: "#ecececff",
+    marginBottom: 40,
     borderRadius: 12,
     marginHorizontal: 16,
     marginVertical: 20,
@@ -304,7 +312,7 @@ export const homeStyles = StyleSheet.create({
   
   
   buttonText: {
-    color: 'white',
+    color: '#f4f4f4ff',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
