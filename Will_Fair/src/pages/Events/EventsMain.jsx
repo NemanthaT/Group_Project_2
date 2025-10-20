@@ -88,10 +88,12 @@ function FeaturedContent() {
   useEffect(() => {
     const scrollY = sessionStorage.getItem('eventsScroll');
     if (scrollY) {
-      window.scrollTo(0, parseInt(scrollY));
-      sessionStorage.removeItem('eventsScroll');
+      // Use requestAnimationFrame to ensure the scroll happens after render
+      requestAnimationFrame(() => {
+        window.scrollTo(0, parseInt(scrollY));
+        sessionStorage.removeItem('eventsScroll');
+      });
     }
-
   }, []);
 
   const handleFilterChange = (e, filterName) => {
@@ -347,18 +349,16 @@ function FeaturedContent() {
         onSubmit={handleEventSubmit}
       />
 
-      {showVolunteerModal && selectedEvent && (
-              <VolunteerEventModal
-                isOpen={showVolunteerModal}
-                onClose={() => {
-                  setShowVolunteerModal(false);
-                  setSelectedEvent(null);
-                  fetchEvents();
-                }}
-                eventId={selectedEvent.id}          
-                eventTitle={selectedEvent.title} 
-              />
-            )}
+      <VolunteerEventModal
+        isOpen={showVolunteerModal}
+        onClose={() => {
+          setShowVolunteerModal(false);
+          setSelectedEvent(null);
+          fetchEvents();
+        }}
+        eventId={selectedEvent?.id}
+        eventTitle={selectedEvent?.title}
+      />
 
 
       <section className="programs">
@@ -401,7 +401,7 @@ function FeaturedContent() {
                     <button
                       className="btn-main btn-outline-main"
                       onClick={() => {
-                        sessionStorage.setItem('eventsScroll', window.scrollY); 
+                        sessionStorage.setItem('eventsScroll', window.scrollY.toString());
                         navigate(`/Events/${opp.id}`, { state: { opp } });
                       }}
                     >
@@ -410,8 +410,13 @@ function FeaturedContent() {
                     <button
                       className="btn-main btn-primary-main"
                       onClick={() => {
-                        setSelectedEvent(opp);        
-                        setShowVolunteerModal(true);  
+                        const currentPosition = window.scrollY;
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${currentPosition}px`;
+                        document.body.style.width = '100%';
+                        sessionStorage.setItem('eventsScroll', currentPosition.toString());
+                        setSelectedEvent(opp);
+                        setShowVolunteerModal(true);
                       }}
                     >
                       Volunteer
