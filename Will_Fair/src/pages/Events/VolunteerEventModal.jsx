@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './VolunteerEventModal.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Community Event", eventId }) {
 
@@ -47,41 +49,76 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      Object.values(newErrors).forEach(error => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 3000
+        });
+      });
       return;
     }
 
     if (!eventId) {
-      alert("Missing event ID. Please refresh the page and try again.");
+      toast.error("Missing event ID. Please refresh the page and try again.", {
+        position: "top-right",
+        autoClose: 3000
+      });
       return; // stop submission
     }
 
     try {
-      await axios.post("http://localhost:5000/api/volunteers", {
+      const response = await axios.post("http://localhost:5000/api/volunteers", {
         event_id: eventId,
         volunteer_name: form.name,
         volunteer_email: form.email,
         volunteer_phone: form.contact,
-        notes:form.notes,
+        notes: form.notes,
       });
 
-      alert(`Thank you for volunteering for ${eventTitle}!`);
-      setForm({ name: "", email: "", contact: "", notes: "" });
-      onClose();
+      if (response.data.success) {
+        toast.success(`Thank you for volunteering for ${eventTitle}!`, {
+          position: "top-right",
+          autoClose: 3000
+        });
+        setForm({ name: "", email: "", contact: "", notes: "" });
+        onClose();
+      } else {
+        throw new Error(response.data.message || 'Submission failed');
+      }
     } catch (err) {
       console.error(err);
-      if (err.response?.data?.error)
-        alert(err.response.data.error);
-      else alert("Submission failed. Please try again.");
+      toast.error(
+        err.response?.data?.error || "Failed to submit volunteer application. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 5000
+        }
+      );
     }
   };
 
-  // // Prevent background scroll when open
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   const original = document.body.style.overflow;
-  //   document.body.style.overflow = 'hidden';
-  //   return () => { document.body.style.overflow = original; };
-  // }, [isOpen]);
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // Store the original values
+    const originalStyle = window.getComputedStyle(document.body);
+    const originalOverflow = originalStyle.overflow;
+    const originalPaddingRight = originalStyle.paddingRight;
+    
+    // Calculate scroll bar width
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
+    // Add padding right to prevent content shift
+    document.body.style.paddingRight = `${scrollBarWidth}px`;
+    document.body.style.overflow = 'hidden';
+
+    // Cleanup function to restore original styles
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -90,6 +127,18 @@ export default function VolunteerEventModal({ isOpen, onClose, eventTitle = "Com
       className="modal-overlay"
       onClick={(e) => e.target.className === "modal-overlay" && onClose()}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="modal-card">
         <div className="modal-header">
           <h2>Volunteer for this Event</h2>
