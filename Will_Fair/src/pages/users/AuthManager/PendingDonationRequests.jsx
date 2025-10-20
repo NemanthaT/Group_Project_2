@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Clock, CheckCircle, XCircle, Package } from "lucide-react";
 import "./AuthManagerDashboard.css";
 
 const PendingDonationRequests = ( {user}) => {
@@ -60,10 +61,10 @@ const PendingDonationRequests = ( {user}) => {
   };
 
   const statsCards = [
-    { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" },
-    { value: stats.accepted, label: "Accepted", icon: "✅", color: "#10b981" },
-    { value: stats.declined, label: "Declined", icon: "❌", color: "#ef4444" },
-    { value: stats.total, label: "Total", icon: "📦", color: "#3b82f6" },
+    { value: stats.pending, label: "Pending", icon: Clock, color: "#f59e0b" },
+    { value: stats.accepted, label: "Accepted", icon: CheckCircle, color: "#10b981" },
+    { value: stats.declined, label: "Declined", icon: XCircle, color: "#ef4444" },
+    { value: stats.total, label: "Total", icon: Package, color: "#3b82f6" },
   ];
 
   if (loading) return <div>Loading...</div>;
@@ -77,22 +78,25 @@ const PendingDonationRequests = ( {user}) => {
           <p>Review and manage Donation Requests</p>
         </div>
       </div>
-      {/* Stats Cards */}
+     
       <div className="authmanager-stats-grid" style={{ marginBottom: 24 }}>
-        {statsCards.map((card, idx) => (
-          <div className="authmanager-stat-card" key={idx}>
-            <div
-              className="authmanager-stat-icon"
-              style={{ backgroundColor: card.color + "15", color: card.color }}
-            >
-              {card.icon}
+        {statsCards.map((card, idx) => {
+          const Icon = card.icon;
+          return (
+            <div className="authmanager-stat-card" key={idx}>
+              <div
+                className="authmanager-stat-icon"
+                style={{ color: card.color }}
+              >
+                <Icon size={28} />
+              </div>
+              <div className="authmanager-stat-info">
+                <div className="authmanager-stat-value">{card.value}</div>
+                <div className="authmanager-stat-label">{card.label}</div>
+              </div>
             </div>
-            <div className="authmanager-stat-info">
-              <div className="authmanager-stat-value">{card.value}</div>
-              <div className="authmanager-stat-label">{card.label}</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="pending-requests-list">
         {requests.length === 0 ? (

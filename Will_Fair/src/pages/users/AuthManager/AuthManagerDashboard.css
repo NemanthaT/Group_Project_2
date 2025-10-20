@@ -130,6 +130,13 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
+.no-events-message{
+  text-align: center;
+  padding: 40px 20px;
+  color: rgb(21, 16, 16);
+  font-size: 25px;
+}
+
 .pending-requests-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -155,7 +162,7 @@ body {
   border-radius: 12px;
 }
 .authmanager-welcome-section{
-  background: #dcdcdc;
+  background: #fafbfc;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 40px;
@@ -601,7 +608,7 @@ tbody tr:hover {
 
 /* Welcome Section */
 .welcome-section {
-  background: white;
+  background: #6366f1;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -612,13 +619,13 @@ tbody tr:hover {
 .welcome-content h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #1e293b;
+  color: white;
   margin-bottom: 8px;
 }
 
 .welcome-content p {
   font-size: 15px;
-  color: #64748b;
+  color: white;
 }
 
 /* Overview Grid */

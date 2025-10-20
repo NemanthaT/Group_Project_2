@@ -123,7 +123,7 @@ const AuthManager = () => {
           onClick={() => setActiveTab('events')}
         >
           <CalendarCheck size={18} />
-          Voluntary Events
+          Volunteering Events
           {stats.pendingEvents > 0 && (
             <span className="nav-badge">{stats.pendingEvents}</span>
           )}
