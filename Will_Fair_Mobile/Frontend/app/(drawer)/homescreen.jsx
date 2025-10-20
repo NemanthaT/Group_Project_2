@@ -56,32 +56,7 @@ const HomeScreen = () => {
 
     const navigation = useNavigation(); // ← Hook for drawer access
 
-    const programs = [
-    {
-        id: 1,
-        title: 'Child Care Renovation',
-        target: '$50,000',
-        raised: '$5,000',
-        progress: '40%',
-        image: require('../../assets/images/program1.png'),
-    },
-    {
-        id: 2,
-        title: 'Elderly Care Support',
-        target: '$10,000',
-        raised: '$5,000',
-        progress: '70%',
-        image: require('../../assets/images/program2.png'),
-    },
-    {
-        id: 3,
-        title: 'Medical Aid',
-        target: '$18,000',
-        raised: '$5,000',
-        progress: '55%',
-        image: require('../../assets/images/program3.png'),
-    },
-    ];
+    const programs = [];
 
 
   return (
@@ -89,7 +64,7 @@ const HomeScreen = () => {
       <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
 
         {/* Hero Section */}
-        <LinearGradient colors={["#7B61FF", "#9333EA"]} style={homeStyles.hero}>
+        <LinearGradient colors={["#7B61FF", "#7B61FF"]} style={homeStyles.hero}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -109,18 +84,18 @@ const HomeScreen = () => {
             Whether it’s food, education, healthcare, or emergency relief — your
             contribution matters.
           </Text>
-          <View style={homeStyles.heroButtons}>
+          {/* <View style={homeStyles.heroButtons}>
             <TouchableOpacity style={homeStyles.ctaButton}>
               <Text style={homeStyles.ctaText}>Get Started</Text>
             </TouchableOpacity>
             <TouchableOpacity style={homeStyles.donateButton}>
               <Text style={homeStyles.buttonText}>Donate Now</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </LinearGradient>
 
         {/* Featured Programs */}
-        <Text style={homeStyles.sectionTitle}>Featured Programs</Text>
+        {/* <Text style={homeStyles.sectionTitle}>Featured Programs</Text> */}
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={homeStyles.cardRow}>
          {programs.map((item) => (
@@ -157,7 +132,7 @@ const HomeScreen = () => {
 </ScrollView>
 
         {/* Impact Section */}
-        <View style={homeStyles.impactContainer}>
+        {/* <View style={homeStyles.impactContainer}>
           <Text style={homeStyles.sectionTitle}>Our Impact</Text>
           <View style={homeStyles.impactBox}>
             <Ionicons name="school-outline" size={24} color="#7B61FF" />
@@ -169,7 +144,7 @@ const HomeScreen = () => {
             <Text style={homeStyles.impactValue}>10,000+</Text>
             <Text style={homeStyles.impactLabel}>Medical Treatment</Text>
           </View>
-        </View>
+        </View> */}
 
         {/* Testimonial Section */}
         <View style={homeStyles.testimonialContainer}>
@@ -181,7 +156,7 @@ const HomeScreen = () => {
         </View>
 
         {/* Contact Form */}
-        <View style={homeStyles.contactContainer}>
+        {/* <View style={homeStyles.contactContainer}>
           <Text style={homeStyles.sectionTitle}>Are you willing to make a DIFFERENCE?</Text>
           <TextInput placeholder="Full Name" style={homeStyles.inputField} />
           <TextInput placeholder="Email" style={homeStyles.inputField} />
@@ -194,7 +169,7 @@ const HomeScreen = () => {
           <TouchableOpacity style={homeStyles.donateButton}>
             <Text style={homeStyles.buttonText}>Submit</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
      {/* Contact Us */}
       {/* <View ref={contactRef} onLayout={(event) => setContactY(event.nativeEvent.layout.y)} style={homeStyles.testimonialContainer}> */}
