@@ -22,19 +22,15 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     contactNumber: ''
   });
 
-  // field errors to show inline tooltips instead of alerts
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // refs for form fields so we can focus / scroll the first invalid one
   const fieldRefs = useRef({});
 
-  // image and document uploads (required)
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [documentFiles, setDocumentFiles] = useState([]);
 
-  // Handlers moved out of JSX
   const handleImageUpload = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -45,7 +41,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     setImageFile(file);
     const url = URL.createObjectURL(file);
     setImagePreview(url);
-    // clear image-related error
     setErrors(prev => ({ ...prev, image: null }));
   };
 
@@ -57,7 +52,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       return;
     }
     setDocumentFiles(prev => [...prev, ...pdfFiles]);
-    // clear document-related error
     setErrors(prev => ({ ...prev, documents: null }));
   };
 
@@ -65,25 +59,20 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     setDocumentFiles(prev => { const copy = [...prev]; copy.splice(index,1); return copy; });
   };
 
-  // Helper function to sanitize phone number (remove spaces)
   const sanitizePhoneNumber = (phone) => {
     return phone.replace(/\s+/g, '');
   };
 
-  // Helper function to validate Sri Lankan phone number format
   const validatePhoneNumber = (phone) => {
     const sanitized = sanitizePhoneNumber(phone);
-    // Must start with +94 followed by exactly 9 digits
     const phoneRegex = /^\+94\d{9}$/;
     return phoneRegex.test(sanitized);
   };
 
-  // reset form when modal opens
   useEffect(() => {
     if (isOpen) setForm({ name: '', isRange: false, date: '', startDate: '', endDate: '', description: '', volunteersNeeded: 5, location: '', type: '', commitment: '', skills: '', contactName: '', contactEmail: '', contactNumber: '' });
   }, [isOpen]);
 
-  // helper to update a field and clear its error
   const updateField = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
     setErrors(prev => ({ ...prev, [key]: null }));
@@ -97,7 +86,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate all required text fields
     if (!form.name || form.name.trim() === '') {
       toast.error('Event name is required.');
       return;
@@ -143,13 +131,11 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       return;
     }
 
-    // Validate phone number format
     if (!validatePhoneNumber(form.contactNumber)) {
       toast.error('Contact number must be in format +94xxxxxxxxx (e.g., +94771234567)');
       return;
     }
 
-    // Validate date fields
     if (!form.isRange) {
       if (!form.date || form.date === '') {
         toast.error('Event date is required.');
@@ -164,35 +150,29 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
         toast.error('End date is required.');
         return;
       }
-      // Check that end date is after start date
       if (new Date(form.endDate) < new Date(form.startDate)) {
         toast.error('End date must be after start date.');
         return;
       }
     }
 
-    // Validate number of volunteers
     if (!form.volunteersNeeded || form.volunteersNeeded < 1) {
       toast.error('Number of volunteers must be at least 1.');
       return;
     }
 
-    // Require event image
     if (!imageFile) {
       toast.error('Event image is required.');
       return;
     }
 
-    // Require at least one proof document to be uploaded
     if (documentFiles.length === 0) {
       toast.error('Please upload at least one proof document (PDF).');
       return;
     }
 
-    // Sanitize phone number before submission (remove spaces)
     const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
 
-    // Build FormData
     let formData = new FormData();
     formData.append('name', form.name);
     formData.append('isRange', form.isRange);
@@ -206,7 +186,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     formData.append('contactEmail', form.contactEmail);
     formData.append('contactNumber', sanitizedPhone);
 
-    // Add date fields
     if (form.isRange) {
       formData.append('startDate', form.startDate);
       formData.append('endDate', form.endDate);
@@ -214,12 +193,10 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       formData.append('date', form.date);
     }
 
-    // Append image file (single)
     if (imageFile) {
       formData.append('image', imageFile);
     }
 
-    // Append document files
     documentFiles.forEach((file) => formData.append('documents', file));
 
     console.log('Form Data:', formData);
@@ -228,9 +205,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     const result = await onSubmit(formData);
     setIsSubmitting(false);
 
-    // Only reset form if submission was successful
     if (result.success) {
-      // Reset form and files
       setForm({
         name: '',
         isRange: false,
@@ -257,14 +232,12 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     }
   };
 
-  // prevent background scrolling while modal is open
   useEffect(() => {
     if (!isOpen) return;
 
     const originalOverflow = document.body.style.overflow;
     const originalPaddingRight = document.body.style.paddingRight;
 
-    // compute scrollbar width and add padding to avoid layout shift
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -401,7 +374,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             {renderError('contactNumber')}
           </div>
 
-          {/* Image upload (required) */}
           <div className="form-row">
             <label>Event Image (required)</label>
             <div className="image-upload-card">
@@ -429,7 +401,6 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             </div>
           </div>
 
-          {/* Document uploads (required, PDF) */}
           <div className="form-row">
             <label>Proof Documents (PDF) (required)</label>
             <div className="file-upload-card">
@@ -441,9 +412,11 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
                 multiple
                 style={{ display: 'none' }}
               />
-              <label htmlFor="eventDocumentUpload" className="choose-files-button">
-                Choose files
-              </label>
+              {documentFiles.length < 5 && (
+                <label htmlFor="eventDocumentUpload" className="choose-files-button">
+                  Choose files
+                </label>
+              )}
 
               <div className="file-display" style={{ marginTop: 12 }}>
                 {documentFiles.length > 0 ? (

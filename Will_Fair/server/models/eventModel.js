@@ -6,7 +6,7 @@ import pool from "../db.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//Get all events with organiser info and attached documents
+// Retrieves all approved events with organiser info and documents
 async function getEvents() {
     try {
         const sql = `
@@ -55,6 +55,7 @@ async function getEvents() {
     }
 }
 
+// Retrieves a single event by ID with organiser information
 async function getEventById(eventId) {
     try{
         const sql = `
@@ -92,6 +93,7 @@ async function getEventById(eventId) {
     }
 }
 
+// Retrieves all events pending approval with organiser info and documents
 async function getPendingEvents() {
     try {
         const sql = `
@@ -139,6 +141,7 @@ async function getPendingEvents() {
     }
 }
 
+// Retrieves all events marked for deletion with organiser info and documents
 async function getPendingDeletionEvents() {
     try {
         const sql = `
@@ -185,10 +188,9 @@ async function getPendingDeletionEvents() {
     }
 }
 
-// Add a new organiser to the database (or return existing one by email)
+// Adds a new organiser or updates existing one if email already exists
 async function addOrganiser(organiserData) {
     try {
-        // First, check if organiser with this email already exists
         const checkSql = `
             SELECT organiser_id FROM event_organisers 
             WHERE email = $1
@@ -196,11 +198,9 @@ async function addOrganiser(organiserData) {
         
         const existingOrganiser = await pool.query(checkSql, [organiserData.email]);
         
-        // If organiser exists, update name and phone number and return their ID
         if (existingOrganiser.rows.length > 0) {
             const organiserId = existingOrganiser.rows[0].organiser_id;
             
-            // Update name and phone number to the latest ones provided
             const updateSql = `
                 UPDATE event_organisers 
                 SET name = $1, phone = $2, updated_at = NOW()
@@ -211,7 +211,6 @@ async function addOrganiser(organiserData) {
             return { success: true, organiserId, existing: true };
         }
         
-        // If not, create a new organiser
         const insertSql = `
             INSERT INTO event_organisers (name, email, phone)
             VALUES ($1, $2, $3)
@@ -232,10 +231,9 @@ async function addOrganiser(organiserData) {
     }
 }
 
-// Add a new event to the database
+// Creates a new event in the database with all provided details
 async function addEvent(eventData) {
     try {
-        // Generate unique event key
         const eventKey = generateEventKey();
 
         const sql = `
@@ -294,10 +292,9 @@ async function addEvent(eventData) {
 }
 
 
-// Add documents for an event
+// Adds document records to the database for a specific event
 async function addDocuments(eventId, documents) {
     try {
-        // documents should be an array of objects with { filename, path }
         if (!Array.isArray(documents) || documents.length === 0) {
             return { success: true, message: "No documents to add" };
         }
@@ -318,7 +315,7 @@ async function addDocuments(eventId, documents) {
     }
 }
 
-// Update event image path after file has been moved
+// Updates the image path for an event after file upload
 async function updateEventImage(eventId, imagePath) {
     try {
         const sql = `UPDATE events SET image_path = $1 WHERE event_id = $2`;
@@ -330,7 +327,7 @@ async function updateEventImage(eventId, imagePath) {
     }
 }
 
-// Approve an event (set is_approved to true)
+// Approves an event by setting is_approved to true
 async function approveEvent(eventId) {
     try {
         const sql = `
@@ -353,7 +350,7 @@ async function approveEvent(eventId) {
     }
 }
 
-// Delete an event (volunteers and documents auto-delete via CASCADE)
+// Deletes an event and its associated files from database and filesystem
 async function deleteEvent(eventId) {
     try {
         const sql = `
@@ -384,7 +381,7 @@ async function deleteEvent(eventId) {
     }
 }
 
-// Get count of pending approval events
+// Returns the count of events pending approval
 async function getPendingEventsCount() {
     try {
         const sql = `
@@ -403,7 +400,7 @@ async function getPendingEventsCount() {
     }
 }
 
-// Get count of pending deletion events
+// Returns the count of events pending deletion approval
 async function getPendingDeletionEventsCount() {
     try {
         const sql = `
@@ -421,7 +418,7 @@ async function getPendingDeletionEventsCount() {
     }
 }
 
-// Get both counts in one call for efficiency
+// Returns counts for pending approval and deletion events in one query
 async function getEventCounts() {
     try {
         const sql = `
@@ -446,6 +443,7 @@ async function getEventCounts() {
     }
 }
 
+// Generates a unique volunteer key for event registration
 function generateVolunteerKey() {
   const prefix = 'VOL';
   const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -453,6 +451,7 @@ function generateVolunteerKey() {
   return `${prefix}-${randomPart}-${timestamp}`;
 }
 
+// Withdraws a volunteer from an event using email and volunteer key
 async function withdrawVolunteer(email, volunteerKey) {
   try {
     const query = `
@@ -465,7 +464,7 @@ async function withdrawVolunteer(email, volunteerKey) {
     const result = await pool.query(query, [email, volunteerKey]);
     
     if (result.rows.length === 0) {
-      return {
+        return {
         success: false,
         message: 'No matching volunteer registration found. Please check your email and volunteer key.'
       };
@@ -473,7 +472,6 @@ async function withdrawVolunteer(email, volunteerKey) {
 
     const deletedVolunteer = result.rows[0];
     
-    // Decrement the volunteers_signed count for the event
     const updateEventQuery = `
       UPDATE events 
       SET volunteers_signed = GREATEST(volunteers_signed - 1, 0)
@@ -498,6 +496,7 @@ async function withdrawVolunteer(email, volunteerKey) {
   }
 }
 
+// Generates a unique event key for event creation
 function generateEventKey() {
   const prefix = 'EVT';
   const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -505,9 +504,9 @@ function generateEventKey() {
   return `${prefix}-${randomPart}-${timestamp}`;
 }
 
+// Submits a deletion request for an event by the organiser
 async function requestEventDeletion(email, eventKey) {
   try {
-    // First, find the organiser_id from the email
     const organiserQuery = `
       SELECT organiser_id 
       FROM event_organisers 
@@ -525,7 +524,6 @@ async function requestEventDeletion(email, eventKey) {
 
     const organiserId = organiserResult.rows[0].organiser_id;
     
-    // Update the event's request_deletion status
     const updateQuery = `
       UPDATE events 
       SET request_deletion = true, 

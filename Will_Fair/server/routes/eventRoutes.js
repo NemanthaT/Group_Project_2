@@ -18,7 +18,6 @@ const storage = multer.diskStorage({
 const eventUpload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    // Check mimetype for proper validation
     const allowedMimeTypes = [
       'application/pdf',
       'image/jpeg',
@@ -33,20 +32,16 @@ const eventUpload = multer({
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024  // 10MB for events
+    fileSize: 10 * 1024 * 1024 
   }
 });
 
-// POST create event with custom upload middleware
 router.post('/createEvent', eventUpload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'documents', maxCount: 5 }
 ]), createEvent);
 
-// POST withdraw volunteer
 router.post('/withdrawVolunteer', withdrawVolunteerController);
-
-// POST request event deletion
 router.post('/deleteRequest', requestEventDeletionController);
 
 // GET event by ID
@@ -56,7 +51,6 @@ router.get('/:id', async (req, res) => {
   res.json(result);//returns { success: true, event: {...} } or { success: false, message: "..." }
 });
 
-//public Routes
 router.get('/', getEventsController);
 
 export default router;
