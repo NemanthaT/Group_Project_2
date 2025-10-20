@@ -8,7 +8,8 @@ import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import BackButton from '../components/backbutton'
+import BackButton from '../components/backbutton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Login = ({ visible, onClose, onLoginPress }) => {
@@ -83,6 +84,18 @@ const handleLogin = async () => {
     console.log('Login response:', data);
 
     if (response.ok) {
+      // Save guest user data to AsyncStorage
+      const userData = {
+        guestuser_id: data.user.guestuser_id,
+        username: data.user.username,
+        email: data.user.email,
+        phone: data.user.phone,
+        user_type: 'guestuser'
+      };
+      
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      console.log('Guest user data saved to AsyncStorage:', userData);
+      
       Alert.alert('Success', `Welcome back, ${data.user.username}!`, [
         {
           text: 'OK',
