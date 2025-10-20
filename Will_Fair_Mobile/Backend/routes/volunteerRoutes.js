@@ -1,35 +1,20 @@
-// Volunteer Routes
+// Volunteer Routes for Mobile Backend
 const express = require('express');
 const router = express.Router();
 const volunteerController = require('../controllers/volunteerController');
-const multer = require('multer');
-const path = require('path');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
-});
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error('Invalid file type'));
-    }
-  }
-});
+// Public Routes
 
-router.post('/volunteer_ind_reg', upload.single('proofDocument'), volunteerController.registerIndividual);
-router.post('/volunteer_rep_reg', upload.single('proofDocument'), volunteerController.registerRepresentative);
-router.post('/volunteer_login', volunteerController.login);
+// Create a new volunteer signup
+router.post('/volunteers', volunteerController.createVolunteerSignup);
+
+// Get all volunteers for a specific event
+router.get('/volunteers/event/:eventId', volunteerController.getVolunteersByEvent);
+
+// Get a specific volunteer signup by ID
+router.get('/volunteers/:id', volunteerController.getVolunteerById);
+
+// Cancel/Delete volunteer signup
+router.delete('/volunteers/:id', volunteerController.cancelVolunteerSignup);
 
 module.exports = router;

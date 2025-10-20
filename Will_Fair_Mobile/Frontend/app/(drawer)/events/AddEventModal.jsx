@@ -138,70 +138,84 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
       return;
     }
 
+    if (!onSubmit) {
+      Alert.alert('Error', 'Submit handler not provided');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
-    let formData = new FormData();
-    Object.entries(form).forEach(([k, v]) => {
-      if (k === 'volunteersNeeded') {
-        formData.append(k, Number(v));
+    try {
+      const sanitizedPhone = sanitizePhoneNumber(form.contactNumber);
+      let formData = new FormData();
+      Object.entries(form).forEach(([k, v]) => {
+        if (k === 'volunteersNeeded') {
+          formData.append(k, Number(v));
+        } else {
+          formData.append(k, v);
+        }
+      });
+      formData.append('contactNumber', sanitizedPhone);
+
+      if (form.isRange) {
+        formData.append('startDate', form.startDate);
+        formData.append('endDate', form.endDate);
       } else {
-        formData.append(k, v);
+        formData.append('date', form.date);
       }
-    });
-    formData.append('contactNumber', sanitizedPhone);
 
-    if (form.isRange) {
-      formData.append('startDate', form.startDate);
-      formData.append('endDate', form.endDate);
-    } else {
-      formData.append('date', form.date);
-    }
+      if (imageFile && imageFile.uri) {
+        const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
+        const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
+        const imageType = imageFile.type || 'image/jpeg';
+        
+        formData.append('image', {
+          uri: imageUri,
+          name: imageName,
+          type: imageType
+        });
+      }
 
-    if (imageFile && imageFile.uri) {
-      const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
-      const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
-      const imageType = imageFile.type || 'image/jpeg';
-      
-      formData.append('image', {
-        uri: imageUri,
-        name: imageName,
-        type: imageType
+      documentFiles.forEach((file, idx) => {
+        formData.append('documents', {
+          uri: file.uri,
+          name: file.name || `document_${idx + 1}.pdf`,
+          type: 'application/pdf'
+        });
       });
-    }
 
-    documentFiles.forEach((file, idx) => {
-      formData.append('documents', {
-        uri: file.uri,
-        name: file.name || `document_${idx + 1}.pdf`,
-        type: 'application/pdf'
-      });
-    });
+      console.log('Calling onSubmit with formData...');
+      const result = await onSubmit(formData);
+      console.log('onSubmit result:', result);
 
-    const result = await onSubmit(formData);
-    setIsSubmitting(false);
-
-    if (result && result.success) {
-      setForm({
-        name: '',
-        isRange: false,
-        date: '',
-        startDate: '',
-        endDate: '',
-        description: '',
-        volunteersNeeded: '5',
-        location: '',
-        type: '',
-        commitment: '',
-        skills: '',
-        contactName: '',
-        contactEmail: '',
-        contactNumber: ''
-      });
-      setImageFile(null);
-      setDocumentFiles([]);
-      setErrors({});
-      onClose && onClose();
+      if (result && result.success) {
+        Alert.alert('Success', 'Event created successfully!');
+        setForm({
+          name: '',
+          isRange: false,
+          date: '',
+          startDate: '',
+          endDate: '',
+          description: '',
+          volunteersNeeded: '5',
+          location: '',
+          type: '',
+          commitment: '',
+          skills: '',
+          contactName: '',
+          contactEmail: '',
+          contactNumber: ''
+        });
+        setImageFile(null);
+        setDocumentFiles([]);
+        setErrors({});
+        onClose && onClose();
+      }
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      Alert.alert('Error', 'An unexpected error occurred while creating the event');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
