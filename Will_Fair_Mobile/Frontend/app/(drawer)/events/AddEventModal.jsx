@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert, Platform } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { EVENT_OPTIONS } from '../../../constants/eventOptions';
 
 export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -54,6 +56,10 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   };
 
   const handleImagePick = async () => {
+    if (imageFile) {
+      Alert.alert('Limit', 'Only one image can be submitted.');
+      return;
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -66,12 +72,19 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   };
 
   const handleDocumentPick = async () => {
+    if (documentFiles.length >= 5) {
+      Alert.alert('Limit', 'Maximum 5 PDF documents allowed.');
+      return;
+    }
     let result = await DocumentPicker.getDocumentAsync({
       type: 'application/pdf',
       multiple: true
     });
     if (result.type === 'success') {
-      setDocumentFiles(prev => [...prev, result]);
+      setDocumentFiles(prev => {
+        const newFiles = [...prev, result];
+        return newFiles.slice(0, 5);
+      });
       setErrors(prev => ({ ...prev, documents: null }));
     }
   };
@@ -164,29 +177,133 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}><Text style={{fontSize:18}}>✕</Text></TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ padding: 12 }}>
-            {/* ...fields as in your web version, using TextInput, Switch, etc... */}
-            {/* Add error display below each field as in the web version */}
-            {/* Add image/document pickers and display selected files */}
-            {/* Add Cancel/Create buttons */}
-            {/* ... */}
-            {/* For brevity, use your previous field rendering code, but add error display and file pickers as above */}
+            {/* Event Name */}
             <Text style={styles.label}>Event Name</Text>
             <TextInput style={styles.input} value={form.name} onChangeText={t => updateField('name', t)} />
             {errors.name && <Text style={styles.err}>{errors.name}</Text>}
 
-            {/* ...repeat for all fields... */}
+            {/* Event Date & Range Toggle */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+              <Text style={styles.label}>Event Date</Text>
+              <Switch value={form.isRange} onValueChange={v => updateField('isRange', v)} style={{ marginLeft: 12 }} />
+              <Text style={{ marginLeft: 8, color: '#888' }}>Multi-day?</Text>
+            </View>
+            {!form.isRange ? (
+              <View>
+                <TextInput style={styles.input} value={form.date} onChangeText={t => updateField('date', t)} placeholder="YYYY-MM-DD" />
+                {errors.date && <Text style={styles.err}>{errors.date}</Text>}
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                  <TextInput style={styles.input} value={form.startDate} onChangeText={t => updateField('startDate', t)} placeholder="Start Date" />
+                  {errors.startDate && <Text style={styles.err}>{errors.startDate}</Text>}
+                </View>
+                <Text style={{ marginHorizontal: 8 }}>to</Text>
+                <View style={{ flex: 1 }}>
+                  <TextInput style={styles.input} value={form.endDate} onChangeText={t => updateField('endDate', t)} placeholder="End Date" />
+                  {errors.endDate && <Text style={styles.err}>{errors.endDate}</Text>}
+                </View>
+              </View>
+            )}
 
+            {/* Location */}
+            <Text style={styles.label}>Location</Text>
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={form.location}
+                onValueChange={v => updateField('location', v)}
+              >
+                <Picker.Item label="Select Location" value="" />
+                {EVENT_OPTIONS.location.map(opt => (
+                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                ))}
+              </Picker>
+            </View>
+            {errors.location && <Text style={styles.err}>{errors.location}</Text>}
 
+            {/* Volunteer Type */}
+            <Text style={styles.label}>Volunteer Type</Text>
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={form.type}
+                onValueChange={v => updateField('type', v)}
+              >
+                <Picker.Item label="Select Type" value="" />
+                {EVENT_OPTIONS.type.map(opt => (
+                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                ))}
+              </Picker>
+            </View>
+            {errors.type && <Text style={styles.err}>{errors.type}</Text>}
+
+            {/* Time Commitment */}
+            <Text style={styles.label}>Time Commitment</Text>
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={form.commitment}
+                onValueChange={v => updateField('commitment', v)}
+              >
+                <Picker.Item label="Select Commitment" value="" />
+                {EVENT_OPTIONS.commitment.map(opt => (
+                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                ))}
+              </Picker>
+            </View>
+            {errors.commitment && <Text style={styles.err}>{errors.commitment}</Text>}
+
+            {/* Skills */}
+            <Text style={styles.label}>Skills</Text>
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={form.skills}
+                onValueChange={v => updateField('skills', v)}
+              >
+                <Picker.Item label="Select Skills" value="" />
+                {EVENT_OPTIONS.skills.map(opt => (
+                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                ))}
+              </Picker>
+            </View>
+            {errors.skills && <Text style={styles.err}>{errors.skills}</Text>}
+
+            {/* Number of Volunteers */}
+            <Text style={styles.label}>Number of Volunteers</Text>
+            <TextInput style={styles.input} value={form.volunteersNeeded} onChangeText={t => updateField('volunteersNeeded', t.replace(/[^0-9]/g, ''))} keyboardType="numeric" />
+            {errors.volunteersNeeded && <Text style={styles.err}>{errors.volunteersNeeded}</Text>}
+
+            {/* Event Description */}
+            <Text style={styles.label}>Event Description</Text>
+            <TextInput style={[styles.input, { height: 80 }]} value={form.description} onChangeText={t => updateField('description', t)} multiline numberOfLines={4} />
+            {errors.description && <Text style={styles.err}>{errors.description}</Text>}
+
+            {/* Contact Name */}
+            <Text style={styles.label}>Contact Name</Text>
+            <TextInput style={styles.input} value={form.contactName} onChangeText={t => updateField('contactName', t)} />
+            {errors.contactName && <Text style={styles.err}>{errors.contactName}</Text>}
+
+            {/* Contact Email */}
+            <Text style={styles.label}>Contact Gmail</Text>
+            <TextInput style={styles.input} value={form.contactEmail} onChangeText={t => updateField('contactEmail', t)} keyboardType="email-address" placeholder="example@gmail.com" />
+            {errors.contactEmail && <Text style={styles.err}>{errors.contactEmail}</Text>}
+
+            {/* Contact Number */}
+            <Text style={styles.label}>Contact Number</Text>
+            <TextInput style={styles.input} value={form.contactNumber} onChangeText={t => updateField('contactNumber', t)} keyboardType="phone-pad" placeholder="e.g. +94 77 123 4567" />
+            {errors.contactNumber && <Text style={styles.err}>{errors.contactNumber}</Text>}
+
+            {/* Event Image (required) */}
             <Text style={styles.label}>Event Image (required)</Text>
-            <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
-              <Text style={styles.uploadText}>{imageFile ? 'Change image' : 'Choose image'}</Text>
+            <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick} disabled={!!imageFile}>
+              <Text style={styles.uploadText}>{imageFile ? 'Image selected' : 'Choose image'}</Text>
             </TouchableOpacity>
             {imageFile && <Text style={{ marginTop: 4 }}>{imageFile.uri.split('/').pop()}</Text>}
             {errors.image && <Text style={styles.err}>{errors.image}</Text>}
 
+            {/* Proof Documents (PDF) (required) */}
             <Text style={styles.label}>Proof Documents (PDF) (required)</Text>
-            <TouchableOpacity style={styles.uploadBox} onPress={handleDocumentPick}>
-              <Text style={styles.uploadText}>Choose PDF</Text>
+            <TouchableOpacity style={styles.uploadBox} onPress={handleDocumentPick} disabled={documentFiles.length >= 5}>
+              <Text style={styles.uploadText}>{documentFiles.length < 5 ? 'Choose PDF' : 'Max 5 PDFs'}</Text>
             </TouchableOpacity>
             {documentFiles.map((file, idx) => (
               <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
