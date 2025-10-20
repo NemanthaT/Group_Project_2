@@ -1,3 +1,30 @@
+// Update donee email
+async function updateDoneeEmail(doneeId, newEmail) {
+  try {
+    await pool.query(
+      `UPDATE donees SET email = $1 WHERE donee_id = $2`,
+      [newEmail, doneeId]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during updateDoneeEmail():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+// Update donee password (expects already hashed password)
+async function updateDoneePassword(doneeId, newPasswordHash) {
+  try {
+    await pool.query(
+      `UPDATE donees SET password_hash = $1 WHERE donee_id = $2`,
+      [newPasswordHash, doneeId]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Database error during updateDoneePassword():', err);
+    return { success: false, message: 'Database error' };
+  }
+}
 // doneeModel.js
 import pool from "../db.js";
 import fs from 'fs';
@@ -14,11 +41,11 @@ async function getTotalDonees() {
 async function getAllDonees() {
   try {
     const res = await pool.query(`
-      SELECT d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path,
-        COALESCE(SUM(n.quantity_received),0) AS totalReceived
+      SELECT d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path, d.type, d.category,
+        COALESCE(SUM(n.quantity_received), 0) AS totalReceived
       FROM donees d
       LEFT JOIN donation_requests n ON d.donee_id = n.donee_id
-      GROUP BY d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path
+      GROUP BY d.donee_id, d.first_name, d.last_name, d.email, d.phone, d.verification_status, d.proof_document_path, d.type, d.category
       ORDER BY d.donee_id
     `);
     res.rows.forEach(row => {
@@ -26,6 +53,8 @@ async function getAllDonees() {
       row.totalReceived = Number(row.totalreceived || row.totalReceived || 0);
       row.status = row.verification_status === 'accepted' ? 'Accepted' : 'Pending';
       row.verified = row.verification_status === 'accepted';
+      row.type = row.type || 'Individual';
+      row.category = row.category || 'General';
       // Attach documents array with the saved file path if available
       const docPath = "server/"+row.proof_document_path;
       row.documents = docPath ? [docPath] : [];
@@ -128,4 +157,4 @@ function getProofDocumentPath(doneeId) {
   });
 }
 
-export { registerDonee, getProofDocumentPath, getTotalDonees, getAllDonees, getPendingVerifications, getDoneeStats };
+export { registerDonee, getProofDocumentPath, getTotalDonees, getAllDonees, getPendingVerifications, getDoneeStats, updateDoneeEmail, updateDoneePassword };

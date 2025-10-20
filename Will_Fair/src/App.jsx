@@ -13,13 +13,14 @@ function App() {
   console.log(user);
   return (
     <Router>
-      {(user == null || user.role !== "auth_manager") && <Header user={user} />}
+      {/*(user == null || user.role !== "auth_manager") && <Header user={user} />*/}
+      <Header user={user} />
       <main>
         <Suspense fallback={<div className="loading">Loading...</div>}>
           <AppRoutes user={user} />
         </Suspense>
       </main>
-      {(user == null || user.role !== "auth_manager") && <Footer />}
+      {(user == null || (user.role == "donor" && user.role == "donee") ) && <Footer />}
     </Router>
   );
 }

@@ -6,6 +6,8 @@ import AddEventModal from './components/AddEventModal';
 import VolunteerEventModal from './VolunteerEventModal';
 import RequestEventDeletionModal from './components/RequestEventDeletionModal';
 import WithdrawRegistrationModal from './components/WithdrawRegistrationModal';
+import RequestVolunteerListModal from './components/RequestVolunteerListModal';
+import VolunteerListDisplayModal from './components/VolunteerListDisplayModal';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +21,11 @@ function EventDetails() {
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showRequestVolunteerListModal, setShowRequestVolunteerListModal] = useState(false);
+  const [showVolunteerListDisplayModal, setShowVolunteerListDisplayModal] = useState(false);
+  const [volunteerList, setVolunteerList] = useState([]);
+  const [volunteerListEmail, setVolunteerListEmail] = useState('');
+  const [volunteerListEventKey, setVolunteerListEventKey] = useState('');
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [eventError, setEventError] = useState(null);
@@ -31,7 +38,11 @@ function EventDetails() {
     setShowWithdrawModal(true);
   };
 
-  // Handles volunteer withdrawal and redirects to events page
+  const handleRequestVolunteerList = () => {
+    setShowRequestVolunteerListModal(true);
+  };
+
+  // Handle withdraw submission
   const handleWithdrawSubmit = async (formData) => {
     try {
       await axios.post('http://localhost:5000/events/withdrawVolunteer', formData);
@@ -68,6 +79,47 @@ function EventDetails() {
       console.error(error);
       toast.error('Failed to submit deletion request. Please try again.');
       return { success: false, error };
+    }
+  };
+
+  const handleVolunteerListRequestSubmit = async (formData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/events/getVolunteerList', formData);
+
+      if (response.data.success) {
+        toast.success('Volunteer list retrieved successfully!');
+        setVolunteerList(response.data.volunteers);
+        setVolunteerListEmail(formData.email);
+        setVolunteerListEventKey(formData.eventKey);
+        setShowRequestVolunteerListModal(false);
+        setShowVolunteerListDisplayModal(true);
+        return { success: true };
+      } else {
+        toast.error(response.data.message || 'Failed to retrieve volunteer list.');
+        return { success: false };
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMessage = error.response?.data?.message || 'Failed to retrieve volunteer list. Please try again.';
+      toast.error(errorMessage);
+      return { success: false, error };
+    }
+  };
+
+  // Handle sending volunteer list via email
+  const handleSendVolunteerListEmail = async (formData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/events/sendVolunteerListEmail', formData);
+
+      if (response.data.success) {
+        toast.success('Volunteer list has been sent to your email!');
+      } else {
+        toast.error(response.data.message || 'Failed to send email.');
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMessage = error.response?.data?.message || 'Failed to send email. Please try again.';
+      toast.error(errorMessage);
     }
   };
 
@@ -181,19 +233,26 @@ function EventDetails() {
                   }}
                 ></div>
               </div>
-              <div className="funding-info">
-                <div>
-                  <div className="funding-label">Volunteers Signed:</div>
-                  <div className="funding-amount">{event.volunteersSigned}</div>
-                </div>
-                <div>
-                  <div className="funding-label">Volunteers Needed:</div>
-                  <div className="funding-amount">{event.volunteersNeeded}</div>
-                </div>
+            <div className="funding-info">
+              <div>
+                <div className="funding-label">Volunteers Signed:</div>
+                <div className="funding-amount">{event.volunteersSigned}</div>
+              </div>
+              <div>
+                <div className="funding-label">Volunteers Needed:</div>
+                <div className="funding-amount">{event.volunteersNeeded}</div>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Request Volunteer List Button */}
+            <button
+              className="btn-request-volunteer-list"
+              onClick={handleRequestVolunteerList}
+              title="Request list of registered volunteers"
+            >
+              Request Volunteer List
+            </button>
+          </div>            {/* Description */}
             <div className="event-description">
               <span className="label">Description: </span>
               <span className="content">{event.description}</span>
@@ -275,6 +334,25 @@ function EventDetails() {
             isOpen={showWithdrawModal}
             onClose={() => setShowWithdrawModal(false)}
             onSubmit={handleWithdrawSubmit}
+          />
+        )}
+
+        {showRequestVolunteerListModal && (
+          <RequestVolunteerListModal
+            isOpen={showRequestVolunteerListModal}
+            onClose={() => setShowRequestVolunteerListModal(false)}
+            onSubmit={handleVolunteerListRequestSubmit}
+          />
+        )}
+
+        {showVolunteerListDisplayModal && (
+          <VolunteerListDisplayModal
+            isOpen={showVolunteerListDisplayModal}
+            onClose={() => setShowVolunteerListDisplayModal(false)}
+            volunteers={volunteerList}
+            email={volunteerListEmail}
+            eventKey={volunteerListEventKey}
+            onSendEmail={handleSendVolunteerListEmail}
           />
         )}
       </div>

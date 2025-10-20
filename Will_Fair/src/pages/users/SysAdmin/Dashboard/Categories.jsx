@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styles from "../Styles";
-import { Edit, Trash2, UserPlus, Check, X } from "lucide-react";
+import { Edit, Trash2, UserPlus, Check, X, Save } from "lucide-react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Categories = ({ name, setName, desc, setDesc, onToggle, onDelete }) => {
+const Categories = ({ name, setName, desc, setDesc }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [type, setType] = useState('Monetary');
+  const [editId, setEditId] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editType, setEditType] = useState("Monetary");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -29,7 +35,7 @@ const Categories = ({ name, setName, desc, setDesc, onToggle, onDelete }) => {
 
   const handleAdd = async () => {
     if (!name.trim()) {
-      alert('Enter category name');
+      toast.warn('Enter category name');
       return;
     }
     try {
@@ -43,19 +49,83 @@ const Categories = ({ name, setName, desc, setDesc, onToggle, onDelete }) => {
         setName('');
         setDesc('');
         setType('Monetary');
+        toast.success('Category added successfully!');
       } else {
-        alert('Failed to add category');
+        toast.error('Failed to add category');
       }
     } catch {
-      alert('Error adding category');
+      toast.error('Error adding category');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    try {
+      const resp = await axios.delete(`http://localhost:5000/admin/categories/${id}`);
+      if (resp.data && resp.data.success) {
+        setCategories(prev => prev.filter(c => c.id !== id));
+        toast.success('Category deleted!');
+      } else {
+        toast.error('Failed to delete category');
+      }
+    } catch {
+      toast.error('Error deleting category');
+    }
+  };
+
+  const handleToggle = async (id) => {
+    try {
+      const resp = await axios.patch(`http://localhost:5000/admin/categories/${id}/toggle`);
+      if (resp.data && resp.data.success) {
+        setCategories(prev =>
+          prev.map(c =>
+            c.id === id ? { ...c, status: resp.data.status } : c
+          )
+        );
+        toast.success('Category status updated!');
+      } else {
+        toast.error('Failed to update status');
+      }
+    } catch {
+      toast.error('Error updating status');
+    }
+  };
+
+  const startEdit = (cat) => {
+    setEditId(cat.id);
+    setEditName(cat.name);
+    setEditDesc(cat.description);
+    setEditType(cat.type);
+  };
+
+  const handleEditSave = async (id) => {
+    try {
+      const resp = await axios.put(`http://localhost:5000/admin/categories/${id}`,
+        { name: editName, description: editDesc, type: editType });
+      if (resp.data && resp.data.success) {
+        setCategories(prev =>
+          prev.map(c =>
+            c.id === id
+              ? { ...c, name: editName, description: editDesc, type: editType }
+              : c
+          )
+        );
+        setEditId(null);
+        toast.success('Category updated!');
+      } else {
+        toast.error('Failed to update category');
+      }
+    } catch {
+      toast.error('Error updating category');
     }
   };
 
   if (loading) return <div>Loading categories...</div>;
-  if (error) return <div style={{color: 'red'}}>{error}</div>;
+  if (error) return <div style={{color: 'red'}}>{error}<ToastContainer /></div>;
 
   return (
     <div>
+      <ToastContainer position="top-right" autoClose={3000} />
       <div style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>Donation Categories</h2>
       </div>
@@ -87,18 +157,44 @@ const Categories = ({ name, setName, desc, setDesc, onToggle, onDelete }) => {
           <tbody>
             {categories.map(c => (
               <tr key={c.id} style={styles.tr}>
-                <td style={styles.td}><strong>{c.name}</strong></td>
-                <td style={styles.td}>{c.description}</td>
-                <td style={styles.td}>{c.type}</td>
+                <td style={styles.td}>
+                  {editId === c.id ? (
+                    <input value={editName} onChange={e => setEditName(e.target.value)} style={styles.input} />
+                  ) : (
+                    <strong>{c.name}</strong>
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editId === c.id ? (
+                    <input value={editDesc} onChange={e => setEditDesc(e.target.value)} style={styles.input} />
+                  ) : (
+                    c.description
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editId === c.id ? (
+                    <select value={editType} onChange={e => setEditType(e.target.value)} style={styles.input}>
+                      <option value="Monetary">Monetary</option>
+                      <option value="Non-Monetary">Non-Monetary</option>
+                    </select>
+                  ) : (
+                    c.type
+                  )}
+                </td>
                 <td style={styles.td}>
                   <span style={{...styles.badge, ...(c.status === 'Active' ? styles.badgeActive : styles.badgeInactive)}}>{c.status}</span>
                 </td>
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>
-                    <button style={styles.btnIcon} onClick={() => onToggle(c.id)}>
+                    {editId === c.id ? (
+                      <button style={styles.btnIcon} onClick={() => handleEditSave(c.id)}><Save size={16} /></button>
+                    ) : (
+                      <button style={styles.btnIcon} onClick={() => startEdit(c)}><Edit size={16} /></button>
+                    )}
+                    <button style={styles.btnIcon} onClick={() => handleToggle(c.id)}>
                       {c.status === 'Active' ? <X size={16} /> : <Check size={16} />}
                     </button>
-                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => onDelete(c.id)}><Trash2 size={16} /></button>
+                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDelete(c.id)}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>

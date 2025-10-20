@@ -3,9 +3,10 @@ import LogoImg from '@/assets/images/logo.png';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Mail, Lock, Eye, User, Users, FileText, Upload } from "lucide-react";
 
 //Form for Donor Login
 export function LoginD() {
@@ -47,14 +48,16 @@ export function LoginD() {
           location.reload(); // Reload to update user state
           break;
         case "auth_manager":
-          navigate("/users/authManager");
+          navigate("/users/auth_manager");
           location.reload(); 
           break;
         case "regional_manager":
-          navigate("/regional/dashboard");
+          navigate("/users/regional_manager");
+          location.reload();
           break;
         case "system_admin":
-          navigate("/admin/dashboard");
+          navigate("/users/system_admin");
+          location.reload();
           break;
         default:
           navigate("/");
@@ -98,7 +101,7 @@ export function LoginD() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">📧</span>
+              <span className="input-icon"><Mail size={18} /></span>
               <input
                 type="email"
                 name="email"
@@ -112,7 +115,7 @@ export function LoginD() {
 
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
+              <span className="input-icon"><Lock size={18} /></span>
               <input
                 type="password"
                 name="password"
@@ -122,7 +125,7 @@ export function LoginD() {
                 required
               />
               <button type="button" className="password-toggle">
-                👁️
+                <Eye size={18} />
               </button>
             </div>
           </div>
@@ -154,6 +157,8 @@ export function SignUpD() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -230,7 +235,7 @@ export function SignUpD() {
         <form id="signupForm" onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">👤</span>
+              <span className="input-icon"><User size={18} /></span>
               <input
                 type="text"
                 id="fullName"
@@ -244,7 +249,7 @@ export function SignUpD() {
 
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">📧</span>
+              <span className="input-icon"><Mail size={18} /></span>
               <input
                 type="email"
                 id="email"
@@ -258,29 +263,35 @@ export function SignUpD() {
 
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
+              <span className="input-icon"><Lock size={18} /></span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Password"
                 required
                 value={formData.password}
                 onChange={handleChange}
               />
+              <button type="button" className="password-toggle" onClick={() => setShowPassword((prev) => !prev)}>
+                <Eye size={18} />
+              </button>
             </div>
           </div>
 
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
+              <span className="input-icon"><Lock size={18} /></span>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 placeholder="Confirm Password"
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
+              <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword((prev) => !prev)}>
+                <Eye size={18} />
+              </button>
             </div>
           </div>
 
@@ -403,7 +414,7 @@ export function LoginF() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">📧</span>
+              <span className="input-icon"><Mail size={18} /></span>
               <input
                 type="tel"
                 name="phone"
@@ -418,7 +429,7 @@ export function LoginF() {
 
           <div className="form-group">
             <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
+              <span className="input-icon"><Lock size={18} /></span>
               <input
                 type="password"
                 name="password"
@@ -428,7 +439,7 @@ export function LoginF() {
                 onChange={handleChange}
               />
               <button type="button" className="password-toggle">
-                👁️
+                <Eye size={18} />
               </button>
             </div>
           </div>
@@ -609,7 +620,7 @@ export function SignUpF() {
             
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">👤</span>
+                <span className="input-icon"><User size={18} /></span>
                 <input
                   type="text"
                   name="name"
@@ -623,7 +634,7 @@ export function SignUpF() {
             
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">👥</span>
+                <span className="input-icon"><Users size={18} /></span>
                 <select
                   name="userType"
                   required
@@ -659,7 +670,7 @@ export function SignUpF() {
             
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">📧</span>
+                <span className="input-icon"><Mail size={18} /></span>
                 <input
                   type="tel"
                   name="phone"
@@ -674,7 +685,7 @@ export function SignUpF() {
 
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon"><Lock size={18} /></span>
                 <input
                   type="password"
                   name="password"
@@ -688,7 +699,7 @@ export function SignUpF() {
 
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon"><Lock size={18} /></span>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -717,10 +728,10 @@ export function SignUpF() {
                 <div className="upload-content">
                   <span className="upload-text">
                     {formData.proofDocument
-                      ? "📄 " + formData.proofDocument.name
-                      : "📄 Proof Document"}
+                      ? <FileText size={18} />
+                      : <FileText size={18} />} {formData.proofDocument ? formData.proofDocument.name : "Proof Document"}
                   </span>
-                  <span className="upload-btn">Upload</span>
+                  <span className="upload-btn"><Upload size={18} /> Upload</span>
                 </div>
               </div>
               

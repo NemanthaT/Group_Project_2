@@ -1,5 +1,82 @@
+import { updateDoneeEmail, updateDoneePassword } from "../models/doneeModel.js";
+import bcrypt from "bcryptjs";
+// Update donee email
+export const updateEmail = async (req, res) => {
+  const { doneeId, email } = req.body;
+  if (!doneeId || !email) {
+    return res.status(400).json({ success: false, error: "Missing doneeId or email" });
+  }
+  try {
+    const result = await updateDoneeEmail(doneeId, email);
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(500).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error("Error in updateEmail:", err);
+    res.status(500).json({ success: false, error: "Server error while updating email" });
+  }
+};
+
+// Update donee password
+export const updatePassword = async (req, res) => {
+  const { doneeId, newPassword } = req.body;
+  if (!doneeId || !newPassword) {
+    return res.status(400).json({ success: false, error: "Missing doneeId or newPassword" });
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const result = await updateDoneePassword(doneeId, hashedPassword);
+    if (result.success) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(500).json({ success: false, error: result.message });
+    }
+  } catch (err) {
+    console.error("Error in updatePassword:", err);
+    res.status(500).json({ success: false, error: "Server error while updating password" });
+  }
+};
+// Get donee profile by donee ID
+export const getDoneeProfile = async (req, res) => {
+  const doneeId = req.query.doneeId;
+  if (!doneeId) {
+    return res.status(400).json({ success: false, error: "Missing doneeId" });
+  }
+  try {
+    const allDonees = await getAllDonees();
+    const donee = allDonees.find(d => String(d.donee_id) === String(doneeId) || String(d.id) === String(doneeId));
+    if (!donee) {
+      console.log("Donee not found for ID:", doneeId);
+      return res.status(404).json({ success: false, error: "Donee not found" });
+    }
+    // Map to frontend structure
+    res.status(200).json({
+      success: true,
+      donee: {
+        name: donee.name || '',
+        email: donee.email || '',
+        phone: donee.phone || '',
+        category: donee.type || 'individual',
+        subcategory: donee.category || '',
+        proofDocuments: donee.documents?.map((doc, i) => ({
+          id: i + 1,
+          name: doc.split('/').pop(),
+          uploadDate: '', // Add if available
+          size: '' // Add if available
+        })) || []
+      }
+    });
+  } catch (err) {
+    console.error("Error in getDoneeProfile:", err);
+    res.status(500).json({ success: false, error: "Server error while fetching donee profile" });
+  }
+};
 // doneeController.js
 import { registerDonee, getAllDonees } from "../models/doneeModel.js";
+import pool from "../db.js";
 
 export const signUpDonee = async (req, res) => {
   const { type, name, phone, password } = req.body;
@@ -54,3 +131,33 @@ export const getDoneesAdmin = async (req, res) => {
     res.status(500).json({ success: false, error: "Server error fetching donees" });
   }
 };
+
+// PATCH /admin/donees/:id/toggle - Toggle donee status
+export async function toggleDoneeAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `UPDATE donees SET verification_status = CASE WHEN verification_status = 'accepted' THEN 'pending' ELSE 'accepted' END WHERE donee_id = $1 RETURNING verification_status`,
+      [id]
+    );
+    if (result.rows.length) {
+      const status = result.rows[0].verification_status === 'accepted' ? 'Accepted' : 'Pending';
+      res.json({ success: true, status });
+    } else {
+      res.status(404).json({ success: false, error: "Donee not found" });
+    }
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to toggle donee status" });
+  }
+}
+
+// DELETE /admin/donees/:id - Delete donee
+export async function deleteDoneeAdmin(req, res) {
+  const { id } = req.params;
+  try {
+    await pool.query(`DELETE FROM donees WHERE donee_id = $1`, [id]);
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false, error: "Failed to delete donee" });
+  }
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import { CalendarDays, MapPin, Tag, Clock, Target, Users, FileText, Paperclip, User, StickyNote } from "lucide-react";
 import "./EventDetailsCard.css";
 
 const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeTab }) => {
@@ -63,43 +64,43 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeT
           <div className="event-details-grid">
 
             <div className="event-detail-item">
-              <span className="event-detail-label">📅 Date</span>
+              <span className="event-detail-label"><CalendarDays size={16} style={{marginRight:4}} /> Date</span>
               <span className="event-detail-value">{formatEventDate()}</span>
             </div>
 
             <div className="event-detail-item">
-              <span className="event-detail-label">📍 Location</span>
+              <span className="event-detail-label"><MapPin size={16} style={{marginRight:4}} /> Location</span>
               <span className="event-detail-value">{event.location}</span>
             </div>
 
             <div className="event-detail-item">
-              <span className="event-detail-label">🏷️ Type</span>
+              <span className="event-detail-label"><Tag size={16} style={{marginRight:4}} /> Type</span>
               <span className="event-detail-value">{formatLabel(event.type)}</span>
             </div>
 
             <div className="event-detail-item">
-              <span className="event-detail-label">⏰ Commitment</span>
+              <span className="event-detail-label"><Clock size={16} style={{marginRight:4}} /> Commitment</span>
               <span className="event-detail-value">{formatLabel(event.commitment)}</span>
             </div>
 
             <div className="event-detail-item">
-              <span className="event-detail-label">🎯 Skills Required</span>
+              <span className="event-detail-label"><Target size={16} style={{marginRight:4}} /> Skills Required</span>
               <span className="event-detail-value">{formatLabel(event.skills)}</span>
             </div>
 
             <div className="event-detail-item">
-              <span className="event-detail-label">👥 Volunteers Needed</span>
+              <span className="event-detail-label"><Users size={16} style={{marginRight:4}} /> Volunteers Needed</span>
               <span className="event-detail-value">{event.volunteers_needed}</span>
             </div>
           </div>
 
           <div className="event-detail-section">
-            <h3 className="event-detail-section-title">📝 Description</h3>
+            <h3 className="event-detail-section-title"><StickyNote size={16} style={{marginRight:4}} /> Description</h3>
             <p className="event-detail-description">{event.description}</p>
           </div>
 
           <div className="event-detail-section">
-            <h3 className="event-detail-section-title">👤 Organiser Information</h3>
+            <h3 className="event-detail-section-title"><User size={16} style={{marginRight:4}} /> Organiser Information</h3>
             <div className="event-organiser-info">
               <div className="event-organiser-item">
                 <span className="event-organiser-label">Name:</span>
@@ -118,11 +119,11 @@ const EventDetailsCard = ({ event, isOpen, onClose, onApprove, onDelete, activeT
 
           {event.documents && event.documents.length > 0 && (
             <div className="event-detail-section">
-              <h3 className="event-detail-section-title">📎 Attached Documents</h3>
+              <h3 className="event-detail-section-title"><Paperclip size={16} style={{marginRight:4}} /> Attached Documents</h3>
               <div className="event-documents-list">
                 {event.documents.map((doc, index) => (
                   <div key={doc.document_id || index} className="event-document-item">
-                    <span className="event-document-icon">📄</span>
+                    <span className="event-document-icon"><FileText size={16} style={{marginRight:4}} /></span>
                     <span className="event-document-name">{doc.filename}</span>
                     <a 
                       href={`http://localhost:5000/${doc.path}`} 

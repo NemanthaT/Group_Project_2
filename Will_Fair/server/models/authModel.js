@@ -90,8 +90,9 @@ export const authenticateDonee = async (phone, password) => {
 };
 
 export async function getNameById(userId, role, userType) {
+  const roleType = role === 'system_admin' ? 'admin' : role;
   const result = await pool.query(
-    `SELECT first_name, last_name FROM ${userType} WHERE ${role}_id = $1`,
+    `SELECT first_name, last_name FROM ${userType} WHERE ${roleType}_id = $1`,
     [userId]
   );
   if (result.rows.length > 0) {
