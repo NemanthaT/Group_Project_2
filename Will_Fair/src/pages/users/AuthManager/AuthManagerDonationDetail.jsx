@@ -65,7 +65,7 @@ const AuthManagerDonationDetail = () => {
   return (
     <div className="authmanager-dashboard">
       {/* Mobile overlay */}
-      <div
+      {/*<div
         className={`authmanager-sidebar-overlay ${
           sidebarVisible ? "authmanager-visible" : ""
         }`}
@@ -107,16 +107,17 @@ const AuthManagerDonationDetail = () => {
         >
           Logout
         </button>
-      </div>
+      </div>*/}
 
       {/* Main content */}
       <div className="authmanager-main-content">
         <div className="authmanager-content-wrapper">
           <div className="authmanager-dashboard-content">
-            <div className="authmanager-welcome-section">
+            <div className="authmanager-welcome-section" id="individual-donation">
               <div className="authmanager-welcome-content">
                 <button
                   className="btn btn-secondary"
+                  id="back-button"
                   onClick={() => navigate(-1)}
                 >
                   &larr; Back
@@ -125,7 +126,7 @@ const AuthManagerDonationDetail = () => {
               </div>
             </div>
 
-            <div className="donation-detail-card">
+            <div className="donation-detail-card" id="donation-image">
               <div className="coverImageContainer">
                 <img
                   className="coverImage"

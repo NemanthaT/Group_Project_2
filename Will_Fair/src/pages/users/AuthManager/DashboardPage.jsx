@@ -146,7 +146,7 @@ const DashboardPage = ({ user, stats, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Pending Approvals Section */}
+      {/* 
       <div className="pending-section">
         <h2>Quick Actions</h2>
         <div className="pending-grid">
@@ -172,7 +172,7 @@ const DashboardPage = ({ user, stats, setActiveTab }) => {
             </button>
           </div>
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 };
