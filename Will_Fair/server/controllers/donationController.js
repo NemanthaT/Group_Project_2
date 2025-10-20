@@ -10,7 +10,8 @@ import {
   getDonationsForReg,
   markDonationCompleted,
   markDonationSent,
-  getContributorsByDonationId
+  getContributorsByDonationId,
+  markNonMonetaryContributionReceived
 } from "../models/donationModel.js";
 
 // Controller for creating a monetary donation
@@ -370,5 +371,25 @@ export const getDonationContributors = async (req, res) => {
   } catch (err) {
     console.error('Error fetching contributors:', err);
     res.status(500).json({ success: false, error: 'Server error fetching contributors' });
+  }
+};
+
+// PATCH /donations/:id/mark-received - Mark a non-monetary donor's contribution as received
+export const markNonMonetaryReceived = async (req, res) => {
+  const { id } = req.params;
+  const { donationId, donorId } = req.body;
+  if (!id || !donationId || donorId == null) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
+  try {
+    const result = await markNonMonetaryContributionReceived(donationId, donorId);
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json({ success: false, error: result.error || 'Failed to mark as received' });
+    }
+  } catch (err) {
+    console.error('Error in markNonMonetaryReceived:', err);
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 };

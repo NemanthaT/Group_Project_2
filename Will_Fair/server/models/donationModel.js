@@ -663,7 +663,7 @@ async function getContributorsByDonationId(donationId) {
   console.log("Fetching contributors for donation ID:", donationId);
   try {
     const res = await pool.query(
-      `SELECT ds.amount, d.first_name, d.last_name
+      `SELECT ds.amount, ds.received, d.first_name, d.last_name, d.donor_id
         FROM donations ds
         LEFT JOIN donors d ON ds.donor_id = d.donor_id
         WHERE ds.request_id = $1
@@ -673,6 +673,8 @@ async function getContributorsByDonationId(donationId) {
     console.log("Contributors fetched:", res.rows);
     // Map to expected frontend format
     return res.rows.map((row) => ({
+      donor_id: row.donor_id,
+      received: row.received,
       name:
         row.first_name && row.last_name
           ? `${row.first_name} ${row.last_name}`
@@ -682,6 +684,21 @@ async function getContributorsByDonationId(donationId) {
   } catch (err) {
     console.error("Error in getContributorsByDonationId:", err);
     return [];
+  }
+}
+
+// Mark a non-monetary donor's contribution as received
+async function markNonMonetaryContributionReceived(donationId, donorId) {
+  try {
+    // Update the donations table to set received = true for this donor/donation
+    await pool.query(
+      `UPDATE donations SET received = true WHERE request_id = $1 AND donor_id = $2`,
+      [donationId, donorId]
+    );
+    return { success: true };
+  } catch (err) {
+    console.error('Error in markNonMonetaryContributionReceived:', err);
+    return { success: false, error: 'Database error' };
   }
 }
 
@@ -705,4 +722,5 @@ export {
   markDonationCompleted,
   markDonationSent,
   getContributorsByDonationId,
+  markNonMonetaryContributionReceived,
 };

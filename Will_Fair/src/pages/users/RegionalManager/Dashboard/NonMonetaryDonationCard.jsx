@@ -11,6 +11,7 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
   const [donors, setDonors] = useState([]);
   const [loadingDonors, setLoadingDonors] = useState(false);
   const [errorDonors, setErrorDonors] = useState(null);
+  const [receivedDonorIds, setReceivedDonorIds] = useState([]);
 
   const handleView = async () => {
     setShowModal(true);
@@ -35,8 +36,25 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
     toast.info(`Inform donor: ${donor.name || 'Anonymous'}`);
   };
 
-  const handleMarkReceived = (donor) => {
-    toast.success(`Marked as received for: ${donor.name || 'Anonymous'}`);
+  // Mark a donor's contribution as received (persist to backend)
+  const handleMarkReceived = async (donor,donation) => {
+    console.log('Marking as received:', donor.donor_id, donation.request_id);
+    try {
+      const response = await fetch(`http://localhost:5000/donations/${donation.request_id}/mark-received`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ donationId: donation.request_id, donorId: donor.donor_id })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success(`Marked as received for: ${donor.name || 'Anonymous'}`);
+        setReceivedDonorIds(prev => [...prev, donor.donor_id]);
+      } else {
+        toast.error(data.error || 'Failed to mark as received');
+      }
+    } catch {
+      toast.error('Failed to mark as received');
+    }
   };
 
   return (
@@ -125,7 +143,7 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
                       <tr style={{background: '#f7f7f7'}}>
                         <th style={{textAlign: 'left', padding: '10px 8px', fontWeight: 600, borderBottom: '1px solid #eee'}}>Donor Name</th>
                         <th style={{textAlign: 'left', padding: '10px 8px', fontWeight: 600, borderBottom: '1px solid #eee'}}>Amount</th>
-                        <th style={{textAlign: 'left', padding: '10px 8px', fontWeight: 600, borderBottom: '1px solid #eee'}}>Actions</th>
+                        <th style={{textAlign: 'left', padding: '10px 8px', fontWeight: 600, borderBottom: '1px solid #eee'}}>State</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -133,9 +151,16 @@ const NonMonetaryDonationCard = ({ donation, onComplete, onSent, getStatusColor,
                         <tr key={idx} style={{borderBottom: '1px solid #f0f0f0'}}>
                           <td style={{padding: '10px 8px'}}>{donor.name || 'Anonymous'}</td>
                           <td style={{padding: '10px 8px'}}>{donor.amount.toLocaleString()}</td>
-                          <td style={{padding: '10px 8px', display: 'flex', alignContent: 'flex-end', gap: '8px' }}>
-                            <button style={{marginRight: 8, padding: '10px 10px', background: '#6366f1', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14}} onClick={() => handleInformDonor(donor)}>Inform Donor</button>
-                            <button style={{marginRight: 0, padding: '10px 10px', background: '#bbf7d0', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14}} onClick={() => handleMarkReceived(donor)}>Mark as Received</button>
+                          <td style={{padding: '10px 8px'}}>
+                            {console.log("Donor received status:", donor.received)} 
+                            {donor.received === 'true' || receivedDonorIds.includes(donor.donor_id) ? (
+                              <span style={{color: '#22c55e', fontWeight: 600}}>Received</span>
+                            ) : (
+                              <>
+                                <button style={{marginRight: 8, padding: '10px 10px', background: '#6366f1', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14}} onClick={() => handleInformDonor(donor)}>Inform Donor</button>
+                                <button style={{marginRight: 0, padding: '10px 10px', background: '#bbf7d0', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14}} onClick={() => handleMarkReceived(donor, donation)}>Mark as Received</button>
+                              </>
+                            )}
                           </td>
                         </tr>
                       ))}
