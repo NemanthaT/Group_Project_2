@@ -51,7 +51,7 @@ const MyDonationReq = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+      <LinearGradient colors={["#7B61FF", "#7B61FF"]} style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={{

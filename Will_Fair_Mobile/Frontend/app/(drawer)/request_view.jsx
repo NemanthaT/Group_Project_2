@@ -195,7 +195,7 @@ const RequestView = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <LinearGradient
-        colors={["#7B61FF", "#9333EA"]}
+        colors={["#7B61FF", "#7B61FF"]}
         style={styles.header}
       >
         <TouchableOpacity

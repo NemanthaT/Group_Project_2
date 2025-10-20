@@ -308,3 +308,60 @@ exports.createDonationRequestMobile = async (req, res) => {
     });
   }
 };
+
+// Update donation request (only editable fields: quantity_needed, due_date)
+// Image and document cannot be changed after creation
+exports.updateDonationRequestMobile = async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    const {
+      quantity_needed,
+      due_date,
+      donee_id
+    } = req.body;
+
+    console.log('=== UPDATE DONATION REQUEST ===');
+    console.log('Request ID:', requestId);
+    console.log('Request body:', req.body);
+    console.log('Params:', req.params);
+
+    // Validate required fields
+    if (!requestId) {
+      return res.status(400).json({ success: false, message: 'Request ID is required' });
+    }
+    if (!donee_id) {
+      return res.status(400).json({ success: false, message: 'Donee ID is required' });
+    }
+    if (!quantity_needed) {
+      return res.status(400).json({ success: false, message: 'Quantity needed is required' });
+    }
+    if (!due_date) {
+      return res.status(400).json({ success: false, message: 'Due date is required' });
+    }
+
+    console.log(`Updating donation request ${requestId} for donee ${donee_id}`);
+
+    // Call model function to update database
+    const result = await Donation.updateDonationRequest({
+      request_id: requestId,
+      donee_id,
+      quantity_needed,
+      due_date
+    });
+
+    if (result.success) {
+      console.log('Donation request updated successfully');
+      return res.status(200).json(result);
+    } else {
+      console.error('Failed to update donation request:', result.message);
+      return res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error('Error updating donation request:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update donation request',
+      error: err.message
+    });
+  }
+};

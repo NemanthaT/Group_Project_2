@@ -20,9 +20,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { donationRequestsStyles, donationRequestsStyles as styles } from "../../assets/styles/donationrequestsstyles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE } from '../constants/API';
+import { useLocalSearchParams } from 'expo-router';
 
 const NonMonetary = () => {
   const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  
+  // Check if in edit mode
+  const isEditMode = params.editMode === 'true';
+  const editRequestId = params.requestId;
+
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [imageFile, setImageFile] = useState(null);
@@ -47,7 +54,7 @@ const NonMonetary = () => {
         setLoadingCategories(true);
         try {
           // Use local backend. On Android emulator replace localhost with 10.0.2.2
-          const base = Platform.OS === "android" ? "http://10.36.223.72:5000" : "http://localhost:5000";
+          const base = Platform.OS === "android" ? "http://192.168.122.72:5000" : "http://localhost:5000";
           const url = `${base}/api/donations/nonMonetaryCategories`;
   
           const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -78,6 +85,27 @@ const NonMonetary = () => {
   
       fetchCategories();
     }, []);
+
+  // Auto-fill form when in edit mode (only once when component mounts)
+  useEffect(() => {
+    if (isEditMode && params.requestId) {
+      console.log('Edit mode activated, filling form with:', params);
+      
+      // Set form fields from params
+      if (params.title) setTitle(params.title);
+      if (params.description) setDescription(params.description);
+      if (params.quantity_needed) setQuantity(params.quantity_needed.toString());
+      if (params.category_id) setCategory(parseInt(params.category_id));
+      if (params.due_date) {
+        const dueDate = new Date(params.due_date);
+        if (!isNaN(dueDate.getTime())) {
+          setDate(dueDate);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, params.requestId]);
+
   const handleDocumentPick = async () => {
     const result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
     if (!result.canceled) {
@@ -150,46 +178,67 @@ const NonMonetary = () => {
       // Format date as YYYY-MM-DD
       const formattedDate = date.toISOString().split('T')[0];
 
-      // Create FormData for file uploads (same pattern as monetary donation)
-      const formData = new FormData();
-      formData.append('donee_id', doneeId.toString());
-      formData.append('title', title.trim());
-      formData.append('description', description.trim());
-      formData.append('quantity_needed', quantity.toString());
-      formData.append('due_date', formattedDate);
-      formData.append('type', 'non-monetary');
-      formData.append('category_id', category.toString());
+      console.log(isEditMode ? 'Updating non-monetary donation request' : 'Creating non-monetary donation request');
 
-      // Add image file if selected
-      if (imageFile) {
-        formData.append('image', {
-          uri: imageFile.uri,
-          type: imageFile.mimeType || 'image/jpeg',
-          name: imageFile.fileName || `image_${Date.now()}.jpg`
+      // Send to backend (POST for create, PUT for update)
+      const url = isEditMode 
+        ? `${API_BASE}/api/donations/${editRequestId}` 
+        : `${API_BASE}/api/donations`;
+      
+      let response;
+      
+      if (isEditMode) {
+        // For updates, only send editable fields as JSON
+        response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            donee_id: doneeId,
+            quantity_needed: quantity.toString(),
+            due_date: formattedDate
+          })
         });
-        console.log('Image file attached:', imageFile.fileName);
-      }
+      } else {
+        // For create, send FormData with all fields including files
+        const formData = new FormData();
+        formData.append('donee_id', doneeId.toString());
+        formData.append('title', title.trim());
+        formData.append('description', description.trim());
+        formData.append('quantity_needed', quantity.toString());
+        formData.append('due_date', formattedDate);
+        formData.append('type', 'non-monetary');
+        formData.append('category_id', category.toString());
 
-      // Add document file if selected
-      if (docFile) {
-        formData.append('document', {
-          uri: docFile.uri,
-          type: docFile.mimeType || 'application/pdf',
-          name: docFile.name || `document_${Date.now()}.pdf`
+        // Add image file if selected
+        if (imageFile) {
+          formData.append('image', {
+            uri: imageFile.uri,
+            type: imageFile.mimeType || 'image/jpeg',
+            name: imageFile.fileName || `image_${Date.now()}.jpg`
+          });
+          console.log('Image file attached:', imageFile.fileName);
+        }
+
+        // Add document file if selected
+        if (docFile) {
+          formData.append('document', {
+            uri: docFile.uri,
+            type: docFile.mimeType || 'application/pdf',
+            name: docFile.name || `document_${Date.now()}.pdf`
+          });
+          console.log('Document file attached:', docFile.name);
+        }
+
+        response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData
         });
-        console.log('Document file attached:', docFile.name);
       }
-
-      console.log('Submitting non-monetary donation request with FormData');
-
-      // Send to backend with FormData
-      const response = await fetch(`${API_BASE}/api/donations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData
-      });
 
       const data = await response.json();
       console.log('Response from server:', data);
@@ -197,28 +246,58 @@ const NonMonetary = () => {
       if (data.success) {
         Alert.alert(
           'Success! 🎉',
-          `Your donation request has been submitted successfully with status "pending". We will review it and get back to you soon.`,
+          isEditMode 
+            ? 'Your donation request has been updated successfully.'
+            : 'Your donation request has been submitted successfully with status "pending". We will review it and get back to you soon.',
           [
             {
               text: 'View My Requests',
-              onPress: () => navigation.navigate('mydonationreq'),
+              onPress: () => {
+                // Clear form after update
+                if (isEditMode) {
+                  setTitle('');
+                  setDescription('');
+                  setItemName('');
+                  setQuantity('');
+                  setCategory(null);
+                  setDate(new Date());
+                  setImageFile(null);
+                  setDocFile(null);
+                }
+                navigation.navigate('mydonationreq');
+              },
             },
             {
               text: 'Go to Home',
-              onPress: () => navigation.navigate('homescreen'),
+              onPress: () => {
+                // Clear form after update
+                if (isEditMode) {
+                  setTitle('');
+                  setDescription('');
+                  setItemName('');
+                  setQuantity('');
+                  setCategory(null);
+                  setDate(new Date());
+                  setImageFile(null);
+                  setDocFile(null);
+                }
+                navigation.navigate('homescreen');
+              },
             },
           ]
         );
 
-        // Clear form
-        setTitle('');
-        setDescription('');
-        setItemName('');
-        setQuantity('');
-        setCategory(null);
-        setDate(new Date());
-        setImageFile(null);
-        setDocFile(null);
+        // Clear form after create (not edit)
+        if (!isEditMode) {
+          setTitle('');
+          setDescription('');
+          setItemName('');
+          setQuantity('');
+          setCategory(null);
+          setDate(new Date());
+          setImageFile(null);
+          setDocFile(null);
+        }
       } else {
         Alert.alert('Error', data.message || 'Failed to submit donation request. Please try again.');
       }
@@ -233,7 +312,7 @@ const NonMonetary = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <LinearGradient colors={["#7B61FF", "#9333EA"]} style={styles.header}>
+      <LinearGradient colors={["#7B61FF", "#7B61FF"]} style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           style={{ position: "absolute", top: 10, left: 10, zIndex: 5 }}
@@ -272,7 +351,9 @@ const NonMonetary = () => {
       {/* Form */}
       <View style={styles.form}>
         {/* ✅ Dynamic Category Dropdown */}
-        <Text style={donationRequestsStyles.sectionTitle}>Category</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>
+          Category {isEditMode && <Text style={{ color: '#999', fontSize: 12 }}>(Cannot be changed)</Text>}
+        </Text>
         <DropDownPicker
           open={openCategory}
           value={category}
@@ -281,29 +362,36 @@ const NonMonetary = () => {
           setValue={setCategory}
           setItems={setCategories}
           placeholder={loadingCategories ? "Loading categories..." : "Select Category"}
-          disabled={loadingCategories}
+          disabled={loadingCategories || isEditMode}
           listMode="SCROLLVIEW"
           style={{
             marginBottom: openCategory ? 150 : 20,
             borderColor: "#ccc",
             borderRadius: 8,
+            backgroundColor: isEditMode ? '#f0f0f0' : '#fff',
           }}
         />
-        <Text style={donationRequestsStyles.sectionTitle}>Reason for Request</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>
+          Reason for Request {isEditMode && <Text style={{ color: '#999', fontSize: 12 }}>(Cannot be changed)</Text>}
+        </Text>
         <TextInput
-          style={styles.inputField}
+          style={[styles.inputField, isEditMode && { backgroundColor: '#f0f0f0', color: '#666' }]}
           placeholder="Enter request name"
           placeholderTextColor="#999"
           value={title}
           onChangeText={setTitle}
+          editable={!isEditMode}
         />
-        <Text style={styles.sectionTitle}>Detailed Description</Text>
+        <Text style={styles.sectionTitle}>
+          Detailed Description {isEditMode && <Text style={{ color: '#999', fontSize: 12 }}>(Cannot be changed)</Text>}
+        </Text>
         <TextInput
-          style={[styles.inputField, { height: 100, textAlignVertical: "top" }]}
+          style={[styles.inputField, { height: 100, textAlignVertical: "top" }, isEditMode && { backgroundColor: '#f0f0f0', color: '#666' }]}
           multiline
           placeholder="Explain your situation, who will benefit, and how the donations will be used."
           value={description}
           onChangeText={setDescription}
+          editable={!isEditMode}
         />
         <Text style={donationRequestsStyles.sectionTitle}>Item Name</Text>
         <TextInput 
@@ -327,20 +415,36 @@ const NonMonetary = () => {
         {showDatePicker && (
           <DateTimePicker value={date} mode="date" display="default" onChange={onChangeDate} />
         )}
-        <Text style={donationRequestsStyles.sectionTitle}>Request Image (Optional)</Text>
-        <TouchableOpacity style={styles.uploadBox} onPress={handleImagePick}>
-          <Text style={{ textAlign: "center" }}>Choose File</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>
+          Request Image (Optional) {isEditMode && <Text style={{ color: '#999', fontSize: 12 }}>(Cannot be changed)</Text>}
+        </Text>
+        <TouchableOpacity 
+          style={[styles.uploadBox, isEditMode && { backgroundColor: '#f0f0f0' }]} 
+          onPress={handleImagePick}
+          disabled={isEditMode}
+        >
+          <Text style={{ textAlign: "center", color: isEditMode ? '#999' : '#000' }}>
+            {isEditMode ? 'Image cannot be changed' : 'Choose File'}
+          </Text>
         </TouchableOpacity>
-        {imageFile && (
+        {imageFile && !isEditMode && (
           <Text style={{ marginTop: 6, marginBottom: 10, color: "green", fontSize: 12 }}>
             Selected: {imageFile.fileName || "Image selected"}
           </Text>
         )}
-        <Text style={donationRequestsStyles.sectionTitle}>Proof Documents</Text>
-        <TouchableOpacity style={styles.uploadBox} onPress={handleDocumentPick}>
-          <Text style={{ textAlign: "center" }}>Choose File</Text>
+        <Text style={donationRequestsStyles.sectionTitle}>
+          Proof Documents {isEditMode && <Text style={{ color: '#999', fontSize: 12 }}>(Cannot be changed)</Text>}
+        </Text>
+        <TouchableOpacity 
+          style={[styles.uploadBox, isEditMode && { backgroundColor: '#f0f0f0' }]} 
+          onPress={handleDocumentPick}
+          disabled={isEditMode}
+        >
+          <Text style={{ textAlign: "center", color: isEditMode ? '#999' : '#000' }}>
+            {isEditMode ? 'Document cannot be changed' : 'Choose File'}
+          </Text>
         </TouchableOpacity>
-        {docFile && (
+        {docFile && !isEditMode && (
           <Text style={{ marginTop: 6, marginBottom: 10, color: "green", fontSize: 12 }}>
             Selected: {docFile.name}
           </Text>
@@ -357,7 +461,9 @@ const NonMonetary = () => {
           {submitting ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitText}>Create Request</Text>
+            <Text style={styles.submitText}>
+              {isEditMode ? 'Update Request' : 'Create Request'}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

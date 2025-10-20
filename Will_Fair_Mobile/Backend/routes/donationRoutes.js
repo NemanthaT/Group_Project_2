@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile, addDonationAmountMobile, getMyDonationRequestsMobile, deleteDonationRequestMobile, createDonationRequestMobile } = require('../controllers/donationController');
+const { getRecentDonationsMobile, getAllDonationsMobile, getDonationByIdMobile, addDonationAmountMobile, getMyDonationRequestsMobile, deleteDonationRequestMobile, createDonationRequestMobile, updateDonationRequestMobile } = require('../controllers/donationController');
 const multer = require('multer');
 const path = require('path');
 
@@ -37,14 +37,20 @@ const upload = multer({
   }
 });
 
+// POST /api/donations/add-amount - MUST come before generic /donations routes
+router.post('/donations/add-amount', addDonationAmountMobile);
+
 // POST /api/donations - Create new donation request with file uploads
 router.post('/donations', upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'document', maxCount: 1 }
 ]), createDonationRequestMobile);
 
-// POST /api/donations/add-amount
-router.post('/donations/add-amount', addDonationAmountMobile);
+// PUT /api/donations/:id - Update donation request (only quantity_needed and due_date)
+router.put('/donations/:id', updateDonationRequestMobile);
+
+// DELETE /api/donations/:id - Delete donation request
+router.delete('/donations/:id', deleteDonationRequestMobile);
 
 // GET /api/donations/recent
 router.get('/donations/recent', getRecentDonationsMobile);
@@ -54,9 +60,6 @@ router.get('/donations/all', getAllDonationsMobile);
 
 // GET /api/donations/my/:doneeId - MUST come before /donations/:id
 router.get('/donations/my/:doneeId', getMyDonationRequestsMobile);
-
-// DELETE /api/donations/:id - Delete donation request
-router.delete('/donations/:id', deleteDonationRequestMobile);
 
 // GET /api/donations/:id - This should be last as it's most generic
 router.get('/donations/:id', getDonationByIdMobile);

@@ -61,9 +61,24 @@ const MyDonationReq = () => {
       return;
     }
     
-    // Navigate to edit page (you can create this later)
-    Alert.alert('Edit', 'Edit functionality will be implemented');
-    // router.push({ pathname: '/(drawer)/edit_donation_request', params: { id } });
+    // Navigate to appropriate form based on type (monetary or non-monetary)
+    const formPath = (request.type || '').toLowerCase() === 'monetary' 
+      ? '/(drawer)/monetory' 
+      : '/(drawer)/nonmonetory';
+    
+    router.push({ 
+      pathname: formPath, 
+      params: { 
+        editMode: 'true',
+        requestId: request.request_id,
+        title: request.title,
+        description: request.description,
+        quantity_needed: request.quantity_needed,
+        due_date: request.due_date,
+        category_id: request.category_id,
+        type: request.type
+      } 
+    });
   };
 
   const handleRemove = async () => {

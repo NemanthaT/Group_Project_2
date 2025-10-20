@@ -184,3 +184,67 @@ exports.createDonationRequest = async (donationData) => {
     };
   }
 };
+
+// Update donation request (only editable fields: quantity_needed, due_date)
+// Can only update if status is 'pending' and request belongs to the donee
+exports.updateDonationRequest = async (updateData) => {
+  try {
+    const {
+      request_id,
+      donee_id,
+      quantity_needed,
+      due_date
+    } = updateData;
+
+    // Validate required fields
+    if (!request_id || !donee_id || !quantity_needed || !due_date) {
+      return { 
+        success: false, 
+        message: 'Missing required fields: request_id, donee_id, quantity_needed, due_date are required' 
+      };
+    }
+
+    // First check if the request exists and belongs to the donee
+    const checkResult = await db.query(
+      'SELECT request_id, status, donee_id FROM donation_requests WHERE request_id = $1',
+      [request_id]
+    );
+
+    if (checkResult.rows.length === 0) {
+      return { success: false, message: 'Donation request not found' };
+    }
+
+    const request = checkResult.rows[0];
+
+    // Verify the request belongs to the donee
+    if (request.donee_id !== parseInt(donee_id)) {
+      return { success: false, message: 'Unauthorized: This request does not belong to you' };
+    }
+
+    // Check if status is pending (only pending requests can be updated)
+    if (request.status?.toLowerCase() !== 'pending') {
+      return { success: false, message: 'Only pending requests can be updated' };
+    }
+
+    // Update the request (only quantity_needed and due_date)
+    const result = await db.query(
+      `UPDATE donation_requests 
+       SET quantity_needed = $1, due_date = $2, updated_at = NOW()
+       WHERE request_id = $3 AND donee_id = $4
+       RETURNING request_id, title, quantity_needed, due_date, type, status, updated_at`,
+      [quantity_needed, due_date, request_id, donee_id]
+    );
+
+    return { 
+      success: true, 
+      message: 'Donation request updated successfully',
+      request: result.rows[0]
+    };
+  } catch (err) {
+    console.error('Database error during updateDonationRequest():', err);
+    return { 
+      success: false, 
+      message: 'Database error: ' + err.message 
+    };
+  }
+};
