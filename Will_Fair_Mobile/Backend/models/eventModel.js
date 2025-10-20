@@ -109,7 +109,87 @@ async function getEventById(eventId) {
     }
 }
 
+// Create a new event with organiser and documents
+async function createEvent(eventData) {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // 1. Insert or get organiser
+        let organiserId;
+        const organiserCheck = await client.query(
+            'SELECT organiser_id FROM event_organisers WHERE email = $1',
+            [eventData.contactEmail]
+        );
+
+        if (organiserCheck.rows.length > 0) {
+            organiserId = organiserCheck.rows[0].organiser_id;
+        } else {
+            const organiserInsert = await client.query(
+                `INSERT INTO event_organisers (name, email, phone, created_at, updated_at) 
+                 VALUES ($1, $2, $3, NOW(), NOW()) 
+                 RETURNING organiser_id`,
+                [eventData.contactName, eventData.contactEmail, eventData.contactNumber]
+            );
+            organiserId = organiserInsert.rows[0].organiser_id;
+        }
+
+        // 2. Insert event
+        const isRange = eventData.isRange === true || eventData.isRange === 'true';
+        const eventInsert = await client.query(
+            `INSERT INTO events (
+                name, description, type, commitment, location, skills,
+                is_range, date, start_date, end_date,
+                volunteers_needed, volunteers_signed,
+                image_path, organiser_id,
+                created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
+            RETURNING event_id`,
+            [
+                eventData.name,
+                eventData.description,
+                eventData.type,
+                eventData.commitment,
+                eventData.location,
+                eventData.skills,
+                isRange,
+                isRange ? null : eventData.date,
+                isRange ? eventData.startDate : null,
+                isRange ? eventData.endDate : null,
+                Number(eventData.volunteersNeeded) || 0,
+                0, // volunteers_signed starts at 0
+                eventData.imagePath || null,
+                organiserId
+            ]
+        );
+
+        const eventId = eventInsert.rows[0].event_id;
+
+        // 3. Insert documents if any
+        if (eventData.documentPaths && eventData.documentPaths.length > 0) {
+            for (const doc of eventData.documentPaths) {
+                await client.query(
+                    `INSERT INTO event_documents (event_id, filename, path, uploaded_at) 
+                     VALUES ($1, $2, $3, NOW())`,
+                    [eventId, doc.filename, doc.path]
+                );
+            }
+        }
+
+        await client.query('COMMIT');
+        return { success: true, eventId };
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("=== ERROR in createEvent ===");
+        console.error("Error:", err);
+        return { success: false, message: `Failed to create event: ${err.message}` };
+    } finally {
+        client.release();
+    }
+}
+
 module.exports = { 
     getEvents, 
-    getEventById 
+    getEventById,
+    createEvent
 };

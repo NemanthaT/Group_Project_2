@@ -176,24 +176,52 @@ export default function EventsScreen() {
         </View>
       )} />
 
-      <AddEventModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onCreate={(formData) => {
-        const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
-        const date = formData.isRange ? formData.startDate : formData.date;
-        const newOpp = {
-          id,
-          title: formData.name || 'Untitled Event',
-          description: formData.description,
-          type: formData.type || 'other',
-          commitment: formData.commitment || 'flexible',
-          location: formData.location || 'TBD',
-          skills: formData.skills || 'none',
-          volunteersNeeded: Number(formData.volunteersNeeded) || 0,
-          volunteersSigned: 0,
-          image: '',
-          date: date || ''
-        };
-        setOpportunities(prev => [newOpp, ...prev]);
-      }} />
+      <AddEventModal 
+        isOpen={showAddModal} 
+        onClose={() => setShowAddModal(false)} 
+        onSubmit={async (formData) => {
+          try {
+            console.log('Submitting event to backend...');
+            console.log('FormData keys:', Array.from(formData.keys ? formData.keys() : []));
+            
+            // Use fetch instead of axios for proper FormData handling in React Native
+            const response = await fetch(`${API_BASE}/api/events`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              body: formData
+            });
+            
+            const data = await response.json();
+            console.log('Event creation response:', data);
+            
+            if (data.success) {
+              // Refresh events list
+              const res = await axios.get(`${API_BASE}/api/events`);
+              if (res.data.success) {
+                setOpportunities(res.data.events || []);
+              }
+              return { success: true };
+            } else {
+              alert('Error: ' + (data.error || 'Failed to create event'));
+              return { success: false };
+            }
+          } catch (error) {
+            console.error('Error creating event:', error);
+            let errorMessage = 'Failed to create event';
+            if (error.response) {
+              errorMessage = error.response.data?.error || error.message;
+            } else if (error.message) {
+              errorMessage = error.message;
+            } else {
+              errorMessage = 'Network error - cannot reach server';
+            }
+            alert('Error: ' + errorMessage);
+            return { success: false };
+          }
+        }} 
+      />
     </SafeAreaView>
   );
 }

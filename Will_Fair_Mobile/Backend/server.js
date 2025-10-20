@@ -14,13 +14,29 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  next();
+});
+
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = 'uploads';
+const eventUploadsDir = path.join(uploadsDir, 'events');
+const eventDocsDir = path.join(uploadsDir, 'events', 'documents');
+
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(eventUploadsDir)) {
+  fs.mkdirSync(eventUploadsDir, { recursive: true });
+}
+if (!fs.existsSync(eventDocsDir)) {
+  fs.mkdirSync(eventDocsDir, { recursive: true });
 }
 
 // Test database connection
@@ -72,14 +88,14 @@ app.get("/api/health", (req, res) => {
 const donorRoutes = require('./routes/donorRoutes');
 const doneeRoutes = require('./routes/doneeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-// const volunteerRoutes = require('./routes/volunteerRoutes');
+const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes');
 const guestuserRoutes = require('./routes/guestuserRoutes');
 app.use('/api', donorRoutes);
 app.use('/api', doneeRoutes);
 app.use('/api', categoryRoutes);
-// app.use('/api', volunteerRoutes);
+app.use('/api', volunteerRoutes);
 app.use('/api', eventRoutes);
 app.use('/api', donationRoutes);
 app.use('/api', guestuserRoutes);
@@ -178,6 +194,10 @@ app.listen(PORT, () => {
   console.log(`  🔐 POST http://localhost:${PORT}/api/volunteer_login`);
   console.log(`  📅 GET  http://localhost:${PORT}/api/events`);
   console.log(`  📋 GET  http://localhost:${PORT}/api/events/:id`);
+  console.log(`  ✏️  POST http://localhost:${PORT}/api/events`);
+  console.log(`  🙋 POST http://localhost:${PORT}/api/volunteers`);
+  console.log(`  👥 GET  http://localhost:${PORT}/api/volunteers/event/:eventId`);
+  console.log(`  ❌ DELETE http://localhost:${PORT}/api/volunteers/:id`);
   console.log(`\n🔧 Backend ready for connections!`);
 });
 

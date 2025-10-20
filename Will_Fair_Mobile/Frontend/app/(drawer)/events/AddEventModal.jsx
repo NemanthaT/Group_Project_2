@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert, Platform } from 'react-native';
+import { Modal, View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -159,23 +159,29 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
     }
 
     if (imageFile && imageFile.uri) {
-      const imageUri = Platform.OS === 'ios' ? imageFile.uri.replace('file://', '') : imageFile.uri;
-      const imageName = imageFile.fileName || imageFile.uri.split('/').pop() || 'event_image.jpg';
-      const imageType = imageFile.type || 'image/jpeg';
+      console.log('=== IMAGE FILE DEBUG ===');
+      console.log('Full imageFile object:', JSON.stringify(imageFile, null, 2));
       
       formData.append('image', {
-        uri: imageUri,
-        name: imageName,
-        type: imageType
+        uri: imageFile.uri,
+        type: imageFile.mimeType || imageFile.type || 'image/jpeg',
+        name: imageFile.fileName || `event_image_${Date.now()}.jpg`
       });
+      
+      console.log('Image appended to FormData');
     }
 
     documentFiles.forEach((file, idx) => {
+      console.log(`=== DOCUMENT ${idx + 1} DEBUG ===`);
+      console.log('Full file object:', JSON.stringify(file, null, 2));
+      
       formData.append('documents', {
         uri: file.uri,
-        name: file.name || `document_${idx + 1}.pdf`,
-        type: 'application/pdf'
+        type: file.mimeType || 'application/pdf',
+        name: file.name || `event_document_${Date.now()}_${idx + 1}.pdf`
       });
+      
+      console.log(`Document ${idx + 1} appended to FormData`);
     });
 
     const result = await onSubmit(formData);
