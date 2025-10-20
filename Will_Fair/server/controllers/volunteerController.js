@@ -1,7 +1,15 @@
 import pool from "../db.js";
-import { generateVolunteerKey } from "../models/eventModel.js";
 import { sendEmail } from "../services/emailService.js";
 import { volunteerRegistrationTemplate } from "../services/emailTemplates.js";
+import { createVolunteer, updateVolunteerCount, getEventDetailsForEmail } from "../models/volunteerModel.js";
+
+
+const generateVolunteerKey = () => {
+    const prefix = 'VOL';
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 6);
+    return `${prefix}-${timestamp}${random}`.toUpperCase();
+};
 
 export const registerVolunteer = async (req, res) => {
   const { event_id, volunteer_name, volunteer_email, volunteer_phone, notes } = req.body;
@@ -16,36 +24,18 @@ export const registerVolunteer = async (req, res) => {
     //generate volunteer key
     const volunteerKey = generateVolunteerKey();
 
-    const insertQuery = `
-      INSERT INTO event_volunteers (event_id, volunteer_name, volunteer_email, volunteer_phone, notes, volunteer_key)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING volunteer_id;
-    `;
-    const { rows } = await client.query(insertQuery, [
+    const { rows } = await createVolunteer(client, {
       event_id,
       volunteer_name,
       volunteer_email,
       volunteer_phone,
-      notes || null,
+      notes,
       volunteerKey
-    ]);
+    });
 
-   
-    const updateEvent = `
-      UPDATE events
-      SET volunteers_signed = volunteers_signed + 1
-      WHERE event_id = $1;
-    `;
-    await client.query(updateEvent, [event_id]);
+    await updateVolunteerCount(client, event_id);
 
-
-
-    // Get event details for the email
-    const eventQuery = `
-      SELECT name as title, COALESCE(start_date, date) as event_date, location
-      FROM events WHERE event_id = $1
-    `;
-    const eventResult = await client.query(eventQuery, [event_id]);
+    const eventResult = await getEventDetailsForEmail(client, event_id);
     const eventDetails = eventResult.rows[0];
 
     // Send confirmation email with volunteer key
