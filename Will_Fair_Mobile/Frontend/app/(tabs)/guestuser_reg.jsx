@@ -1,44 +1,36 @@
 import { API_BASE } from '../constants/API';
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StatusBar, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../assets/styles/donorreg.styles';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
 import BackButton from '../components/backbutton'
 
-
-const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
+const GuestUser = ({ visible, onClose, onLoginPress }) => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secure, setSecure] = useState(true);
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [secureConfirm, setSecureConfirm] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [proofDocument, setProofDocument] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-   // Add category state
-    const [category, setCategory] = useState('');
-    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  
-    // Category options
-    const categoryOptions = [
-      'child care',
-      'elder care',
-      'education',
-      'healthcare',
-    ];
-
-// Validation functions
+  // Validation functions
   const validateEmail = (email) => {
-    return /^\S+@\S+\.\S+$/.test(email);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/; // 10 digit phone number
+    return phoneRegex.test(phone);
   };
 
   const validatePassword = (password) => {
@@ -48,17 +40,11 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Full Name validation
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (fullName.trim().length < 2) {
-      newErrors.fullName = 'Full name must be at least 2 characters';
-    }
-
-    
-    // Category validation
-    if (!category) {
-      newErrors.category = 'Please select a category';
+    // Username validation
+    if (!username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (username.trim().length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
     }
 
     // Email validation
@@ -66,6 +52,13 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
       newErrors.email = 'Email is required';
     } else if (!validateEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Phone validation
+    if (!phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!validatePhone(phone)) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
     }
 
     // Password validation
@@ -82,11 +75,6 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-       // Proof Document validation (REQUIRED)
-    if (!proofDocument) {
-      newErrors.proofDocument = 'Proof document is required';
-    }
-
     // Terms agreement validation
     if (!agreed) {
       newErrors.agreed = 'You must agree to terms and conditions';
@@ -96,105 +84,58 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const pickDocument = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf', 'image/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-        copyToCacheDirectory: true,
-        multiple: false,
-      });
-      
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setProofDocument(result.assets[0]);
+// Submit to database
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    Alert.alert('Validation Error', 'Please fix the errors before submitting');
+    return;
+  }
 
-        if (errors.proofDocument) {
-        setErrors(prev => ({ ...prev, proofDocument: null }));
-      }
-      }
-    } catch (error) {
-      console.log('Document pick error:', error);
-      Alert.alert('Error', 'Failed to pick document');
-    }
-  };
-
-  // Submit to database
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors before submitting');
-      return;
-    }
-
-    setLoading(true);
-    try {
-    const formData = new FormData();
-    formData.append('fullName', fullName.trim());
-    formData.append('category', category); // ADD THIS LINE - This was missing!
-    formData.append('email', email.trim());
-    formData.append('password', password);
-      
-// Append document if selected (optional for individual)
-    if (proofDocument) {
-      formData.append('proofDocument', {
-        uri: proofDocument.uri,
-        type: proofDocument.mimeType || 'application/octet-stream',
-        name: proofDocument.name || 'document'
-      });
-    }
-
-    console.log('Submitting form data...');
-    console.log('Category being sent:', category); // ADD THIS DEBUG LOG
-
-  const response = await fetch(`${API_BASE}/api/volunteer_rep_reg`, {
+  setLoading(true);
+  try {
+  const response = await fetch(`${API_BASE}/api/guestuser_reg`, {
       method: 'POST',
-      // REMOVED: Don't set Content-Type for FormData
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        password: password
+      }),
     });
 
-    console.log('Response status:', response.status);
-    
-    // Check if response is JSON
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const textResponse = await response.text();
-      console.log('Non-JSON response:', textResponse);
-      Alert.alert('Server Error', 'Server returned an unexpected response');
-      return;
-    }
-
     const data = await response.json();
-    console.log('Response data:', data);
 
-  if (response.ok) {
-    Alert.alert('Success', 'Representative donee account created successfully!', [
-      {
-        text: 'OK',
-        onPress: () => {
-          // Clear form
-          setFullName('');
-          setCategory('');
-          setShowCategoryDropdown(false);
-          setEmail('');
-          setPassword('');
-          setConfirmPassword('');
-          setProofDocument(''); 
-          setAgreed(false);
-          setErrors({});
-          // Navigate to login
-          navigation.navigate('donee_login');
+    if (response.ok) {
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Clear form
+            setUsername('');
+            setEmail('');
+            setPhone('');
+            setPassword('');
+            setConfirmPassword('');
+            setAgreed(false);
+            setErrors({});
+            // Navigate to login or close modal
+            navigation.navigate('guestuser_login');
+          }
         }
-      }
-    ]);
+      ]);
     } else {
       Alert.alert('Error', data.message || 'Registration failed');
     }
   } catch (error) {
     console.error('Registration error:', error);
-    Alert.alert('Error', 'Network error. Please check your connection and backend server.');
+    Alert.alert('Error', 'Network error. Please try again.');
   } finally {
     setLoading(false);
   }
 };
-
 
   return (
     <Modal
@@ -213,7 +154,6 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
           <View style={styles.container}>
             <View style={styles.card}>
               <BackButton />
-
               {/* Logo */}
               <View style={styles.logoContainer}>
                 <View style={styles.logoBackground}>
@@ -233,100 +173,30 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
 
               {/* Divider */}
               <View style={styles.divider} />
-              
-              {/* Support Tabs */}
-              <View style={styles.toggleContainer}>
-                <TouchableOpacity style={styles.toggleButton}
-                onPress={() => navigation.navigate("volunteer_ind_reg")}>
-                  <Text style={styles.toggleText}>Individual</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.toggleButton, styles.activeToggleButton]}
-                onPress={() => navigation.navigate("volunteer_rep_reg")}>
-                  <Text style={styles.activeToggleText}>Representative</Text>
-                </TouchableOpacity>
-              </View>
 
-              {/* Full Name Input */}
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
+              {/* Username Input */}
+              {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
               <View style={styles.inputWrapper}>
                 <Ionicons name="person-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
-                  placeholder="Full Name"
-                  style={[styles.input, errors.fullName && { borderColor: 'red' }]}
+                  placeholder="Username"
+                  style={[styles.input, errors.username && { borderColor: 'red' }]}
                   placeholderTextColor="#999"
-                  value={fullName}
+                  value={username}
                   onChangeText={(text) => {
-                    setFullName(text);
-                    if (errors.fullName) {
-                      setErrors(prev => ({ ...prev, fullName: null }));
+                    setUsername(text);
+                    if (errors.username) {
+                      setErrors(prev => ({ ...prev, username: null }));
                     }
                   }}
+                  autoCapitalize="none"
                 />
               </View>
-
-              
-              {/* Category Dropdown */}
-              {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
-              <View style={styles.inputWrapper}>
-                <Ionicons name="list-outline" size={20} color="#999" style={styles.icon} />
-                <TouchableOpacity
-                  style={[styles.input, errors.category && { borderColor: 'red' }]}
-                  onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                >
-                  <Text style={[styles.input, { color: category ? '#000' : '#999' }]}>
-                    {category || 'Select Category'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}>
-                  <Ionicons
-                    name={showCategoryDropdown ? 'chevron-up' : 'chevron-down'}
-                    size={20}
-                    color="#999"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-              </View>
-
-             {/* Category Dropdown Options */}
-          {showCategoryDropdown && (
-            <View style={styles.dropdownContainer}>
-              <ScrollView 
-                style={{ maxHeight: 200 }}
-                showsVerticalScrollIndicator={true}
-                nestedScrollEnabled={true}
-              >
-                {categoryOptions.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.dropdownOption,
-                      category === option && styles.selectedOption
-                    ]}
-                    onPress={() => {
-                      setCategory(option);
-                      setShowCategoryDropdown(false);
-                      if (errors.category) {
-                        setErrors(prev => ({ ...prev, category: null }));
-                      }
-                    }}
-                  >
-                    <Text style={[
-                      styles.dropdownOptionText,
-                      category === option && styles.selectedOptionText
-                    ]}>
-                      {option}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-
 
               {/* Email Input */}
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
               <View style={styles.inputWrapper}>
-                <Ionicons name="call-outline" size={20} color="#999" style={styles.icon} />
+                <Ionicons name="mail-outline" size={20} color="#999" style={styles.icon} />
                 <TextInput
                   placeholder="Email"
                   style={[styles.input, errors.email && { borderColor: 'red' }]}
@@ -339,6 +209,27 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
                     }
                   }}
                   keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              {/* Phone Input */}
+              {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="call-outline" size={20} color="#999" style={styles.icon} />
+                <TextInput
+                  placeholder="Phone Number"
+                  style={[styles.input, errors.phone && { borderColor: 'red' }]}
+                  placeholderTextColor="#999"
+                  value={phone}
+                  onChangeText={(text) => {
+                    setPhone(text);
+                    if (errors.phone) {
+                      setErrors(prev => ({ ...prev, phone: null }));
+                    }
+                  }}
+                  keyboardType="phone-pad"
+                  maxLength={10}
                 />
               </View>
 
@@ -359,6 +250,7 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
                     }
                   }}
                 />
+                
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
                   <Ionicons
                     name={secure ? 'eye-off-outline' : 'eye-outline'}
@@ -396,25 +288,6 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
                 </TouchableOpacity>
               </View>
 
-             {/* Document Upload (REQUIRED) */}
-              {errors.proofDocument && <Text style={styles.errorText}>{errors.proofDocument}</Text>}
-              <View style={styles.inputWrapper}>
-                <Ionicons name="document-outline" size={20} color="#999" style={styles.icon} />
-                <TouchableOpacity 
-                  onPress={pickDocument} 
-                  style={[styles.input, errors.proofDocument && { borderColor: 'red' }]}
-                >
-                  <Text
-                    style={[
-                      styles.documentText,
-                      { color: proofDocument ? '#000' : '#999' },
-                    ]}
-                  >
-                    {proofDocument ? proofDocument.name : 'Upload Proof Document *'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
               {/* Terms & Conditions Checkbox */}
               {errors.agreed && <Text style={styles.errorText}>{errors.agreed}</Text>}
               <View style={styles.checkboxContainer}>
@@ -434,11 +307,11 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
                 </Text>
               </View>
 
-              {/* Sign Up Button (CHANGED) */}
+              {/* Sign Up Button */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.loginButton, loading && { opacity: 0.6 }]}
-                  onPress={handleSubmit} // Changed from navigation.navigate('login')
+                  onPress={handleSubmit}
                   activeOpacity={0.8}
                   disabled={loading}
                 >
@@ -456,7 +329,7 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
               {/* Login Link */}
               <TouchableOpacity
                 style={styles.loginContainer}
-                onPress={() => navigation.navigate('volunteer_login')} 
+                onPress={() => navigation.navigate('guestuser_login')}
               >
                 <Text style={styles.loginText}>
                   Already have an account?
@@ -471,4 +344,4 @@ const VolunteerOrg = ({ visible, onClose, onLoginPress }) => {
   );
 };
 
-export default VolunteerOrg;
+export default GuestUser;

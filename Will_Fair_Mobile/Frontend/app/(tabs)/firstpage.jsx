@@ -80,14 +80,14 @@ const FirstPage = ({ visible, onClose, onDonorPress, onDoneePress }) => {
                 {/* Volunteer Button */}
                 <TouchableOpacity
                   style={[styles.button, styles.volunteerButton]}
-                  onPress={() => navigation.navigate('/(drawer)/homescreen')}
+                  onPress={() => navigation.navigate('guestuser_login')}
                   activeOpacity={0.8}
                 >
                   <LinearGradient
                     colors={['#7B61FF', '#9333EA']}
                     style={styles.buttonGradient}
                   >
-                    <Text style={styles.buttonText}>Volunteer</Text>
+                    <Text style={styles.buttonText}>Guest User</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>

@@ -32,10 +32,17 @@ export default function CustomDrawer(props) {
           console.log('Parsed user object:', user);
           console.log('User type:', user.user_type);
           
-          setUsername(user.firstName || user.first_name || user.username || 'User');
+          // Set username based on user type
+          if (user.user_type === 'guestuser') {
+            setUsername(user.username || 'Guest User');
+          } else {
+            setUsername(user.firstName || user.first_name || user.username || 'User');
+          }
+          
           setUserType(user.user_type || 'donor'); // Default to donor if not specified
           
           console.log('Setting userType to:', user.user_type || 'donor');
+          console.log('Setting username to:', user.user_type === 'guestuser' ? (user.username || 'Guest User') : (user.firstName || user.first_name || user.username || 'User'));
         } else {
           console.log('No user data found in AsyncStorage');
           setUsername('User');
@@ -64,7 +71,7 @@ export default function CustomDrawer(props) {
           />
           <Text style={styles.username}>{username}</Text>
           <Text style={styles.userTypeLabel}>
-            {userType === 'donee' ? '👤 Donee' : '💰 Donor'}
+            {userType === 'donee' ? '👤 Donee' : userType === 'guestuser' ? '👥 Guest User' : '💰 Donor'}
           </Text>
       </View>
 
@@ -92,7 +99,7 @@ export default function CustomDrawer(props) {
           </TouchableOpacity>
         )}
         
-        {/* Show for BOTH */}
+        {/* Show for ALL user types */}
         <TouchableOpacity onPress={() => navigateTo('/(drawer)/events/events')} style={styles.menuButton}>
           <Text style={styles.menuText}>Events</Text>
         </TouchableOpacity>
