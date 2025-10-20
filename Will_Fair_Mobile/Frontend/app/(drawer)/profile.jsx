@@ -81,15 +81,6 @@ const Profile = () => {
     );
   };
 
-  const handleEditProfile = () => {
-    // Only donors can edit their profile
-    if (userType === 'donor') {
-      router.push('/(drawer)/edit_profile');
-    } else {
-      Alert.alert('Info', 'Profile editing is currently only available for donors.');
-    }
-  };
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -215,14 +206,6 @@ const Profile = () => {
 
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
-            style={styles.editButton}
-            onPress={handleEditProfile}
-          >
-            <Ionicons name="create-outline" size={20} color="#fff" />
-            <Text style={styles.editButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.logoutButton}
             onPress={handleLogout}
