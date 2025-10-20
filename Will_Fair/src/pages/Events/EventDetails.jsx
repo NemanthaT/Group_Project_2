@@ -318,6 +318,7 @@ function EventDetails() {
             onClose={() => setShowVolunteerModal(false)}
             eventId={event.id}
             eventTitle={event.title}
+            eventOrganiserEmail={event.organizerEmail}
           />
         )}
 
