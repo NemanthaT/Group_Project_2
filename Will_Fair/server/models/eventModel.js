@@ -563,7 +563,7 @@ async function requestEventDeletion(email, eventKey) {
 async function getVolunteerListByEvent(email, eventKey) {
   try {
     const verifyQuery = `
-      SELECT e.event_id, e.name
+      SELECT e.event_id, e.name, o.name as organiser_name
       FROM events e
       INNER JOIN event_organisers o ON e.organiser_id = o.organiser_id
       WHERE o.email = $1 AND e.event_key = $2
@@ -580,6 +580,7 @@ async function getVolunteerListByEvent(email, eventKey) {
     
     const eventId = verifyResult.rows[0].event_id;
     const eventName = verifyResult.rows[0].name;
+    const organiserName = verifyResult.rows[0].organiser_name;
     
     const volunteersQuery = `
       SELECT 
@@ -597,6 +598,7 @@ async function getVolunteerListByEvent(email, eventKey) {
     return {
       success: true,
       eventName: eventName,
+      organiserName: organiserName,
       volunteers: volunteersResult.rows
     };
     

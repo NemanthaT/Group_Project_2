@@ -464,13 +464,10 @@ export const sendVolunteerListEmailController = async (req, res) => {
     if (!result.success) {
       return res.status(404).json(result);
     }
-    
-    const organizerQuery = await import('../models/eventModel.js').then(module => module.default || module);
-    
 
     try {
       const emailContent = volunteerListTemplate({
-        organizerName: email.split('@')[0],
+        organizerName: result.organiserName,
         eventTitle: result.eventName,
         volunteers: result.volunteers,
         totalVolunteers: result.volunteers.length
