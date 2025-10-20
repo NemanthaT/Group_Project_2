@@ -132,9 +132,9 @@ export default function EventsScreen() {
           </Picker>
         </View>
 
-        <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
+        {/* <TouchableOpacity style={styles.addBtn} onPress={() => setShowAddModal(true)}>
           <Text style={{ color: '#fff' }}>+ Add Event</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <FlatList data={sorted} keyExtractor={i => String(i.id)} contentContainerStyle={{ padding: 12 }} renderItem={({ item }) => (
@@ -148,7 +148,7 @@ export default function EventsScreen() {
           </View>
 
           <View style={styles.progressRow}>
-            <View style={styles.progressBarBackground}>
+              <View style={styles.progressBarBackground}>
               <View style={[styles.progressFill, { width: `${(item.volunteersSigned / Math.max(1,item.volunteersNeeded)) * 100}%` }]} />
             </View>
             <Text style={styles.progressText}>{item.volunteersSigned}/{item.volunteersNeeded} signed</Text>
@@ -176,24 +176,47 @@ export default function EventsScreen() {
         </View>
       )} />
 
-      <AddEventModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onCreate={(formData) => {
-        const id = opportunities.length ? Math.max(...opportunities.map(o => o.id)) + 1 : 1;
-        const date = formData.isRange ? formData.startDate : formData.date;
-        const newOpp = {
-          id,
-          title: formData.name || 'Untitled Event',
-          description: formData.description,
-          type: formData.type || 'other',
-          commitment: formData.commitment || 'flexible',
-          location: formData.location || 'TBD',
-          skills: formData.skills || 'none',
-          volunteersNeeded: Number(formData.volunteersNeeded) || 0,
-          volunteersSigned: 0,
-          image: '',
-          date: date || ''
-        };
-        setOpportunities(prev => [newOpp, ...prev]);
-      }} />
+      <AddEventModal 
+        isOpen={showAddModal} 
+        onClose={() => setShowAddModal(false)} 
+        onSubmit={async (formData) => {
+          try {
+            console.log('Submitting event to API...');
+            
+            const response = await axios.post(`${API_BASE}/api/events`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+
+            console.log('Event creation response:', response.data);
+
+            if (response.data.success) {
+              // Refresh events list after successful creation
+              const res = await axios.get(`${API_BASE}/api/events`);
+              if (res.data && res.data.success) {
+                setOpportunities(res.data.events || []);
+              }
+              
+              setShowAddModal(false);
+              return { success: true };
+            } else {
+              alert(response.data.message || 'Failed to create event');
+              return { success: false };
+            }
+          } catch (error) {
+            console.error('Error creating event:', error);
+            let errorMessage = 'Failed to create event';
+            if (error.response) {
+              errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+            } else if (error.request) {
+              errorMessage = 'Network error: Cannot connect to server';
+            }
+            alert(errorMessage);
+            return { success: false };
+          }
+        }} 
+      />
     </SafeAreaView>
   );
 }
