@@ -82,7 +82,12 @@ const Profile = () => {
   };
 
   const handleEditProfile = () => {
-    Alert.alert('Edit Profile', 'Edit profile functionality coming soon!');
+    // Only donors can edit their profile
+    if (userType === 'donor') {
+      router.push('/(drawer)/edit_profile');
+    } else {
+      Alert.alert('Info', 'Profile editing is currently only available for donors.');
+    }
   };
 
   if (loading) {

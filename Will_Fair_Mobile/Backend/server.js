@@ -14,6 +14,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Log all incoming requests (for debugging)
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -169,7 +175,9 @@ app.listen(PORT, () => {
   console.log(`\n📋 Available endpoints:`);
   console.log(`  ✅ GET  http://localhost:${PORT}/api/health`);
   console.log(`  📝 POST http://localhost:${PORT}/api/donor_reg`);
-  console.log(`  👤 POST http://localhost:${PORT}/api/donee_ind_reg`);
+  console.log(`  � POST http://localhost:${PORT}/api/donor_login`);
+  console.log(`  ✏️  PUT  http://localhost:${PORT}/api/donor/:donor_id`);
+  console.log(`  �👤 POST http://localhost:${PORT}/api/donee_ind_reg`);
   console.log(`  🏢 POST http://localhost:${PORT}/api/donee_rep_reg`);
   console.log(`  🔐 POST http://localhost:${PORT}/api/donee_login`);
   console.log(`  🔑 POST http://localhost:${PORT}/api/login`);
