@@ -44,7 +44,6 @@
   line-height: 1;
 }
 
-/* The form itself becomes the scrollable area */
 .modal-form {
   padding: 16px 20px 12px 20px;
   display: flex;
@@ -61,21 +60,19 @@
   margin-bottom: 8px;
 }
 
-/* label row with toggle (keeps toggle visually next to label) */
 .form-row-label {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* keep label and toggle together on the left */
-  gap: 8px; /* small gap so toggle sits right next to label */
+  justify-content: flex-start; 
+  gap: 8px;
 }
 
 .date-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
-  /* keep the toggle visible while scrolling the form */
   position: sticky;
-  top: 0; /* will stick to top of scrollable .modal-form area */
+  top: 0; 
   background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.95));
   padding-left: 4px;
   border-radius: 6px;
@@ -130,13 +127,12 @@
   transform-origin: left center;
 }
 
-/* inline field error tooltip / hint */
 .field-error {
   margin-top: 6px;
   display: inline-block;
   background: #fff7f7;
-  color: #b91c1c; /* red-700 */
-  border: 1px solid #fecaca; /* red-200 */
+  color: #b91c1c; 
+  border: 1px solid #fecaca; 
   padding: 6px 8px;
   border-radius: 8px;
   font-size: 13px;
@@ -149,7 +145,6 @@
   transform: translateY(-50%) translateX(4px);
 }
 
-/* File/Image upload styles */
 .choose-file-button,
 .choose-files-button {
   display: inline-block;
@@ -198,7 +193,7 @@
 }
 
 .remove-document-button {
-  background: #dc2626; /* red-600 */
+  background: #dc2626; 
   color: #fff;
   border: 1px solid rgba(0,0,0,0.08);
   padding: 6px 10px;
@@ -208,7 +203,7 @@
 }
 
 .remove-document-button:hover {
-  background: #b91c1c; /* darker red on hover */
+  background: #b91c1c; 
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
@@ -218,7 +213,6 @@
   border-radius: 8px;
 }
 
-/* Inputs and selects share the same visual style */
 .modal-form input[type="text"],
 .modal-form input[type="date"],
 .modal-form input[type="number"],
@@ -236,7 +230,6 @@
   color: #0f172a;
 }
 
-/* make selects visually match and add a custom arrow */
 .modal-form select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -245,7 +238,7 @@
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 18px 18px;
-  padding-right: 40px; /* room for arrow */
+  padding-right: 40px; 
 }
 
 .modal-form input:focus,
@@ -267,7 +260,6 @@
   color: #666;
 }
 
-/* Sticky action bar so buttons remain visible while scrolling */
 .modal-form .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -339,9 +331,41 @@
   font-size: 13px;
 }
 
-/* Small screens: make modal full width with comfortable padding */
 @media (max-width: 480px) {
   .modal-card { width: 100%; border-radius: 8px; }
   .modal-header { padding: 14px 16px; }
   .modal-form { padding: 12px 16px 10px; }
+}
+
+.modal-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  border-radius: 12px;
+}
+
+.modal-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e9ecef;
+  border-top: 4px solid #6366f1;
+  border-radius: 50%;
+  animation: modal-spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes modal-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal-loading-text {
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
 }

@@ -8,8 +8,8 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setForm({ email: '', eventKey: '' });
@@ -31,14 +31,12 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
     e.preventDefault();
     const newErrors = {};
 
-    // Validate email
     if (!form.email || !form.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = 'Enter a valid email address';
     }
 
-    // Validate event key
     if (!form.eventKey || !form.eventKey.trim()) {
       newErrors.eventKey = 'Event key is required';
     }
@@ -48,27 +46,19 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    try {
-      // TODO: Replace with actual backend call
-      console.log('Deletion request submitted:', form);
-      alert('Event deletion request submitted successfully!');
+    if (onSubmit) {
+      setIsSubmitting(true);
+      const result = await onSubmit(form);
+      setIsSubmitting(false);
       
-      // Reset form
-      setForm({ email: '', eventKey: '' });
-      setErrors({});
-      onClose();
-      
-      // Call parent submit handler if provided
-      if (onSubmit) {
-        await onSubmit(form);
+      if (result?.success) {
+        setForm({ email: '', eventKey: '' });
+        setErrors({});
+        onClose();
       }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit deletion request. Please try again.');
     }
   };
 
-  // Prevent background scroll when open
   useEffect(() => {
     if (!isOpen) return;
     const original = document.body.style.overflow;
@@ -80,7 +70,14 @@ export default function RequestEventDeletionModal({ isOpen, onClose, onSubmit })
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px' }}>
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Submitting deletion request...</p>
+          </div>
+        )}
+        
         <div className="modal-header">
           <h2>Event Deletion Request</h2>
           <button className="modal-close" onClick={onClose}>✕</button>

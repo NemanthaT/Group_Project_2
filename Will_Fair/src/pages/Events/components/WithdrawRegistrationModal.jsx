@@ -8,8 +8,8 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setForm({ email: '', volunteerKey: '' });
@@ -31,14 +31,12 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
     e.preventDefault();
     const newErrors = {};
 
-    // Validate email
     if (!form.email || !form.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = 'Enter a valid email address';
     }
 
-    // Validate volunteer key
     if (!form.volunteerKey || !form.volunteerKey.trim()) {
       newErrors.volunteerKey = 'Volunteer key is required';
     }
@@ -48,27 +46,19 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
       return;
     }
 
-    try {
-      // TODO: Replace with actual backend call
-      console.log('Withdrawal request submitted:', form);
-      alert('Registration withdrawn successfully!');
+    if (onSubmit) {
+      setIsSubmitting(true);
+      const result = await onSubmit(form);
+      setIsSubmitting(false);
       
-      // Reset form
-      setForm({ email: '', volunteerKey: '' });
-      setErrors({});
-      onClose();
-      
-      // Call parent submit handler if provided
-      if (onSubmit) {
-        await onSubmit(form);
+      if (result?.success) {
+        setForm({ email: '', volunteerKey: '' });
+        setErrors({});
+        onClose();
       }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to withdraw registration. Please try again.');
     }
   };
 
-  // Prevent background scroll when open
   useEffect(() => {
     if (!isOpen) return;
     const original = document.body.style.overflow;
@@ -80,7 +70,14 @@ export default function WithdrawRegistrationModal({ isOpen, onClose, onSubmit })
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') onClose(); }}>
-      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px' }}>
+      <div className="modal-card" style={{ maxWidth: '520px', minWidth: '400px', position: 'relative' }}>
+        {isSubmitting && (
+          <div className="modal-loading-overlay">
+            <div className="modal-loading-spinner"></div>
+            <p className="modal-loading-text">Processing withdrawal...</p>
+          </div>
+        )}
+        
         <div className="modal-header">
           <h2>Withdraw Registration Form</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
