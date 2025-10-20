@@ -64,11 +64,15 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
       }
     }
 
-    if (!form.email.trim()) newErrors.email = "Email is required";
-
-
-    else if (!/\S+@\S+\.\S+/.test(form.email))
-      newErrors.email = "Enter a valid email";
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else {
+      // Simple practical email regex
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(form.email.trim())) {
+        newErrors.email = "Enter a valid email address";
+      }
+    }
     return newErrors;
   };
 
@@ -103,7 +107,7 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
       });
 
       if (response.data.success) {
-        toast.success("Successfully registered as volunteer! Check your email for confirmation.", {
+        toast.success("Successfully registered as a volunteer!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -124,14 +128,14 @@ export default function VolunteerEventModal({ isOpen, onClose, onVolunteerSucces
             window.scrollTo(0, parseInt(savedPosition));
             sessionStorage.removeItem('eventsScroll');
           }
-        }, 1000);
+        }, 2000);
       } else {
         throw new Error(response.data.message || 'Submission failed');
       }
     } catch (err) {
       const errorMessage = err.response?.data?.error ||
         err.response?.data?.message ||
-        "Failed to submit volunteer application. Please try again.";
+        "Submission Faild. Please try again.";
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
