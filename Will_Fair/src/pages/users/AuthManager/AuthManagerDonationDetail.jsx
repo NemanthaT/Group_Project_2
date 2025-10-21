@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 import "./AuthManagerDashboard.css";
 
 const AuthManagerDonationDetail = () => {
@@ -9,6 +12,8 @@ const AuthManagerDonationDetail = () => {
   const [donation, setDonation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
 
   const [activeTab, setActiveTab] = useState("requests");
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -47,15 +52,41 @@ const AuthManagerDonationDetail = () => {
     fetchDonation();
   }, [id]);
 
-  const handleAction = async (action) => {
+  const handleActionClick = (action) => {
+    setConfirmAction(action);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmAction = async () => {
     try {
       await axios.post(
-        `http://localhost:5000/authManager/pending-donations/${id}/${action}`
+        `http://localhost:5000/authManager/pending-donations/${id}/${confirmAction}`
       );
-      navigate(-1); // Go back to the list after action
+      toast.success(`Donation request ${confirmAction}ed successfully!`);
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
     } catch {
-      alert("Failed to update request status");
+      toast.error("Failed to update request status");
+    } finally {
+      setShowConfirm(false);
+      setConfirmAction(null);
     }
+  };
+
+  const cancelAction = () => {
+    setShowConfirm(false);
+    setConfirmAction(null);
+  };
+
+  const getConfirmMessage = () => {
+    if (!donation) return '';
+    if (confirmAction === 'accept') {
+      return `Are you sure you want to accept the donation request "${donation.title}"? This will make it active and visible to donors.`;
+    } else if (confirmAction === 'reject') {
+      return `Are you sure you want to reject the donation request "${donation.title}"? This action cannot be undone.`;
+    }
+    return '';
   };
 
   if (loading) return <div>Loading...</div>;
@@ -64,8 +95,16 @@ const AuthManagerDonationDetail = () => {
 
   return (
     <div className="authmanager-dashboard">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <ConfirmationModal
+        show={showConfirm}
+        title={confirmAction === 'accept' ? 'Accept Donation Request' : 'Reject Donation Request'}
+        message={getConfirmMessage()}
+        onConfirm={handleConfirmAction}
+        onCancel={cancelAction}
+      />
       {/* Mobile overlay */}
-      <div
+      {/*<div
         className={`authmanager-sidebar-overlay ${
           sidebarVisible ? "authmanager-visible" : ""
         }`}
@@ -107,16 +146,17 @@ const AuthManagerDonationDetail = () => {
         >
           Logout
         </button>
-      </div>
+      </div>*/}
 
       {/* Main content */}
       <div className="authmanager-main-content">
         <div className="authmanager-content-wrapper">
           <div className="authmanager-dashboard-content">
-            <div className="authmanager-welcome-section">
+            <div className="authmanager-welcome-section" id="individual-donation">
               <div className="authmanager-welcome-content">
                 <button
                   className="btn btn-secondary"
+                  id="back-button"
                   onClick={() => navigate(-1)}
                 >
                   &larr; Back
@@ -125,7 +165,7 @@ const AuthManagerDonationDetail = () => {
               </div>
             </div>
 
-            <div className="donation-detail-card">
+            <div className="donation-detail-card" id="donation-image">
               <div className="coverImageContainer">
                 <img
                   className="coverImage"
@@ -191,7 +231,7 @@ const AuthManagerDonationDetail = () => {
               <div className="pending-actions" style={{ marginTop: 16 }}>
                 <button
                   className="btn btn-primary"
-                  onClick={() => handleAction("accept")}
+                  onClick={() => handleActionClick("accept")}
                   style={{ marginRight: 8 }}
                   disabled={donation.status !== "pending"}
                 >
@@ -199,7 +239,7 @@ const AuthManagerDonationDetail = () => {
                 </button>
                 <button
                   className="btn btn-danger"
-                  onClick={() => handleAction("reject")}
+                  onClick={() => handleActionClick("reject")}
                   disabled={donation.status !== "pending"}
                 >
                   Reject

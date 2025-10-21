@@ -8,6 +8,7 @@ import Categories from './Dashboard/Categories';
 import AdminManagement from './Dashboard/AdminManagement';
 import Modal from './Dashboard/Modal';
 import DocumentViewer from './Dashboard/DocumentViewer';
+import { toast } from 'react-toastify';
 
 import styles from "./Styles";
 import "./AdminStyles.css";
@@ -65,9 +66,13 @@ const AdminDashboard = () => {
   }, []);
 
   const handleDelete = (type, id) => {
-    if (!window.confirm('Delete this item?')) return;
-    if (type === 'donee') setDonees(donees.filter(d => d.id !== id));
-    if (type === 'admin') setAdmins(admins.filter(a => a.id !== id));
+    if (type === 'donee') {
+      setDonees(donees.filter(d => d.id !== id));
+      toast.success('Donee deleted successfully!');
+    }
+    if (type === 'admin') {
+      setAdmins(admins.filter(a => a.id !== id));
+    }
   };
 
   const viewDocuments = (docs, title) => {

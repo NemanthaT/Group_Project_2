@@ -18,4 +18,3 @@ router.get('/volunteers/:id', volunteerController.getVolunteerById);
 router.delete('/volunteers/:id', volunteerController.cancelVolunteerSignup);
 
 module.exports = router;
-

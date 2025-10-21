@@ -1,5 +1,8 @@
-// Donor login for Will_Fair_Mobile
+// Donor Controller
 const bcrypt = require('bcrypt');
+const donorModel = require('../models/donorModel');
+
+// Donor login for Will_Fair_Mobile
 exports.loginDonor = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -20,8 +23,67 @@ exports.loginDonor = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-// Donor Controller
-const donorModel = require('../models/donorModel');
+
+// Update donor profile (flexible - can update any combination of fields)
+// Email cannot be updated
+exports.updateDonorProfile = async (req, res) => {
+  try {
+    const { donor_id } = req.params;
+    const { first_name, last_name, password } = req.body;
+    
+    console.log('=== UPDATE DONOR PROFILE ===');
+    console.log('Donor ID:', donor_id);
+    console.log('Request body:', req.body);
+    console.log('Update data:', { first_name, last_name, password: password ? '***' : 'not provided' });
+    
+    // Validate donor_id
+    if (!donor_id) {
+      return res.status(400).json({ success: false, message: 'Donor ID is required' });
+    }
+    
+    // At least one field must be provided for update
+    if (!first_name && !last_name && !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'At least one field (first_name, last_name, or password) must be provided' 
+      });
+    }
+    
+    // Validate password if provided
+    if (password && password.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Password must be at least 6 characters long' 
+      });
+    }
+    
+    // Build update data object (only include provided fields)
+    const updateData = {};
+    if (first_name !== undefined) updateData.first_name = first_name;
+    if (last_name !== undefined) updateData.last_name = last_name;
+    if (password) updateData.password = password;
+    
+    console.log('Calling model with updateData:', updateData);
+    
+    // Call model to update
+    const result = await donorModel.updateDonorProfile(donor_id, updateData);
+    
+    if (result.success) {
+      console.log('Profile updated successfully:', result.donor);
+      return res.status(200).json(result);
+    } else {
+      console.error('Failed to update profile:', result.message);
+      return res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error('Error in updateDonorProfile controller:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error',
+      error: error.message 
+    });
+  }
+};
 
 exports.registerDonor = async (req, res) => {
   try {

@@ -73,6 +73,7 @@
 
 .donation-category {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 8px 16px;
   border-radius: 25px;
@@ -475,7 +476,7 @@
   .donation-hero {
     grid-template-columns: 1fr;
     max-height: none;
-    min-height: auto;
+    min-height: unset;
   }
   
   .donation-image-container {

@@ -30,8 +30,8 @@
 }
 
 .pagination-btn {
-  background: #0d429b;
-  color: white;
+  background: #0d429b !important;
+  color: white !important;
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 25px;
@@ -71,4 +71,9 @@
 .total-items {
   font-size: 0.9rem;
   color: #7f8c8d;
+}
+
+.container {
+  width: 80% !important;
+  margin: 0 auto !important;
 }

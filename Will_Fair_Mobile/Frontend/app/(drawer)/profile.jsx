@@ -81,10 +81,6 @@ const Profile = () => {
     );
   };
 
-  const handleEditProfile = () => {
-    Alert.alert('Edit Profile', 'Edit profile functionality coming soon!');
-  };
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -210,14 +206,6 @@ const Profile = () => {
 
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
-            style={styles.editButton}
-            onPress={handleEditProfile}
-          >
-            <Ionicons name="create-outline" size={20} color="#fff" />
-            <Text style={styles.editButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.logoutButton}
             onPress={handleLogout}

@@ -350,6 +350,35 @@ async function approveEvent(eventId) {
     }
 }
 
+// Rejects an event by deleting it from the database
+async function rejectEvent(eventId) {
+    try {
+        const sql = `
+            DELETE FROM events 
+            WHERE event_id = $1 AND is_approved = false
+            RETURNING event_id
+        `;
+        
+        const result = await pool.query(sql, [eventId]);
+        
+        if (result.rows.length === 0) {
+            return { success: false, message: "Event not found or already approved" };
+        }
+
+        const eventFolder = path.join(__dirname, '..', 'uploads', 'events', eventId.toString());
+        
+        if (fs.existsSync(eventFolder)) {
+            fs.rmSync(eventFolder, { recursive: true, force: true });
+            console.log(`✅ Deleted event folder: ${eventFolder}`);
+        }
+        
+        return { success: true, eventId: result.rows[0].event_id };
+    } catch (err) {
+        console.error("Database error during rejectEvent():", err);
+        return { success: false, message: "Database error" };
+    }
+}
+
 // Deletes an event and its associated files from database and filesystem
 async function deleteEvent(eventId) {
     try {
@@ -559,6 +588,58 @@ async function requestEventDeletion(email, eventKey) {
   }
 }
 
+// Retrieves the list of volunteers for a specific event
+async function getVolunteerListByEvent(email, eventKey) {
+  try {
+    const verifyQuery = `
+      SELECT e.event_id, e.name, o.name as organiser_name
+      FROM events e
+      INNER JOIN event_organisers o ON e.organiser_id = o.organiser_id
+      WHERE o.email = $1 AND e.event_key = $2
+    `;
+    
+    const verifyResult = await pool.query(verifyQuery, [email, eventKey]);
+    
+    if (verifyResult.rows.length === 0) {
+      return {
+        success: false,
+        message: 'Event not found or you are not the organizer of this event. Please check your email and event key.'
+      };
+    }
+    
+    const eventId = verifyResult.rows[0].event_id;
+    const eventName = verifyResult.rows[0].name;
+    const organiserName = verifyResult.rows[0].organiser_name;
+    
+    const volunteersQuery = `
+      SELECT 
+        volunteer_name as name,
+        volunteer_email as email,
+        volunteer_phone as mobile,
+        signed_up_date as registered_at
+      FROM event_volunteers
+      WHERE event_id = $1
+      ORDER BY signed_up_date DESC
+    `;
+    
+    const volunteersResult = await pool.query(volunteersQuery, [eventId]);
+    
+    return {
+      success: true,
+      eventName: eventName,
+      organiserName: organiserName,
+      volunteers: volunteersResult.rows
+    };
+    
+  } catch (error) {
+    console.error('Error in getVolunteerListByEvent:', error);
+    return {
+      success: false,
+      message: 'An error occurred while retrieving the volunteer list.'
+    };
+  }
+}
+
 export { 
     getEvents, 
     getEventById, 
@@ -568,7 +649,8 @@ export {
     addEvent, 
     addDocuments, 
     updateEventImage, 
-    approveEvent, 
+    approveEvent,
+    rejectEvent,
     deleteEvent,
     getPendingEventsCount,
     getPendingDeletionEventsCount,
@@ -576,6 +658,7 @@ export {
     generateVolunteerKey,
     withdrawVolunteer,
     generateEventKey,        
-    requestEventDeletion
+    requestEventDeletion,
+    getVolunteerListByEvent
 };
 

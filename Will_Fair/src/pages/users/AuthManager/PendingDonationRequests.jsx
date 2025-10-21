@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Clock, CheckCircle, XCircle, Package } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 import "./AuthManagerDashboard.css";
 
 const PendingDonationRequests = ( {user}) => {
@@ -9,6 +13,9 @@ const PendingDonationRequests = ( {user}) => {
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const [stats, setStats] = useState({ pending: 0, accepted: 0, declined: 0, total: 0 });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,25 +52,53 @@ const PendingDonationRequests = ( {user}) => {
     fetchStats();
   }, [requests]);
 
-  const handleAction = async (id, action) => {
-    setActionLoading(id + action);
+  const handleActionClick = (request, action) => {
+    setSelectedRequest(request);
+    setConfirmAction(action);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedRequest || !confirmAction) return;
+    
+    setActionLoading(selectedRequest.request_id + confirmAction);
     try {
       await axios.post(
-        `http://localhost:5000/authManager/pending-donations/${id}/${action}`
+        `http://localhost:5000/authManager/pending-donations/${selectedRequest.request_id}/${confirmAction}`
       );
-      setRequests((prev) => prev.filter((r) => r.request_id !== id));
+      setRequests((prev) => prev.filter((r) => r.request_id !== selectedRequest.request_id));
+      toast.success(`Donation request ${confirmAction}ed successfully!`);
     } catch {
-      alert("Failed to update request status");
+      toast.error("Failed to update request status");
     } finally {
       setActionLoading(null);
+      setShowConfirm(false);
+      setSelectedRequest(null);
+      setConfirmAction(null);
     }
   };
 
+  const cancelAction = () => {
+    setShowConfirm(false);
+    setSelectedRequest(null);
+    setConfirmAction(null);
+  };
+
+  const getConfirmMessage = () => {
+    if (!selectedRequest) return '';
+    if (confirmAction === 'accept') {
+      return `Are you sure you want to accept the donation request "${selectedRequest.title}"? This will make it active and visible to donors.`;
+    } else if (confirmAction === 'reject') {
+      return `Are you sure you want to reject the donation request "${selectedRequest.title}"? This action cannot be undone.`;
+    }
+    return '';
+  };
+
   const statsCards = [
-    { value: stats.pending, label: "Pending", icon: "⏳", color: "#f59e0b" },
-    { value: stats.accepted, label: "Accepted", icon: "✅", color: "#10b981" },
-    { value: stats.declined, label: "Declined", icon: "❌", color: "#ef4444" },
-    { value: stats.total, label: "Total", icon: "📦", color: "#3b82f6" },
+    { value: stats.pending, label: "Pending", icon: Clock, color: "#f59e0b" },
+    { value: stats.accepted, label: "Accepted", icon: CheckCircle, color: "#10b981" },
+    { value: stats.declined, label: "Declined", icon: XCircle, color: "#ef4444" },
+    { value: stats.total, label: "Total", icon: Package, color: "#3b82f6" },
   ];
 
   if (loading) return <div>Loading...</div>;
@@ -71,28 +106,39 @@ const PendingDonationRequests = ( {user}) => {
 
   return (
     <div className="authmanager-dashboard-content">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <ConfirmationModal
+        show={showConfirm}
+        title={confirmAction === 'accept' ? 'Accept Donation Request' : 'Reject Donation Request'}
+        message={getConfirmMessage()}
+        onConfirm={handleConfirmAction}
+        onCancel={cancelAction}
+      />
       <div className="authmanager-welcome-section">
         <div className="authmanager-welcome-content">
           <h2>Pending Donation Requests</h2>
           <p>Review and manage Donation Requests</p>
         </div>
       </div>
-      {/* Stats Cards */}
+     
       <div className="authmanager-stats-grid" style={{ marginBottom: 24 }}>
-        {statsCards.map((card, idx) => (
-          <div className="authmanager-stat-card" key={idx}>
-            <div
-              className="authmanager-stat-icon"
-              style={{ backgroundColor: card.color + "15", color: card.color }}
-            >
-              {card.icon}
+        {statsCards.map((card, idx) => {
+          const Icon = card.icon;
+          return (
+            <div className="authmanager-stat-card" key={idx}>
+              <div
+                className="authmanager-stat-icon"
+                style={{ color: card.color }}
+              >
+                <Icon size={28} />
+              </div>
+              <div className="authmanager-stat-info">
+                <div className="authmanager-stat-value">{card.value}</div>
+                <div className="authmanager-stat-label">{card.label}</div>
+              </div>
             </div>
-            <div className="authmanager-stat-info">
-              <div className="authmanager-stat-value">{card.value}</div>
-              <div className="authmanager-stat-label">{card.label}</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="pending-requests-list">
         {requests.length === 0 ? (
@@ -125,14 +171,14 @@ const PendingDonationRequests = ( {user}) => {
                 <button
                   className="btn btn-primary"
                   disabled={actionLoading === req.request_id + "accept"}
-                  onClick={() => handleAction(req.request_id, "accept")}
+                  onClick={() => handleActionClick(req, "accept")}
                 >
                   Accept
                 </button>
                 <button
                   className="btn btn-danger"
                   disabled={actionLoading === req.request_id + "reject"}
-                  onClick={() => handleAction(req.request_id, "reject")}
+                  onClick={() => handleActionClick(req, "reject")}
                 >
                   Reject
                 </button>

@@ -448,6 +448,164 @@ The WillFair Team
   };
 }
 
+/**
+ * Email template for volunteer list (organizer)
+ */
+function volunteerListTemplate(data) {
+  const { organizerName, eventTitle, volunteers, totalVolunteers } = data;
+  
+  // Create table rows for volunteers
+  const volunteerRows = volunteers.map((vol, index) => `
+    <tr style="border-bottom: 1px solid #e5e7eb;">
+      <td style="padding: 12px; text-align: center; font-weight: 600; color: #6b7280;">${index + 1}</td>
+      <td style="padding: 12px;">${vol.name}</td>
+      <td style="padding: 12px;">${vol.email}</td>
+      <td style="padding: 12px;">${vol.mobile}</td>
+    </tr>
+  `).join('');
+
+  const textVolunteerList = volunteers.map((vol, index) => 
+    `${index + 1}. ${vol.name} - ${vol.email} - ${vol.mobile}`
+  ).join('\n');
+
+  return {
+    subject: `Volunteer List for Event: ${eventTitle}`,
+    text: `
+Hello ${organizerName},
+
+Here is the complete list of volunteers registered for your event "${eventTitle}".
+
+Total Volunteers: ${totalVolunteers}
+
+Volunteer List:
+${textVolunteerList}
+
+Thank you for organizing this event on WillFair!
+
+Best regards,
+The WillFair Team
+    `,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #4a6cf7, #8b5cf6); color: white; padding: 20px; text-align: center; }
+    .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+    .count-badge { background-color: #f0f4ff; padding: 12px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #4a6cf7; }
+    .count-badge strong { color: #4a6cf7; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 8px; overflow: hidden; }
+    thead { background: linear-gradient(135deg, #4a6cf7, #8b5cf6); color: white; }
+    th { padding: 12px; text-align: left; font-weight: 600; }
+    td { padding: 12px; }
+    tbody tr:hover { background-color: #f9fafb; }
+    .footer { text-align: center; margin-top: 20px; color: #777; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Volunteer List</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong>${organizerName}</strong>,</p>
+      <p>Here is the complete list of volunteers registered for your event <strong>"${eventTitle}"</strong>.</p>
+      
+      <div class="count-badge">
+        Total Volunteers: <strong>${totalVolunteers}</strong>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align: center; width: 50px;">#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${volunteerRows}
+        </tbody>
+      </table>
+
+      <p>Thank you for organizing this event on WillFair!</p>
+    </div>
+    <div class="footer">
+      <p>© 2025 WillFair. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `
+  };
+}
+
+/**
+ * Email template for event rejection notification (organizer)
+ */
+function eventRejectionTemplate(eventData) {
+  const { organizerName, eventTitle, rejectionReason } = eventData;
+  
+  return {
+    subject: `Event Not Approved: ${eventTitle}`,
+    text: `
+Hello ${organizerName},
+
+We regret to inform you that your event "${eventTitle}" has not been approved for listing on WillFair.
+
+${rejectionReason ? `Reason: ${rejectionReason}` : 'Our team reviewed your submission and determined it does not meet our current criteria.'}
+
+If you have any questions or would like to submit a revised event proposal, please feel free to create a new event with updated information.
+
+Thank you for your interest in WillFair.
+
+Best regards,
+The WillFair Team
+    `,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+    .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+    .rejection-notice { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #777; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Event Review Update</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong>${organizerName}</strong>,</p>
+      <p>We regret to inform you that your event <strong>"${eventTitle}"</strong> has not been approved for listing on WillFair.</p>
+      
+      <div class="rejection-notice">
+        <h3>Review Decision</h3>
+        <p>${rejectionReason || 'Our team reviewed your submission and determined it does not meet our current criteria at this time.'}</p>
+      </div>
+
+      <p>If you have any questions or would like to submit a revised event proposal, please feel free to create a new event with updated information.</p>
+      
+      <p>Thank you for your interest in making a difference through WillFair.</p>
+    </div>
+    <div class="footer">
+      <p>© 2025 WillFair. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `
+  };
+}
+
 export {
   eventCreationTemplate,
   volunteerRegistrationTemplate,
@@ -455,5 +613,7 @@ export {
   eventDeletionOrganizerTemplate,
   eventCancellationVolunteerTemplate,
   newVolunteerNotificationTemplate,
-  eventApprovalTemplate
+  eventApprovalTemplate,
+  volunteerListTemplate,
+  eventRejectionTemplate
 };

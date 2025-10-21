@@ -6,7 +6,7 @@ const styles = {
   adminName: { fontSize: '20px' },
   nav: { display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '30px', marginTop:'150px' },
   navBtn: { padding: '12px 32px', border: '2px solid #e5e7eb', background: 'white', borderRadius: '8px', fontSize: '16px', fontWeight: '600', color: '#6b7280', cursor: 'pointer', transition: 'all 0.2s' },
-  navBtnActive: { background: 'linear-gradient(135deg, #667eea, #764ba2)', borderColor: '#667eea', color: 'white' },
+  navBtnActive: { background: '#667eea', borderColor: '#667eea', color: 'white' },
   content: { padding: '30px', width: '70%', maxWidth: '90%', margin: '0 auto' },
   statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' },
   statCard: { backgroundColor: 'white', padding: '20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '15px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },

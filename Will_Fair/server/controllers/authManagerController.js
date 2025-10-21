@@ -8,7 +8,8 @@ import {
 import { 
   getPendingEvents, 
   getPendingDeletionEvents, 
-  approveEvent, 
+  approveEvent,
+  rejectEvent,
   deleteEvent,
   getPendingEventsCount,
   getPendingDeletionEventsCount,
@@ -19,7 +20,8 @@ import { sendEmail } from "../services/emailService.js";
 import { 
   eventDeletionOrganizerTemplate, 
   eventCancellationVolunteerTemplate,
-  eventApprovalTemplate 
+  eventApprovalTemplate,
+  eventRejectionTemplate
 } from "../services/emailTemplates.js";
 import pool from "../db.js";
 
@@ -193,6 +195,74 @@ export const approveEventController = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             error: 'Server error while approving event' 
+        });
+    }
+};
+
+// Rejects a pending event and sends notification email to organizer
+export const rejectEventController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rejectionReason } = req.body;
+        
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Event ID is required" 
+            });
+        }
+        
+        const eventResult = await getEventById(id);
+        
+        if (!eventResult.success) {
+            return res.status(404).json({ 
+                success: false, 
+                error: "Event not found" 
+            });
+        }
+        
+        const event = eventResult.event;
+        const organizerInfo = event.organiser;
+        
+        const result = await rejectEvent(id);
+        
+        if (!result.success) {
+            return res.status(400).json({ 
+                success: false, 
+                error: result.message 
+            });
+        }
+
+        try {
+            const rejectionEmailContent = eventRejectionTemplate({
+                organizerName: organizerInfo.name,
+                eventTitle: event.name,
+                rejectionReason: rejectionReason || ''
+            });
+
+            await sendEmail({
+                to: organizerInfo.email,
+                subject: rejectionEmailContent.subject,
+                text: rejectionEmailContent.text,
+                html: rejectionEmailContent.html
+            });
+
+            console.log(`✅ Event rejection email sent to organizer: ${organizerInfo.email}`);
+        } catch (emailError) {
+            console.error('⚠️ Failed to send event rejection email to organizer:', emailError.message);
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Event rejected successfully",
+            eventId: result.eventId,
+            emailSent: true
+        });
+    } catch (err) {
+        console.error('Error rejecting event:', err);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Server error while rejecting event' 
         });
     }
 };

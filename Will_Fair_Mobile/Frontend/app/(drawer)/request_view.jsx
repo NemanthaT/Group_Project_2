@@ -38,7 +38,7 @@ const RequestView = () => {
             raised: item.quantity_received,
             target: item.quantity_needed,
             due_date: item.due_date,
-            status: getStatus(item),
+            status: item.status, // Use actual database status
             type: getType(item),
             category: item.category || item.category_name || '',
           }));
@@ -57,10 +57,6 @@ const RequestView = () => {
     // eslint-disable-next-line
   }, [showAll]);
 
-  function getStatus(item) {
-    if (item.quantity_received >= item.quantity_needed) return 'Completed';
-    return 'Active';
-  }
   function getType(item) {
     return item.type || 'Non-Monetary';
   }
@@ -78,9 +74,9 @@ const RequestView = () => {
       console.log('Image URL:', item.image_url);
     }
     
-    const isCompleted = Number(item.raised) >= Number(item.target);
-    const isPastDeadline = item.due_date && new Date(item.due_date) < new Date();
-    const donateDisabled = isCompleted || isPastDeadline;
+    // Only check status from database - ignore deadline and quantity
+    // If status is 'active', donation is enabled regardless of target or deadline
+    const donateDisabled = item.status !== 'active';
     return (
       <View key={item.id} style={{
         backgroundColor: '#fff',
@@ -158,7 +154,7 @@ const RequestView = () => {
               marginRight: 8,
             }}
             onPress={() => {
-              if (donateDisabled) return;
+              if (item.status !== 'active') return;
               if ((item.type || '').toLowerCase() === 'monetary') {
                 router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: item.id } });
               } else {
@@ -168,7 +164,7 @@ const RequestView = () => {
             disabled={donateDisabled}
           >
             <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
-              {isCompleted ? 'Completed' : isPastDeadline ? 'Deadline Passed' : 'Donate Now'}
+              {item.status === 'active' ? 'Donate Now' : 'Not Available'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

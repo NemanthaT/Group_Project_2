@@ -4,6 +4,7 @@ import { Edit, Trash2, UserPlus, Check, X, Save } from "lucide-react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "./ConfirmationModal";
 
 const Categories = ({ name, setName, desc, setDesc }) => {
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,9 @@ const Categories = ({ name, setName, desc, setDesc }) => {
   const [editName, setEditName] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editType, setEditType] = useState("Monetary");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -58,37 +62,60 @@ const Categories = ({ name, setName, desc, setDesc }) => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
-    try {
-      const resp = await axios.delete(`http://localhost:5000/admin/categories/${id}`);
-      if (resp.data && resp.data.success) {
-        setCategories(prev => prev.filter(c => c.id !== id));
-        toast.success('Category deleted!');
-      } else {
-        toast.error('Failed to delete category');
-      }
-    } catch {
-      toast.error('Error deleting category');
-    }
+  const handleDeleteClick = (category) => {
+    setSelectedCategory(category);
+    setConfirmAction('delete');
+    setShowConfirm(true);
   };
 
-  const handleToggle = async (id) => {
-    try {
-      const resp = await axios.patch(`http://localhost:5000/admin/categories/${id}/toggle`);
-      if (resp.data && resp.data.success) {
-        setCategories(prev =>
-          prev.map(c =>
-            c.id === id ? { ...c, status: resp.data.status } : c
-          )
-        );
-        toast.success('Category status updated!');
-      } else {
-        toast.error('Failed to update status');
+  const handleToggleClick = (category) => {
+    setSelectedCategory(category);
+    setConfirmAction('toggle');
+    setShowConfirm(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedCategory) return;
+
+    if (confirmAction === 'delete') {
+      try {
+        const resp = await axios.delete(`http://localhost:5000/admin/categories/${selectedCategory.id}`);
+        if (resp.data && resp.data.success) {
+          setCategories(prev => prev.filter(c => c.id !== selectedCategory.id));
+          toast.success('Category deleted!');
+        } else {
+          toast.error('Failed to delete category');
+        }
+      } catch {
+        toast.error('Error deleting category');
       }
-    } catch {
-      toast.error('Error updating status');
+    } else if (confirmAction === 'toggle') {
+      try {
+        const resp = await axios.patch(`http://localhost:5000/admin/categories/${selectedCategory.id}/toggle`);
+        if (resp.data && resp.data.success) {
+          setCategories(prev =>
+            prev.map(c =>
+              c.id === selectedCategory.id ? { ...c, status: resp.data.status } : c
+            )
+          );
+          toast.success('Category status updated!');
+        } else {
+          toast.error('Failed to update status');
+        }
+      } catch {
+        toast.error('Error updating status');
+      }
     }
+
+    setShowConfirm(false);
+    setSelectedCategory(null);
+    setConfirmAction(null);
+  };
+
+  const cancelAction = () => {
+    setShowConfirm(false);
+    setSelectedCategory(null);
+    setConfirmAction(null);
   };
 
   const startEdit = (cat) => {
@@ -120,12 +147,29 @@ const Categories = ({ name, setName, desc, setDesc }) => {
     }
   };
 
+  const getConfirmMessage = () => {
+    if (confirmAction === 'delete') {
+      return `Are you sure you want to delete the category "${selectedCategory?.name}"? This action cannot be undone.`;
+    } else if (confirmAction === 'toggle') {
+      const newStatus = selectedCategory?.status === 'Active' ? 'Inactive' : 'Active';
+      return `Are you sure you want to change the status of "${selectedCategory?.name}" to ${newStatus}?`;
+    }
+    return '';
+  };
+
   if (loading) return <div>Loading categories...</div>;
   if (error) return <div style={{color: 'red'}}>{error}<ToastContainer /></div>;
 
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
+      <ConfirmationModal
+        show={showConfirm}
+        title={confirmAction === 'delete' ? 'Delete Category' : 'Change Status'}
+        message={getConfirmMessage()}
+        onConfirm={handleConfirmAction}
+        onCancel={cancelAction}
+      />
       <div style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>Donation Categories</h2>
       </div>
@@ -187,14 +231,14 @@ const Categories = ({ name, setName, desc, setDesc }) => {
                 <td style={styles.td}>
                   <div style={styles.actionButtons}>
                     {editId === c.id ? (
-                      <button style={styles.btnIcon} onClick={() => handleEditSave(c.id)}><Save size={16} /></button>
+                      <button style={styles.btnIcon} onClick={() => handleEditSave(c.id)}><Save size={24} /></button>
                     ) : (
-                      <button style={styles.btnIcon} onClick={() => startEdit(c)}><Edit size={16} /></button>
+                      <button style={styles.btnIcon} onClick={() => startEdit(c)}><Edit size={24} /></button>
                     )}
-                    <button style={styles.btnIcon} onClick={() => handleToggle(c.id)}>
-                      {c.status === 'Active' ? <X size={16} /> : <Check size={16} />}
+                    <button style={styles.btnIcon} onClick={() => handleToggleClick(c)}>
+                      {c.status === 'Active' ? <X size={24} /> : <Check size={24} />}
                     </button>
-                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDelete(c.id)}><Trash2 size={16} /></button>
+                    <button style={{...styles.btnIcon, ...styles.btnIconDelete}} onClick={() => handleDeleteClick(c)}><Trash2 size={24} /></button>
                   </div>
                 </td>
               </tr>

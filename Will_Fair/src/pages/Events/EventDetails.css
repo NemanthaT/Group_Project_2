@@ -203,7 +203,7 @@
   justify-content: center;
   text-align: center;
   white-space: nowrap;
-  min-width: 180px;
+  /*min-width: 180px;*/
   flex: 1;
 }
 
@@ -389,6 +389,36 @@
 .content {
   font-weight: 400;       /* Normal / light weight for content */
   color: #555;            /* Lighter than label */
+}
+
+/* Request Volunteer List Button */
+.btn-request-volunteer-list {
+  margin-top: 16px;
+  padding: 0.65rem 1.3rem;
+  border-radius: 8px;
+  border: 1.5px solid #6b7280;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-request-volunteer-list:hover {
+  background: rgba(107, 114, 128, 0.08);
+  border-color: #4b5563;
+  color: #4b5563;
+  transform: translateY(-2px);
 }
 
 /* Loading Screen */

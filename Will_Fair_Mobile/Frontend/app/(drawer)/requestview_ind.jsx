@@ -46,8 +46,11 @@ const MyDonationReq = () => {
     return <View style={styles.noResultsContainer}><Text>{error || 'Request not found'}</Text></View>;
   }
 
-  const isCompleted = Number(request.quantity_received) >= Number(request.quantity_needed);
-  const progress = isCompleted ? 100 : (request.quantity_received / request.quantity_needed) * 100;
+  // Only 'active' status donations are visible to donors (filtered by backend)
+  // Button is enabled ONLY if status is 'active' - ignore deadline and quantity target
+  const progress = request.quantity_needed > 0 
+    ? Math.min((request.quantity_received / request.quantity_needed) * 100, 100)
+    : 0;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -117,7 +120,7 @@ const MyDonationReq = () => {
             borderRadius: 12,
             backgroundColor: '#ffffffff',
             width: '100%',
-            opacity: isCompleted ? 1 : 0.85,
+            opacity: 0.85,
             transition: 'width 0.3s',
           }} />
           <View style={{
@@ -128,7 +131,7 @@ const MyDonationReq = () => {
             borderRadius: 12,
             backgroundColor: '#7B61FF',
             width: `${progress}%`,
-            opacity: isCompleted ? 1 : 0.85,
+            opacity: 0.85,
             transition: 'width 0.3s',
           }} />
           <Text style={{
@@ -142,7 +145,7 @@ const MyDonationReq = () => {
             textAlignVertical: 'center',
             textAlign: 'right',
             lineHeight: 18,
-          }}>{isCompleted ? '100%' : `${Math.round(progress)}%`}</Text>
+          }}>{`${Math.round(progress)}%`}</Text>
         </View>
         <View style={styles.amountRow}>
           <View>
@@ -181,15 +184,12 @@ const MyDonationReq = () => {
           </View>
         </View>
 
-        {/* Donate Now Button (styled like request_view) */}
+        {/* Donate Now Button - Only disabled if status is not 'active' */}
         <View style={{ marginTop: 24, alignItems: 'center' }}>
           {request && (
             <TouchableOpacity
               style={{
-                backgroundColor:
-                  Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())
-                    ? '#A0AEC0'
-                    : '#7B61FF',
+                backgroundColor: request.status === 'active' ? '#7B61FF' : '#A0AEC0',
                 borderRadius: 8,
                 paddingVertical: 14,
                 paddingHorizontal: 32,
@@ -201,21 +201,17 @@ const MyDonationReq = () => {
                 elevation: 3,
               }}
               onPress={() => {
-                if (Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())) return;
+                if (request.status !== 'active') return;
                 if ((request.type || '').toLowerCase() === 'monetary') {
                   router.push({ pathname: '/(drawer)/donation_payment_new', params: { requestId: request.request_id } });
                 } else {
                   router.push({ pathname: '/(drawer)/non_monetary_donation', params: { requestId: request.request_id } });
                 }
               }}
-              disabled={Number(request.quantity_received) >= Number(request.quantity_needed) || (request.due_date && new Date(request.due_date) < new Date())}
+              disabled={request.status !== 'active'}
             >
               <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
-                {Number(request.quantity_received) >= Number(request.quantity_needed)
-                  ? 'Completed'
-                  : request.due_date && new Date(request.due_date) < new Date()
-                  ? 'Deadline Passed'
-                  : 'Donate Now'}
+                {request.status === 'active' ? 'Donate Now' : 'Not Available'}
               </Text>
             </TouchableOpacity>
           )}

@@ -32,7 +32,7 @@ const db = require('../config/db');
 
 exports.getRecentDonations = async (limit = 3) => {
   const result = await db.query(
-    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name
+    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name, dr.status
      FROM donation_requests dr
      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
      WHERE dr.status = 'active'
@@ -46,7 +46,7 @@ exports.getRecentDonations = async (limit = 3) => {
 // Fetch all donation requests (for 'View All')
 exports.getAllDonations = async () => {
   const result = await db.query(
-    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name
+    `SELECT dr.request_id, dr.title, dr.quantity_needed, dr.quantity_received, dr.due_date, dr.type, dr.category_id, dc.category_name, dr.status
      FROM donation_requests dr
      LEFT JOIN donation_categories dc ON dr.category_id = dc.category_id
      WHERE dr.status = 'active'
