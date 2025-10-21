@@ -72,7 +72,7 @@ const Monetary = () => {
       setLoadingCategories(true);
       try {
         // Use local backend. On Android emulator replace localhost with 10.0.2.2
-        const base = Platform.OS === "android" ? "http://10.23.1.180:5000" : "http://localhost:5000";
+        const base = Platform.OS === "android" ? "http://10.203.170.72:5000" : "http://localhost:5000";
         const url = `${base}/api/donations/monetaryCategories`;
 
         const res = await fetch(url, { headers: { Accept: "application/json" } });
