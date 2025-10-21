@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
-import AddEventModal from './AddEventModal';
+// import AddEventModal from './AddEventModal';
 import axios from 'axios';
 import { API_BASE } from '../../constants/API';
 import { useBackHandler } from '../../hooks/useBackHandler';
@@ -176,7 +176,7 @@ export default function EventsScreen() {
         </View>
       )} />
 
-      <AddEventModal 
+      {/*<AddEventModal 
         isOpen={showAddModal} 
         onClose={() => setShowAddModal(false)} 
         onSubmit={async (formData) => {
@@ -216,7 +216,7 @@ export default function EventsScreen() {
             return { success: false };
           }
         }} 
-      />
+      />*/}
     </SafeAreaView>
   );
 }
