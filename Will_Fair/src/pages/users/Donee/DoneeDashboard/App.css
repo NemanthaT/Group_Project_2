@@ -260,7 +260,7 @@ body {
 
 /* Hero Section */
 .app .hero-section {
-  background: linear-gradient(135deg, #2563eb, #8b5cf6, #2563eb);
+  background: linear-gradient(135deg, #9233ea83 0%, #0d419b80 100%);
   position: relative;
   overflow: hidden;
 }
