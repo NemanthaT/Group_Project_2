@@ -52,6 +52,11 @@
   gap: 1rem;
 }
 
+.hero-buttons .btn-secondary {
+    color:white;
+    
+}
+
 .btn-primary {
   background: #fff;
   color: #6366f1;
