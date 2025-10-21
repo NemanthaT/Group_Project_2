@@ -3,7 +3,7 @@ import { Modal, View, Text, TextInput, ScrollView, StyleSheet, Platform, Touchab
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { EVENT_OPTIONS } from '../../../constants/eventOptions';
+// import { EVENT_OPTIONS } from '../../../constants/eventOptions';
 
 export default function AddEventModal({ isOpen, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -272,7 +272,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
             {/* Location */}
             <Text style={styles.label}>Location</Text>
             <View style={styles.pickerBox}>
-              <Picker
+              {/* <Picker
                 selectedValue={form.location}
                 onValueChange={v => updateField('location', v)}
               >
@@ -280,23 +280,23 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
                 {EVENT_OPTIONS.location.map(opt => (
                   <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
                 ))}
-              </Picker>
+              </Picker> */}
             </View>
             {errors.location && <Text style={styles.err}>{errors.location}</Text>}
 
             {/* Volunteer Type */}
             <Text style={styles.label}>Volunteer Type</Text>
             <View style={styles.pickerBox}>
-              <Picker
+              {/* <Picker
                 selectedValue={form.type}
                 onValueChange={v => updateField('type', v)}
               >
-                <Picker.Item label="Select Type" value="" />
+                {/* <Picker.zItem label="Select Type" value="" />
                 {EVENT_OPTIONS.type.map(opt => (
                   <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
                 ))}
-              </Picker>
-            </View>
+              </Picker> */}
+            </View> */
             {errors.type && <Text style={styles.err}>{errors.type}</Text>}
 
             {/* Time Commitment */}
@@ -310,14 +310,14 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
                 {EVENT_OPTIONS.commitment.map(opt => (
                   <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
                 ))}
-              </Picker>
+              </Picker> */}
             </View>
             {errors.commitment && <Text style={styles.err}>{errors.commitment}</Text>}
 
             {/* Skills */}
             <Text style={styles.label}>Skills</Text>
             <View style={styles.pickerBox}>
-              <Picker
+              {/* <Picker
                 selectedValue={form.skills}
                 onValueChange={v => updateField('skills', v)}
               >
@@ -325,7 +325,7 @@ export default function AddEventModal({ isOpen, onClose, onSubmit }) {
                 {EVENT_OPTIONS.skills.map(opt => (
                   <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
                 ))}
-              </Picker>
+              </Picker> */}
             </View>
             {errors.skills && <Text style={styles.err}>{errors.skills}</Text>}
 

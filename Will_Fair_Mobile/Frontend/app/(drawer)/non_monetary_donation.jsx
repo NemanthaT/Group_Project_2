@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from "react-native";
 import { API_BASE } from '../constants/API';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getUserInfo } from '../../utils/authHelpers';
 
 const NonMonetaryDonation = () => {
   const { requestId } = useLocalSearchParams();
@@ -36,11 +37,12 @@ const NonMonetaryDonation = () => {
   if (error || !request) return <View style={styles.container}><Text>{error || 'Request not found'}</Text></View>;
 
   const balanced = Math.max(request.quantity_needed - request.quantity_received, 0);
+  const remainingQuantity = balanced;
   const isCompleted = (request.status || '').toLowerCase() === 'completed';
   const isPastDeadline = request.due_date && new Date(request.due_date) < new Date();
   const donateDisabled = isCompleted || isPastDeadline;
 
-  const handleDonate = () => {
+  const handleDonate = async () => {
     if (donateDisabled) return;
     const qty = parseInt(quantity, 10);
     if (!item.trim()) {
@@ -51,24 +53,56 @@ const NonMonetaryDonation = () => {
       setError("Please enter a valid quantity");
       return;
     }
-    if (qty > balanced) {
-      setError(`Quantity cannot exceed the target or balanced amount (${balanced})`);
+    
+    // Allow donations to exceed target quantity - donors can be generous!
+    // Removed the balanced quantity check to allow over-donations
+
+    // Get user info (donor_id)
+    const userInfo = await getUserInfo();
+    console.log('User ID retrieved:', userInfo?.donor_id);
+    
+    if (!userInfo || !userInfo.donor_id) {
+      Alert.alert("Error", "User not authenticated. Please login again.");
       return;
     }
-    // Here you would call your backend to process the non-monetary donation
-    Alert.alert(
-      "Success",
-      `You have pledged to donate ${qty} x ${item} to '${request.title}'!`,
-      [
-        {
-          text: "OK",
-          onPress: () => router.push("/(drawer)/request_view"),
+
+    try {
+      // Call backend to process the non-monetary donation
+      const response = await fetch(`${API_BASE}/api/donations/add-amount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ]
-    );
-    setItem("");
-    setQuantity("");
-    setError("");
+        body: JSON.stringify({
+          request_id: request.request_id,
+          amount: qty,
+          donor_id: userInfo.donor_id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        Alert.alert(
+          "Success",
+          `You have donated ${qty} x ${item} to '${request.title}'!`,
+          [
+            {
+              text: "OK",
+              onPress: () => router.push("/(drawer)/request_view"),
+            },
+          ]
+        );
+        setItem("");
+        setQuantity("");
+        setError("");
+      } else {
+        Alert.alert("Error", result.message || "Failed to process donation. Please try again.");
+      }
+    } catch (error) {
+      console.error('Non-monetary donation error:', error);
+      Alert.alert("Error", "Network error. Please check your connection and try again.");
+    }
   };
 
   return (
@@ -80,7 +114,15 @@ const NonMonetaryDonation = () => {
           <Text style={[styles.infoText, { fontWeight: 'bold', fontSize: 17 }]}>Title: {request.title}</Text>
           <Text style={styles.infoText}>Target items: {Number(request.quantity_needed).toLocaleString('en-US')}</Text>
           <Text style={styles.infoText}>Received items: {Number(request.quantity_received).toLocaleString('en-US')}</Text>
+          <Text style={styles.infoText}>Remaining: {Number(remainingQuantity).toLocaleString('en-US')}</Text>
         </View>
+        {remainingQuantity === 0 && !isCompleted && (
+          <View style={{ backgroundColor: '#FEF3C7', padding: 10, borderRadius: 8, marginBottom: 12 }}>
+            <Text style={{ color: '#92400E', fontSize: 13, textAlign: 'center' }}>
+              ✨ Target reached! Your extra contribution will help even more!
+            </Text>
+          </View>
+        )}
         <Text style={styles.label}>Item</Text>
         <TextInput
           style={styles.input}
