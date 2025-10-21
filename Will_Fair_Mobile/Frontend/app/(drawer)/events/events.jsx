@@ -223,8 +223,8 @@ export default function EventsScreen() {
 
 const styles = StyleSheet.create({
   hero: { height: 140, padding: 16, justifyContent: 'center', backgroundColor: '#7B61FF' },
-  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  heroSubtitle: { color: '#EEDCFF', marginTop: 6 },
+  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700', alignSelf: 'center' },
+  heroSubtitle: { color: '#EEDCFF', marginTop: 6, alignSelf: 'center', textAlign: 'center', fontSize: 13 },
   filters: { padding: 12, backgroundColor: '#fafafa' },
   picker: { height: 50, width: '100%', color: '#333', backgroundColor: '#fff' },
   addBtn: { backgroundColor: '#7B61FF', padding: 10, alignItems: 'center', borderRadius: 6, marginTop: 8 },
