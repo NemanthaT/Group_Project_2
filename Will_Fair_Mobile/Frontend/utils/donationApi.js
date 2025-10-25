@@ -1,45 +1,72 @@
-import axios from 'axios';
-import { getAuthToken } from '../utils/authHelpers';
+import { API_BASE } from '../app/constants/API';
 
 // Call monetary donation payment API
 export const makeDonationPayment = async ({ requestId, amount, donorId }) => {
-  const token = await getAuthToken();
   try {
-    const response = await axios.post(
-      'http://192.168.122.72:5000/api/donations/add-amount',
-      { request_id: requestId, amount, donor_id: donorId },
+    console.log('=== DONATION API CALL ===');
+    console.log('URL:', `${API_BASE}/api/donations/add-amount`);
+    console.log('Payload:', { request_id: requestId, amount, donor_id: donorId });
+    
+    const response = await fetch(
+      `${API_BASE}/api/donations/add-amount`,
       {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          request_id: requestId,
+          amount: amount,
+          donor_id: donorId,
+        }),
       }
     );
-    return response.data;
+
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Response data:', data);
+    console.log('=== END DONATION API CALL ===');
+    
+    return data;
   } catch (error) {
-    return { success: false, error: error?.response?.data?.error || error.message };
+    console.error('=== DONATION PAYMENT ERROR ===');
+    console.error('Error type:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Full error:', error);
+    console.error('=== END ERROR ===');
+    return { 
+      success: false, 
+      error: error.message || 'Network error occurred'
+    };
   }
 };
 
-// Call non-monetary donation API
+// Call non-monetary donation API (not currently used, but kept for future)
 export const makeNonMonetaryDonation = async (donationData) => {
-  const token = await getAuthToken();
   try {
     const formData = new FormData();
     Object.entries(donationData).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    const response = await axios.post(
-      'http://192.168.122.72:5000/createNonMonDonation',
-      formData,
+    
+    const response = await fetch(
+      `${API_BASE}/createNonMonDonation`,
       {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
+        body: formData,
       }
     );
-    return response.data;
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
-    return { success: false, error: error?.response?.data?.error || error.message };
+    console.error('Non-monetary donation error:', error);
+    return { 
+      success: false, 
+      error: error.message || 'Network error occurred'
+    };
   }
 };

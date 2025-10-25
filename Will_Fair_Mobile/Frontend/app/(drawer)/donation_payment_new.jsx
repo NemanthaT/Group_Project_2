@@ -40,7 +40,7 @@ const DonationPayment = () => {
   const isCompleted = (request.status || '').toLowerCase() === 'completed';
   const isPastDeadline = request.due_date && new Date(request.due_date) < new Date();
   const progress = isCompleted ? 100 : (request.quantity_received / request.quantity_needed) * 100;
-  const balanced = Math.max(request.quantity_needed - request.quantity_received, 0);
+  const remainingAmount = Math.max(request.quantity_needed - request.quantity_received, 0);
   const donateDisabled = isCompleted || isPastDeadline;
 
   const handleQuickAmount = (val) => {
@@ -62,18 +62,9 @@ const DonationPayment = () => {
       }
       return;
     }
-    if (amt > balanced) {
-      if (!errorShown) {
-        setError(`Amount cannot exceed the target or balanced amount (Rs. ${balanced})`);
-        setErrorShown(true);
-        setTimeout(() => {
-          setError("");
-          setErrorShown(false);
-          router.push({ pathname: '/(drawer)/requestview_ind', params: { requestId: request.request_id } });
-        }, 2000);
-      }
-      return;
-    }
+    
+    // Allow donations to exceed target amount - donors can be generous!
+    // Removed the balanced amount check to allow over-donations
 
     // Get user info (donor_id)
     const userInfo = await getUserInfo();
@@ -86,26 +77,31 @@ const DonationPayment = () => {
     }
 
     // Call backend to process the donation
-    const result = await makeDonationPayment({
-      requestId: request.request_id,
-      amount: amt,
-      donorId: userInfo.donor_id,
-    });
+    try {
+      const result = await makeDonationPayment({
+        requestId: request.request_id,
+        amount: amt,
+        donorId: userInfo.donor_id,
+      });
 
-    if (result.success) {
-      Alert.alert(
-        "Success",
-        `You have donated Rs. ${amt} to '${request.title}'!`,
-        [
-          {
-            text: "OK",
-            onPress: () => router.push("/(drawer)/request_view"),
-          },
-        ]
-      );
-      setAmount("");
-    } else {
-      Alert.alert("Error", result.error || "Failed to process donation. Please try again.");
+      if (result.success) {
+        Alert.alert(
+          "Success",
+          `You have donated Rs. ${amt} to '${request.title}'!`,
+          [
+            {
+              text: "OK",
+              onPress: () => router.push("/(drawer)/request_view"),
+            },
+          ]
+        );
+        setAmount("");
+      } else {
+        Alert.alert("Error", result.error || "Failed to process donation. Please try again.");
+      }
+    } catch (error) {
+      console.error('Donation error:', error);
+      Alert.alert("Error", "Network error. Please check your connection and try again.");
     }
   };
 
@@ -123,7 +119,15 @@ const DonationPayment = () => {
           <Text style={[styles.infoText, { fontWeight: 'bold', fontSize: 17 }]}>Title: {request.title}</Text>
           <Text style={styles.infoText}>Target Amount: Rs. {Number(request.quantity_needed).toLocaleString('en-US')}</Text>
           <Text style={styles.infoText}>Received Amount: Rs. {Number(request.quantity_received).toLocaleString('en-US')}</Text>
+          <Text style={styles.infoText}>Remaining: Rs. {Number(remainingAmount).toLocaleString('en-US')}</Text>
         </View>
+        {remainingAmount === 0 && !isCompleted && (
+          <View style={{ backgroundColor: '#FEF3C7', padding: 10, borderRadius: 8, marginBottom: 12 }}>
+            <Text style={{ color: '#92400E', fontSize: 13, textAlign: 'center' }}>
+              ✨ Target reached! Your extra contribution will help even more!
+            </Text>
+          </View>
+        )}
         <Text style={styles.label}>Amount (Rs.)</Text>
         <TextInput
           style={styles.input}

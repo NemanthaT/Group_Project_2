@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
-import AddEventModal from './AddEventModal';
+// import AddEventModal from './AddEventModal';
 import axios from 'axios';
 import { API_BASE } from '../../constants/API';
 import { useBackHandler } from '../../hooks/useBackHandler';
@@ -176,7 +176,7 @@ export default function EventsScreen() {
         </View>
       )} />
 
-      <AddEventModal 
+      {/*<AddEventModal 
         isOpen={showAddModal} 
         onClose={() => setShowAddModal(false)} 
         onSubmit={async (formData) => {
@@ -216,15 +216,15 @@ export default function EventsScreen() {
             return { success: false };
           }
         }} 
-      />
+      />*/}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   hero: { height: 140, padding: 16, justifyContent: 'center', backgroundColor: '#7B61FF' },
-  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  heroSubtitle: { color: '#EEDCFF', marginTop: 6 },
+  heroTitle: { color: '#fff', fontSize: 20, fontWeight: '700', alignSelf: 'center' },
+  heroSubtitle: { color: '#EEDCFF', marginTop: 6, alignSelf: 'center', textAlign: 'center', fontSize: 13 },
   filters: { padding: 12, backgroundColor: '#fafafa' },
   picker: { height: 50, width: '100%', color: '#333', backgroundColor: '#fff' },
   addBtn: { backgroundColor: '#7B61FF', padding: 10, alignItems: 'center', borderRadius: 6, marginTop: 8 },
