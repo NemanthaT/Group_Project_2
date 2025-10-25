@@ -37,8 +37,22 @@ const upload = multer({
   }
 });
 
-// POST /api/donations/add-amount - MUST come before generic /donations routes
+// =================== SPECIFIC ROUTES FIRST ===================
+// These MUST come before parametrized routes to avoid conflicts
+
+// POST /api/donations/add-amount - Add donation to existing request
 router.post('/donations/add-amount', addDonationAmountMobile);
+
+// GET /api/donations/recent - Get recent donations
+router.get('/donations/recent', getRecentDonationsMobile);
+
+// GET /api/donations/all - Get all donations
+router.get('/donations/all', getAllDonationsMobile);
+
+// GET /api/donations/my/:doneeId - Get donations by donee
+router.get('/donations/my/:doneeId', getMyDonationRequestsMobile);
+
+// =================== PARAMETRIZED ROUTES LAST ===================
 
 // POST /api/donations - Create new donation request with file uploads
 router.post('/donations', upload.fields([
@@ -46,22 +60,13 @@ router.post('/donations', upload.fields([
   { name: 'document', maxCount: 1 }
 ]), createDonationRequestMobile);
 
+// GET /api/donations/:id - Get single donation by ID (MUST be last GET)
+router.get('/donations/:id', getDonationByIdMobile);
+
 // PUT /api/donations/:id - Update donation request (only quantity_needed and due_date)
 router.put('/donations/:id', updateDonationRequestMobile);
 
 // DELETE /api/donations/:id - Delete donation request
 router.delete('/donations/:id', deleteDonationRequestMobile);
-
-// GET /api/donations/recent
-router.get('/donations/recent', getRecentDonationsMobile);
-
-// GET /api/donations/all
-router.get('/donations/all', getAllDonationsMobile);
-
-// GET /api/donations/my/:doneeId - MUST come before /donations/:id
-router.get('/donations/my/:doneeId', getMyDonationRequestsMobile);
-
-// GET /api/donations/:id - This should be last as it's most generic
-router.get('/donations/:id', getDonationByIdMobile);
 
 module.exports = router;

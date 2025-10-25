@@ -56,32 +56,7 @@ const HomeScreen = () => {
 
     const navigation = useNavigation(); // ← Hook for drawer access
 
-    const programs = [
-    {
-        id: 1,
-        title: 'Child Care Renovation',
-        target: '$50,000',
-        raised: '$5,000',
-        progress: '40%',
-        image: require('../../assets/images/program1.png'),
-    },
-    {
-        id: 2,
-        title: 'Elderly Care Support',
-        target: '$10,000',
-        raised: '$5,000',
-        progress: '70%',
-        image: require('../../assets/images/program2.png'),
-    },
-    {
-        id: 3,
-        title: 'Medical Aid',
-        target: '$18,000',
-        raised: '$5,000',
-        progress: '55%',
-        image: require('../../assets/images/program3.png'),
-    },
-    ];
+    const programs = [];
 
 
   return (
@@ -89,7 +64,7 @@ const HomeScreen = () => {
       <ScrollView style={homeStyles.container} showsVerticalScrollIndicator={false}>
 
         {/* Hero Section */}
-        <View style={[homeStyles.hero, { backgroundColor: "#5c41e0ff", marginTop: 40 }]}>
+        <LinearGradient colors={["#7B61FF", "#7B61FF"]} style={homeStyles.hero}>
         <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={{
@@ -109,15 +84,15 @@ const HomeScreen = () => {
             Whether it’s food, education, healthcare, or emergency relief — your
             contribution matters.
           </Text>
-          <View style={homeStyles.heroButtons}>
+          {/* <View style={homeStyles.heroButtons}>
             <TouchableOpacity style={homeStyles.ctaButton}>
               <Text style={homeStyles.ctaText}>Get Started</Text>
             </TouchableOpacity>
             <TouchableOpacity style={homeStyles.donateButton}>
               <Text style={homeStyles.buttonText}>Donate Now</Text>
             </TouchableOpacity>
-          </View>
-        </View>
+          </View> */}
+        </LinearGradient>
 
         {/* Featured Programs */}
         {/* <Text style={homeStyles.sectionTitle}>Featured Programs</Text> */}
