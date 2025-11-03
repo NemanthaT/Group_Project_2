@@ -57,7 +57,7 @@ const HeroSection = ({ user }) => {
             </button>
           </div>
 
-          <div className="hero-stats">
+          <div className="hero-stats" id="hero-stats">
             <div className="stat">
               <div className="stat-number">{loading ? '—' : stats.livesImpacted.toLocaleString()}</div>
               <div className="stat-label">Lives Impacted</div>
