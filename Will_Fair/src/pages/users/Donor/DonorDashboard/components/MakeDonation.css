@@ -49,7 +49,7 @@
   outline: none;
 }
 .make-donation-btn {
-  background: #764ba2;;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   border: none;
   padding: 0.75rem 2rem;
@@ -60,7 +60,7 @@
   cursor: pointer;
 }
 .make-donation-btn:hover {
-  background: #6c2faa;;
+  background: linear-gradient(135deg, #2d52f7 0%, #540c9c 100%);
 }
 .make-donation-success {
   color: #10b981;
