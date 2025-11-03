@@ -53,8 +53,14 @@
 }
 
 .hero-buttons .btn-secondary {
-    color:white;
-    
+  color:white;
+  border: 2px solid white;
+}
+.hero-buttons .btn-secondary:hover {
+    background: white;
+    border: 2px solid white;
+    color: #6366f1;
+    transform: translateY(-3px);
 }
 
 .btn-primary {

@@ -75,10 +75,10 @@ const WaysToHelp = () => {
               <h3 className="way-title">{way.title}</h3>
               <p className="way-description">{way.description}</p>
 
-              <button className="btn btn-outline" onClick={way.onClick}>
+              {/*<button className="btn btn-outline" onClick={way.onClick}>
                 {way.action}
                 <ArrowRight className="icon" />
-              </button>
+              </button>*/}
             </div>
           ))}
         </div>

@@ -7,7 +7,7 @@
 }
 
 .donation-hero {
-  max-width: 1200px;
+  max-width: 60%;
   margin: 0 auto;
   background: white;
   border-radius: 20px;
@@ -35,8 +35,8 @@
 }
 
 .scndSection {
-  width: 60%;
-  margin: 0 auto 2rem auto;
+  width: 80%;
+  margin: 0 auto 4rem auto;
 }
 
 .donation-image {
@@ -428,14 +428,15 @@
 }
 
 .donate-btn.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4a6cf7, #8b5cf6);
   color: white;
   box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s;
 }
 
 .donate-btn.primary:hover {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #2d52f7 0%, #540c9c 100%);
+  background: linear-gradient(135deg, #3158f5, #743afc);
 }
 
 .share-btn.secondary {
