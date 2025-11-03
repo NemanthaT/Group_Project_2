@@ -13,8 +13,10 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  display: grid;
-  grid-template-columns: 350px 1fr;
+  /*display: grid;
+  grid-template-columns: 350px 2fr;*/
+  display: flex;
+  flex-direction: column;
   min-height: 600px;
 }
 
@@ -26,8 +28,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 600px;
+  max-height: 800px !important;
+  width: 500px !important;
   height: 100%;
+  margin: 2rem auto 0rem auto;
+}
+
+.scndSection {
+  width: 60%;
+  margin: 0 auto 2rem auto;
 }
 
 .donation-image {
@@ -53,7 +62,7 @@
   bottom: 0;
   background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
   padding: 20px;
   pointer-events: none;
@@ -81,8 +90,10 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
+  text-transform: capitalize;
   color: #374151;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 10%;
 }
 
 .category-icon {
@@ -98,11 +109,12 @@
   font-size: 0.875rem;
   text-transform: capitalize;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 10%;
 }
 
 /* Content Section */
 .donation-content {
-  padding: 3rem;
+  padding: 1rem 3rem 1rem 3rem;
   overflow-y: auto;
 }
 
@@ -113,6 +125,12 @@
   margin-bottom: 2rem;
 }
 
+.donation-view-container .donation-title-container {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+}
 .donation-view-container .donation-title {
   font-size: 2.5rem;
   font-weight: 700;
@@ -172,7 +190,7 @@
 .progress-section {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 0.5rem 2rem;
   margin-bottom: 2.5rem;
   border: 1px solid #e5e7eb;
 }
@@ -417,7 +435,7 @@
 
 .donate-btn.primary:hover {
   transform: translateY(-2px);
-  background: #0a3580;
+  background: linear-gradient(135deg, #2d52f7 0%, #540c9c 100%);
 }
 
 .share-btn.secondary {
